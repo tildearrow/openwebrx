@@ -74,3 +74,18 @@ class Ssb(BaseDemodulatorChain):
             Agc(Format.FLOAT),
         ]
         super().__init__(workers)
+
+
+class SAm(BaseDemodulatorChain):
+    def __init__(self):
+        agc = Agc(Format.FLOAT)
+        agc.setProfile(AgcProfile.SLOW)
+        agc.setInitialGain(200)
+        workers = [
+            RealPart(),
+            DcBlock(),
+            agc,
+        ]
+
+        super().__init__(workers)
+
