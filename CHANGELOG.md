@@ -1,3 +1,9 @@
+**1.2.12**
+- Added FAX decoder, tested on weather fax transmissions.
+- Added FAX background decoding service (not tested).
+- Fixed a minor JavaScript error on startup.
+- Optimized SSTV decoder code.
+
 **1.2.11**
 - Made receiver panel collapsible, to free screen estate.
 - Now tracking and displaying paths taken by APRS packets.

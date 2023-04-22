@@ -1,3 +1,12 @@
+openwebrx (1.2.12) bullseye jammy; urgency=low
+
+  * Added FAX decoder, tested on weather fax transmissions.
+  * Added FAX background decoding service (not tested).
+  * Fixed a minor JavaScript error on startup.
+  * Optimized SSTV decoder code.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 22 Apr 2023 16:12:00 +0000
+
 openwebrx (1.2.11) bullseye jammy; urgency=low
 
   * Made receiver panel collapsible, to free screen estate.
