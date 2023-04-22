@@ -104,7 +104,7 @@ class FaxParser(ThreadModule):
                 b = self.depth / 8 if self.depth>8 else 1
                 w = self.width
                 if len(self.data)>=w*b:
-                    logger.debug("LINE %d: Got %d/%d pixels" % (self.line, w, len(self.data)/b))
+                    #logger.debug("LINE %d: Got %d/%d pixels" % (self.line, w, len(self.data)/b))
                     # Advance scanline
                     self.line = self.line + 1
                     # If running as a service...
