@@ -459,6 +459,7 @@ class MapConnection(OpenWebRxClient):
             "google_maps_api_key",
             "receiver_gps",
             "map_position_retention_time",
+            "map_ignore_indirect_reports",
             "map_prefer_recent_reports",
             "callsign_url",
             "vessel_url",

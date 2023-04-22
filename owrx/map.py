@@ -80,15 +80,18 @@ class Map(object):
 
     def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, hops: list[str] = []):
         pm = Config.get()
+        ignoreIndirect = pm["map_ignore_indirect_reports"]
         preferRecent = pm["map_prefer_recent_reports"]
         needBroadcast = False
         ts = datetime.now()
 
         with self.positionsLock:
-            # prefer messages with shorter hop count unless preferRecent set
-            if preferRecent or callsign not in self.positions or len(hops) <= len(self.positions[callsign]["hops"]):
-                self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "hops": hops }
-                needBroadcast = True
+            # ignore indirect reports if ignoreIndirect set
+            if not ignoreIndirect or len(hops)==0:
+                # prefer messages with shorter hop count unless preferRecent set
+                if preferRecent or callsign not in self.positions or len(hops) <= len(self.positions[callsign]["hops"]):
+                    self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "hops": hops }
+                    needBroadcast = True
 
         if needBroadcast:
             self.broadcast(

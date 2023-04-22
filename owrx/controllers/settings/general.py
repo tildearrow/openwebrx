@@ -201,6 +201,10 @@ class GeneralSettingsController(SettingsFormController):
                     append="s",
                 ),
                 CheckboxInput(
+                    "map_ignore_indirect_reports",
+                    "Ignore position reports arriving via indirect path",
+                ),
+                CheckboxInput(
                     "map_prefer_recent_reports",
                     "Prefer more recent position reports to shorter path reports",
                 ),
