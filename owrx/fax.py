@@ -187,7 +187,7 @@ class FaxParser(ThreadModule):
                         # 256x4 palette follows the header
                         if headerSize>54:
                             self.colors = self.data[54:headerSize]
-                        else
+                        else:
                             self.colors = None
                         # Find mode name and time
                         modeName  = "IOC-%d %dLPM" % (self.ioc, self.lpm)
