@@ -1,6 +1,6 @@
 **1.2.12**
 - Added FAX decoder, tested on weather fax transmissions.
-- Added FAX background decoding service (not tested).
+- Added FAX background decoding service.
 - Added option to ignore indirect APRS reports.
 - Fixed a minor JavaScript error on startup.
 - Optimized SSTV decoder code.
