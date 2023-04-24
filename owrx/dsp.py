@@ -548,7 +548,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return Am()
         elif demod == "sam":
             from csdr.chain.analog import SAm
-            return SAm()
+            return SAm(self.props["output_rate"])
         elif demod in ["usb", "lsb", "cw"]:
             from csdr.chain.analog import Ssb
             return Ssb()
