@@ -85,7 +85,7 @@ class SAm(BaseDemodulatorChain):
         agc.setInitialGain(200)
 
         workers = [
-            Afc(self.sampleRate),
+            Afc(1),
             RealPart(),
             DcBlock(),
             agc,
@@ -97,5 +97,5 @@ class SAm(BaseDemodulatorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(0, Afc(self.sampleRate))
+
 
