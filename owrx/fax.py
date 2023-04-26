@@ -162,7 +162,7 @@ class FaxParser(ThreadModule):
                             msg
                         ))
                         # If not running as a service, compose result
-                        if not service:
+                        if not self.service:
                             out = {
                                 "mode":      "Fax",
                                 "message":   msg,
