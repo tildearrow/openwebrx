@@ -77,13 +77,10 @@ class Ssb(BaseDemodulatorChain):
 
 
 class SAm(BaseDemodulatorChain):
-    def __init__(self, sampleRate: int):
-        self.sampleRate = sampleRate
-
+    def __init__(self):
         agc = Agc(Format.FLOAT)
         agc.setProfile(AgcProfile.SLOW)
         agc.setInitialGain(200)
-
         workers = [
             Afc(1),
             RealPart(),
@@ -92,10 +89,4 @@ class SAm(BaseDemodulatorChain):
         ]
 
         super().__init__(workers)
-
-    def setSampleRate(self, sampleRate: int) -> None:
-        if sampleRate == self.sampleRate:
-            return
-        self.sampleRate = sampleRate
-
 
