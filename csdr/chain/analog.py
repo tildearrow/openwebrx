@@ -78,15 +78,16 @@ class Ssb(BaseDemodulatorChain):
 
 class SAm(BaseDemodulatorChain):
     def __init__(self):
+        self.updatePeriod = 10
+        self.samplePeriod = 4
         agc = Agc(Format.FLOAT)
         agc.setProfile(AgcProfile.SLOW)
         agc.setInitialGain(200)
         workers = [
-            Afc(10),
+            Afc(self.updatePeriod, self.samplePeriod),
             RealPart(),
             DcBlock(),
             agc,
         ]
-
         super().__init__(workers)
 
