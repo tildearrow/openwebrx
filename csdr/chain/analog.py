@@ -82,7 +82,7 @@ class SAm(BaseDemodulatorChain):
         agc.setProfile(AgcProfile.SLOW)
         agc.setInitialGain(200)
         workers = [
-            Afc(1),
+            Afc(10),
             RealPart(),
             DcBlock(),
             agc,
