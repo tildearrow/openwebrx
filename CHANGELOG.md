@@ -1,3 +1,11 @@
+**1.2.13**
+- Added synchronous AM demodulator (SAM).
+- Added 12.5kHz and 25kHz tuning steps.
+- Extended default FAX page length to 1400 lines.
+- Fixed bandpass bounds resetting after any frequency change.
+- Fixed file browser, restricting all shots to 32% width.
+- Fixed several bugs in the background FAX decoder.
+
 **1.2.12**
 - Added FAX decoder, tested on weather fax transmissions.
 - Added FAX background decoding service.
