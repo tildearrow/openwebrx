@@ -91,7 +91,7 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
         return;
     }
 
-    if (this.mode === mode && this.underlyingModulation === underlyingModulation) {
+    if (this.mode === mode && (!underlyingModulation || this.underlyingModulation === underlyingModulation)) {
         return;
     }
     if (!mode.isAvailable()) {
