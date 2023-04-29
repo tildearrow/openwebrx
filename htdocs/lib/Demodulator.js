@@ -82,11 +82,11 @@ Envelope.prototype.draw = function(visible_range){
         scale_ctx.globalAlpha = 1;
         scale_ctx.stroke();
         scale_ctx.lineWidth = 1;
+        scale_ctx.textBaseline = "top";
         scale_ctx.textAlign = "left";
         scale_ctx.fillText(this.demodulator.high_cut.toString(), to_px + env_att_w, env_h2);
         scale_ctx.textAlign = "right";
         scale_ctx.fillText(this.demodulator.low_cut.toString(), from_px - env_att_w, env_h2);
-        scale_ctx.lineWidth = 3;
     }
     if (typeof line !== "undefined") // out of screen?
     {
@@ -96,6 +96,7 @@ Envelope.prototype.draw = function(visible_range){
             drag_ranges.line_on_screen = true;
             scale_ctx.moveTo(line_px, env_h1 + env_lineplus);
             scale_ctx.lineTo(line_px, env_h2 - env_lineplus);
+            scale_ctx.lineWidth = 3;
             scale_ctx.stroke();
         }
     }

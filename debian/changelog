@@ -4,8 +4,10 @@ openwebrx (1.2.13) bullseye jammy; urgency=low
   * Added 12.5kHz and 25kHz tuning steps.
   * Extended default FAX page length to 1400 lines.
   * Fixed bandpass bounds resetting after any frequency change.
+  * Fixed bandpass indicator labels cutting off.
   * Fixed file browser, restricting all shots to 32% width.
   * Fixed several bugs in the background FAX decoder.
+  * Made OWRX package depend on the latest PyCSDR package.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 29 Apr 2023 16:12:00 +0000
 
