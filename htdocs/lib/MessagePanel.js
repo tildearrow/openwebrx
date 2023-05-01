@@ -321,11 +321,11 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
         var pixels = atob(msg.pixels);
         var img = this.ctx.createImageData(msg.width, 1);
         // Convert BMP BGR pixels into HTML RGBA pixels
-        for(var x = 0, y = 0; x < msg.width*3; ) {
-            img.data[y++] = pixels.charCodeAt(x++);
-            img.data[y++] = pixels.charCodeAt(x++);
-            img.data[y++] = pixels.charCodeAt(x++);
-            img.data[y++] = 0xFF;
+        for (var x = 0; x < msg.width; x++) {
+            img.data[x*4 + 0] = pixels.charCodeAt(x*3 + 2);
+            img.data[x*4 + 1] = pixels.charCodeAt(x*3 + 1);
+            img.data[x*4 + 2] = pixels.charCodeAt(x*3 + 0);
+            img.data[x*4 + 3] = 0xFF;
         }
         // Render scanline
         this.ctx.putImageData(img, 0, msg.line);
@@ -400,11 +400,11 @@ FaxMessagePanel.prototype.pushMessage = function(msg) {
                 img.data[y++] = 0xFF;
             }
         } else {
-            for(var x=0, y=0; x<msg.width*3; ) {
-                img.data[y++] = pixels.charCodeAt(x++);
-                img.data[y++] = pixels.charCodeAt(x++);
-                img.data[y++] = pixels.charCodeAt(x++);
-                img.data[y++] = 0xFF;
+            for (var x = 0; x < msg.width; x++) {
+                img.data[x*4 + 0] = pixels.charCodeAt(x*3 + 2);
+                img.data[x*4 + 1] = pixels.charCodeAt(x*3 + 1);
+                img.data[x*4 + 2] = pixels.charCodeAt(x*3 + 0);
+                img.data[x*4 + 3] = 0xFF;
             }
         }
 
