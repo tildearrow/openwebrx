@@ -118,7 +118,7 @@ class FaxParser(ThreadModule):
                         # Compose result
                         out = {
                             "mode":   "Fax",
-                            "pixels": base64.b64encode(self.data[0:w]).decode(),
+                            "pixels": base64.b64encode(self.data[0:w*b]).decode(),
                             "line":   self.line-1,
                             "width":  self.width,
                             "height": self.height,
