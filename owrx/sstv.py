@@ -117,15 +117,21 @@ class SstvParser(ThreadModule):
     def setDialFrequency(self, frequency: int) -> None:
         self.frequency = frequency
 
+    def myName(self):
+        return "%s%s" % (
+            "Service" if self.service else "Client",
+            " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
+        )
+
     def run(self):
-        logger.debug("%s starting..." % ("Service" if self.service else "Client"))
+        logger.debug("%s starting..." % self.myName())
         # Run while there is input data
         while self.doRun:
             # Read input data
             inp = self.reader.read()
             # Terminate if no input data
             if inp is None:
-                logger.debug("%s exiting..." % ("Service" if self.service else "Client"))
+                logger.debug("%s exiting..." % self.myName())
                 self.doRun = False
                 break
             # Add read data to the buffer
@@ -134,7 +140,8 @@ class SstvParser(ThreadModule):
             out = self.process()
             # Keep processing while there is input to parse
             while out is not None:
-                self.writer.write(pickle.dumps(out))
+                if len(out)>0:
+                    self.writer.write(pickle.dumps(out))
                 out = self.process()
 
     def process(self):
@@ -155,6 +162,8 @@ class SstvParser(ThreadModule):
                         # Close once the last scanline reached
                         if self.line>=self.height:
                             self.closeFile()
+                        # Empty result
+                        out = {}
                     else:
                         # Compose result
                         out = {
@@ -173,8 +182,7 @@ class SstvParser(ThreadModule):
                     # Remove parsed data
                     del self.data[0:w]
 
-            # Parse bitmap (BMP) file header starting with 'BM' or debug msgs
-            elif len(self.data)>=54:
+            else:
                 # Search for the leading 'BM' or ' ['
                 w = self.data.find(b'BM')
                 d = self.data.find(b' [')
@@ -193,13 +201,13 @@ class SstvParser(ThreadModule):
                         # Remove parsed data
                         del self.data[0:w+1]
                         # Log message
-                        logger.debug("%s%s says [%s]" % (
-                            ("Service" if self.service else "Client"),
-                            ((" at %d" % (self.frequency // 1000)) if self.frequency>0 else ""),
-                            msg
-                        ))
-                        # If not running as service, compose result
-                        if not service:
+                        logger.debug("%s says [%s]" % (self.myName(), msg))
+                        # If running as a service...
+                        if self.service:
+                            # Empty result
+                            out = {}
+                        else:
+                            # Compose result
                             out = {
                                 "mode":      "SSTV",
                                 "message":   msg,
@@ -222,14 +230,16 @@ class SstvParser(ThreadModule):
                         timeStamp = datetime.utcnow().strftime("%H:%M:%S")
                         fileName  = Storage().makeFileName("SSTV-{0}", self.frequency)
                         logger.debug("%s receiving %dx%d %s frame as '%s'." % (
-                            ("Service" if self.service else "Client"),
-                            self.width, self.height, modeName, fileName
+                            self.myName(), self.width, self.height,
+                            modeName, fileName
                         ))
                         # If running as a service...
                         if self.service:
                             # Create a new image file and write BMP header
                             self.newFile(fileName)
                             self.writeFile(self.data[0:54])
+                            # Empty result
+                            out = {}
                         else:
                             # Compose result
                             out = {
@@ -245,7 +255,7 @@ class SstvParser(ThreadModule):
                         del self.data[0:54]
 
         except Exception as exptn:
-            logger.debug("Exception parsing: %s" % str(exptn))
+            logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
 
         # Return parsed result or None if no result yet
         return out
