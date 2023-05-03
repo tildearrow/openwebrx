@@ -74,11 +74,44 @@ class FaxParser(ThreadModule):
     def setDialFrequency(self, frequency: int) -> None:
         self.frequency = frequency
 
-    def myName(self):
+    def myName(self) -> str:
         return "%s%s" % (
             "Service" if self.service else "Client",
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
+
+    def applyRLE(self, buf):
+        out = b''
+        j = 0
+        k = 0
+        while j<len(buf):
+            # Search for the next non-repeating byte
+            i = j + 1
+            while i<len(buf) and buf[i]==buf[j]:
+                i = i + 1
+            # If got two or more repeating bytes...
+            if i-j>=2:
+                # Add non-repeating bytes
+                while k<j:
+                    n = min(j-k, 128)
+                    out += bytes([n - 1])
+                    out += buf[k : k+n]
+                    k += n
+                # Add repeating bytes
+                while k<i:
+                    n = min(i-k, 129)
+                    out += bytes([n + 128 - 2, buf[j]])
+                    k += n
+            # Update current position
+            j = i
+        # Add remaining non-repeating bytes
+        while k<j:
+            n = min(j-k, 128)
+            out += bytes([n - 1])
+            out += buf[k : k+n]
+            k += n
+        # Done
+        return out
 
     def run(self):
         logger.debug("%s starting..." % self.myName())
@@ -127,9 +160,10 @@ class FaxParser(ThreadModule):
                         out = {}
                     else:
                         # Compose result
+                        rle = self.applyRLE(self.data[0:w*b])
                         out = {
                             "mode":   "Fax",
-                            "pixels": base64.b64encode(self.data[0:w*b]).decode(),
+                            "pixels": base64.b64encode(rle).decode(),
                             "line":   self.line-1,
                             "width":  self.width,
                             "height": self.height,

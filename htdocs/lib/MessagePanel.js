@@ -387,8 +387,21 @@ FaxMessagePanel.prototype.pushMessage = function(msg) {
     }
     else if(msg.width>0 && msg.height>0 && msg.line>=0 && msg.hasOwnProperty('pixels')) {
         // Will copy pixels to img
-        var pixels = atob(msg.pixels);
         var img = this.ctx.createImageData(msg.width, 1);
+        var rle = atob(msg.pixels);
+        var pixels = '';
+
+        // Unpack RLE-compressed line of pixels
+        for(var x=0 ; x<rle.length ; ) {
+            var c = rle.charCodeAt(x);
+            if(c<128) {
+                pixels += rle.slice(x+1, x+c+2);
+                x += c + 2;
+            } else {
+                pixels += rle.slice(x+1, x+2).repeat(c-128+2)
+                x += 2;
+            }
+        }
 
         // Convert BMP BGR pixels into HTML RGBA pixels
         if(msg.depth==8) {

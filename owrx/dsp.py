@@ -686,7 +686,10 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             b = data.tobytes()
             # If we know it's not pickled, let us not unpickle
             if len(b) < 2 or b[0] != 0x80 or not 3 <= b[1] <= pickle.HIGHEST_PROTOCOL:
-                callback(b.decode("ascii"))
+                try:
+                    callback(b.decode("ascii"))
+                except Exception as e:
+                    logger.debug("Unpickler: %s" % e)
                 return
 
             io = BytesIO(b)
