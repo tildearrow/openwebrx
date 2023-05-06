@@ -29,7 +29,7 @@ class PskReporter(Reporter):
         Current version at the time of the last change:
         https://www.adif.org/312/ADIF_312.htm#Mode_Enumeration
         """
-        return ["FT8", "FT4", "JT9", "JT65", "FST4", "JS8", "Q65", "WSPR", "FST4W"]
+        return ["FT8", "FT4", "JT9", "JT65", "FST4", "JS8", "Q65", "WSPR", "FST4W", "MSK144"]
 
     def stop(self):
         self.cancelTimer()

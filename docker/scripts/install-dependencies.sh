@@ -60,6 +60,10 @@ mv /wsjtx.patch ${WSJT_DIR}
 cmakebuild ${WSJT_DIR}
 rm ${WSJT_TGZ}
 
+git clone https://github.com/alexander-sholohov/msk144decoder.git
+# latest from main as of 2023-02-21
+MAKEFLAGS="" cmakebuild msk144decoder fe2991681e455636e258e83c29fd4b2a72d16095
+
 git clone --depth 1 -b 1.6 https://github.com/wb2osz/direwolf.git
 cd direwolf
 # hamlib is present (necessary for the wsjt-x and js8call builds) and would be used, but there's no real need.
