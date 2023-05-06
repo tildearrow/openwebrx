@@ -39,12 +39,15 @@ class FaxParser(ThreadModule):
                     logger.debug("Deleting short bitmap file '%s'." % self.fileName)
                     os.unlink(self.fileName)
                 else:
+                    # Convert file from BMP to PNG
+                    logger.debug("Converting '%s' to PNG..." % self.fileName)
+                    Storage().convertImage(self.fileName)
                     # Delete excessive files from storage
                     logger.debug("Performing storage cleanup...")
                     Storage().cleanStoredFiles()
 
-            except Exception as exptn:
-                logger.debug("Exception closing file: %s" % str(exptn))
+            except Exception as e:
+                logger.debug("Exception closing file: %s" % str(e))
                 self.file = None
 
     def newFile(self, fileName):
@@ -54,8 +57,8 @@ class FaxParser(ThreadModule):
             logger.debug("Opening bitmap file '%s'..." % self.fileName)
             self.file = open(self.fileName, "wb")
 
-        except Exception as exptn:
-            logger.debug("Exception opening file: %s" % str(exptn))
+        except Exception as e:
+            logger.debug("Exception opening file: %s" % str(e))
             self.file = None
 
     def writeFile(self, data):
@@ -139,11 +142,103 @@ class FaxParser(ThreadModule):
         out = None
 
         try:
-            # Parse bitmap file data (scanlines)
-            if self.width>0:
-                b = self.depth / 8 if self.depth>8 else 1
-                w = self.width
-                if len(self.data)>=w*b:
+            # Pixel size, line width in pixels and bytes
+            b = self.depth / 8 if self.depth>8 else 1
+            w = self.width
+            l = w * b
+
+            # Search for BMP header and comments first, in case
+            # previous bitmap terminates early
+            ll = min(l, len(self.data)) if l>0 else len(self.data)
+            ph = self.data[0:ll].find(b'BM')
+            pc = self.data[0:ll].find(b' [')
+
+            #
+            # If comment found, and we are not receiving an image...
+            #
+            if pc>=0 and (ph<0 or pc<ph) and l==0:
+                # Skip everything until ' ['
+                del self.data[0:pc]
+                # Look for the closing bracket
+                pc = self.data[0:ll].find(b']')
+                if pc>=0:
+                    # Extract message contents
+                    msg = self.data[2:pc].decode()
+                    # Remove parsed data
+                    del self.data[0:pc+1]
+                    # Log message
+                    logger.debug("%s says [%s]" % (self.myName(), msg))
+                    # If running as a service...
+                    if self.service:
+                        # Empty result
+                        out = {}
+                    else:
+                        # Compose result
+                        out = {
+                            "mode":      "Fax",
+                            "message":   msg,
+                            "frequency": self.frequency
+                        }
+
+            #
+            # If BMP header ('BM ... <40> ...') found...
+            #
+            elif ph>=0 and ph+14<ll and self.data[ph+14]==40:
+                # Skip everything until 'BM'
+                del self.data[0:ph]
+                # If got the entire header...
+                if len(self.data)>=54+4*256:
+                    self.width  = self.data[18] + (self.data[19]<<8) + (self.data[20]<<16) + (self.data[21]<<24)
+                    self.height = self.data[22] + (self.data[23]<<8) + (self.data[24]<<16) + (self.data[25]<<24)
+                    self.depth  = self.data[28] + (self.data[29]<<8)
+                    # BMP height value is negative
+                    self.height = 0x100000000 - self.height
+                    # Fax mode is passed via reserved area at offset 6
+                    self.ioc    = self.data[6] * 4
+                    self.lpm    = self.data[7]
+                    self.line   = 0
+                    # Find total header size
+                    headerSize = 54 + (4*256 if self.depth==8 else 0)
+                    # 256x4 palette follows the header
+                    if headerSize>54:
+                        self.colors = self.data[54:headerSize]
+                    else:
+                        self.colors = None
+                    # Find mode name and time
+                    modeName  = "IOC-%d %dLPM" % (self.ioc, self.lpm)
+                    timeStamp = datetime.utcnow().strftime("%H:%M:%S")
+                    fileName  = Storage().makeFileName("FAX-{0}", self.frequency)
+                    logger.debug("%s receiving %dx%d %s frame as '%s'." % (
+                        self.myName(), self.width, self.height,
+                        modeName, fileName
+                    ))
+                    # If running as a service...
+                    if self.service:
+                        # Create a new image file and write BMP header
+                        self.newFile(fileName)
+                        self.writeFile(self.data[0:headerSize])
+                        # Empty result
+                        out = {}
+                    else:
+                        # Compose result
+                        out = {
+                            "mode":      "Fax",
+                            "width":     self.width,
+                            "height":    self.height,
+                            "depth":     self.depth,
+                            "faxMode":   modeName,
+                            "timestamp": timeStamp,
+                            "filename":  fileName,
+                            "frequency": self.frequency
+                        }
+                    # Remove parsed data
+                    del self.data[0:headerSize]
+
+            #
+            # If currently receiving image...
+            #
+            elif l>0:
+                if len(self.data)>=l:
                     #logger.debug("%s got line %d of %d/%d pixels" % (
                     #    self.myName(), self.line, w, len(self.data)/b
                     #))
@@ -152,7 +247,7 @@ class FaxParser(ThreadModule):
                     # If running as a service...
                     if self.service:
                         # Write a scanline into open image file
-                        self.writeFile(self.data[0:w*b])
+                        self.writeFile(self.data[0:l])
                         # Close once the last scanline reached
                         if self.line>=self.height:
                             self.closeFile()
@@ -160,7 +255,7 @@ class FaxParser(ThreadModule):
                         out = {}
                     else:
                         # Compose result
-                        #rle = self.applyRLE(self.data[0:w*b])
+                        #rle = self.applyRLE(self.data[0:l])
                         out = {
                             "mode":   "Fax",
                             "line":   self.line-1,
@@ -168,7 +263,7 @@ class FaxParser(ThreadModule):
                             "height": self.height,
                             "depth":  self.depth,
                             "rle":    False,
-                            "pixels": base64.b64encode(self.data[0:w*b]).decode(),
+                            "pixels": base64.b64encode(self.data[0:l]).decode(),
                         }
                     # If we reached the end of frame, finish scan
                     if self.line>=self.height:
@@ -180,92 +275,18 @@ class FaxParser(ThreadModule):
                         self.lpm    = 0
                         self.colors = None
                     # Remove parsed data
-                    del self.data[0:w*b]
+                    del self.data[0:l]
 
+            #
+            # If not receiving anything...
+            #
             else:
-                # Search for the leading 'BM' or ' ['
-                w = self.data.find(b'BM')
-                d = self.data.find(b' [')
-                # If not found...
-                if w<0 and d<0:
-                    # Skip all but last character (may have 'B')
-                    del self.data[0:len(self.data)-1]
-                elif w<0 or (d>=0 and d<w):
-                    # Skip everything until ' ['
-                    del self.data[0:d]
-                    # Look for the closing bracket
-                    w = self.data.find(b']')
-                    if w>=0:
-                        # Extract message contents
-                        msg = self.data[2:w].decode()
-                        # Remove parsed data
-                        del self.data[0:w+1]
-                        # Log message
-                        logger.debug("%s says [%s]" % (self.myName(), msg))
-                        # If running as a service...
-                        if self.service:
-                            # Empty result
-                            out = {}
-                        else:
-                            # Compose result
-                            out = {
-                                "mode":      "Fax",
-                                "message":   msg,
-                                "frequency": self.frequency
-                            }
-                else:
-                    # Skip everything until 'BM'
-                    del self.data[0:w]
-                    # If got the entire header...
-                    if len(self.data)>=54+4*256:
-                        self.width  = self.data[18] + (self.data[19]<<8) + (self.data[20]<<16) + (self.data[21]<<24)
-                        self.height = self.data[22] + (self.data[23]<<8) + (self.data[24]<<16) + (self.data[25]<<24)
-                        self.depth  = self.data[28] + (self.data[29]<<8)
-                        # BMP height value is negative
-                        self.height = 0x100000000 - self.height
-                        # Fax mode is passed via reserved area at offset 6
-                        self.ioc    = self.data[6] * 4
-                        self.lpm    = self.data[7]
-                        self.line   = 0
-                        # Find total header size
-                        headerSize  = 54 + (4*256 if self.depth==8 else 0)
-                        # 256x4 palette follows the header
-                        if headerSize>54:
-                            self.colors = self.data[54:headerSize]
-                        else:
-                            self.colors = None
-                        # Find mode name and time
-                        modeName  = "IOC-%d %dLPM" % (self.ioc, self.lpm)
-                        timeStamp = datetime.utcnow().strftime("%H:%M:%S")
-                        fileName  = Storage().makeFileName("FAX-{0}", self.frequency)
-                        logger.debug("%s receiving %dx%d %s frame as '%s'." % (
-                            self.myName(), self.width, self.height,
-                            modeName, fileName
-                        ))
-                        # If running as a service...
-                        if self.service:
-                            # Create a new image file and write BMP header
-                            self.newFile(fileName)
-                            self.writeFile(self.data[0:headerSize])
-                            # Empty result
-                            out = {}
-                        else:
-                            # Compose result
-                            out = {
-                                "mode":      "Fax",
-                                "width":     self.width,
-                                "height":    self.height,
-                                "depth":     self.depth,
-                                "faxMode":   modeName,
-                                "timestamp": timeStamp,
-                                "filename":  fileName,
-                                "frequency": self.frequency
-                            }
-                        # Remove parsed data
-                        del self.data[0:headerSize]
+                # Skip all data, but leave some since we may have 'BM ...'
+                l = ph if ph>=0 and ph+14>=len(self.data) else len(self.data)-1
+                del self.data[0:l]
 
-        except Exception as exptn:
-            logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
+        except Exception as e:
+            logger.debug("%s: Exception parsing: %s" % (self.myName(), str(e)))
 
         # Return parsed result or None if no result yet
         return out

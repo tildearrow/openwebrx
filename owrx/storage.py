@@ -2,6 +2,7 @@ from owrx.config.core import CoreConfig
 from owrx.config import Config
 from datetime import datetime
 
+import subprocess
 import os
 import re
 
@@ -11,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Storage(object):
     def __init__(self):
-        self.filePattern = r'[A-Z]+-[0-9]+-[0-9]+(-[0-9]+)?\.bmp'
+        self.filePattern = r'[A-Z]+-[0-9]+-[0-9]+(-[0-9]+)?\.(bmp|png)'
 
     # Get file name pattern
     def getNamePattern(self):
@@ -49,6 +50,22 @@ class Storage(object):
             logger.debug("Deleting stored file '%s'." % os.path.basename(f))
             try:
                 os.unlink(f)
-            except Exception as exptn:
-                logger.debug(str(exptn))
+            except Exception as e:
+                logger.debug("cleanStoredFiles(): " + str(e))
 
+    def convertImage(self, inFile: str):
+        # Adds storage path
+        if not inFile.startswith('/'):
+            inFile = self.getFilePath(inFile)
+        # Only converting BMP files for now
+        outFile = re.sub('\.bmp$', '.png', inFile)
+        if outFile==inFile:
+            return
+        try:
+            # Use ImageMagick to convert file
+            params = ['convert', inFile, outFile]
+            subprocess.check_call(params)
+            # If conversion was successful, delete original file
+            os.unlink(inFile)
+        except Exception as e:
+            logger.debug("convertImage(): " + str(e))

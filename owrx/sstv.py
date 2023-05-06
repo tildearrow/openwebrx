@@ -82,6 +82,9 @@ class SstvParser(ThreadModule):
                     logger.debug("Deleting short bitmap file '%s'." % self.fileName)
                     os.unlink(self.fileName)
                 else:
+                    # Convert file from BMP to PNG
+                    logger.debug("Converting '%s' to PNG..." % self.fileName)
+                    Storage().convertImage(self.fileName)
                     # Delete excessive files from storage
                     logger.debug("Performing storage cleanup...")
                     Storage().cleanStoredFiles()
