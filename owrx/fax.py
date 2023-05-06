@@ -167,7 +167,7 @@ class FaxParser(ThreadModule):
                             "width":  self.width,
                             "height": self.height,
                             "depth":  self.depth,
-                            "rle":    false,
+                            "rle":    False,
                             "pixels": base64.b64encode(self.data[0:w*b]).decode(),
                         }
                     # If we reached the end of frame, finish scan
