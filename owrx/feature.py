@@ -84,6 +84,7 @@ class FeatureDetector(object):
         "pocsag": ["digiham"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
+        "png": ["imagemagick"],
     }
 
     def feature_availability(self):
@@ -560,3 +561,10 @@ class FeatureDetector(object):
             return False
         except ConnectionError:
             return False
+
+    def has_imagemagick(self):
+        """
+        In order to automatically convert received images to the PNG format, you will need to install ImageMagick. It is available as a package for most Linux distributions.
+        """
+        return self.command_is_runnable("convert -version")
+
