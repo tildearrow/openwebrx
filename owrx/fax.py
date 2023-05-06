@@ -160,14 +160,15 @@ class FaxParser(ThreadModule):
                         out = {}
                     else:
                         # Compose result
-                        rle = self.applyRLE(self.data[0:w*b])
+                        #rle = self.applyRLE(self.data[0:w*b])
                         out = {
                             "mode":   "Fax",
-                            "pixels": base64.b64encode(rle).decode(),
                             "line":   self.line-1,
                             "width":  self.width,
                             "height": self.height,
-                            "depth":  self.depth
+                            "depth":  self.depth,
+                            "rle":    false,
+                            "pixels": base64.b64encode(self.data[0:w*b]).decode(),
                         }
                     # If we reached the end of frame, finish scan
                     if self.line>=self.height:
