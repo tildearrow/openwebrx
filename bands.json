@@ -199,8 +199,8 @@
   },
   {
     "name": "4m",
-    "lower_bound": 70150000,
-    "upper_bound": 70200000,
+    "lower_bound": 69900000,
+    "upper_bound": 70500000,
     "frequencies": {
       "wspr": 70091000,
       "msk144": 70230000
