@@ -1,3 +1,14 @@
+openwebrx (1.2.14) bullseye jammy; urgency=low
+
+  * Added automatic image conversion to PNG (requires ImageMagick).
+  * Ported MSK144 decoder from Jakob's development OWRX branch.
+  * Improved FAX parser, fixing several issues.
+  * Fixed color order issue with SSTV and FAX displays.
+  * Fixed several issues in the SSTV parser.
+  * Moved 4m band edges to fit most country-specific allocations.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 6 May 2023 16:12:00 +0000
+
 openwebrx (1.2.13) bullseye jammy; urgency=low
 
   * Added synchronous AM demodulator (SAM).

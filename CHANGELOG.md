@@ -1,3 +1,11 @@
+**1.2.14**
+- Added automatic image conversion to PNG (requires ImageMagick).
+- Ported MSK144 decoder from Jakob's development OWRX branch.
+- Improved FAX parser, fixing several issues.
+- Fixed color order issue with SSTV and FAX displays.
+- Fixed several issues in the SSTV parser.
+- Moved 4m band edges to fit most country-specific allocations.
+
 **1.2.13**
 - Added synchronous AM demodulator (SAM).
 - Added 12.5kHz and 25kHz tuning steps.
