@@ -1051,6 +1051,7 @@ function on_ws_recv(evt) {
                             currentprofile['profile_id'] = config['profile_id'] || currentprofile['profile_id'];
                             $('#openwebrx-sdr-profiles-listbox').val(currentprofile.toString());
 
+                            stopScanner();
                             tuning_step_reset();
                             waterfall_clear();
                             zoom_set(0);
@@ -1708,6 +1709,11 @@ function initSpectrum() {
 
 function toggleSpectrum() {
     spectrum.toggle();
+}
+
+function stopScanner() {
+    $('.openwebrx-scan-button').css('animation-name', '');
+    scanner.stop();
 }
 
 function toggleScanner() {
