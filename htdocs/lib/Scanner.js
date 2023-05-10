@@ -59,6 +59,10 @@ Scanner.prototype.scan = function() {
     if (!this.bookmarks || !this.bookmarks.length) return;
     if (!this.timer || !this.data.length) return;
 
+    // Get current squelch threshold from the slider
+    var $slider = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
+    this.threshold = $slider.val();
+
     // If there is currently selected bookmark...
     if (this.current) {
         var level = this.getLevel(this.current);
