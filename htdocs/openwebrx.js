@@ -1208,6 +1208,8 @@ function on_ws_recv(evt) {
                 waterfall_add(waterfall_f32);
                 // Feed spectrum display with data
                 if (spectrum) spectrum.update(waterfall_f32);
+                // Feed scanner with data
+                if (scanner) scanner.update(waterfall_f32);
                 break;
             case 2:
                 // audio data
@@ -1553,6 +1555,7 @@ function openwebrx_init() {
     $('#openwebrx-panel-receiver').demodulatorPanel();
     window.addEventListener("resize", openwebrx_resize);
     bookmarks = new BookmarkBar();
+    scanner = new Scanner(bookmarks, 1000);
     initSliders();
 }
 
@@ -1705,6 +1708,13 @@ function initSpectrum() {
 
 function toggleSpectrum() {
     spectrum.toggle();
+}
+
+function toggleScanner() {
+    var $scanButton = $('.openwebrx-scan-button');
+    var on = scanner.toggle();
+
+    $scanButton.css('animation-name', on? 'openwebrx-scan-animation' : '');
 }
 
 /*

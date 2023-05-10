@@ -1391,6 +1391,18 @@ img.openwebrx-mirror-img
     animation-iteration-count: infinite;
 }
 
+@keyframes openwebrx-scan-animation {
+    0% { background: #00ff00; color: white; }
+   50% { background: #008000; color: white; }
+  100% { background: #00ff00; color: white; }
+}
+
+.openwebrx-scan-button {
+    color: #80ff80;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
 .openwebrx-slider-button svg {
     position:relative;
     top: 1px;

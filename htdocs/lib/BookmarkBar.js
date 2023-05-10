@@ -145,3 +145,9 @@ BookmarkBar.prototype.getDemodulatorPanel = function() {
 BookmarkBar.prototype.getDemodulator = function() {
     return this.getDemodulatorPanel().getDemodulator();
 };
+
+BookmarkBar.prototype.getAllBookmarks = function() {
+    var sb = this.bookmarks['server'];
+    var lb = this.bookmarks['local'];
+    return !sb.length? (!lb.length? [] : lb) : !lb.length? sb : sb.concat(lb);
+};
