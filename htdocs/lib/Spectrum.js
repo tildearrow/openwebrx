@@ -19,8 +19,19 @@ Spectrum.prototype.update = function(data) {
     // Do not update if no redraw timer or no canvas
     if (!this.timer || (this.el.clientHeight == 0)) return;
 
-    for(var j=0; j<data.length; ++j) {
-        this.data[j] = j>=this.data.length || data[j]>this.data[j]?
+    var i = this.data.length < data.length? this.data.length : data.length;
+
+    // Truncate stored data length, add and fill missing data
+    if (this.data.length > i) {
+        this.data.length = i;
+    } else if(this.data.length < data.length) {
+        this.data.length = data.length;
+        for(var j=i; j<data.length; ++j) this.data[j] = data[j];
+    }
+
+    // Average level over time
+    for(var j=0; j<i; ++j) {
+        this.data[j] = data[j]>this.data[j]?
             data[j] : this.data[j] + (data[j] - this.data[j]) / 10.0;
     }
 
