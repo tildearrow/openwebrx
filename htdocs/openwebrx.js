@@ -1584,6 +1584,12 @@ function initSliders() {
 
         return false;
     });
+
+    // Enable scanner by pressing the right mouse button on SQUELCH
+    $('.openwebrx-squelch-auto').on('contextmenu', function() {
+        toggleScanner();
+        return false;
+    });
 }
 
 function digimodes_init() {
@@ -1712,12 +1718,12 @@ function toggleSpectrum() {
 }
 
 function stopScanner() {
-    $('.openwebrx-scan-button').css('animation-name', '');
+    $('.openwebrx-squelch-auto').css('animation-name', '');
     scanner.stop();
 }
 
 function toggleScanner() {
-    var $scanButton = $('.openwebrx-scan-button');
+    var $scanButton = $('.openwebrx-squelch-auto');
     var on = scanner.toggle();
 
     $scanButton.css('animation-name', on? 'openwebrx-scan-animation' : '');
