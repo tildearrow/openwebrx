@@ -40,14 +40,14 @@ Scanner.prototype.scan = function() {
     if (!this.timer || !this.bookmarks || !this.bookmarks.length) return;
 
     // Get current squelch threshold from the slider
+    // (why do we need to subtract ~13dB here to make FFT match the S-meter?)
     var $slider = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
-    this.threshold = $slider.val();
+    this.threshold = $slider.val() - 13.0;
 
     // If there is currently selected bookmark...
     if (this.current>=0) {
         // Check if its current level still exceeds threshold
-        // (why do we need to add ~13dB here to match the S-meter?)
-        var level = this.bookmarks[this.current].level + 13.0;
+        var level = this.bookmarks[this.current].level;
         if (level>this.threshold) return; else this.current = -1;
     }
 
@@ -58,8 +58,7 @@ Scanner.prototype.scan = function() {
         //console.log("SCAN: " + b.name + " at " + b.frequency + ": " + b.level);
 
         // If level exceeds threshold, tune to the bookmark
-        // (why do we need to add ~13dB here to match the S-meter?)
-        if (b.level+13.0>this.threshold && this.tuneBookmark(b)) {
+        if (b.level>this.threshold && this.tuneBookmark(b)) {
             this.current = j;
             return;
         }
