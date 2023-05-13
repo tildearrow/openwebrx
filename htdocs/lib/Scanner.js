@@ -30,7 +30,7 @@ Scanner.prototype.update = function(data) {
         var b = this.bookmarks[j];
         if (b.frequency > 0) {
             var l = data[(b.pos * data.length) | 0];
-            b.level += (l - b.level) / 5.0;
+            b.level += (l - b.level) / 3.0;
         }
     }
 }
@@ -56,7 +56,8 @@ Scanner.prototype.scan = function() {
         //console.log("SCAN: " + b.name + " at " + b.frequency + ": " + b.level);
 
         // If level exceeds threshold, tune to the bookmark
-        if (b.level>this.threshold && this.tuneBookmark(b)) {
+        // (why do we need to add ~13dB here to match the S-meter?)
+        if (b.level + 13.0 > this.threshold && this.tuneBookmark(b)) {
             this.current = j;
             return;
         }
