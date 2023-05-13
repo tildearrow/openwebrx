@@ -45,7 +45,9 @@ Scanner.prototype.scan = function() {
 
     // If there is currently selected bookmark...
     if (this.current>=0) {
-        var level = this.bookmarks[this.current].level;
+        // Check if its current level still exceeds threshold
+        // (why do we need to add ~13dB here to match the S-meter?)
+        var level = this.bookmarks[this.current].level + 13.0;
         if (level>this.threshold) return; else this.current = -1;
     }
 
@@ -57,7 +59,7 @@ Scanner.prototype.scan = function() {
 
         // If level exceeds threshold, tune to the bookmark
         // (why do we need to add ~13dB here to match the S-meter?)
-        if (b.level + 13.0 > this.threshold && this.tuneBookmark(b)) {
+        if (b.level+13.0>this.threshold && this.tuneBookmark(b)) {
             this.current = j;
             return;
         }
