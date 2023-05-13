@@ -29,7 +29,7 @@ Scanner.prototype.update = function(data) {
     for(var j=0 ; j<this.bookmarks.length ; ++j) {
         var b = this.bookmarks[j];
         if (b.frequency > 0) {
-            var l = data[(b.pos * data.length) | 0];
+            var l = data[Math.round(b.pos * data.length)];
             b.level += (l - b.level) / 3.0;
         }
     }
