@@ -1402,6 +1402,18 @@ img.openwebrx-mirror-img
     animation-iteration-count: infinite;
 }
 
+.openwebrx-squelch-auto .scanner {
+    display: none;
+}
+
+.openwebrx-squelch-auto.highlighted .scanner {
+    display: initial;
+}
+
+.openwebrx-squelch-auto.highlighted .squelch {
+    display: none;
+}
+
 .openwebrx-slider-button svg {
     position:relative;
     top: 1px;

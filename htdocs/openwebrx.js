@@ -1722,7 +1722,9 @@ function toggleSpectrum() {
 }
 
 function stopScanner() {
-    $('.openwebrx-squelch-auto').css('animation-name', '');
+    var $scanButton = $('.openwebrx-squelch-auto');
+    $scanButton.css('animation-name', '');
+    $scanButton.removeClass('highlighted');
     scanner.stop();
 }
 
@@ -1731,6 +1733,11 @@ function toggleScanner() {
     var on = scanner.toggle();
 
     $scanButton.css('animation-name', on? 'openwebrx-scan-animation' : '');
+    if (on) {
+        $scanButton.addClass('highlighted');
+    } else {
+        $scanButton.removeClass('highlighted');
+    }
 }
 
 /*
