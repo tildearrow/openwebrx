@@ -1722,10 +1722,14 @@ function toggleSpectrum() {
 }
 
 function stopScanner() {
-    var $scanButton = $('.openwebrx-squelch-auto');
-    $scanButton.css('animation-name', '');
-    $scanButton.removeClass('highlighted');
-    scanner.stop();
+    if (scanner.isRunning()) {
+        // Stop scanner
+        scanner.stop();
+        // Modify scanner button state
+        var $scanButton = $('.openwebrx-squelch-auto');
+        $scanButton.css('animation-name', '');
+        $scanButton.removeClass('highlighted');
+    }
 }
 
 function toggleScanner() {

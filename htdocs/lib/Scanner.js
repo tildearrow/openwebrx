@@ -109,3 +109,8 @@ Scanner.prototype.toggle = function() {
     // Toggle based on the current timer state
     return this.timer? this.stop() : this.start();
 };
+
+Scanner.prototype.isRunning = function() {
+    // Return current state
+    return this.timer != null;
+};
