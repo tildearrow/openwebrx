@@ -1,3 +1,7 @@
+**1.2.15**
+- Added scanner, enabled with right click on SQ button.
+- Scanner scans bookmarks using the current squelch level.
+
 **1.2.14**
 - Added automatic image conversion to PNG (requires ImageMagick).
 - Ported MSK144 decoder from Jakob's development OWRX branch.
