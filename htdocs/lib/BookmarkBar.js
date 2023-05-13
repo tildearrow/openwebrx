@@ -14,6 +14,7 @@ function BookmarkBar() {
             me.getDemodulatorPanel().setMode(b.modulation, b.underlying);
         }
         $bookmark.addClass('selected');
+        stopScanner();
     });
 
     me.$container.on('click', '.action[data-action=edit]', function(e){

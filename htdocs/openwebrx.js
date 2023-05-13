@@ -145,9 +145,9 @@ function zoomOutTotal() {
 function tuneBySteps(steps) {
     steps = Math.round(steps);
     if (steps != 0) {
-        var f = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().get_offset_frequency();
-        f += steps * tuning_step;
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_offset_frequency(f);
+        var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
+        var f = demodulator.get_offset_frequency();
+        demodulator.set_offset_frequency(f + steps * tuning_step);
     }
 }
 
@@ -400,7 +400,10 @@ function scale_canvas_end_drag(x) {
     var event_handled = false;
     var demodulators = getDemodulators();
     for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_end();
-    if (!event_handled) demodulators[0].set_offset_frequency(scale_offset_freq_from_px(x));
+    if (!event_handled) {
+        demodulators[0].set_offset_frequency(scale_offset_freq_from_px(x));
+        stopScanner();
+    }
 }
 
 function scale_canvas_mouseup(evt) {
@@ -858,6 +861,7 @@ function canvas_mouseup(evt) {
                 f = f - 800;
             }
             demodulator.set_offset_frequency(f);
+            stopScanner();
         }
         else {
             canvas_end_drag();
