@@ -270,6 +270,47 @@ $.fn.pocsagMessagePanel = function() {
     return this.data('panel');
 };
 
+FlexMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+}
+
+FlexMessagePanel.prototype = new MessagePanel();
+
+FlexMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'Flex';
+};
+
+FlexMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="address">Address</th>' +
+                '<th class="message">Message</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+FlexMessagePanel.prototype.pushMessage = function(msg) {
+    var $b = $(this.el).find('tbody');
+    $b.append($(
+        '<tr>' +
+            '<td class="address">' + msg.address + '</td>' +
+            '<td class="message">' + msg.message + '</td>' +
+        '</tr>'
+    ));
+    $b.scrollTop($b[0].scrollHeight);
+};
+
+$.fn.flexMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new FlexMessagePanel(this));
+    }
+    return this.data('panel');
+};
+
 SstvMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();

@@ -1198,6 +1198,16 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
+#openwebrx-panel-flex-message .address {
+    width: 100px;
+}
+
+#openwebrx-panel-flex-message .message {
+    width: 486px;
+    max-width: 486px;
+    white-space: pre;
+}
+
 #openwebrx-panel-sstv-message {
     height: 310px;
     width: 365px;

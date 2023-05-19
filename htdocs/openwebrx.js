@@ -1166,11 +1166,12 @@ function on_ws_recv(evt) {
                     case 'secondary_demod':
                         var value = json['value'];
                         var panels = [
-                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(), 
-                            $('#openwebrx-panel-packet-message').packetMessagePanel(), 
-                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(), 
-                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(), 
-                            $('#openwebrx-panel-fax-message').faxMessagePanel(), 
+                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(),
+                            $('#openwebrx-panel-packet-message').packetMessagePanel(),
+                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(),
+                            $('#openwebrx-panel-flex-message').flexMessagePanel(),
+                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(),
+                            $('#openwebrx-panel-fax-message').faxMessagePanel(),
                             $("#openwebrx-panel-js8-message").js8()
                         ];
                         if (!panels.some(function(panel) {
@@ -1843,6 +1844,7 @@ function secondary_demod_init() {
     $('#openwebrx-panel-wsjt-message').wsjtMessagePanel();
     $('#openwebrx-panel-packet-message').packetMessagePanel();
     $('#openwebrx-panel-pocsag-message').pocsagMessagePanel();
+    $('#openwebrx-panel-flex-message').pocsagMessagePanel();
     $('#openwebrx-panel-sstv-message').sstvMessagePanel();
     $('#openwebrx-panel-fax-message').faxMessagePanel();
     $('#openwebrx-panel-js8-message').js8();
