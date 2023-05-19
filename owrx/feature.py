@@ -83,6 +83,7 @@ class FeatureDetector(object):
         "msk144": ["msk144decoder"],
         "packet": ["direwolf"],
         "pocsag": ["digiham"],
+        "flex": ["multimon"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
@@ -244,6 +245,27 @@ class FeatureDetector(object):
             return (
                 LooseVersion(digiham_version) >= required_version
                 and LooseVersion(pydigiham_version) >= required_version
+            )
+        except ImportError:
+            return False
+
+    def has_multimon(self):
+        """
+        Some digital decoders are supplied via the MultiMon-NG library. You can find the
+        package [here](https://github.com/luarvique/multimon-ng).
+
+        In addition, the [pymmon](https://github.com/luarvique/multimon-ng) package must be installed to provide
+        python bindings for the MultiMon-NG library.
+        """
+        required_version = LooseVersion("0.1")
+
+        try:
+            from mmon.modules import mmon_version as mmon_version
+            from mmon.modules import version as pymmon_version
+
+            return (
+                LooseVersion(mmon_version) >= required_version
+                and LooseVersion(pymmon_version) >= required_version
             )
         except ImportError:
             return False
