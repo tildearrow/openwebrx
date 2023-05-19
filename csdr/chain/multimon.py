@@ -23,4 +23,3 @@ class FlexDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
-
