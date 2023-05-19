@@ -5,7 +5,7 @@ from mmon.modules import Flex
 
 class FlexDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self):
-        self.sampleRate = 48000
+        self.sampleRate = 24000
         workers = [
             FmDemod(),
             AudioResampler(self.sampleRate, 22050),
