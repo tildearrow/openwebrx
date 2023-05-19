@@ -63,11 +63,25 @@ Spectrum.prototype.draw = function() {
         this.el.height = spec_height;
         this.ctx       = this.el.getContext("2d");
         this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
+        this.ctx.strokeStyle = "rgba(255, 255, 0, 1.0)";
+        this.ctx.lineWidth = 1;
     }
 
     // Clear canvas to transparency
     this.ctx.clearRect(0, 0, spec_width, spec_height);
 
+    // Mark currently tuned frequences
+//    var demodulators = getDemodulators();
+//    for (var i=0; i<demodulators.length; i++) {
+//        var f = demodulators[i].get_offset_frequency() + center_freq;
+//        var x = scale_px_from_freq(f, range);
+//        this.ctx.beginPath();
+//        this.ctx.moveTo(x, 0);
+//        this.ctx.lineTo(x, spec_height);
+//        this.ctx.stroke();
+//    }
+
+    // Draw spectrum
     if(spec_width <= data_width) {
         var x_ratio = data_width / spec_width;
         var y_ratio = spec_height / data_height;
