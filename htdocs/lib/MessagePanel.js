@@ -297,7 +297,7 @@ FlexMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
-            '<td class="address">' + msg.timestamp + '</td>' +
+            '<td class="address">' + msg.capcode + '</td>' +
             '<td class="message">' + msg.message + '</td>' +
         '</tr>'
     ));
