@@ -285,8 +285,7 @@ FlexMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th class="address">Address</th>' +
-                '<th class="message">Message</th>' +
+                '<th>FLEX</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -298,9 +297,14 @@ FlexMessagePanel.prototype.pushMessage = function(msg) {
     $b.append($(
         '<tr>' +
             '<td class="address">' + msg.capcode + '</td>' +
-            '<td class="message">' + msg.message + '</td>' +
+            '<td class="timestamp">' + msg.timestamp + '</td>' +
         '</tr>'
     ));
+    if (msg.hasOwnProperty('message')) {
+        $b.append($(
+            '<tr><td class="message" colspan="2">' + msg.message + '</td></tr>'
+        ));
+    }
     $b.scrollTop($b[0].scrollHeight);
 };
 

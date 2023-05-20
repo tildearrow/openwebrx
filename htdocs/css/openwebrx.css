@@ -1198,14 +1198,36 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
+#openwebrx-panel-flex-message {
+    height: 310px;
+}
+
+#openwebrx-panel-flex-message tbody {
+    height: 280px;
+}
+
 #openwebrx-panel-flex-message .address {
     width: 100px;
+    font-weight: bold;
+    background-color: #fff;
+    color: #000;
+}
+
+#openwebrx-panel-flex-message .timestamp {
+    width: 486px;
+    max-width: 486px;
+    font-weight: bold;
+    background-color: #fff;
+    color: #000;
+    text-align: right;
+    white-space: pre;
 }
 
 #openwebrx-panel-flex-message .message {
-    width: 486px;
-    max-width: 486px;
-    white-space: pre;
+    width: 586px;
+    max-width: 586px;
+    column-span: all;
+    word-wrap: break-word;
 }
 
 #openwebrx-panel-sstv-message {
