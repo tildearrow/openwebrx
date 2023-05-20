@@ -91,6 +91,14 @@ class GeneralSettingsController(SettingsFormController):
                     infotext="Specifies web page describing receiver usage policy "
                     + "and shown when a client session times out.",
                 ),
+                CheckboxInput(
+                    "allow_center_freq_changes",
+                    "Allow users to change center frequency",
+                ),
+                CheckboxInput(
+                    "allow_audio_recording",
+                    "Allow users to record received audio",
+                ),
             ),
             Section(
                 "Receiver listings",
