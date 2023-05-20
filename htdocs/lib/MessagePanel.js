@@ -278,7 +278,7 @@ FlexMessagePanel = function(el) {
 FlexMessagePanel.prototype = new MessagePanel();
 
 FlexMessagePanel.prototype.supportsMessage = function(message) {
-    return message['mode'] === 'Flex';
+    return message['mode'] === 'FLEX';
 };
 
 FlexMessagePanel.prototype.render = function() {
