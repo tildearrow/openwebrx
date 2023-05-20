@@ -295,6 +295,10 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                         profile = message["params"]["profile"].split("|")
                         self.setSdr(profile[0])
                         self.sdr.activateProfile(profile[1])
+                elif message["type"] == "setfrequency":
+                    if "params" in message and "frequency" in message["params"]:
+                        frequency = message["params"]["frequency"]
+                        self.sdr.setCenterFreq(frequency)
                 elif message["type"] == "connectionproperties":
                     if "params" in message:
                         self.connectionProperties = message["params"]

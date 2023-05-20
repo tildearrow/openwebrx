@@ -151,6 +151,17 @@ function tuneBySteps(steps) {
     }
 }
 
+function jumpBySteps(steps) {
+    steps = Math.round(steps);
+    if (steps != 0) {
+        var f = center_freq + steps * bandwidth / 4;
+        ws.send(JSON.stringify({
+            "type": "setfrequency",
+            "params": { "frequency": f }
+        }));
+    }
+}
+
 var waterfall_min_level;
 var waterfall_max_level;
 var waterfall_min_level_default;

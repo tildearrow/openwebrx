@@ -231,6 +231,11 @@ class SdrSource(ABC):
         except KeyError:
             logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
 
+    def setCenterFreq(self, frequency):
+        if "center_freq" in self.sdrProps:
+            self.sdrProps["center_freq"] = frequency
+            self.wireEvents()
+
     def getId(self):
         return self.id
 
