@@ -2,9 +2,10 @@ OpenWebRX+
 =========
 
 This is the **improved version** of the OpenWebRX online SDR. The pre-built OpenWebRX+ packages are available from the [package repository](https://luarvique.github.io/ppa/). Pre-built disk images are available from the [Releases page](https://github.com/luarvique/openwebrx/releases). News, support, and general discussion can be found in the [Telegram channel](https://t.me/openwebrx) and related [chat](https://t.me/openwebrx_chat). Features found in OpenWebRX+ that are not present in the original version:
-* AIS, SSTV, RTTY, and CW decoders.
-* Background SSTV decoding with received images browser.
+* AIS, SSTV, FAX, RTTY, and CW decoders.
+* Background SSTV and FAX decoding with received images browser.
 * Built-in recorder for received audio.
+* Built-in scanner over bookmarks.
 * Adjustable noise filtering based on spectral subtraction.
 * Adjustable tuning step.
 * Waterfall panning and zooming on touchscreen based devices.
