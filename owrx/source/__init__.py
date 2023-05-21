@@ -116,21 +116,25 @@ class SdrSource(ABC):
         self.buffer = None
 
         self.props = PropertyStack()
-
-        # layer 0 reserved for profile properties
         self.profileCarousel = SdrProfileCarousel(props)
+
+        # layer 0 contains center_freq so that it can be changed
+        # independently of the profile
+        self.props.addLayer(0, PropertyLayer())
+
+        # layer 1 reserved for profile properties
         # prevent profile names from overriding the device name
-        self.props.addLayer(0, PropertyFilter(self.profileCarousel, ByLambda(lambda x: x != "name")))
+        self.props.addLayer(1, PropertyFilter(self.profileCarousel, ByLambda(lambda x: x != "name")))
 
         # props from our device config
-        self.props.addLayer(1, props)
+        self.props.addLayer(2, props)
 
         # the sdr_id is constant, so we put it in a separate layer
         # this is used to detect device changes, that are then sent to the client
-        self.props.addLayer(2, PropertyLayer(sdr_id=id).readonly())
+        self.props.addLayer(3, PropertyLayer(sdr_id=id).readonly())
 
         # finally, accept global config properties from the top-level config
-        self.props.addLayer(3, Config.get())
+        self.props.addLayer(4, Config.get())
 
         self.sdrProps = self.props.filter(*self.getEventNames())
 
@@ -228,8 +232,12 @@ class SdrSource(ABC):
         logger.debug("activating profile {0} for {1}".format(profile_id, self.getId()))
         try:
             self.profileCarousel.switch(profile_id)
+            self.setCenterFreq(self.profileCarousel["center_freq"])
         except KeyError:
             logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
+
+    def setCenterFreq(self, frequency):
+        self.props["center_freq"] = frequency
 
     def getId(self):
         return self.id

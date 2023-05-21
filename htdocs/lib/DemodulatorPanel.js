@@ -217,6 +217,7 @@ DemodulatorPanel.prototype._apply = function(params) {
     this.getDemodulator().set_offset_frequency(params.offset_frequency);
     this.getDemodulator().setSquelch(params.squelch_level);
     this.updateButtons();
+    this.setMagicKey(params.magic_key);
 };
 
 DemodulatorPanel.prototype.setInitialParams = function(params) {
@@ -225,6 +226,14 @@ DemodulatorPanel.prototype.setInitialParams = function(params) {
 
 DemodulatorPanel.prototype.resetInitialParams = function() {
     this.initialParams = {};
+};
+
+DemodulatorPanel.prototype.setMagicKey = function(key) {
+    this.magic_key = key;
+};
+
+DemodulatorPanel.prototype.getMagicKey = function() {
+    return this.magic_key;
 };
 
 DemodulatorPanel.prototype.onHashChange = function() {
@@ -238,6 +247,7 @@ DemodulatorPanel.prototype.transformHashParams = function(params) {
     if (typeof(params.secondary_mod) !== 'undefined') ret.secondary_mod = params.secondary_mod;
     if (typeof(params.offset_frequency) !== 'undefined') ret.offset_frequency = params.offset_frequency;
     if (typeof(params.sql) !== 'undefined') ret.squelch_level = parseInt(params.sql);
+    if (typeof(params.key) !== 'undefined') ret.magic_key = params.key;
     return ret;
 };
 
@@ -340,10 +350,13 @@ DemodulatorPanel.prototype.updateHash = function() {
         freq: demod.get_offset_frequency() + self.center_freq,
         mod: demod.get_modulation(),
         secondary_mod: demod.get_secondary_demod(),
-        sql: demod.getSquelch()
+        sql: demod.getSquelch(),
+        key: self.magic_key
     }, function(value, key){
-        if (typeof(value) === 'undefined' || value === false) return undefined;
-        return key + '=' + value;
+        if (typeof(value) === 'undefined' || value === false || value === '')
+            return undefined;
+        else
+            return key + '=' + value;
     }).filter(function(v) {
         return !!v;
     }).join(',');

@@ -151,6 +151,17 @@ function tuneBySteps(steps) {
     }
 }
 
+function jumpBySteps(steps) {
+    steps = Math.round(steps);
+    if (steps != 0) {
+        var key = $('#openwebrx-panel-receiver').demodulatorPanel().getMagicKey();
+        var f = center_freq + steps * bandwidth / 4;
+        ws.send(JSON.stringify({
+            "type": "setfrequency", "params": { "frequency": f, "key": key }
+        }));
+    }
+}
+
 var waterfall_min_level;
 var waterfall_max_level;
 var waterfall_min_level_default;
@@ -1080,6 +1091,11 @@ function on_ws_recv(evt) {
                             $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
                         }
 
+                        if ('allow_audio_recording' in config) {
+                            var x = config['allow_audio_recording'];
+                            $('.openwebrx-record-button').css('display', x? '':'none');
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];
@@ -1149,11 +1165,11 @@ function on_ws_recv(evt) {
                     case 'secondary_demod':
                         var value = json['value'];
                         var panels = [
-                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(),
-                            $('#openwebrx-panel-packet-message').packetMessagePanel(),
-                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(),
-                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(),
-                            $('#openwebrx-panel-fax-message').faxMessagePanel(),
+                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(), 
+                            $('#openwebrx-panel-packet-message').packetMessagePanel(), 
+                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(), 
+                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(), 
+                            $('#openwebrx-panel-fax-message').faxMessagePanel(), 
                             $("#openwebrx-panel-js8-message").js8()
                         ];
                         if (!panels.some(function(panel) {
