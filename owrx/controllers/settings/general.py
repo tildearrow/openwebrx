@@ -103,7 +103,9 @@ class GeneralSettingsController(SettingsFormController):
                     "magic_key",
                     "Magic key",
                     infotext="Enter a key the user has to supply to change center frequency."
-                    + " Leave empty if you do not want to protect frequency changes with a key.",
+                    + " Leave empty if you do not want to protect frequency changes with a key."
+                    + " When enabled, the key has to be added to receiver's URL after the hash"
+                    + " sign: http://my.receiver.com/#key=keyvalue.",
                 ),
             ),
             Section(

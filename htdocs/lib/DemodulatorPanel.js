@@ -209,6 +209,7 @@ DemodulatorPanel.prototype.stopDemodulator = function() {
 }
 
 DemodulatorPanel.prototype._apply = function(params) {
+    this.setMagicKey(params.magic_key);
     if (params.secondary_mod) {
         this.setMode(params.secondary_mod, params.mod)
     } else {
@@ -217,7 +218,6 @@ DemodulatorPanel.prototype._apply = function(params) {
     this.getDemodulator().set_offset_frequency(params.offset_frequency);
     this.getDemodulator().setSquelch(params.squelch_level);
     this.updateButtons();
-    this.setMagicKey(params.magic_key);
 };
 
 DemodulatorPanel.prototype.setInitialParams = function(params) {
