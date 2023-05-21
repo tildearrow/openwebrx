@@ -141,6 +141,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "ui_frame",
         "allow_center_freq_changes",
         "allow_audio_recording",
+        "magic_key",
     ]
 
     def __init__(self, conn):
@@ -298,10 +299,15 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                         self.setSdr(profile[0])
                         self.sdr.activateProfile(profile[1])
                 elif message["type"] == "setfrequency":
-                    if "params" in message and "frequency" in message["params"]:
-                        if self.stack["allow_center_freq_changes"]:
-                            frequency = message["params"]["frequency"]
-                            self.sdr.setCenterFreq(frequency)
+                    # If the magic key is set in the settings, only allow
+                    # center frequency changes if it matches the received
+                    # key.
+                    if "params" in message and self.stack["allow_center_freq_changes"]:
+                        magic_key = self.stack["magic_key"]
+                        params = message["params"]
+                        if magic_key == "" or ("key" in params and params["key"] == magic_key):
+                            if "frequency" in params:
+                                self.sdr.setCenterFreq(params["frequency"])
                 elif message["type"] == "connectionproperties":
                     if "params" in message:
                         self.connectionProperties = message["params"]

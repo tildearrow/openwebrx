@@ -36,6 +36,7 @@ var tuning_step_default = 1;
 var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
+var magic_key = "";
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -157,7 +158,7 @@ function jumpBySteps(steps) {
         var f = center_freq + steps * bandwidth / 4;
         ws.send(JSON.stringify({
             "type": "setfrequency",
-            "params": { "frequency": f }
+            "params": { "frequency": f, "key": magic_key }
         }));
     }
 }
@@ -1089,6 +1090,11 @@ function on_ws_recv(evt) {
                         if ('ui_frame' in config) {
                             var x = config['ui_frame'];
                             $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
+                        }
+
+                        if ('allow_audio_recording' in config) {
+                            var x = config['allow_audio_recording'];
+                            $('.openwebrx-record-button').css('display', x? '':'none');
                         }
 
                         break;

@@ -92,12 +92,18 @@ class GeneralSettingsController(SettingsFormController):
                     + "and shown when a client session times out.",
                 ),
                 CheckboxInput(
+                    "allow_audio_recording",
+                    "Allow users to record received audio",
+                ),
+                CheckboxInput(
                     "allow_center_freq_changes",
                     "Allow users to change center frequency",
                 ),
-                CheckboxInput(
-                    "allow_audio_recording",
-                    "Allow users to record received audio",
+                TextInput(
+                    "magic_key",
+                    "Magic key",
+                    infotext="Enter a key the user has to supply to change center frequency."
+                    + " Leave empty if you do not want to protect frequency changes with a key.",
                 ),
             ),
             Section(

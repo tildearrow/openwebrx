@@ -157,6 +157,7 @@ defaultConfig = PropertyLayer(
     waterfall_auto_min_range=50,
     ui_opacity=100,
     ui_frame=False,
+    magic_key="memagic",
     allow_center_freq_changes=False,
     allow_audio_recording=True,
     tuning_precision=2,
