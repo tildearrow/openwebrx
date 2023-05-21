@@ -1,3 +1,10 @@
+**1.2.16**
+- Added ability to change center frequency by right-clicking arrow buttons.
+- Added an option to allow audio recording (on by default).
+- Added an option to allow center frequency changes (off by default).
+- Added an option to require magic key for center frequency changes.
+- Added 10Hz, 20Hz, and 50Hz steps for CW listeners.
+
 **1.2.15**
 - Added scanner, enabled with right click on SQ button.
 - Scanner scans bookmarks using the current squelch level.

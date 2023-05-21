@@ -1,3 +1,13 @@
+openwebrx (1.2.16) bullseye jammy; urgency=low
+
+  * Added ability to change center frequency by right-clicking arrow buttons.
+  * Added an option to allow audio recording (on by default).
+  * Added an option to allow center frequency changes (off by default).
+  * Added an option to require magic key for center frequency changes.
+  * Added 10Hz, 20Hz, and 50Hz steps for CW listeners.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 20 May 2023 16:12:00 +0000
+
 openwebrx (1.2.15) bullseye jammy; urgency=low
 
   * Added scanner, enabled with right click on SQ button.
