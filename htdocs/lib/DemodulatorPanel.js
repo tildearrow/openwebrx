@@ -217,6 +217,7 @@ DemodulatorPanel.prototype._apply = function(params) {
     this.getDemodulator().set_offset_frequency(params.offset_frequency);
     this.getDemodulator().setSquelch(params.squelch_level);
     this.updateButtons();
+    this.setMagicKey(params.magic_key);
 };
 
 DemodulatorPanel.prototype.setInitialParams = function(params) {
@@ -225,6 +226,14 @@ DemodulatorPanel.prototype.setInitialParams = function(params) {
 
 DemodulatorPanel.prototype.resetInitialParams = function() {
     this.initialParams = {};
+};
+
+DemodulatorPanel.prototype.setMagicKey = function(key) {
+    this.magic_key = key;
+};
+
+DemodulatorPanel.prototype.getMagicKey = function() {
+    return this.magic_key;
 };
 
 DemodulatorPanel.prototype.onHashChange = function() {
@@ -344,8 +353,10 @@ DemodulatorPanel.prototype.updateHash = function() {
         sql: demod.getSquelch(),
         key: self.magic_key
     }, function(value, key){
-        if (typeof(value) === 'undefined' || value === false) return undefined;
-        return key + '=' + value;
+        if (typeof(value) === 'undefined' || value === false || value === '')
+            return undefined;
+        else
+            return key + '=' + value;
     }).filter(function(v) {
         return !!v;
     }).join(',');

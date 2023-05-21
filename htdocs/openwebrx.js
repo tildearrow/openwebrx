@@ -36,7 +36,6 @@ var tuning_step_default = 1;
 var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
-var magic_key = "";
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -155,10 +154,10 @@ function tuneBySteps(steps) {
 function jumpBySteps(steps) {
     steps = Math.round(steps);
     if (steps != 0) {
+        var key = $('#openwebrx-panel-receiver').demodulatorPanel().getMagicKey();
         var f = center_freq + steps * bandwidth / 4;
         ws.send(JSON.stringify({
-            "type": "setfrequency",
-            "params": { "frequency": f, "key": magic_key }
+            "type": "setfrequency", "params": { "frequency": f, "key": key }
         }));
     }
 }
@@ -1166,11 +1165,11 @@ function on_ws_recv(evt) {
                     case 'secondary_demod':
                         var value = json['value'];
                         var panels = [
-                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(),
-                            $('#openwebrx-panel-packet-message').packetMessagePanel(),
-                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(),
-                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(),
-                            $('#openwebrx-panel-fax-message').faxMessagePanel(),
+                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(), 
+                            $('#openwebrx-panel-packet-message').packetMessagePanel(), 
+                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(), 
+                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(), 
+                            $('#openwebrx-panel-fax-message').faxMessagePanel(), 
                             $("#openwebrx-panel-js8-message").js8()
                         ];
                         if (!panels.some(function(panel) {

@@ -300,8 +300,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                         self.sdr.activateProfile(profile[1])
                 elif message["type"] == "setfrequency":
                     # If the magic key is set in the settings, only allow
-                    # center frequency changes if it matches the received
-                    # key.
+                    # changes if it matches the received key
                     if "params" in message and self.stack["allow_center_freq_changes"]:
                         magic_key = self.stack["magic_key"]
                         params = message["params"]
