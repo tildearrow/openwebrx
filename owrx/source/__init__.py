@@ -120,9 +120,7 @@ class SdrSource(ABC):
 
         # layer 0 contains center_freq so that it can be changed
         # independently of the profile
-        self.props.addLayer(0, PropertyLayer(
-            center_freq=self.profileCarousel["center_freq"]
-        ))
+        self.props.addLayer(0, PropertyLayer())
 
         # layer 1 reserved for profile properties
         # prevent profile names from overriding the device name
@@ -239,8 +237,7 @@ class SdrSource(ABC):
             logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
 
     def setCenterFreq(self, frequency):
-        if "center_freq" in self.props:
-            self.props["center_freq"] = frequency
+        self.props["center_freq"] = frequency
 
     def getId(self):
         return self.id
