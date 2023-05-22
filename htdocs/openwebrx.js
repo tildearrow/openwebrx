@@ -1017,12 +1017,12 @@ function on_ws_recv(evt) {
                         if ('waterfall_levels' in config) {
                             waterfall_min_level_default = config['waterfall_levels']['min'];
                             waterfall_max_level_default = config['waterfall_levels']['max'];
+                            waterfallColorsDefault();
                         }
                         if ('waterfall_auto_levels' in config)
                             waterfall_auto_levels = config['waterfall_auto_levels'];
                         if ('waterfall_auto_min_range' in config)
                             waterfall_auto_min_range = config['waterfall_auto_min_range'];
-                        waterfallColorsDefault();
 
                         var initial_demodulator_params = {};
                         if ('start_mod' in config)
@@ -1067,6 +1067,7 @@ function on_ws_recv(evt) {
                             $('#openwebrx-sdr-profiles-listbox').val(currentprofile.toString());
 
                             stopScanner();
+                            waterfallColorsDefault();
                             tuning_step_reset();
                             waterfall_clear();
                             zoom_set(0);
