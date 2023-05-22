@@ -120,7 +120,7 @@ class SdrSource(ABC):
 
         # layer 0 contains center_freq so that it can be changed
         # independently of the profile
-        self.props.addLayer(0, PropertyLayer())
+        self.props.addLayer(0, PropertyLayer(center_freq=0))
 
         # layer 1 reserved for profile properties
         # prevent profile names from overriding the device name
@@ -135,6 +135,10 @@ class SdrSource(ABC):
 
         # finally, accept global config properties from the top-level config
         self.props.addLayer(4, Config.get())
+
+        # initialize center_freq from the default profile
+        if "center_freq" in self.profileCarousel:
+            self.setCenterFreq(self.profileCarousel["center_freq"])
 
         self.sdrProps = self.props.filter(*self.getEventNames())
 
