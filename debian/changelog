@@ -1,3 +1,10 @@
+openwebrx (1.2.17) bullseye jammy; urgency=low
+
+  * Fixed center frequency modifications surviving profile change.
+  * Fixed waterfall colors resetting when changing center frequency.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Tue, 23 May 2023 16:12:00 +0000
+
 openwebrx (1.2.16) bullseye jammy; urgency=low
 
   * Added ability to change center frequency by right-clicking arrow buttons.

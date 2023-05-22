@@ -1,3 +1,7 @@
+**1.2.17**
+- Fixed center frequency modifications surviving profile change.
+- Fixed waterfall colors resetting when changing center frequency.
+
 **1.2.16**
 - Added ability to change center frequency by right-clicking arrow buttons.
 - Added an option to allow audio recording (on by default).
