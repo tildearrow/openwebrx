@@ -57,8 +57,8 @@
   },
   {
     "name": "60m",
-    "lower_bound": 5351500,
-    "upper_bound": 5366500,
+    "lower_bound": 5250000,
+    "upper_bound": 5450000,
     "frequencies": {
       "ft8": 5357000,
       "wspr": [5287200, 5364700]
@@ -86,7 +86,7 @@
   },
   {
     "name": "30m",
-    "lower_bound": 10100000,
+    "lower_bound": 10099000,
     "upper_bound": 10150000,
     "frequencies": {
       "bpsk31": 10141000,
@@ -244,7 +244,7 @@
   },
   {
     "name": "13cm",
-    "lower_bound": 2320000000,
+    "lower_bound": 2300000000,
     "upper_bound": 2450000000,
     "frequencies": {
       "q65": [2301065000, 2304065000, 2320065000]
