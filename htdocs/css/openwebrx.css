@@ -1367,7 +1367,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="msk144"]  #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-content-container,
-#openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ft8"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="wspr"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="jt65"]    #openwebrx-digimode-select-channel,
@@ -1404,7 +1403,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="q65"]     #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="msk144"]  #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-canvas-container,
-#openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-canvas-container
 {
     height: 200px;
