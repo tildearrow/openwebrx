@@ -186,7 +186,7 @@ class MultimonParser(ThreadModule):
                         out = rs.group(2)
                         if rs.group(1) != self.selMode:
                             self.selMode = rs.group(1)
-                            out = " %s: %s" % (self.selMode, out)
+                            out = " [%s] %s" % (self.selMode, out)
 
                     #
                     # Everything else
