@@ -164,14 +164,6 @@ class Modes(object):
             requirements=["flex"],
             squelch=False,
         ),
-        DigitalMode(
-            "selcall",
-            "SelCall",
-            underlying=["nfm"],
-            bandpass=Bandpass(-3000, 3000),
-            requirements=["selcall"],
-            squelch=False,
-        ),
         DigitalMode("cwdecoder", "CWDecoder", underlying=["usb"]),
         DigitalMode("rtty170", "RTTY-170", underlying=["usb"]),
         DigitalMode("rtty450", "RTTY-450", underlying=["usb"]),
@@ -187,6 +179,13 @@ class Modes(object):
             "Fax",
             underlying=["usb"],
             service=True,
+            squelch=False,
+        ),
+        DigitalMode(
+            "selcall",
+            "SelCall",
+            underlying=["nfm"],
+            requirements=["selcall"],
             squelch=False,
         ),
     ]
