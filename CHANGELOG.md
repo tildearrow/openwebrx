@@ -1,4 +1,6 @@
 **1.2.17**
+- Integrated multimon-ng digital mode decoding suite.
+- Added Flex paging protocol decoder, provided by multimon-ng.
 - Fixed center frequency modifications surviving profile change.
 - Fixed waterfall colors resetting when changing center frequency.
 - Fixed background decoding cases using resampler.
