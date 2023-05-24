@@ -20,7 +20,7 @@ class MultimonParser(ThreadModule):
         # FLEX message status
         self.reFlex3 = re.compile(r"\d+/\d+/(\S)/\S")
         # <mode>: C
-        self.reSelCall = re.compile(r"(\S+):\s+(\S)")
+        self.reSelCall = re.compile(r"(ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR):\s+(\S)")
 
         self.service   = service
         self.frequency = 0
@@ -100,7 +100,7 @@ class MultimonParser(ThreadModule):
             while out is not None:
                 if len(out)>0:
                     if isinstance(out, str):
-                        self.writer.write(out)
+                        self.writer.write(bytes(out, 'utf-8'))
                     else:
                         self.writer.write(pickle.dumps(out))
                 out = self.process()
