@@ -26,3 +26,27 @@ class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+
+
+class FlexDemodulator(MultimonDemodulator):
+    def __init__(self, service: bool = False):
+        super().__init__(["FLEX"], service=service)
+
+
+class PocsageDemodulator(MultimonDemodulator):
+    def __init__(self, service: bool = False):
+        super().__init__(["POCSAG512", "POCSAG1200", "POCSAG2400"], service=service)
+
+
+class EasDemodulator(MultimonDemodulator):
+    def __init__(self, service: bool = False):
+        super().__init__(["EAS"], service=service)
+
+
+class SelCallDemodulator(MultimonDemodulator):
+    def __init__(self, service: bool = False):
+        super().__init__([
+            "ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI",
+            "DTMF", "EEA", "EIA", "CCIR"
+        ], service=service)
+
