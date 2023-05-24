@@ -84,6 +84,7 @@ class FeatureDetector(object):
         "packet": ["direwolf"],
         "pocsag": ["digiham"],
         "flex": ["multimon"],
+        "selcall": ["multimon"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
