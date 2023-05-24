@@ -20,7 +20,7 @@ class MultimonParser(ThreadModule):
         # FLEX message status
         self.reFlex3 = re.compile(r"\d+/\d+/(\S)/\S")
         # <mode>: C
-        self.reSelCall = re.compile(r"(ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR):\s+(\S)")
+        self.reSelCall = re.compile(r"(ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR):\s+([0-9A-F]+)")
 
         self.service   = service
         self.frequency = 0
@@ -129,7 +129,7 @@ class MultimonParser(ThreadModule):
                     # Parse FLEX and SELCALL messages
                     rf = self.reFlex1.match(msg)
                     rf = self.reFlex2.match(msg) if not rf else rf
-                    rs = self.reSelCall.match(msg) if not rf else None
+                    rs = self.reSelCall.findall(msg) if not rf else []
 
                     #
                     # FLEX
@@ -180,13 +180,16 @@ class MultimonParser(ThreadModule):
                     #
                     # SELCALL
                     #
-                    elif rs is not None:
+                    elif len(rs)>0:
                         # Just output characters as they are, add SELCALL
                         # standard name when changing standard
-                        out = rs.group(2)
-                        if rs.group(1) != self.selMode:
-                            self.selMode = rs.group(1)
-                            out = " [%s] %s" % (self.selMode, out)
+                        out = ""
+                        for x in rs:
+                            if x[0] == self.selMode:
+                                out += x[1]
+                            else:
+                                self.selMode = x[0]
+                                out += " [%s] %s" % (x[0], x[1])
 
                     #
                     # Everything else

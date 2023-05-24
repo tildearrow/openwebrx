@@ -46,7 +46,8 @@ class EasDemodulator(MultimonDemodulator):
 class SelCallDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
         super().__init__([
-            "ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI",
+# These aappear to be rarely used and very similar, so they trigger at once
+#            "ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI",
             "DTMF", "EEA", "EIA", "CCIR"
         ], service=service)
 
