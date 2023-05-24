@@ -99,7 +99,9 @@ class MultimonParser(ThreadModule):
             # Keep processing while there is input to parse
             while out is not None:
                 if len(out)>0:
-                    if isinstance(out, str):
+                    if isinstance(out, bytes):
+                        self.writer.write(out)
+                    elif isinstance(out, str):
                         self.writer.write(bytes(out, 'utf-8'))
                     else:
                         self.writer.write(pickle.dumps(out))
@@ -128,6 +130,10 @@ class MultimonParser(ThreadModule):
                     rf = self.reFlex1.match(msg)
                     rf = self.reFlex2.match(msg) if not rf else rf
                     rs = self.reSelCall.match(msg) if not rf else None
+
+                    #
+                    # FLEX
+                    #
                     if rf is not None:
                         tstamp  = rf.group(1)
                         state   = rf.group(2)
@@ -139,10 +145,15 @@ class MultimonParser(ThreadModule):
                         frag    = "" if not rm else rm.group(1)
                         # Assemble fragmented messages in flexBuf
                         if frag == "F" or frag == "C":
+                            # Do not let flexBuf grow too much
+                            if len(self.flexBuf)>1024:
+                                self.flexBuf = {}
+                            # Accumulate messages in flexBuf, index by capcode
                             if capcode in self.flexBuf:
                                 self.flexBuf[capcode] += msg
                             else:
                                 self.flexBuf[capcode] = msg
+                            # Only output message once it completes
                             if frag == "F":
                                 msg = ""
                             elif frag == "C":
@@ -160,19 +171,26 @@ class MultimonParser(ThreadModule):
                                 "capcode":   capcode,
                                 "type":      msgtype
                             }
-                            # Output completed messages
+                            # Output message adding hash for numeric messages
                             if len(msg)>0:
+                                if msgtype != "ALN":
+                                    msg = "# " + msg
                                 out.update({ "message": msg })
 
+                    #
+                    # SELCALL
+                    #
                     elif rs is not None:
+                        # Just output characters as they are, add SELCALL
+                        # standard name when changing standard
                         out = rs.group(2)
                         if rs.group(1) != self.selMode:
                             self.selMode = rs.group(1)
-                            out = " [%s] %s" % (self.selMode, out)
-                        #out = {
-                        #    "mode":      rs.group(1),
-                        #    "message":   rs.group(2)
-                        #}
+                            out = " %s: %s" % (self.selMode, out)
+
+                    #
+                    # Everything else
+                    #
                     else:
                         # Failed to parse this message
                         out = {}
