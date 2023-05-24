@@ -4,6 +4,7 @@ from pycsdr.types import Format
 from datetime import datetime
 import pickle
 import os
+import re
 
 import logging
 
@@ -11,6 +12,14 @@ logger = logging.getLogger(__name__)
 
 class MultimonParser(ThreadModule):
     def __init__(self, service: bool = False):
+        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>"
+        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>"
+        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
+        # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
+        self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
+        # <mode>: C
+        self.reSelCall = re.compile(r"(\S+):\s+(\S)")
+
         self.service   = service
         self.frequency = 0
         self.data      = bytearray(b'')
@@ -99,7 +108,7 @@ class MultimonParser(ThreadModule):
         # If found end-of-line...
         if eol>=0:
             try:
-                msg = self.data[0:eol].decode()
+                msg = self.data[0:eol].decode(encoding="utf-8", errors="replace")
                 logger.debug("%s: %s" % (self.myName(), msg))
                 # If running as a service...
                 if self.service:
@@ -108,19 +117,26 @@ class MultimonParser(ThreadModule):
                     # Empty result
                     out = {}
                 else:
-                    # Split message into pipe-separated fields
-                    msg = msg.split('|')
-                    # Parse FLEX messages
-                    if len(msg)>=5 and msg[0]=='FLEX':
+                    # Parse FLEX and SELCALL messages
+                    rf = self.reFlex1.match(msg)
+                    rf = self.reFlex2.match(msg) if not rf else rf
+                    rs = self.reSelCall.match(msg) if not rf else None
+                    if rf is not None:
                         out = {
-                            "mode":      msg[0],
-                            "timestamp": msg[1],
-                            "state":     msg[2],
-                            "frame":     msg[3],
-                            "capcode":   msg[4]
+                            "mode":      "FLEX",
+                            "timestamp": rf.group(1),
+                            "state":     rf.group(2),
+                            "frame":     rf.group(3),
+                            "capcode":   rf.group(4),
+                            "type":      rf.group(5)
                         }
-                        if len(msg)>=7:
-                            out.update({ "message": msg[6] })
+                        if len(rf.group(6))>0:
+                            out.update({ "message": rf.group(6) })
+                    elif rs is not None:
+                        out = {
+                            "mode":      rf.group(1),
+                            "message":   rf.group(2)
+                        }
                     else:
                         # Failed to parse this message
                         out = {}
