@@ -17,6 +17,8 @@ class MultimonParser(ThreadModule):
         self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
         # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
         self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
+        # FLEX message status
+        self.reFlex3 = re.compile(r"\d+/\d+/(\S)/\S")
         # <mode>: C
         self.reSelCall = re.compile(r"(\S+):\s+(\S)")
 
@@ -24,6 +26,8 @@ class MultimonParser(ThreadModule):
         self.frequency = 0
         self.data      = bytearray(b'')
         self.file      = None
+        self.selMode   = ""
+        self.flexBuf   = {}
         super().__init__()
 
     def __del__(self):
@@ -95,7 +99,10 @@ class MultimonParser(ThreadModule):
             # Keep processing while there is input to parse
             while out is not None:
                 if len(out)>0:
-                    self.writer.write(pickle.dumps(out))
+                    if isinstance(out, str):
+                        self.writer.write(out)
+                    else:
+                        self.writer.write(pickle.dumps(out))
                 out = self.process()
 
     def process(self):
@@ -122,21 +129,50 @@ class MultimonParser(ThreadModule):
                     rf = self.reFlex2.match(msg) if not rf else rf
                     rs = self.reSelCall.match(msg) if not rf else None
                     if rf is not None:
-                        out = {
-                            "mode":      "FLEX",
-                            "timestamp": rf.group(1),
-                            "state":     rf.group(2),
-                            "frame":     rf.group(3),
-                            "capcode":   rf.group(4),
-                            "type":      rf.group(5)
-                        }
-                        if len(rf.group(6))>0:
-                            out.update({ "message": rf.group(6) })
+                        tstamp  = rf.group(1)
+                        state   = rf.group(2)
+                        frame   = rf.group(3)
+                        capcode = rf.group(4)
+                        msgtype = rf.group(5)
+                        msg     = rf.group(6)
+                        rm      = self.reFlex3.match(state)
+                        frag    = "" if not rm else rm.group(1)
+                        # Assemble fragmented messages in flexBuf
+                        if frag == "F" or frag == "C":
+                            if capcode in self.flexBuf:
+                                self.flexBuf[capcode] += msg
+                            else:
+                                self.flexBuf[capcode] = msg
+                            if frag == "F":
+                                msg = ""
+                            elif frag == "C":
+                                msg = self.flexBuf[capcode]
+                                del self.flexBuf[capcode]
+                        # Do not report fragments of messages
+                        if frag == "F":
+                            out = {}
+                        else:
+                            out = {
+                                "mode":      "FLEX",
+                                "timestamp": tstamp,
+                                "state":     state,
+                                "frame":     frame,
+                                "capcode":   capcode,
+                                "type":      msgtype
+                            }
+                            # Output completed messages
+                            if len(msg)>0:
+                                out.update({ "message": msg })
+
                     elif rs is not None:
-                        out = {
-                            "mode":      rf.group(1),
-                            "message":   rf.group(2)
-                        }
+                        out = rs.group(2)
+                        if rs.group(1) != self.selMode:
+                            self.selMode = rs.group(1)
+                            out = " [%s] %s" % (self.selMode, out)
+                        #out = {
+                        #    "mode":      rs.group(1),
+                        #    "message":   rs.group(2)
+                        #}
                     else:
                         # Failed to parse this message
                         out = {}

@@ -8,10 +8,10 @@ class MultimonModule(PopenModule):
         super().__init__()
 
     def getCommand(self):
-        cmd = ["multimon-ng", "-c"]
+        cmd = ["multimon-ng", "-", "-v0", "-c"]
         for x in self.decoders:
             cmd += ["-a", x]
-        return cmd + ["-"]
+        return cmd
 
     def getInputFormat(self) -> Format:
         return Format.SHORT
