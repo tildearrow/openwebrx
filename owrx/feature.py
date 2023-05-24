@@ -249,27 +249,6 @@ class FeatureDetector(object):
         except ImportError:
             return False
 
-    def has_multimon(self):
-        """
-        Some digital decoders are supplied via the MultiMon-NG library. You can find the
-        package [here](https://github.com/luarvique/multimon-ng).
-
-        In addition, the [pymmon](https://github.com/luarvique/multimon-ng) package must be installed to provide
-        python bindings for the MultiMon-NG library.
-        """
-        required_version = LooseVersion("0.1")
-
-        try:
-            from mmon.modules import mmon_version as mmon_version
-            from mmon.modules import version as pymmon_version
-
-            return (
-                LooseVersion(mmon_version) >= required_version
-                and LooseVersion(pymmon_version) >= required_version
-            )
-        except ImportError:
-            return False
-
     def _check_connector(self, command, required_version):
         owrx_connector_version_regex = re.compile("^{} version (.*)$".format(re.escape(command)))
 
@@ -594,7 +573,16 @@ class FeatureDetector(object):
 
     def has_imagemagick(self):
         """
-        In order to automatically convert received images to the PNG format, you will need to install ImageMagick. It is available as a package for most Linux distributions.
+        In order to automatically convert received images to the PNG format, you will need to install ImageMagick.
+        It is available as a package for most Linux distributions.
         """
         return self.command_is_runnable("convert -version")
+
+    def has_multimon(self):
+        """
+        OpenWebRX uses the [multimon-ng](https://github.com/EliasOenal/multimon-ng) decoder suite to decode Flex and
+        several other digital modes. Multimon-ng is available from the package manager on many distributions, or you
+        can compile it from source.
+        """
+        return self.command_is_runnable("multimon-ng --help")
 

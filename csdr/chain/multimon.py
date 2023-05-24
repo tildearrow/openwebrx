@@ -1,16 +1,19 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
-from pycsdr.modules import FmDemod, AudioResampler
-from mmon.modules import Flex
+from csdr.module.multimon import MultimonModule
+from pycsdr.modules import FmDemod, AudioResampler, Convert
+from pycsdr.types import Format
 from owrx.multimon import MultimonParser
 
-class FlexDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, service: bool = False):
+
+class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, decoders: list[str], service: bool = False):
         self.sampleRate = 24000
         self.parser = MultimonParser(service=service)
         workers = [
             FmDemod(),
             AudioResampler(self.sampleRate, 22050),
-            Flex(),
+            Convert(Format.FLOAT, Format.SHORT),
+            MultimonModule(decoders),
             self.parser,
         ]
         super().__init__(workers)
