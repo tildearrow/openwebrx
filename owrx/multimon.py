@@ -214,9 +214,9 @@ class SelCallParser(MultimonParser):
                 dec = s
             elif dec is not None and len(s)>0:
                 if dec != self.mode:
-                    out += " [" + dec + "]"
+                    out += "[" + dec + "] "
                     self.mode = dec
-                out += " " + s
+                out += s + " "
                 dec = None
         # Done
         return out
