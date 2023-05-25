@@ -2,13 +2,13 @@ from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
 from csdr.module.multimon import MultimonModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert
 from pycsdr.types import Format
-from owrx.multimon import MultimonParser
+from owrx.multimon import MultimonParser, FlexParser, SelCallParser
 
 
 class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, decoders: list[str], service: bool = False):
+    def __init__(self, decoders: list[str], parser):
         self.sampleRate = 24000
-        self.parser = MultimonParser(service=service)
+        self.parser = parser
         workers = [
             FmDemod(),
             AudioResampler(self.sampleRate, 22050),
@@ -30,24 +30,28 @@ class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class FlexDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
-        super().__init__(["FLEX"], service=service)
+        super().__init__(["FLEX"], FlexParser(service=service))
 
 
 class PocsageDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
-        super().__init__(["POCSAG512", "POCSAG1200", "POCSAG2400"], service=service)
+        super().__init__(
+            ["POCSAG512", "POCSAG1200", "POCSAG2400"],
+            MultimonParser(service=service)
+        )
 
 
 class EasDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
-        super().__init__(["EAS"], service=service)
+        super().__init__(["EAS"], MultimonParser(service=service))
 
 
 class SelCallDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
-        super().__init__([
+        super().__init__(
 # These aappear to be rarely used and very similar, so they trigger at once
 #            "ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI",
-            "DTMF", "EEA", "EIA", "CCIR"
-        ], service=service)
+            ["DTMF", "EEA", "EIA", "CCIR"],
+            SelCallParser(service=service)
+        )
 

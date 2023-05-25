@@ -12,22 +12,10 @@ logger = logging.getLogger(__name__)
 
 class MultimonParser(ThreadModule):
     def __init__(self, service: bool = False):
-        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>"
-        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>"
-        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
-        # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
-        self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
-        # FLEX message status
-        self.reFlex3 = re.compile(r"\d+/\d+/(\S)/\S")
-        # <mode>: C
-        self.reSelCall = re.compile(r"(ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR):\s+([0-9A-F]+?)")
-
         self.service   = service
         self.frequency = 0
         self.data      = bytearray(b'')
         self.file      = None
-        self.selMode   = ""
-        self.flexBuf   = {}
         super().__init__()
 
     def __del__(self):
@@ -81,6 +69,10 @@ class MultimonParser(ThreadModule):
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
 
+    def parse(self, msg: str):
+        # By default, fail parsing the message
+        return {}
+
     def run(self):
         logger.debug("%s starting..." % self.myName())
         # Run while there is input data
@@ -126,77 +118,8 @@ class MultimonParser(ThreadModule):
                     # Empty result
                     out = {}
                 else:
-                    # Parse FLEX and SELCALL messages
-                    rf = self.reFlex1.match(msg)
-                    rf = self.reFlex2.match(msg) if not rf else rf
-                    rs = self.reSelCall.findall(msg) if not rf else []
-
-                    #
-                    # FLEX
-                    #
-                    if rf is not None:
-                        tstamp  = rf.group(1)
-                        state   = rf.group(2)
-                        frame   = rf.group(3)
-                        capcode = rf.group(4)
-                        msgtype = rf.group(5)
-                        msg     = rf.group(6)
-                        rm      = self.reFlex3.match(state)
-                        frag    = "" if not rm else rm.group(1)
-                        # Assemble fragmented messages in flexBuf
-                        if frag == "F" or frag == "C":
-                            # Do not let flexBuf grow too much
-                            if len(self.flexBuf)>1024:
-                                self.flexBuf = {}
-                            # Accumulate messages in flexBuf, index by capcode
-                            if capcode in self.flexBuf:
-                                self.flexBuf[capcode] += msg
-                            else:
-                                self.flexBuf[capcode] = msg
-                            # Only output message once it completes
-                            if frag == "F":
-                                msg = ""
-                            elif frag == "C":
-                                msg = self.flexBuf[capcode]
-                                del self.flexBuf[capcode]
-                        # Do not report fragments of messages
-                        if frag == "F":
-                            out = {}
-                        else:
-                            out = {
-                                "mode":      "FLEX",
-                                "timestamp": tstamp,
-                                "state":     state,
-                                "frame":     frame,
-                                "capcode":   capcode,
-                                "type":      msgtype
-                            }
-                            # Output message adding hash for numeric messages
-                            if len(msg)>0:
-                                if msgtype != "ALN":
-                                    msg = "# " + msg
-                                out.update({ "message": msg })
-
-                    #
-                    # SELCALL
-                    #
-                    elif len(rs)>0:
-                        # Just output characters as they are, add SELCALL
-                        # standard name when changing standard
-                        out = ""
-                        for x in rs:
-                            if x[0] == self.selMode:
-                                out += x[1]
-                            else:
-                                self.selMode = x[0]
-                                out += " [%s] %s" % (x[0], x[1])
-
-                    #
-                    # Everything else
-                    #
-                    else:
-                        # Failed to parse this message
-                        out = {}
+                    # Let parse() function do its thing
+                    out = self.parse(msg)
 
             except Exception as exptn:
                 logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
@@ -206,3 +129,95 @@ class MultimonParser(ThreadModule):
 
         # Return parsed result or None if no result yet
         return out
+
+
+class FlexParser(MultimonParser):
+    def __init__(self, service: bool = False):
+        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>"
+        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>"
+        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
+        # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
+        self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
+        # FLEX message status
+        self.reFlex3 = re.compile(r"\d+/\d+/(\S)/\S")
+        # Fragmented messages will be assembled here
+        self.flexBuf = {}
+        # Construct parent object
+        super().__init__(service)
+
+    def parse(self, msg: str):
+        # Parse FLEX messages
+        r = self.reFlex1.match(msg)
+        r = self.reFlex2.match(msg) if not r else r
+        out = {}
+
+        if r is not None:
+            tstamp  = r.group(1)
+            state   = r.group(2)
+            frame   = r.group(3)
+            capcode = r.group(4)
+            msgtype = r.group(5)
+            msg     = r.group(6)
+            rm      = self.reFlex3.match(state)
+            frag    = "" if not rm else rm.group(1)
+            # Assemble fragmented messages in flexBuf
+            if frag == "F" or frag == "C":
+                # Do not let flexBuf grow too much
+                if len(self.flexBuf)>1024:
+                    self.flexBuf = {}
+                # Accumulate messages in flexBuf, index by capcode
+                if capcode in self.flexBuf:
+                    self.flexBuf[capcode] += msg
+                else:
+                    self.flexBuf[capcode] = msg
+            # Only output message once it completes
+            if frag == "F":
+                msg = ""
+            elif frag == "C":
+                msg = self.flexBuf[capcode]
+                del self.flexBuf[capcode]
+            # Do not report fragments of messages
+            if frag != "F":
+                out.update({
+                    "mode":      "FLEX",
+                    "timestamp": tstamp,
+                    "state":     state,
+                    "frame":     frame,
+                    "capcode":   capcode,
+                    "type":      msgtype
+                })
+                # Output message adding hash for numeric messages
+                if len(msg)>0:
+                    if msgtype != "ALN":
+                        msg = "# " + msg
+                    out.update({ "message": msg })
+
+        # Done
+        return out
+
+
+class SelCallParser(MultimonParser):
+    def __init__(self, service: bool = False):
+        self.reSplit = re.compile(r"(ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR):\s+")
+        self.reMatch = re.compile(r"ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR")
+        self.mode = ""
+        super().__init__(service)
+
+    def parse(self, msg: str):
+        # Parse SELCALL messages
+        dec = None
+        out = ""
+        r = self.reSplit.split(msg)
+
+        for s in r:
+            if self.reMatch.match(s):
+                dec = s
+            elif dec is not None and len(s)>0:
+                if dec != self.mode:
+                    out += " [" + dec + "]"
+                    self.mode = dec
+                out += " " + s
+                dec = None
+        # Done
+        return out
+
