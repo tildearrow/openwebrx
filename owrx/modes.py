@@ -108,15 +108,11 @@ class Modes(object):
         AnalogMode("cw", "CW", bandpass=Bandpass(700, 900)),
         AnalogMode("sam", "SAM", bandpass=Bandpass(-4000, 4000)),
         AnalogMode("dmr", "DMR", bandpass=Bandpass(-4000, 4000), requirements=["digital_voice_digiham"], squelch=False),
-        AnalogMode(
-            "dstar", "D-Star", bandpass=Bandpass(-3250, 3250), requirements=["digital_voice_digiham"], squelch=False
-        ),
+        AnalogMode("dstar", "D-Star", bandpass=Bandpass(-3250, 3250), requirements=["digital_voice_digiham"], squelch=False),
         AnalogMode("nxdn", "NXDN", bandpass=Bandpass(-3250, 3250), requirements=["digital_voice_digiham"], squelch=False),
         AnalogMode("ysf", "YSF", bandpass=Bandpass(-4000, 4000), requirements=["digital_voice_digiham"], squelch=False),
         AnalogMode("m17", "M17", bandpass=Bandpass(-4000, 4000), requirements=["digital_voice_m17"], squelch=False),
-        AnalogMode(
-            "freedv", "FreeDV", bandpass=Bandpass(300, 3000), requirements=["digital_voice_freedv"], squelch=False
-        ),
+        AnalogMode("freedv", "FreeDV", bandpass=Bandpass(300, 3000), requirements=["digital_voice_freedv"], squelch=False),
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
@@ -181,7 +177,7 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
-        DigitalMode("selcall", "SelCall", underlying=["nfm"], requirements=["selcall"]),
+        DigitalMode("selcall", "SelCall", underlying=["nfm"], requirements=["selcall"], squelch=False),
     ]
 
     @staticmethod
