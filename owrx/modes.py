@@ -158,6 +158,7 @@ class Modes(object):
             underlying=["nfm"],
             bandpass=Bandpass(-6000, 6000),
             requirements=["flex"],
+            service=True,
             squelch=False,
         ),
         DigitalMode("cwdecoder", "CWDecoder", underlying=["usb"]),
