@@ -1,7 +1,7 @@
 **1.2.17**
 - Integrated multimon-ng digital mode decoding suite.
 - Added FLEX paging protocol decoder, provided by multimon-ng.
-- Added multiple SELCALL protocol decoders, provided by multimon-ng.
+- Added SELCALL decoders for EEA, EIA, CCIR, DTMF standards.
 - Fixed center frequency modifications surviving profile change.
 - Fixed waterfall colors resetting when changing center frequency.
 - Fixed background decoding cases using resampler.
