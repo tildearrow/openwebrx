@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 class Storage(object):
     def __init__(self):
-        self.filePattern = r'[A-Z]+-[0-9]+-[0-9]+(-[0-9]+)?\.(bmp|png)'
+        self.filePattern = r'[A-Z]+-[0-9]+-[0-9]+(-[0-9]+)?\.(bmp|png|txt)'
 
     # Get file name pattern
     def getNamePattern(self):
