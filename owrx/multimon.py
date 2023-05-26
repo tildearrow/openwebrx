@@ -83,8 +83,8 @@ class MultimonParser(ThreadModule):
         )
 
     def parse(self, msg: str):
-        # By default, fail parsing the message
-        return {}
+        # By default, do not parse, just return the string
+        return msg
 
     def run(self):
         logger.debug("%s starting..." % self.myName())
