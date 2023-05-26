@@ -293,6 +293,10 @@ FlexMessagePanel.prototype.render = function() {
 };
 
 FlexMessagePanel.prototype.pushMessage = function(msg) {
+    var html_escape = function(input) {
+        return $('<div/>').text(input).html()
+    };
+
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
@@ -300,9 +304,12 @@ FlexMessagePanel.prototype.pushMessage = function(msg) {
             '<td class="timestamp">' + msg.timestamp + '</td>' +
         '</tr>'
     ));
+
     if (msg.hasOwnProperty('message')) {
         $b.append($(
-            '<tr><td class="message" colspan="2">' + msg.message + '</td></tr>'
+            '<tr><td class="message" colspan="2">' +
+            html_escape(msg.message) +
+            '</td></tr>'
         ));
     }
     $b.scrollTop($b[0].scrollHeight);
