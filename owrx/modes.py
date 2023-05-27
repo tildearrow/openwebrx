@@ -144,15 +144,16 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
-        DigitalMode(
-            "pocsag",
-            "Pocsag",
-            underlying=["nfm"],
-            bandpass=Bandpass(-6000, 6000),
-            requirements=["pocsag"],
-            service=True,
-            squelch=False,
-        ),
+# Replaced by the general paging decoder (both POCSAG and FLEX)
+#        DigitalMode(
+#            "pocsag",
+#            "Pocsag",
+#            underlying=["nfm"],
+#            bandpass=Bandpass(-6000, 6000),
+#            requirements=["pocsag"],
+#            service=True,
+#            squelch=False,
+#        ),
         DigitalMode(
             "page",
             "Paging",

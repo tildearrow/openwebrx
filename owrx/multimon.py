@@ -147,7 +147,7 @@ class MultimonParser(ThreadModule):
 class PageParser(MultimonParser):
     def __init__(self, service: bool = False):
         # POCSAG<baud>: Address: <num> Function: <hex> (Certainty: <num> )?(Numeric|Alpha|Skyper): <message>
-        self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)\s+(Certainty:.*(\d+)\s+)?(\S+):\s*(.*)")
+        self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)(\s+Certainty:.*(\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>
         self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
@@ -166,7 +166,7 @@ class PageParser(MultimonParser):
             return self.parsePocsag(msg)
         elif msg.startswith("FLEX"):
             return self.parseFlex(msg)
-        else
+        else:
             return {}
 
     def parsePocsag(self, msg: str):
@@ -176,22 +176,27 @@ class PageParser(MultimonParser):
         # Parse POCSAG messages
         r = self.rePocsag.match(msg)
         if r is not None:
-            baud = r.group(1)
-            addr = r.group(2)
-            func = r.group(3)
-            cert = r.group(5)
-            type = r.group(6)
-            msg  = r.group(7)
+            baud      = r.group(1)
+            capcode   = r.group(2)
+            function  = r.group(3)
+            certainty = r.group(5)
+            msgtype   = "" if not r.group(7) else r.group(7)
+            msg       = "" if not r.group(8) else r.group(8)
             out.update({
                 "mode":      "POCSAG",
                 "baud":      baud,
                 "timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-                "address":   addr,
-                "function":  func,
-                "certainty": cert,
-                "type":      type,
+                "address":   capcode,
+                "function":  function,
+                "certainty": certainty,
+                "type":      msgtype,
                 "message":   msg
             })
+            # Output type and message
+            if len(msgtype)>0:
+                out.update({ "type": msgtype })
+            if len(msg)>0:
+                out.update({ "message": msg })
 
         # Done
         return out
