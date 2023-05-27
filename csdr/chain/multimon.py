@@ -2,7 +2,7 @@ from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
 from csdr.module.multimon import MultimonModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert
 from pycsdr.types import Format
-from owrx.multimon import MultimonParser, FlexParser, SelCallParser
+from owrx.multimon import MultimonParser, PageParser, SelCallParser
 
 
 class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
@@ -28,16 +28,11 @@ class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.parser.setDialFrequency(frequency)
 
 
-class FlexDemodulator(MultimonDemodulator):
-    def __init__(self, service: bool = False):
-        super().__init__(["FLEX"], FlexParser(service=service))
-
-
-class PocsageDemodulator(MultimonDemodulator):
+class PageDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
         super().__init__(
-            ["POCSAG512", "POCSAG1200", "POCSAG2400"],
-            MultimonParser(service=service)
+            ["FLEX", "POCSAG512", "POCSAG1200", "POCSAG2400"],
+            PageParser(service=service)
         )
 
 
