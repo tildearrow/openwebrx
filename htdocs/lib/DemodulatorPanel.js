@@ -166,7 +166,7 @@ DemodulatorPanel.prototype.updatePanels = function() {
     toggle_panel("openwebrx-panel-js8-message", modulation == "js8");
     toggle_panel("openwebrx-panel-packet-message", ["packet", "ais"].indexOf(modulation) >= 0);
     toggle_panel("openwebrx-panel-pocsag-message", modulation === "pocsag");
-    toggle_panel("openwebrx-panel-flex-message", modulation === "flex");
+    toggle_panel("openwebrx-panel-page-message", modulation === "page");
     toggle_panel("openwebrx-panel-sstv-message", modulation === "sstv");
     toggle_panel("openwebrx-panel-fax-message", modulation === "fax");
 

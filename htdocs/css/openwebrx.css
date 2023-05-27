@@ -1198,23 +1198,32 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
-#openwebrx-panel-flex-message {
+#openwebrx-panel-page-message {
     height: 310px;
 }
 
-#openwebrx-panel-flex-message tbody {
+#openwebrx-panel-page-message tbody {
     height: 280px;
 }
 
-#openwebrx-panel-flex-message .address {
-    width: 100px;
+#openwebrx-panel-page-message .address {
+    width: 120px;
     font-weight: bold;
     background-color: #fff;
+    text-align: center;
     color: #000;
 }
 
-#openwebrx-panel-flex-message .timestamp {
-    width: 486px;
+#openwebrx-panel-page-message .mode {
+    width: 120px;
+    font-weight: normal;
+    background-color: #fff;
+    text-align: center;
+    color: #000;
+}
+
+#openwebrx-panel-page-message .timestamp {
+    width: 346px;
     max-width: 486px;
     font-weight: bold;
     background-color: #fff;
@@ -1223,7 +1232,7 @@ img.openwebrx-mirror-img
     white-space: pre;
 }
 
-#openwebrx-panel-flex-message .message {
+#openwebrx-panel-page-message .message {
     width: 566px;
     max-width: 566px;
     column-span: all;

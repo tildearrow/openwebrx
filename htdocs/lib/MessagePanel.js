@@ -270,29 +270,30 @@ $.fn.pocsagMessagePanel = function() {
     return this.data('panel');
 };
 
-FlexMessagePanel = function(el) {
+PageMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
+    this.modes = ['FLEX', 'POCSAG'];
 }
 
-FlexMessagePanel.prototype = new MessagePanel();
+PageMessagePanel.prototype = new MessagePanel();
 
-FlexMessagePanel.prototype.supportsMessage = function(message) {
-    return message['mode'] === 'FLEX';
+PageMessagePanel.prototype.supportsMessage = function(message) {
+    return this.modes.indexOf(message['mode']) >= 0;
 };
 
-FlexMessagePanel.prototype.render = function() {
+PageMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>FLEX</th>' +
+                '<th>Paging</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
     ));
 };
 
-FlexMessagePanel.prototype.pushMessage = function(msg) {
+PageMessagePanel.prototype.pushMessage = function(msg) {
     var html_escape = function(input) {
         return $('<div/>').text(input).html()
     };
@@ -300,14 +301,15 @@ FlexMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
-            '<td class="address">' + msg.capcode + '</td>' +
+            '<td class="address">' + msg.address + '</td>' +
+            '<td class="mode">' + msg.mode + msg.baud + '</td>' +
             '<td class="timestamp">' + msg.timestamp + '</td>' +
         '</tr>'
     ));
 
     if (msg.hasOwnProperty('message')) {
         $b.append($(
-            '<tr><td class="message" colspan="2">' +
+            '<tr><td class="message" colspan="3">' +
             html_escape(msg.message) +
             '</td></tr>'
         ));
@@ -315,9 +317,9 @@ FlexMessagePanel.prototype.pushMessage = function(msg) {
     $b.scrollTop($b[0].scrollHeight);
 };
 
-$.fn.flexMessagePanel = function() {
+$.fn.pageMessagePanel = function() {
     if (!this.data('panel')) {
-        this.data('panel', new FlexMessagePanel(this));
+        this.data('panel', new PageMessagePanel(this));
     }
     return this.data('panel');
 };
