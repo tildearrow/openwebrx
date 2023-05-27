@@ -618,7 +618,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return PocsagDemodulator()
         elif mod == "page":
             from csdr.chain.multimon import PageDemodulator
-            return PageDemodulator()
+            return PageDemodulator(filtering = True)
         elif mod == "selcall":
             from csdr.chain.multimon import SelCallDemodulator
             return SelCallDemodulator()

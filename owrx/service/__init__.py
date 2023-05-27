@@ -320,7 +320,7 @@ class ServiceHandler(SdrSourceEventClient):
             return FaxDemodulator(service=True)
         elif mod == "page":
             from csdr.chain.multimon import PageDemodulator
-            return PageDemodulator(service=True)
+            return PageDemodulator(service=True, filtering=False)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 

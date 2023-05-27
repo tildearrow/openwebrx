@@ -145,7 +145,9 @@ class MultimonParser(ThreadModule):
 
 
 class PageParser(MultimonParser):
-    def __init__(self, service: bool = False):
+    def __init__(self, filtering: bool = False, service: bool = False):
+        # When true, try filtering out unreadable messages
+        self.filtering = filtering
         # POCSAG<baud>: Address: <num> Function: <hex> (Certainty: <num> )?(Numeric|Alpha|Skyper): <message>
         self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)(\s+Certainty:.*(\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
@@ -155,6 +157,9 @@ class PageParser(MultimonParser):
         self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
         # FLEX message status
         self.reFlex3 = re.compile(r"(\d+/\d+)(/\S)?/\S")
+        # Message filtering patterns
+        self.reControl = re.compile(r"<[\w\d]{2,3}>")
+        self.reSpaces = re.compile(r"\s+")
         # Fragmented messages will be assembled here
         self.flexBuf = {}
         # Construct parent object
@@ -169,6 +174,17 @@ class PageParser(MultimonParser):
         else:
             return {}
 
+    def collapseSpaces(self, msg: str) -> str:
+        # Collapse white space
+        return self.reSpaces.sub(" ", msg).strip()
+
+    def isReadable(self, msg: str) -> bool:
+       # Consider string human-readable if the average word length
+       # is sufficiently small
+       spaces  = msg.count(" ")
+       letters = len(msg) - spaces
+       return (letters > 0) and (letters / (spaces+1) < 40)
+
     def parsePocsag(self, msg: str):
         # No result yet
         out = {}
@@ -182,21 +198,27 @@ class PageParser(MultimonParser):
             certainty = r.group(5)
             msgtype   = "" if not r.group(7) else r.group(7)
             msg       = "" if not r.group(8) else r.group(8)
-            out.update({
-                "mode":      "POCSAG",
-                "baud":      baud,
-                "timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
-                "address":   capcode,
-                "function":  function,
-                "certainty": certainty,
-                "type":      msgtype,
-                "message":   msg
-            })
-            # Output type and message
-            if len(msgtype)>0:
-                out.update({ "type": msgtype })
-            if len(msg)>0:
-                out.update({ "message": msg })
+
+            # Remove POCSAG "<XXX>" sequences and collapse white space
+            msg = self.collapseSpaces(self.reControl.sub(" ", msg))
+
+            # When filtering, only output readable messages
+            if not self.filtering or (msgtype=="Alpha" and len(msg)>0):
+                out.update({
+                    "mode":      "POCSAG",
+                    "baud":      baud,
+                    "timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                    "address":   capcode,
+                    "function":  function,
+                    "certainty": certainty,
+                    "type":      msgtype,
+                    "message":   msg
+                })
+                # Output type and message
+                if len(msgtype)>0:
+                    out.update({ "type": msgtype })
+                if len(msg)>0:
+                    out.update({ "message": msg })
 
         # Done
         return out
@@ -236,20 +258,22 @@ class PageParser(MultimonParser):
                 del self.flexBuf[capcode]
             # Do not report fragments of messages
             if frag != "F":
-                out.update({
-                    "mode":      "FLEX",
-                    "baud":      baud,
-                    "timestamp": tstamp,
-                    "state":     state,
-                    "frame":     frame,
-                    "address":   capcode,
-                    "type":      msgtype
-                })
-                # Output message adding hash for numeric messages
-                if len(msg)>0:
-                    if msgtype != "ALN":
-                        msg = "# " + msg
-                    out.update({ "message": msg })
+                # Collapse white space
+                msg = self.collapseSpaces(msg)
+                # When filtering, only output readable messages
+                if not self.filtering or (msgtype=="ALN" and self.isReadable(msg)):
+                    out.update({
+                        "mode":      "FLEX",
+                        "baud":      baud,
+                        "timestamp": tstamp,
+                        "state":     state,
+                        "frame":     frame,
+                        "address":   capcode,
+                        "type":      msgtype
+                    })
+                    # Output message
+                    if len(msg)>0:
+                        out.update({ "message": msg })
 
         # Done
         return out
