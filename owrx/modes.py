@@ -171,14 +171,14 @@ class Modes(object):
             "SSTV",
             underlying=["usb", "lsb"],
             service=True,
-            squelch=False,
+            squelch=True,
         ),
         DigitalMode(
             "fax",
             "Fax",
             underlying=["usb"],
             service=True,
-            squelch=False,
+            squelch=True,
         ),
         DigitalMode(
             "selcall",
