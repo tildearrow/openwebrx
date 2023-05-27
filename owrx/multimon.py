@@ -148,6 +148,12 @@ class PageParser(MultimonParser):
     def __init__(self, filtering: bool = False, service: bool = False):
         # When true, try filtering out unreadable messages
         self.filtering = filtering
+        # Use these colors to mark messages by address
+        self.colors = [
+            "#FFFFFF", "#999999", "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99",
+            "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF",
+            "#FF99FF", "#FF99CC",
+        ]
         # POCSAG<baud>: Address: <num> Function: <hex> (Certainty: <num> )?(Numeric|Alpha|Skyper): <message>
         self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)(\s+Certainty:.*(\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
@@ -159,9 +165,11 @@ class PageParser(MultimonParser):
         self.reFlex3 = re.compile(r"(\d+/\d+)(/\S)?/\S")
         # Message filtering patterns
         self.reControl = re.compile(r"<[\w\d]{2,3}>")
-        self.reSpaces = re.compile(r"\s+")
+        self.reSpaces = re.compile(r"[\000-\037\s]+")
         # Fragmented messages will be assembled here
         self.flexBuf = {}
+        # Color assignments will be maintained here
+        self.colorBuf = {}
         # Construct parent object
         super().__init__(filePrefix="PAGE", service=service)
 
@@ -184,6 +192,18 @@ class PageParser(MultimonParser):
        spaces  = msg.count(" ")
        letters = len(msg) - spaces
        return (letters > 0) and (letters / (spaces+1) < 40)
+
+    def getColor(self, capcode: str) -> str:
+        if capcode in self.colorBuf:
+            return self.colorBuf[capcode]
+        else:
+            # If we run out of colors, reuse the oldest entry
+            if len(self.colorBuf) >= len(self.colors):
+                color = self.colorBuf.pop(next(iter(self.colorBuf)))
+            else:
+                color = self.colors[len(self.colorBuf)]
+            self.colorBuf[capcode] = color
+            return color
 
     def parsePocsag(self, msg: str):
         # No result yet
@@ -211,6 +231,7 @@ class PageParser(MultimonParser):
                     "address":   capcode,
                     "function":  function,
                     "certainty": certainty,
+                    "color":     self.getColor(capcode),
                     "type":      msgtype,
                     "message":   msg
                 })
@@ -269,6 +290,7 @@ class PageParser(MultimonParser):
                         "state":     state,
                         "frame":     frame,
                         "address":   capcode,
+                        "color":     self.getColor(capcode),
                         "type":      msgtype
                     })
                     # Output message
