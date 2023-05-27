@@ -195,15 +195,17 @@ class PageParser(MultimonParser):
 
     def getColor(self, capcode: str) -> str:
         if capcode in self.colorBuf:
-            return self.colorBuf[capcode]
+            # Sort entries in order of freshness
+            color = self.colorBuf.pop(capcode)
+        elif len(self.colorBuf) < len(self.colors):
+            # Assign each initial entry color based on its order
+            color = self.colors[len(self.colorBuf)]
         else:
             # If we run out of colors, reuse the oldest entry
-            if len(self.colorBuf) >= len(self.colors):
-                color = self.colorBuf.pop(next(iter(self.colorBuf)))
-            else:
-                color = self.colors[len(self.colorBuf)]
-            self.colorBuf[capcode] = color
-            return color
+            color = self.colorBuf.pop(next(iter(self.colorBuf)))
+        # Done
+        self.colorBuf[capcode] = color
+        return color
 
     def parsePocsag(self, msg: str):
         # No result yet
