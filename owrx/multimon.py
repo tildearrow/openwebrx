@@ -144,26 +144,65 @@ class MultimonParser(ThreadModule):
         return out
 
 
-class FlexParser(MultimonParser):
+class PageParser(MultimonParser):
     def __init__(self, service: bool = False):
-        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>"
-        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>"
+        # POCSAG<baud>: Address: <num> Function: <hex> (Certainty: <num> )?(Numeric|Alpha|Skyper): <message>
+        self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)\s+(Certainty:.*(\d+)\s+)?(\S+):\s*(.*)")
+        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
+        # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>
         self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
         # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
         self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
         # FLEX message status
-        self.reFlex3 = re.compile(r"\d+/\d+/(\S)/\S")
+        self.reFlex3 = re.compile(r"(\d+/\d+)(/\S)?/\S")
         # Fragmented messages will be assembled here
         self.flexBuf = {}
         # Construct parent object
-        super().__init__(filePrefix="FLEX", service=service)
+        super().__init__(filePrefix="PAGE", service=service)
 
     def parse(self, msg: str):
+        # Steer message to POCSAG or FLEX parser
+        if msg.startswith("POCSAG"):
+            return self.parsePocsag(msg)
+        elif msg.startswith("FLEX"):
+            return self.parseFlex(msg)
+        else
+            return {}
+
+    def parsePocsag(self, msg: str):
+        # No result yet
+        out = {}
+
+        # Parse POCSAG messages
+        r = self.rePocsag.match(msg)
+        if r is not None:
+            baud = r.group(1)
+            addr = r.group(2)
+            func = r.group(3)
+            cert = r.group(5)
+            type = r.group(6)
+            msg  = r.group(7)
+            out.update({
+                "mode":      "POCSAG",
+                "baud":      baud,
+                "timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                "address":   addr,
+                "function":  func,
+                "certainty": cert,
+                "type":      type,
+                "message":   msg
+            })
+
+        # Done
+        return out
+
+    def parseFlex(self, msg: str):
+        # No result yet
+        out = {}
+
         # Parse FLEX messages
         r = self.reFlex1.match(msg)
         r = self.reFlex2.match(msg) if not r else r
-        out = {}
-
         if r is not None:
             tstamp  = r.group(1)
             state   = r.group(2)
@@ -172,7 +211,8 @@ class FlexParser(MultimonParser):
             msgtype = r.group(5)
             msg     = r.group(6)
             rm      = self.reFlex3.match(state)
-            frag    = "" if not rm else rm.group(1)
+            baud    = "" if not rm else rm.group(1)
+            frag    = "" if not rm or not rm.group(2) else rm.group(2)[1]
             # Assemble fragmented messages in flexBuf
             if frag == "F" or frag == "C":
                 # Do not let flexBuf grow too much
@@ -193,10 +233,11 @@ class FlexParser(MultimonParser):
             if frag != "F":
                 out.update({
                     "mode":      "FLEX",
+                    "baud":      baud,
                     "timestamp": tstamp,
                     "state":     state,
                     "frame":     frame,
-                    "capcode":   capcode,
+                    "address":   capcode,
                     "type":      msgtype
                 })
                 # Output message adding hash for numeric messages

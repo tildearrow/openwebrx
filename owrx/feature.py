@@ -83,7 +83,7 @@ class FeatureDetector(object):
         "msk144": ["msk144decoder"],
         "packet": ["direwolf"],
         "pocsag": ["digiham"],
-        "flex": ["multimon"],
+        "page": ["multimon"],
         "selcall": ["multimon"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
@@ -581,9 +581,9 @@ class FeatureDetector(object):
 
     def has_multimon(self):
         """
-        OpenWebRX uses the [multimon-ng](https://github.com/EliasOenal/multimon-ng) decoder suite to decode Flex and
-        several other digital modes. Multimon-ng is available from the package manager on many distributions, or you
-        can compile it from source.
+        OpenWebRX uses the [multimon-ng](https://github.com/EliasOenal/multimon-ng) decoder suite to decode FLEX,
+        POCSAG, and several other digital modes. Multimon-ng is available from the package manager on many
+        distributions, or you can compile it from source.
         """
         return self.command_is_runnable("multimon-ng --help")
 

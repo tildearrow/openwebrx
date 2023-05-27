@@ -318,9 +318,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "fax":
             from csdr.chain.digimodes import FaxDemodulator
             return FaxDemodulator(service=True)
-        elif mod == "flex":
-            from csdr.chain.multimon import FlexDemodulator
-            return FlexDemodulator(service=True)
+        elif mod == "page":
+            from csdr.chain.multimon import PageDemodulator
+            return PageDemodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 
