@@ -180,7 +180,13 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
-        DigitalMode("selcall", "SelCall", underlying=["nfm"], requirements=["selcall"], squelch=False),
+        DigitalMode(
+            "selcall",
+            "SelCall",
+            underlying=["nfm"],
+            requirements=["selcall"],
+            squelch=True
+        ),
     ]
 
     @staticmethod

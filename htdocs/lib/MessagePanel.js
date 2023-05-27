@@ -298,6 +298,10 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
         return $('<div/>').text(input).html()
     };
 
+    // Get color from the message, default to white
+    var color = msg.hasOwnProperty('color')? msg.color : "#FFF";
+
+    // Append message header (address, time, etc)
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
@@ -305,8 +309,9 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
             '<td class="mode">' + msg.mode + msg.baud + '</td>' +
             '<td class="timestamp">' + msg.timestamp + '</td>' +
         '</tr>'
-    ));
+    ).css('background-color', color));
 
+    // Append message body (text)
     if (msg.hasOwnProperty('message')) {
         $b.append($(
             '<tr><td class="message" colspan="3">' +
@@ -314,6 +319,8 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
             '</td></tr>'
         ));
     }
+
+    // Jump list to the last received message
     $b.scrollTop($b[0].scrollHeight);
 };
 

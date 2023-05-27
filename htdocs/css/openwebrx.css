@@ -1209,7 +1209,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-page-message .address {
     width: 120px;
     font-weight: bold;
-    background-color: #fff;
     text-align: left;
     color: #000;
 }
@@ -1217,7 +1216,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-page-message .mode {
     width: 120px;
     font-weight: normal;
-    background-color: #fff;
     text-align: center;
     color: #000;
 }
@@ -1226,7 +1224,6 @@ img.openwebrx-mirror-img
     width: 346px;
     max-width: 486px;
     font-weight: bold;
-    background-color: #fff;
     color: #000;
     text-align: right;
     white-space: pre;

@@ -1,13 +1,14 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
 from csdr.module.multimon import MultimonModule
-from pycsdr.modules import FmDemod, AudioResampler, Convert
+from pycsdr.modules import FmDemod, AudioResampler, Convert, Squelch
 from pycsdr.types import Format
 from owrx.multimon import MultimonParser, PageParser, SelCallParser
 
 
 class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, decoders: list[str], parser):
+    def __init__(self, decoders: list[str], parser, withSquelch: bool = False):
         self.sampleRate = 24000
+        self.squelch = None
         self.parser = parser
         workers = [
             FmDemod(),
@@ -16,16 +17,32 @@ class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
             MultimonModule(decoders),
             self.parser,
         ]
+        # If using squelch, insert Squelch() at the start
+        if withSquelch:
+            # s-meter readings are available every 1024 samples
+            # the reporting interval is measured in those 1024-sample blocks
+            self.readingsPerSec = 4
+            self.squelch = Squelch(5, int(self.sampleRate / (self.readingsPerSec * 1024)))
+            workers.insert(0, self.squelch)
+
+        # Connect all the workers
         super().__init__(workers)
 
     def getFixedAudioRate(self) -> int:
         return self.sampleRate
 
     def supportsSquelch(self) -> bool:
-        return False
+        return self.squelch != None
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+
+    def _convertToLinear(self, db: float) -> float:
+        return float(math.pow(10, db / 10))
+
+    def setSquelchLevel(self, level: float) -> None:
+        if self.squelch:
+            self.squelch.setSquelchLevel(self._convertToLinear(level))
 
 
 class PageDemodulator(MultimonDemodulator):
@@ -47,6 +64,7 @@ class SelCallDemodulator(MultimonDemodulator):
 # These aappear to be rarely used and very similar, so they trigger at once
 #            "ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI",
             ["DTMF", "EEA", "EIA", "CCIR"],
-            SelCallParser(service=service)
+            SelCallParser(service=service),
+            withSquelch = True
         )
 
