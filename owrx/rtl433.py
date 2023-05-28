@@ -5,6 +5,7 @@ from datetime import datetime
 import pickle
 import os
 import re
+import json
 
 import logging
 
@@ -83,8 +84,8 @@ class Rtl433Parser(ThreadModule):
         )
 
     def parse(self, msg: str):
-        # By default, do not parse, just return the string
-        return msg
+        # Expect JSON data in text form
+        return json.loads(msg)
 
     def run(self):
         logger.debug("%s starting..." % self.myName())
