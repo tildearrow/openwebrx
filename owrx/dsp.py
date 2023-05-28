@@ -643,6 +643,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "fax":
             from csdr.chain.digimodes import FaxDemodulator
             return FaxDemodulator()
+        elif mod == "ism":
+            from csdr.chain.rtl433 import Rtl433Demodulator
+            return Rtl433Demodulator()
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)

@@ -187,6 +187,14 @@ class Modes(object):
             requirements=["selcall"],
             squelch=True
         ),
+        DigitalMode(
+            "ism",
+            "ISM",
+            underlying=["nfm"],
+            bandpass=Bandpass(-6250, 6250),
+            requirements=["ism"],
+            squelch=False
+        ),
     ]
 
     @staticmethod
