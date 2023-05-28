@@ -193,6 +193,7 @@ class Modes(object):
             underlying=["nfm"],
             bandpass=Bandpass(-24000, 24000),
             requirements=["ism"],
+            service=True,
             squelch=False
         ),
     ]

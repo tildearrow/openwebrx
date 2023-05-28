@@ -321,6 +321,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "page":
             from csdr.chain.multimon import PageDemodulator
             return PageDemodulator(service=True, filtering=False)
+        elif mod == "ism":
+            from csdr.chain.rtl433 import Rtl433Demodulator
+            return Rtl433Demodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 
