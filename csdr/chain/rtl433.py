@@ -1,3 +1,4 @@
+
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
 from csdr.module.rtl433 import Rtl433Module
 from pycsdr.modules import Convert, Agc
@@ -7,7 +8,7 @@ from owrx.rtl433 import Rtl433Parser
 
 class Rtl433Demodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self):
-        self.sampleRate = 24000
+        self.sampleRate = 48000
         self.parser = Rtl433Parser()
         workers = [
             Agc(Format.COMPLEX_FLOAT),
