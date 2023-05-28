@@ -58,7 +58,7 @@ class DecodingSettingsController(SettingsFormController):
                 NumberInput("digimodes_fft_size", "Digimodes FFT size", append="bins"),
             ),
             Section(
-                "Paging",
+                "Pager traffic",
                 CheckboxInput(
                     "paging_filter",
                     "Filter out empty, numeric, or unreadable pager messages",
