@@ -88,6 +88,7 @@ class FeatureDetector(object):
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
+        "ism": ["rtl433"],
     }
 
     def feature_availability(self):
@@ -586,4 +587,12 @@ class FeatureDetector(object):
         distributions, or you can compile it from source.
         """
         return self.command_is_runnable("multimon-ng --help")
+
+    def has_rtl433(self):
+        """
+        OpenWebRX uses the [rtl_433](https://github.com/merbanan/rtl_433) decoder suite to decode various
+        instrumentation signals. Rtl_433 is available from the package manager on many
+        distributions, or you can compile it from source.
+        """
+        return self.command_is_runnable("rtl_433 --help")
 

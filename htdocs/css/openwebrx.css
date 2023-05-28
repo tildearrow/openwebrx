@@ -1390,6 +1390,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-select-channel
+#openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-select-channel
 {
     display: none;
 }
