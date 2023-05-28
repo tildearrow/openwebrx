@@ -1,3 +1,4 @@
+
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
 from csdr.module.rtl433 import Rtl433Module
 from pycsdr.modules import Convert, Agc
@@ -26,7 +27,4 @@ class Rtl433Demodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
-<<<<<<< HEAD
 
-=======
->>>>>>> be4846a (Trying to integrate with rtl_433 for ISM signal decoding.)
