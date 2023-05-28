@@ -58,6 +58,13 @@ class DecodingSettingsController(SettingsFormController):
                 NumberInput("digimodes_fft_size", "Digimodes FFT size", append="bins"),
             ),
             Section(
+                "Paging",
+                CheckboxInput(
+                    "paging_filter",
+                    "Filter out empty, numeric, or unreadable pager messages",
+                ),
+            ),
+            Section(
                 "Decoding settings",
                 NumberInput("decoding_queue_workers", "Number of decoding workers"),
                 NumberInput("decoding_queue_length", "Maximum length of decoding job queue"),
@@ -87,5 +94,6 @@ class DecodingSettingsController(SettingsFormController):
                     [Option(v, "{}s".format(v)) for v in Fst4wProfile.availableIntervals],
                 ),
                 Q65ModeMatrix("q65_enabled_combinations", "Enabled Q65 Mode combinations"),
+
             ),
         ]

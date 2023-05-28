@@ -1,4 +1,5 @@
 from owrx.storage import Storage
+from owrx.config import Config
 from csdr.module import ThreadModule
 from pycsdr.types import Format
 from datetime import datetime
@@ -145,9 +146,10 @@ class MultimonParser(ThreadModule):
 
 
 class PageParser(MultimonParser):
-    def __init__(self, filtering: bool = False, service: bool = False):
+    def __init__(self, service: bool = False):
         # When true, try filtering out unreadable messages
-        self.filtering = filtering
+        pm = Config.get()
+        self.filtering = "paging_filter" in pm and pm["paging_filter"]
         # Use these colors to mark messages by address
         self.colors = [
             "#FFFFFF", "#999999", "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99",

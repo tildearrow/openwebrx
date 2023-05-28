@@ -46,10 +46,10 @@ class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class PageDemodulator(MultimonDemodulator):
-    def __init__(self, filtering: bool = False, service: bool = False):
+    def __init__(self, service: bool = False):
         super().__init__(
             ["FLEX", "POCSAG512", "POCSAG1200", "POCSAG2400"],
-            PageParser(filtering=filtering, service=service)
+            PageParser(service=service)
         )
 
 

@@ -197,4 +197,5 @@ defaultConfig = PropertyLayer(
     # pskreporter_antenna_information=None,
     wsprnet_enabled=False,
     wsprnet_callsign="N0CALL",
+    paging_filter=True,
 ).readonly()
