@@ -26,4 +26,7 @@ class Rtl433Demodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+<<<<<<< HEAD
 
+=======
+>>>>>>> be4846a (Trying to integrate with rtl_433 for ISM signal decoding.)

@@ -13,7 +13,7 @@ class Rtl433Module(PopenModule):
             "-F", "json" if jsonOutput else "kv",
             "-R", "-80",  "-R", "-149", "-R", "-154", "-R", "-160",
             "-R", "-161", "-R", "-167", "-R", "-178", "-R", "64",
-#            "-A",
+            "-A",
         ]
 
     def getInputFormat(self) -> Format:
