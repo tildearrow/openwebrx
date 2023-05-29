@@ -333,7 +333,8 @@ $.fn.pageMessagePanel = function() {
 IsmMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
-    this.special = ['mode', 'id', 'model', 'time', 'color'];
+    // These are basic message attributes
+    this.basicInfo = ['mode', 'id', 'model', 'time', 'color'];
 }
 
 IsmMessagePanel.prototype = new MessagePanel();
@@ -363,35 +364,38 @@ IsmMessagePanel.prototype.formatAttr = function(msg, key) {
 };
 
 IsmMessagePanel.prototype.pushMessage = function(msg) {
-    // Get color from the message, default to white
-    var color = msg.hasOwnProperty('color')? msg.color : "#FFF";
+    // Get basic information, assume white color if missing
+    var address = msg.hasOwnProperty('id')? msg.id : "???";
+    var device  = msg.hasOwnProperty('model')? msg.model : "";
+    var tstamp  = msg.hasOwnProperty('time')? msg.time : "";
+    var color   = msg.hasOwnProperty('color')? msg.color : "#FFF";
 
     // Append message header (address, time, etc)
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
-            '<td class="address">' + msg.id + '</td>' +
-            '<td class="device">' + msg.model + '</td>' +
-            '<td class="timestamp" colspan="2">' + msg.time + '</td>' +
+            '<td class="address">' + address + '</td>' +
+            '<td class="device">' + device + '</td>' +
+            '<td class="timestamp" colspan="2">' + tstamp + '</td>' +
         '</tr>'
     ).css('background-color', color));
 
-    // Append attributes
-    var row = null;
+    // Append attributes in pairs, skip basic information
+    var last = null;
     for (var key in msg) {
-        if (this.special.indexOf(key) < 0) {
+        if (this.basicInfo.indexOf(key) < 0) {
             var cell = this.formatAttr(msg, key);
-            if (!row) {
-                row = cell;
+            if (!last) {
+                last = cell;
             } else {
-                $b.append($('<tr>' + row + cell + '</tr>'));
-                row = null;
+                $b.append($('<tr>' + last + cell + '</tr>'));
+                last = null;
             }
         }
     }
 
     // Last row
-    if (row) $b.append($('<tr>' + row + '<td class="attr"/></tr>'));
+    if (last) $b.append($('<tr>' + last + '<td class="attr"/></tr>'));
 
     // Jump list to the last received message
     $b.scrollTop($b[0].scrollHeight);
