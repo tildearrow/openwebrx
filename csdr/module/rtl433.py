@@ -8,10 +8,13 @@ class Rtl433Module(PopenModule):
         self.jsonOutput = jsonOutput
         super().__init__()
 
+    def getCommandTEST(self):
+        return ["dummy433"]
+
     def getCommand(self):
         return [
             "rtl_433", "-r", "cs16:-", "-s", str(self.sampleRate),
-            "-F", "json" if self.jsonOutput else "kv",
+            "-M", "time:utc", "-F", "json" if self.jsonOutput else "kv",
 # These need 48kHz, 24kHz is not enough for them
 #            "-R", "-80",  "-R", "-149", "-R", "-154", "-R", "-160",
 #            "-R", "-161",

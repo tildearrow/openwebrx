@@ -1172,6 +1172,7 @@ function on_ws_recv(evt) {
                             $('#openwebrx-panel-page-message').pageMessagePanel(),
                             $('#openwebrx-panel-sstv-message').sstvMessagePanel(),
                             $('#openwebrx-panel-fax-message').faxMessagePanel(),
+                            $('#openwebrx-panel-ism-message').ismMessagePanel(),
                             $("#openwebrx-panel-js8-message").js8()
                         ];
                         if (!panels.some(function(panel) {
@@ -1847,6 +1848,7 @@ function secondary_demod_init() {
     $('#openwebrx-panel-page-message').pageMessagePanel();
     $('#openwebrx-panel-sstv-message').sstvMessagePanel();
     $('#openwebrx-panel-fax-message').faxMessagePanel();
+    $('#openwebrx-panel-ism-message').ismMessagePanel();
     $('#openwebrx-panel-js8-message').js8();
 }
 

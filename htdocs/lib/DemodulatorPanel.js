@@ -169,6 +169,7 @@ DemodulatorPanel.prototype.updatePanels = function() {
     toggle_panel("openwebrx-panel-page-message", modulation === "page");
     toggle_panel("openwebrx-panel-sstv-message", modulation === "sstv");
     toggle_panel("openwebrx-panel-fax-message", modulation === "fax");
+    toggle_panel("openwebrx-panel-ism-message", modulation === "ism");
 
     modulation = this.getDemodulator().get_modulation();
     var showing = 'openwebrx-panel-metadata-' + modulation;

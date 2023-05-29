@@ -273,13 +273,12 @@ $.fn.pocsagMessagePanel = function() {
 PageMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
-    this.modes = ['FLEX', 'POCSAG'];
 }
 
 PageMessagePanel.prototype = new MessagePanel();
 
 PageMessagePanel.prototype.supportsMessage = function(message) {
-    return this.modes.indexOf(message['mode']) >= 0;
+    return (message['mode'] === 'FLEX') || (message['mode'] === 'POCSAG');
 };
 
 PageMessagePanel.prototype.render = function() {
@@ -327,6 +326,80 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
 $.fn.pageMessagePanel = function() {
     if (!this.data('panel')) {
         this.data('panel', new PageMessagePanel(this));
+    }
+    return this.data('panel');
+};
+
+IsmMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+    this.special = ['mode', 'id', 'model', 'time', 'color'];
+}
+
+IsmMessagePanel.prototype = new MessagePanel();
+
+IsmMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'ISM';
+};
+
+IsmMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th>Devices</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+IsmMessagePanel.prototype.formatAttr = function(msg, key) {
+    return('<td class="attr" colspan="2">' +
+        '<div style="border-bottom:1px dotted;">' +
+        '<span style="float:left;">' + key + '</span>' +
+        '<span style="float:right;">' + msg[key] + '</span>' +
+        '</div></td>'
+    );
+};
+
+IsmMessagePanel.prototype.pushMessage = function(msg) {
+    // Get color from the message, default to white
+    var color = msg.hasOwnProperty('color')? msg.color : "#FFF";
+
+    // Append message header (address, time, etc)
+    var $b = $(this.el).find('tbody');
+    $b.append($(
+        '<tr>' +
+            '<td class="address">' + msg.id + '</td>' +
+            '<td class="device">' + msg.model + '</td>' +
+            '<td class="timestamp" colspan="2">' + msg.time + '</td>' +
+        '</tr>'
+    ).css('background-color', color));
+
+    // Append attributes
+    var row = null;
+    for (var key in msg) {
+        if (this.special.indexOf(key) < 0) {
+            var cell = this.formatAttr(msg, key);
+            if (!row) {
+                row = cell;
+            } else {
+                $b.append($('<tr>' + row + cell + '</tr>'));
+                row = null;
+            }
+        }
+    }
+
+    // Last row
+    if (row) $b.append($('<tr>' + row + '<td class="attr"/></tr>'));
+
+    // Jump list to the last received message
+    $b.scrollTop($b[0].scrollHeight);
+};
+
+$.fn.ismMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new IsmMessagePanel(this));
     }
     return this.data('panel');
 };

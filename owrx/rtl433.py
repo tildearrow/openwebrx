@@ -20,6 +20,13 @@ class Rtl433Parser(ThreadModule):
         self.file      = None
         self.maxLines  = 10000
         self.cntLines  = 0
+        self.colorBuf  = {}
+        # Use these colors to mark devices by ID
+        self.colors = [
+            "#FFFFFF", "#999999", "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99",
+            "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF",
+            "#FF99FF", "#FF99CC",
+        ]
         super().__init__()
 
     def __del__(self):
@@ -83,9 +90,28 @@ class Rtl433Parser(ThreadModule):
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
 
+    def getColor(self, id: str) -> str:
+        if id in self.colorBuf:
+            # Sort entries in order of freshness
+            color = self.colorBuf.pop(id)
+        elif len(self.colorBuf) < len(self.colors):
+            # Assign each initial entry color based on its order
+            color = self.colors[len(self.colorBuf)]
+        else:
+            # If we run out of colors, reuse the oldest entry
+            color = self.colorBuf.pop(next(iter(self.colorBuf)))
+        # Done
+        self.colorBuf[id] = color
+        return color
+
     def parse(self, msg: str):
         # Expect JSON data in text form
-        return json.loads(msg)
+        out = json.loads(msg)
+        out.update({
+            "mode": "ISM",
+            "color": self.getColor(out["id"])
+        })
+        return out
 
     def run(self):
         logger.debug("%s starting..." % self.myName())
