@@ -319,11 +319,11 @@ class ServiceHandler(SdrSourceEventClient):
             from csdr.chain.digimodes import FaxDemodulator
             return FaxDemodulator(service=True)
         elif mod == "page":
-            from csdr.chain.multimon import PageDemodulator
+            from csdr.chain.toolbox import PageDemodulator
             return PageDemodulator(service=True)
         elif mod == "ism":
-            from csdr.chain.rtl433 import Rtl433Demodulator
-            return Rtl433Demodulator(service=True)
+            from csdr.chain.toolbox import IsmDemodulator
+            return IsmDemodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 

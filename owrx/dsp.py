@@ -617,10 +617,10 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             from csdr.chain.digiham import PocsagDemodulator
             return PocsagDemodulator()
         elif mod == "page":
-            from csdr.chain.multimon import PageDemodulator
+            from csdr.chain.toolbox import PageDemodulator
             return PageDemodulator()
         elif mod == "selcall":
-            from csdr.chain.multimon import SelCallDemodulator
+            from csdr.chain.toolbox import SelCallDemodulator
             return SelCallDemodulator()
         elif mod == "bpsk31":
             from csdr.chain.digimodes import PskDemodulator
@@ -644,8 +644,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             from csdr.chain.digimodes import FaxDemodulator
             return FaxDemodulator()
         elif mod == "ism":
-            from csdr.chain.rtl433 import Rtl433Demodulator
-            return Rtl433Demodulator()
+            from csdr.chain.toolbox import IsmDemodulator
+            return IsmDemodulator()
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)

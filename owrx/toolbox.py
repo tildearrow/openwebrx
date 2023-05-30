@@ -6,13 +6,21 @@ from datetime import datetime
 import pickle
 import os
 import re
+import json
 
 import logging
 
 logger = logging.getLogger(__name__)
 
-class MultimonParser(ThreadModule):
-    def __init__(self, filePrefix: str = "MON", service: bool = False):
+
+class TextParser(ThreadModule):
+    def __init__(self, filePrefix: str = "LOG", service: bool = False):
+        # Use these colors to label messages by address
+        self.colors = [
+            "#FFFFFF", "#999999", "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99",
+            "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF",
+            "#FF99FF", "#FF99CC",
+        ]
         self.service   = service
         self.frequency = 0
         self.data      = bytearray(b'')
@@ -20,6 +28,7 @@ class MultimonParser(ThreadModule):
         self.file      = None
         self.maxLines  = 10000
         self.cntLines  = 0
+        self.colorBuf  = {}
         super().__init__()
 
     def __del__(self):
@@ -77,12 +86,29 @@ class MultimonParser(ThreadModule):
     def setDialFrequency(self, frequency: int) -> None:
         self.frequency = frequency
 
+    # Compose name of this decoder, made of client/service and frequency
     def myName(self):
         return "%s%s" % (
             "Service" if self.service else "Client",
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
 
+    # Get a unique color for a given ID, reusing colors as we go
+    def getColor(self, id: str) -> str:
+        if id in self.colorBuf:
+            # Sort entries in order of freshness
+            color = self.colorBuf.pop(id)
+        elif len(self.colorBuf) < len(self.colors):
+            # Assign each initial entry color based on its order
+            color = self.colors[len(self.colorBuf)]
+        else:
+            # If we run out of colors, reuse the oldest entry
+            color = self.colorBuf.pop(next(iter(self.colorBuf)))
+        # Done
+        self.colorBuf[id] = color
+        return color
+
+    # DERIVED CLASSES SHOULD IMPLEMENT THIS FUNCTION!
     def parse(self, msg: str):
         # By default, do not parse, just return the string
         return msg
@@ -145,17 +171,26 @@ class MultimonParser(ThreadModule):
         return out
 
 
-class PageParser(MultimonParser):
+class IsmParser(TextParser):
+    def __init__(self, service: bool = False):
+        super().__init__(filePrefix="ISM", service=service)
+
+    def parse(self, msg: str):
+        # Expect JSON data in text form
+        out = json.loads(msg)
+        # Add mode name and a color to identify the sender
+        out.update({
+            "mode": "ISM",
+            "color": self.getColor(out["id"])
+        })
+        return out
+
+
+class PageParser(TextParser):
     def __init__(self, service: bool = False):
         # When true, try filtering out unreadable messages
         pm = Config.get()
         self.filtering = "paging_filter" in pm and pm["paging_filter"]
-        # Use these colors to mark messages by address
-        self.colors = [
-            "#FFFFFF", "#999999", "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99",
-            "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF",
-            "#FF99FF", "#FF99CC",
-        ]
         # POCSAG<baud>: Address: <num> Function: <hex> (Certainty: <num> )?(Numeric|Alpha|Skyper): <message>
         self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)(\s+Certainty:.*(\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
@@ -170,8 +205,6 @@ class PageParser(MultimonParser):
         self.reSpaces = re.compile(r"[\000-\037\s]+")
         # Fragmented messages will be assembled here
         self.flexBuf = {}
-        # Color assignments will be maintained here
-        self.colorBuf = {}
         # Construct parent object
         super().__init__(filePrefix="PAGE", service=service)
 
@@ -194,20 +227,6 @@ class PageParser(MultimonParser):
        spaces  = msg.count(" ")
        letters = len(msg) - spaces
        return (letters > 0) and (letters / (spaces+1) < 40)
-
-    def getColor(self, capcode: str) -> str:
-        if capcode in self.colorBuf:
-            # Sort entries in order of freshness
-            color = self.colorBuf.pop(capcode)
-        elif len(self.colorBuf) < len(self.colors):
-            # Assign each initial entry color based on its order
-            color = self.colors[len(self.colorBuf)]
-        else:
-            # If we run out of colors, reuse the oldest entry
-            color = self.colorBuf.pop(next(iter(self.colorBuf)))
-        # Done
-        self.colorBuf[capcode] = color
-        return color
 
     def parsePocsag(self, msg: str):
         # No result yet
@@ -305,12 +324,13 @@ class PageParser(MultimonParser):
         return out
 
 
-class SelCallParser(MultimonParser):
+class SelCallParser(TextParser):
     def __init__(self, service: bool = False):
         self.reSplit = re.compile(r"(ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR):\s+")
         self.reMatch = re.compile(r"ZVEI1|ZVEI2|ZVEI3|DZVEI|PZVEI|DTMF|EEA|EIA|CCIR")
         self.mode = ""
-        super().__init__(service)
+        # Construct parent object
+        super().__init__(filePrefix="SELCALL", service=service)
 
     def parse(self, msg: str):
         # Parse SELCALL messages

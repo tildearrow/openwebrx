@@ -285,7 +285,7 @@ PageMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>Paging</th>' +
+                '<th>Pager&nbsp;Messages</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -347,7 +347,7 @@ IsmMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>Devices</th>' +
+                '<th>Device&nbsp;Messages</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'

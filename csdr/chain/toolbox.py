@@ -1,8 +1,31 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
-from csdr.module.multimon import MultimonModule
-from pycsdr.modules import FmDemod, AudioResampler, Convert, Squelch
+from csdr.module.toolbox import Rtl433Module, MultimonModule
+from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
 from pycsdr.types import Format
-from owrx.multimon import MultimonParser, PageParser, SelCallParser
+from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser
+
+
+class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, service: bool = False):
+        self.sampleRate = 48000
+        self.parser = IsmParser(service=service)
+        workers = [
+            Agc(Format.COMPLEX_FLOAT),
+            Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
+            Rtl433Module(self.sampleRate, jsonOutput = not service),
+            self.parser,
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
+
+    def supportsSquelch(self) -> bool:
+        return False
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)
 
 
 class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
@@ -55,7 +78,7 @@ class PageDemodulator(MultimonDemodulator):
 
 class EasDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
-        super().__init__(["EAS"], MultimonParser(service=service))
+        super().__init__(["EAS"], TextParser(service=service))
 
 
 class SelCallDemodulator(MultimonDemodulator):

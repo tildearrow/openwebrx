@@ -156,7 +156,7 @@ class Modes(object):
 #        ),
         DigitalMode(
             "page",
-            "Paging",
+            "Page",
             underlying=["nfm"],
             bandpass=Bandpass(-6000, 6000),
             requirements=["page"],

@@ -8,10 +8,10 @@ class Rtl433Module(PopenModule):
         self.jsonOutput = jsonOutput
         super().__init__()
 
-    def getCommandTEST(self):
+    def getCommand(self):
         return ["dummy433"]
 
-    def getCommand(self):
+    def getCommandOK(self):
         return [
             "rtl_433", "-r", "cs16:-", "-s", str(self.sampleRate),
             "-M", "time:utc", "-F", "json" if self.jsonOutput else "kv",
@@ -26,6 +26,24 @@ class Rtl433Module(PopenModule):
 
     def getInputFormat(self) -> Format:
         return Format.COMPLEX_SHORT
+
+    def getOutputFormat(self) -> Format:
+        return Format.CHAR
+
+
+class MultimonModule(PopenModule):
+    def __init__(self, decoders: list[str]):
+        self.decoders = decoders
+        super().__init__()
+
+    def getCommand(self):
+        cmd = ["multimon-ng", "-", "-v0", "-c"]
+        for x in self.decoders:
+            cmd += ["-a", x]
+        return cmd
+
+    def getInputFormat(self) -> Format:
+        return Format.SHORT
 
     def getOutputFormat(self) -> Format:
         return Format.CHAR
