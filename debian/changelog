@@ -12,7 +12,7 @@ openwebrx (1.2.18) bullseye jammy; urgency=low
   * Disabled the original POCSAG decoder, superseded by the new one.
   * Added 433.92MHz ISM frequency to the band plan.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Sat, 3 June 2023 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 3 Jun 2023 16:12:00 +0000
 
 openwebrx (1.2.17) bullseye jammy; urgency=low
 
