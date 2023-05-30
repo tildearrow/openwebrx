@@ -10,6 +10,7 @@
 - Changed read() to read1() in PopenModule to get immediate input.
 - Disabled the original POCSAG decoder, superseded by the new one.
 - Added 433.92MHz ISM frequency to the bandplan.
+- Added 6.25kHz and 8.33kHz tuning steps.
 
 **1.2.17**
 - Integrated multimon-ng digital mode decoding suite.
