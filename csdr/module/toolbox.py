@@ -20,7 +20,7 @@ class Rtl433Module(PopenModule):
 #            "-R", "-161",
 #            "-R", "64",
             # These need >48kHz bandwidth
-            "-167", "-R", "-178",
+            "-R", "-167", "-R", "-178",
             "-A",
         ]
 
