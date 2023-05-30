@@ -1,3 +1,19 @@
+openwebrx (1.2.18) bullseye jammy; urgency=low
+
+  * Integrated rtl-433 ISM decoding suite.
+  * Added universal paging decoder (POCSAG + FLEX) via multimon-ng.
+  * Added ISM decoder via rtl-433.
+  * Added color identification for paging addresses.
+  * Added optional paging filter to only show readable messages.
+  * Added file browser support for text files (such as ISB logs).
+  * Enabled background service functionality for ISM and paging.
+  * Enabled squelch support for SELCALL, SSTV, and FAX decoders.
+  * Changed read() to read1() in PopenModule to get immediate input.
+  * Disabled the original POCSAG decoder, superseded by the new one.
+  * Added 433.92MHz ISM frequency to the band plan.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 3 June 2023 16:12:00 +0000
+
 openwebrx (1.2.17) bullseye jammy; urgency=low
 
   * Integrated multimon-ng digital mode decoding suite.
