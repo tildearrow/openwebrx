@@ -359,7 +359,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     // Assume white color if missing
     var color    = msg.hasOwnProperty('color')?    msg.color : '#FFF';
     var aircraft = msg.hasOwnProperty('aircraft')? msg.aircraft : '';
-    var flight   = msg.hasOwnProperty('flight')?   msg.flight : '???';
+    var flight   = msg.hasOwnProperty('flight')?   msg.flight : '';
 
     var tstamp =
         msg.hasOwnProperty('msgtime')?

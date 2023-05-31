@@ -367,8 +367,6 @@ class HfdlLocation(LatLngLocation):
             res["aircraft"] = self.data["aircraft"]
         if "message" in self.data:
             res["comment"] = self.data["message"]
-        elif "type" in self.data:
-            res["comment"] = self.data["type"]
         return res
 
 
@@ -380,35 +378,57 @@ class HfdlParser(TextParser):
         # Expect JSON data in text form
         data   = json.loads(msg)
         tstamp = datetime.fromtimestamp(data["hfdl"]["t"]["sec"]).strftime("%I:%M:%S")
-        data   = data["hfdl"]["lpdu"]
-        hfnpdu = data["hfnpdu"] if "hfnpdu" in data else {}
-        type   = data["type"]["name"]
-        # Only use aircraft data for now
-        if data["src"]["type"] != "Aircraft":
+        # @@@ Only parse messages that have LDPU frames for now !!!
+        if "lpdu" not in data["hfdl"]:
             return {}
         # Collect basic data first
         out = {
             "mode": "HFDL",
             "time": tstamp,
-            "type": type
         }
+        # Parse LPDU if present
+        if "lpdu" in data["hfdl"]:
+            self.parseLpdu(data["hfdl"]["lpdu"], out)
+        # Parse SPDU if present
+        if "spdu" in data["hfdl"]:
+            self.parseSpdu(data["hfdl"]["spdu"], out)
+        # Parse MPDU if present
+        if "mpdu" in data["hfdl"]:
+            self.parseMpdu(data["hfdl"]["mpdu"], out)
+        # Done
+        return out
+
+    def parseSpdu(self, data, out):
+        # Not parsing yet
+        out["type"] = "SPDU frame"
+        return out
+
+    def parseMpdu(self, data, out):
+        # Not parsing yet
+        out["type"] = "MPDU frame"
+        return out
+
+    def parseLpdu(self, data, out):
+        # Collect data
+        out["type"] = data["type"]["name"]
         # Add aircraft info, if present
         if "ac_info" in data and "icao" in data["ac_info"]:
             out["aircraft"] = data["ac_info"]["icao"].strip()
-        # If it is enveloped ACARS data, process separately
-        if "acars" in hfnpdu:
-            return self.parseAcars(hfnpdu["acars"], out)
-        else:
-            return self.parseModeS(hfnpdu, out)
+        # Parse HFNPDU is present
+        if "hfnpdu" in data:
+            self.parseHfnpdu(data["hfnpdu"], out)
+        # Done
+        return out
 
-    def parseModeS(self, data, out):
+    def parseHfnpdu(self, data, out):
+        # If we see ACARS message, parse it and drop out
+        if "acars" in data:
+            return self.parseAcars(data["acars"], out)
         # Use flight ID as unique identifier
         flight = data["flight_id"].strip() if "flight_id" in data else ""
-        if len(flight)<=0:
-            flight = "???"
-        # Collect relevant fields only
-        out["flight"] = flight
-        out["color"]  = self.getColor(flight),
+        if len(flight)>0:
+            out["flight"] = flight
+            out["color"]  = self.getColor(flight)
         # If message carries time, parse it
         if "utc_time" in data:
             msgtime = data["utc_time"]
@@ -431,17 +451,16 @@ class HfdlParser(TextParser):
         return out
 
     def parseAcars(self, data, out):
+        # Collect data
+        out["type"]     = "ACARS frame"
+        out["aircraft"] = data["reg"].strip()
+        out["message"]  = data["msg_text"].strip()
         # Use flight ID as unique identifier
         flight = data["flight"].strip() if "flight" in data else ""
-        if len(flight)<=0:
-            flight = "???"
-        out.update({
-            "type":     "ACARS frame",
-            "color":    self.getColor(flight),
-            "flight":   flight,
-            "aircraft": data["reg"].strip(),
-            "message":  data["msg_text"].strip()
-        })
+        if len(flight)>0:
+            out["flight"] = flight
+            out["color"]  = self.getColor(flight)
+        # Done
         return out
 
     def updateMap(self, data):
