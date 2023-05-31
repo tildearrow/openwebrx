@@ -39,6 +39,8 @@ $(function(){
     var fillOpacity = 0.35;
     var callsign_url = null;
     var vessel_url = null;
+    var aircraft_url = null;
+    var flight_url = null;
 
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
@@ -151,6 +153,7 @@ $(function(){
                     marker.power    = update.location.power;
                     marker.gain     = update.location.gain;
                     marker.device   = update.location.device;
+                    marker.aircraft = update.location.aircraft;
                     marker.directivity = update.location.directivity;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
@@ -304,6 +307,12 @@ $(function(){
                         if ('vessel_url' in config) {
                             vessel_url = config['vessel_url'];
                         }
+                        if ('aircraft_url' in config) {
+                            aircraft_url = config['aircraft_url'];
+                        }
+                        if ('flight_url' in config) {
+                            flight_url = config['flight_url'];
+                        }
                     break;
                     case "update":
                         processUpdates(json.value);
@@ -364,6 +373,13 @@ $(function(){
         // 9-character strings may be AIS MMSI numbers
         if(callsign.match(new RegExp('^[0-9]{9}$')))
             url = vessel_url;
+        // 3 characters and a number may be a flight number
+        else if(callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
+            url = flight_url;
+        // 2 characters and a long number may be a flight number
+        else if(callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
+            url = flight_url;
+        // Everything else is a HAM callsign
         else
             url = callsign_url;
 
@@ -523,6 +539,10 @@ $(function(){
 
         if (marker.directivity) {
             detailsString += makeListItem('Direction', marker.directivity);
+        }
+
+        if (marker.aircraft) {
+            detailsString += makeListItem('Aircraft', marker.aircraft);
         }
 
         // Combine course and speed if both present

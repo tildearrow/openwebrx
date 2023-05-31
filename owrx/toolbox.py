@@ -1,3 +1,5 @@
+from owrx.map import Map, LatLngLocation
+from owrx.aprs import getSymbolData
 from owrx.storage import Storage
 from owrx.config import Config
 from csdr.module import ThreadModule
@@ -183,10 +185,8 @@ class IsmParser(TextParser):
         # Expect JSON data in text form
         out = json.loads(msg)
         # Add mode name and a color to identify the sender
-        out.update({
-            "mode": "ISM",
-            "color": self.getColor(out["id"])
-        })
+        out["mode"]  = "ISM"
+        out["color"] = self.getColor(out["id"])
         return out
 
 
@@ -251,7 +251,7 @@ class PageParser(TextParser):
 
             # When filtering, only output readable messages
             if not self.filtering or (msgtype=="Alpha" and len(msg)>0):
-                out.update({
+                out = {
                     "mode":      "POCSAG",
                     "baud":      baud,
                     "timestamp": self.getUtcTime(),
@@ -261,12 +261,12 @@ class PageParser(TextParser):
                     "color":     self.getColor(capcode),
                     "type":      msgtype,
                     "message":   msg
-                })
+                }
                 # Output type and message
                 if len(msgtype)>0:
-                    out.update({ "type": msgtype })
+                    out["type"] = msgtype
                 if len(msg)>0:
-                    out.update({ "message": msg })
+                    out["message"] = msg
 
         # Done
         return out
@@ -310,7 +310,7 @@ class PageParser(TextParser):
                 msg = self.collapseSpaces(msg)
                 # When filtering, only output readable messages
                 if not self.filtering or (msgtype=="ALN" and self.isReadable(msg)):
-                    out.update({
+                    out = {
                         "mode":      "FLEX",
                         "baud":      baud,
                         "timestamp": tstamp,
@@ -319,10 +319,10 @@ class PageParser(TextParser):
                         "address":   capcode,
                         "color":     self.getColor(capcode),
                         "type":      msgtype
-                    })
+                    }
                     # Output message
                     if len(msg)>0:
-                        out.update({ "message": msg })
+                        out["message"] = msg
 
         # Done
         return out
@@ -355,6 +355,23 @@ class SelCallParser(TextParser):
         return out
 
 
+class HfdlLocation(LatLngLocation):
+    def __init__(self, data):
+        super().__init__(data["lat"], data["lon"])
+        self.data = data
+
+    def __dict__(self):
+        res = super(HfdlLocation, self).__dict__()
+        res["symbol"] = getSymbolData('^', '/')
+        if "aircraft" in self.data:
+            res["aircraft"] = self.data["aircraft"]
+        if "message" in self.data:
+            res["comment"] = self.data["message"]
+        elif "type" in self.data:
+            res["comment"] = self.data["type"]
+        return res
+
+
 class HfdlParser(TextParser):
     def __init__(self, service: bool = False):
         super().__init__(filePrefix="ISM", service=service)
@@ -365,54 +382,69 @@ class HfdlParser(TextParser):
         tstamp = datetime.fromtimestamp(data["hfdl"]["t"]["sec"]).strftime("%I:%M:%S")
         data   = data["hfdl"]["lpdu"]
         hfnpdu = data["hfnpdu"] if "hfnpdu" in data else {}
+        type   = data["type"]["name"]
         # Only use aircraft data for now
         if data["src"]["type"] != "Aircraft":
             return {}
+        # Collect basic data first
+        out = {
+            "mode": "HFDL",
+            "time": tstamp,
+            "type": type
+        }
+        # Add aircraft info, if present
+        if "ac_info" in data and "icao" in data["ac_info"]:
+            out["aircraft"] = data["ac_info"]["icao"].strip()
         # If it is enveloped ACARS data, process separately
-        elif "acars" in hfnpdu:
-            return self.parseAcars(hfnpdu["acars"], tstamp)
-        elif "flight_id" in hfnpdu:
-            # Use flight ID as unique identifier
-            flight = hfnpdu["flight_id"]
-            # Collect relevant fields only
-            out = {
-                "mode":   "HFDL",
-                "color":  self.getColor(flight),
-                "flight": flight,
-                "time":   tstamp
-            }
-            # If message carries time, parse it
-            if "utc_time" in hfnpdu:
-                msgtime = hfnpdu["utc_time"]
-            elif "time" in hfnpdu:
-                msgtime = hfnpdu["time"]
-            else:
-                msgtime = None
-            # Add aircraft info and position
-            if msgtime:
-                out.update({"msgtime": "%02d:%02d:%02d" % (
-                    msgtime["hour"], msgtime["min"], msgtime["sec"]
-                )})
-            if "ac_info" in data and "icao" in data["ac_info"]:
-                out.update({"aircraft": data["ac_info"]["icao"]})
-            if "pos" in hfnpdu:
-                out.update({
-                    "lat": hfnpdu["pos"]["lat"],
-                    "lon": hfnpdu["pos"]["lon"]
-                })
-            # Done
-            return out
+        if "acars" in hfnpdu:
+            return self.parseAcars(hfnpdu["acars"], out)
         else:
-            return {}
+            return self.parseModeS(hfnpdu, out)
 
-    def parseAcars(self, data, tstamp):
+    def parseModeS(self, data, out):
         # Use flight ID as unique identifier
-        flight = data["flight"];
-        return {
-            "mode":     "HFDL",
+        flight = data["flight_id"].strip() if "flight_id" in data else ""
+        if len(flight)<=0:
+            flight = "???"
+        # Collect relevant fields only
+        out["flight"] = flight
+        out["color"]  = self.getColor(flight),
+        # If message carries time, parse it
+        if "utc_time" in data:
+            msgtime = data["utc_time"]
+        elif "time" in data:
+            msgtime = data["time"]
+        else:
+            msgtime = None
+        # Add reported message time, if present
+        if msgtime:
+            out["msgtime"] = "%02d:%02d:%02d" % (
+                msgtime["hour"], msgtime["min"], msgtime["sec"]
+            )
+        # Add aircraft location, if present
+        if "pos" in data:
+            out["lat"] = data["pos"]["lat"]
+            out["lon"] = data["pos"]["lon"]
+            # Report location on the map
+            self.updateMap(out)
+        # Done
+        return out
+
+    def parseAcars(self, data, out):
+        # Use flight ID as unique identifier
+        flight = data["flight"].strip() if "flight" in data else ""
+        if len(flight)<=0:
+            flight = "???"
+        out.update({
+            "type":     "ACARS frame",
             "color":    self.getColor(flight),
             "flight":   flight,
-            "time":     tstamp,
-            "aircraft": data["reg"],
-            "message":  data["msg_text"]
-        }
+            "aircraft": data["reg"].strip(),
+            "message":  data["msg_text"].strip()
+        })
+        return out
+
+    def updateMap(self, data):
+        if "flight" in data and "lat" in data and "lon" in data:
+            loc = HfdlLocation(data)
+            Map.getSharedInstance().updateLocation(data["flight"], loc, data["mode"])

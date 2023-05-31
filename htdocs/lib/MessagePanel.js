@@ -359,7 +359,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     // Assume white color if missing
     var color    = msg.hasOwnProperty('color')?    msg.color : '#FFF';
     var aircraft = msg.hasOwnProperty('aircraft')? msg.aircraft : '';
-    var flight   = msg.hasOwnProperty('flight')?   msg.flight : '';
+    var flight   = msg.hasOwnProperty('flight')?   msg.flight : '???';
 
     var tstamp =
         msg.hasOwnProperty('msgtime')?
@@ -369,7 +369,9 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
 
     var data =
         msg.hasOwnProperty('lat') && msg.hasOwnProperty('lon')?
-            '@ ' + msg.lat + ', ' + msg.lon : ''
+            '@ ' + msg.lat + ', ' + msg.lon :
+        msg.hasOwnProperty('type')?
+            msg.type : '';
 
     // Append report
     var $b = $(this.el).find('tbody');

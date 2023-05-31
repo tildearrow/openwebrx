@@ -475,6 +475,8 @@ class MapConnection(OpenWebRxClient):
             "map_prefer_recent_reports",
             "callsign_url",
             "vessel_url",
+            "aircraft_url",
+            "flight_url",
             "receiver_name",
         )
         filtered_config.wire(self.write_config)

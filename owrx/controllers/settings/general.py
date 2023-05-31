@@ -238,6 +238,21 @@ class GeneralSettingsController(SettingsFormController):
                     + "allowing to look up vessel information by its AIS MMSI number. "
                     + "Place curly brackers ({}) where MMSI is supposed to be.",
                 ),
+                TextInput(
+                    "aircraft_url",
+                    "Aircraft database URL",
+                    infotext="Specifies aircraft lookup URL, such as PLAINSPOTTERS.NET, "
+                    + "allowing to look up aircraft information by its registration number "
+                    + "or ICAO MODE-S code. Place curly brackers ({}) where the aircraft "
+                    + "identifier is supposed to be.",
+                ),
+                TextInput(
+                    "flight_url",
+                    "Flight database URL",
+                    infotext="Specifies flight lookup URL, such as FLIGHTAWARE.COM, "
+                    + "allowing to look up aircraft flights. Place curly brackers ({}) "
+                    + "where flight identifier is supposed to be.",
+                ),
             ),
         ]
 
