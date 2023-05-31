@@ -414,6 +414,9 @@ class HfdlParser(TextParser):
         # Add aircraft info, if present
         if "ac_info" in data and "icao" in data["ac_info"]:
             out["aircraft"] = data["ac_info"]["icao"].strip()
+        # Source might be a ground station
+        if data["src"]["type"] == "Ground station":
+            out["flight"] = "GS-%d" % data["src"]["id"]
         # Parse HFNPDU is present
         if "hfnpdu" in data:
             self.parseHfnpdu(data["hfnpdu"], out)
