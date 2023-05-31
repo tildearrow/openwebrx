@@ -5,8 +5,9 @@
 - Added HFDL decoder via dumphfdl.
 - Added color identification for pager addresses.
 - Added optional filter to only show readable pager messages.
-- Added file browser support for text files (such as ISM logs).
-- Enabled background service functionality for ISM and PAGE.
+- Added file browser support for text logs (such as ISM or HFDL).
+- Added HFDL-based aircraft display to the map.
+- Enabled background service functionality for HFDL, ISM, and PAGE.
 - Enabled squelch support for SELCALL, SSTV, and FAX decoders.
 - Changed read() to read1() in PopenModule to get immediate input.
 - Made PopenModule kill process that refuses to terminate on its own.
