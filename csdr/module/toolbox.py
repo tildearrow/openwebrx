@@ -9,9 +9,6 @@ class Rtl433Module(PopenModule):
         super().__init__()
 
     def getCommand(self):
-        return ["dummy433"]
-
-    def getCommandOK(self):
         return [
             "rtl_433", "-r", "cs16:-", "-s", str(self.sampleRate),
             "-M", "time:utc", "-F", "json" if self.jsonOutput else "kv",
