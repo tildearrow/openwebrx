@@ -168,7 +168,6 @@ defaultConfig = PropertyLayer(
     map_ignore_indirect_reports=False,
     callsign_url="https://www.qrzcq.com/call/{}",
     vessel_url="https://www.vesselfinder.com/vessels/details/{}",
-    aircraft_url="https://www.planespotters.net/search?q={}",
     flight_url="https://flightaware.com/live/flight/{}",
     usage_policy_url="policy",
     session_timeout=0,

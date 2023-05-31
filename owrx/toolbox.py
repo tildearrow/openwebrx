@@ -119,6 +119,11 @@ class TextParser(ThreadModule):
         # By default, do not parse, just return the string
         return msg
 
+    # ONLY IMPLEMENT THIS FUNCTION WHEN REPORTING LOCATION FROM SERVICE!
+    def updateLocation(self, msg: str):
+        # By default, do nothing
+        pass
+
     def run(self):
         logger.debug("%s starting..." % self.myName())
         # Run while there is input data
@@ -161,6 +166,8 @@ class TextParser(ThreadModule):
                 if self.service:
                     # Write message into open log file, including end-of-line
                     self.writeFile(self.data[0:eol+1])
+                    # Optionally, parse and report location
+                    self.updateLocation(msg)
                     # Empty result
                     out = {}
                 else:

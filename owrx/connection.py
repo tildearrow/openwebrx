@@ -142,7 +142,6 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "allow_center_freq_changes",
         "allow_audio_recording",
         "magic_key",
-        "aircraft_url",
         "flight_url",
     ]
 
@@ -477,7 +476,6 @@ class MapConnection(OpenWebRxClient):
             "map_prefer_recent_reports",
             "callsign_url",
             "vessel_url",
-            "aircraft_url",
             "flight_url",
             "receiver_name",
         )

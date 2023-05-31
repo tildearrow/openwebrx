@@ -1102,11 +1102,6 @@ function on_ws_recv(evt) {
                             panel.setFlightUrl(config['flight_url']);
                         }
 
-                        if ('aircraft_url' in config) {
-                            var panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
-                            panel.setAircraftUrl(config['aircraft_url']);
-                        }
-
                         break;
                     case "secondary_config":
                         var s = json['value'];

@@ -39,7 +39,6 @@ $(function(){
     var fillOpacity = 0.35;
     var callsign_url = null;
     var vessel_url = null;
-    var aircraft_url = null;
     var flight_url = null;
 
     var colorKeys = {};
@@ -306,9 +305,6 @@ $(function(){
                         }
                         if ('vessel_url' in config) {
                             vessel_url = config['vessel_url'];
-                        }
-                        if ('aircraft_url' in config) {
-                            aircraft_url = config['aircraft_url'];
                         }
                         if ('flight_url' in config) {
                             flight_url = config['flight_url'];

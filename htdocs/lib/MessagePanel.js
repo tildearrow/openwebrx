@@ -333,7 +333,6 @@ $.fn.pageMessagePanel = function() {
 HfdlMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
-    this.aircraft_url = null;
     this.flight_url = null;
 }
 
@@ -341,10 +340,6 @@ HfdlMessagePanel.prototype = new MessagePanel();
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'HFDL';
-};
-
-HfdlMessagePanel.prototype.setAircraftUrl = function(url) {
-    this.aircraft_url = url;
 };
 
 HfdlMessagePanel.prototype.setFlightUrl = function(url) {
@@ -355,17 +350,13 @@ HfdlMessagePanel.prototype.linkify = function(id) {
     var url = null;
 
     // Do not linkify empty strings
-    if (id.len<=0) return(id);
+    if (id.len<=0) return id;
 
-    // 6 hexadecimal digits are an ICAO aircraft ID
-    if (id.match(new RegExp('^[0-9A-F]{6}$')))
-        url = this.aircraft_url;
-    // Dot with a name is an aircraft ID
-    else if (id.match(new RegExp('^\.[0-9A-Z]{1,3}-[0-9A-Z]{1,5}$')))
-        url = this.aircraft_url;
+    // 6 hexadecimal digits are an ICAO aircraft ID, not linkifying
+    if (id.match(new RegExp('^[0-9A-F]{6}$'))) return id;
+
     // Everything else is a flight ID
-    else
-        url = this.flight_url;
+    url = this.flight_url;
 
     // Must have valid lookup URL
     if ((url == null) || (url == ''))
