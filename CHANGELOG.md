@@ -1,13 +1,15 @@
 **1.2.18**
-- Integrated rtl-433 ISM decoding suite.
+- Integrated rtl-433 and dumphfdl decoder tools.
 - Added universal PAGE decoder (POCSAG + FLEX) via multimon-ng.
 - Added ISM decoder via rtl-433.
+- Added HFDL decoder via dumphfdl.
 - Added color identification for pager addresses.
 - Added optional filter to only show readable pager messages.
 - Added file browser support for text files (such as ISM logs).
 - Enabled background service functionality for ISM and PAGE.
 - Enabled squelch support for SELCALL, SSTV, and FAX decoders.
 - Changed read() to read1() in PopenModule to get immediate input.
+- Made PopenModule kill process that refuses to terminate on its own.
 - Disabled the original POCSAG decoder, superseded by the new one.
 - Added 433.92MHz ISM frequency to the bandplan.
 - Added 6.25kHz and 8.33kHz tuning steps.

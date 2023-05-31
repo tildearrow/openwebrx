@@ -93,6 +93,10 @@ class TextParser(ThreadModule):
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
 
+    # Get current UTC time in a standardized format
+    def getUtcTime(self) -> str:
+        return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+
     # Get a unique color for a given ID, reusing colors as we go
     def getColor(self, id: str) -> str:
         if id in self.colorBuf:
@@ -250,7 +254,7 @@ class PageParser(TextParser):
                 out.update({
                     "mode":      "POCSAG",
                     "baud":      baud,
-                    "timestamp": datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S'),
+                    "timestamp": self.getUtcTime(),
                     "address":   capcode,
                     "function":  function,
                     "certainty": certainty,
