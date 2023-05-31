@@ -196,6 +196,15 @@ class Modes(object):
             service=True,
             squelch=False
         ),
+        DigitalMode(
+            "hfdl",
+            "HFDL",
+            underlying=["usb"],
+            bandpass=Bandpass(0, 3000),
+            requirements=["hfdl"],
+            service=True,
+            squelch=False
+        ),
     ]
 
     @staticmethod

@@ -86,6 +86,7 @@ class FeatureDetector(object):
         "page": ["multimon"],
         "selcall": ["multimon"],
         "ism": ["rtl433"],
+        "hfdl": ["dumphfdl"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
@@ -595,4 +596,12 @@ class FeatureDetector(object):
         distributions, or you can compile it from source.
         """
         return self.command_is_runnable("rtl_433 --help")
+
+    def has_dumphfdl(self):
+        """
+        OpenWebRX uses the [dumphfdl](https://github.com/szpajder/dumphfdl) tool to decode HFDL
+        aircraft communications. Dumphfdl is not yet available as a package and thus you will have
+        to compile it from source.
+        """
+        return self.command_is_runnable("dumphfdl --help")
 

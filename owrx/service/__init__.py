@@ -324,6 +324,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "ism":
             from csdr.chain.toolbox import IsmDemodulator
             return IsmDemodulator(service=True)
+        elif mod == "hfdl":
+            from csdr.chain.toolbox import HfdlDemodulator
+            return HfdlDemodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 

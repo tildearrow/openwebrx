@@ -1,8 +1,8 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
-from csdr.module.toolbox import Rtl433Module, MultimonModule
+from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
 from pycsdr.types import Format
-from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser
+from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser, HfdlParser
 
 
 class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
@@ -90,4 +90,27 @@ class SelCallDemodulator(MultimonDemodulator):
             SelCallParser(service=service),
             withSquelch = True
         )
+
+
+class HfdlDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, service: bool = False):
+        self.sampleRate = 12000
+        self.parser = HfdlParser(service=service)
+        workers = [
+            Agc(Format.COMPLEX_FLOAT),
+            DumpHfdlModule(self.sampleRate, jsonOutput = not service),
+            self.parser,
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
+
+    def supportsSquelch(self) -> bool:
+        return False
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)
+
 

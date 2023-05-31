@@ -350,3 +350,65 @@ class SelCallParser(TextParser):
         # Done
         return out
 
+
+class HfdlParser(TextParser):
+    def __init__(self, service: bool = False):
+        super().__init__(filePrefix="ISM", service=service)
+
+    def parse(self, msg: str):
+        # Expect JSON data in text form
+        data   = json.loads(msg)
+        tstamp = datetime.fromtimestamp(data["hfdl"]["t"]["sec"]).strftime("%I:%M:%S")
+        data   = data["hfdl"]["lpdu"]
+        hfnpdu = data["hfnpdu"] if "hfnpdu" in data else {}
+        # Only use aircraft data for now
+        if data["src"]["type"] != "Aircraft":
+            return {}
+        # If it is enveloped ACARS data, process separately
+        elif "acars" in hfnpdu:
+            return self.parseAcars(hfnpdu["acars"], tstamp)
+        elif "flight_id" in hfnpdu:
+            # Use flight ID as unique identifier
+            flight = hfnpdu["flight_id"]
+            # Collect relevant fields only
+            out = {
+                "mode":   "HFDL",
+                "color":  self.getColor(flight),
+                "flight": flight,
+                "time":   tstamp
+            }
+            # If message carries time, parse it
+            if "utc_time" in hfnpdu:
+                msgtime = hfnpdu["utc_time"]
+            elif "time" in hfnpdu:
+                msgtime = hfnpdu["time"]
+            else:
+                msgtime = None
+            # Add aircraft info and position
+            if msgtime:
+                out.update({"msgtime": "%02d:%02d:%02d" % (
+                    msgtime["hour"], msgtime["min"], msgtime["sec"]
+                )})
+            if "ac_info" in data and "icao" in data["ac_info"]:
+                out.update({"aircraft": data["ac_info"]["icao"]})
+            if "pos" in hfnpdu:
+                out.update({
+                    "lat": hfnpdu["pos"]["lat"],
+                    "lon": hfnpdu["pos"]["lon"]
+                })
+            # Done
+            return out
+        else:
+            return {}
+
+    def parseAcars(self, data, tstamp):
+        # Use flight ID as unique identifier
+        flight = data["flight"];
+        return {
+            "mode":     "HFDL",
+            "color":    self.getColor(flight),
+            "flight":   flight,
+            "time":     tstamp,
+            "aircraft": data["reg"],
+            "message":  data["msg_text"]
+        }

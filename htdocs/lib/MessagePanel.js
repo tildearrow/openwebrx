@@ -330,6 +330,77 @@ $.fn.pageMessagePanel = function() {
     return this.data('panel');
 };
 
+HfdlMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+}
+
+HfdlMessagePanel.prototype = new MessagePanel();
+
+HfdlMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'HFDL';
+};
+
+HfdlMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="timestamp">Time</th>' +
+                '<th class="flight">Flight</th>' +
+                '<th class="aircraft">Aircraft</th>' +
+                '<th class="position">Data</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+HfdlMessagePanel.prototype.pushMessage = function(msg) {
+    // Assume white color if missing
+    var color    = msg.hasOwnProperty('color')?    msg.color : '#FFF';
+    var aircraft = msg.hasOwnProperty('aircraft')? msg.aircraft : '';
+    var flight   = msg.hasOwnProperty('flight')?   msg.flight : '';
+
+    var tstamp =
+        msg.hasOwnProperty('msgtime')?
+            '<b>' + msg.time + '</b>' :
+        msg.hasOwnProperty('time')?
+            msg.time : '';
+
+    var data =
+        msg.hasOwnProperty('lat') && msg.hasOwnProperty('lon')?
+            '@ ' + msg.lat + ', ' + msg.lon : ''
+
+    // Append report
+    var $b = $(this.el).find('tbody');
+    $b.append($(
+        '<tr>' +
+            '<td class="timestamp">' + tstamp + '</td>' +
+            '<td class="flight">' + flight + '</td>' +
+            '<td class="aircraft">' + aircraft + '</td>' +
+            '<td class="data">' + data + '</td>' +
+        '</tr>'
+    ).css('background-color', color).css('color', '#000'));
+
+    // Append messsage if present
+    if (msg.hasOwnProperty('message') && (msg.message.length>0)) {
+        $b.append($(
+            '<tr><td class="message" colspan="4">' + msg.message + '</td></tr>'
+        ))
+    }
+
+    // Jump list to the last received message
+    $b.scrollTop($b[0].scrollHeight);
+};
+
+$.fn.hfdlMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new HfdlMessagePanel(this));
+    }
+    return this.data('panel');
+};
+
+
 IsmMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();

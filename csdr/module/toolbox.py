@@ -48,3 +48,25 @@ class MultimonModule(PopenModule):
     def getOutputFormat(self) -> Format:
         return Format.CHAR
 
+
+class DumpHfdlModule(PopenModule):
+    def __init__(self, sampleRate: int = 12000, jsonOutput: bool = False):
+        self.sampleRate = sampleRate
+        self.jsonOutput = jsonOutput
+        super().__init__()
+
+    def getCommand(self):
+        return [
+            "dumphfdl", "--iq-file", "-", "--sample-format", "CF32",
+            "--sample-rate", str(self.sampleRate), "--output",
+            "decoded:%s:file:path=-" % ("json" if self.jsonOutput else "text"),
+            "--centerfreq", "0", "0"
+        ]
+
+    def getInputFormat(self) -> Format:
+        return Format.COMPLEX_FLOAT
+
+    def getOutputFormat(self) -> Format:
+        return Format.CHAR
+
+
