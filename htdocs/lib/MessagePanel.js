@@ -333,12 +333,46 @@ $.fn.pageMessagePanel = function() {
 HfdlMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
+    this.aircraft_url = null;
+    this.flight_url = null;
 }
 
 HfdlMessagePanel.prototype = new MessagePanel();
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'HFDL';
+};
+
+HfdlMessagePanel.prototype.setAircraftUrl = function(url) {
+    this.aircraft_url = url;
+};
+
+HfdlMessagePanel.prototype.setFlightUrl = function(url) {
+    this.flight_url = url;
+};
+
+HfdlMessagePanel.prototype.linkify = function(id) {
+    var url = null;
+
+    // Do not linkify empty strings
+    if (id.len<=0) return(id);
+
+    // 6 hexadecimal digits are an ICAO aircraft ID
+    if (id.match(new RegExp('^[0-9A-F]{6}$')))
+        url = this.aircraft_url;
+    // Dot with a name is an aircraft ID
+    else if (id.match(new RegExp('^\.[0-9A-Z]{1,3}-[0-9A-Z]{1,5}$')))
+        url = this.aircraft_url;
+    // Everything else is a flight ID
+    else
+        url = this.flight_url;
+
+    // Must have valid lookup URL
+    if ((url == null) || (url == ''))
+        return id;
+    else
+        return '<a target="callsign_info" href="' +
+            url.replaceAll('{}', id) + '">' + id + '</a>';
 };
 
 HfdlMessagePanel.prototype.render = function() {
@@ -356,8 +390,7 @@ HfdlMessagePanel.prototype.render = function() {
 };
 
 HfdlMessagePanel.prototype.pushMessage = function(msg) {
-    // Assume white color if missing
-    var color    = msg.hasOwnProperty('color')?    msg.color : '#FFF';
+    var color    = msg.hasOwnProperty('color')?    msg.color : '#00000000';
     var aircraft = msg.hasOwnProperty('aircraft')? msg.aircraft : '';
     var flight   = msg.hasOwnProperty('flight')?   msg.flight : '';
 
@@ -378,8 +411,8 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     $b.append($(
         '<tr>' +
             '<td class="timestamp">' + tstamp + '</td>' +
-            '<td class="flight">' + flight + '</td>' +
-            '<td class="aircraft">' + aircraft + '</td>' +
+            '<td class="flight">' + this.linkify(flight) + '</td>' +
+            '<td class="aircraft">' + this.linkify(aircraft) + '</td>' +
             '<td class="data">' + data + '</td>' +
         '</tr>'
     ).css('background-color', color).css('color', '#000'));

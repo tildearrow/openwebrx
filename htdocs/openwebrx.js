@@ -1097,6 +1097,16 @@ function on_ws_recv(evt) {
                             $('.openwebrx-record-button').css('display', x? '':'none');
                         }
 
+                        if ('flight_url' in config) {
+                            var panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
+                            panel.setFlightUrl(config['flight_url']);
+                        }
+
+                        if ('aircraft_url' in config) {
+                            var panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
+                            panel.setAircraftUrl(config['aircraft_url']);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];

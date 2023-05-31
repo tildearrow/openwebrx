@@ -1240,6 +1240,10 @@ img.openwebrx-mirror-img
     height: 180px;
 }
 
+#openwebrx-panel-hfdl-message a {
+    color: inherit;
+}
+
 #openwebrx-panel-hfdl-message tbody {
     height: 150px;
 }
