@@ -15,9 +15,8 @@ class Rtl433Module(PopenModule):
 # These need 48kHz, 24kHz is not enough for them
 #            "-R", "-80",  "-R", "-149", "-R", "-154", "-R", "-160",
 #            "-R", "-161",
-#            "-R", "64",
-            # These need >48kHz bandwidth
-            "-R", "-167", "-R", "-178",
+# These need >48kHz bandwidth
+#            "-R", "-167", "-R", "-178",
             "-A",
         ]
 

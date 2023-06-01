@@ -379,7 +379,7 @@ class HfdlLocation(LatLngLocation):
 
 class HfdlParser(TextParser):
     def __init__(self, service: bool = False):
-        super().__init__(filePrefix="ISM", service=service)
+        super().__init__(filePrefix="HFDL", service=service)
 
     def parse(self, msg: str):
         # Expect JSON data in text form
