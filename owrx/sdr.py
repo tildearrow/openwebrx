@@ -233,6 +233,11 @@ class SdrService(object):
         if not sources:
             return None
         # TODO: configure default sdr in config? right now it will pick the first one off the list.
+        # For now, try returning the first unlocked source
+        for src in sources.keys():
+            if not sources[src].isLocked():
+                return sources[src]
+        # If no unlocked sources, just return the first one
         return sources[list(sources.keys())[0]]
 
     @staticmethod

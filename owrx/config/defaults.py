@@ -155,6 +155,7 @@ defaultConfig = PropertyLayer(
     waterfall_levels=PropertyLayer(min=-88, max=-20),
     waterfall_auto_levels=PropertyLayer(min=3, max=10),
     waterfall_auto_min_range=50,
+    key_locked=False,
     ui_opacity=100,
     ui_frame=False,
     magic_key="memagic",
