@@ -383,6 +383,9 @@ class SdrSource(ABC):
     def isAvailable(self):
         return self.monitor is not None
 
+    def isLocked(self):
+        return "key_locked" in self.props and self.props["key_locked"]
+
     def stop(self):
         with self.modificationLock:
             if self.process is not None:
@@ -560,12 +563,6 @@ class SdrDeviceDescription(object):
     def getInputs(self) -> List[Input]:
         return [
             CheckboxInput("enabled", "Enable this device", converter=OptionalConverter(defaultFormValue=True)),
-            GainInput("rf_gain", "Device gain", self.hasAgc()),
-            NumberInput(
-                "ppm",
-                "Frequency correction",
-                append="ppm",
-            ),
             CheckboxInput(
                 "always-on",
                 "Keep device running at all times",
@@ -574,6 +571,16 @@ class SdrDeviceDescription(object):
             CheckboxInput(
                 "services",
                 "Run background services on this device",
+            ),
+            CheckboxInput(
+                "key_locked",
+                "Protect access to this device with a magic key",
+            ),
+            GainInput("rf_gain", "Device gain", self.hasAgc()),
+            NumberInput(
+                "ppm",
+                "Frequency correction",
+                append="ppm",
             ),
             ExponentialInput(
                 "lfo_offset",
@@ -608,6 +615,7 @@ class SdrDeviceDescription(object):
         keys = [
             "always-on",
             "services",
+            "key_locked",
             "rf_gain",
             "lfo_offset",
             "waterfall_levels",
