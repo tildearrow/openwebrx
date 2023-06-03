@@ -1971,7 +1971,10 @@ function secondary_demod_waterfall_set_zoom(low_cut, high_cut) {
 
 function sdr_profile_changed() {
     var value = $('#openwebrx-sdr-profiles-listbox').val();
-    ws.send(JSON.stringify({type: "selectprofile", params: {profile: value}}));
+    var key = $('#openwebrx-panel-receiver').demodulatorPanel().getMagicKey();
+    ws.send(JSON.stringify({
+        "type": "selectprofile", "params": { "profile": value, "key": key }
+    }));
 }
 
 function tuning_step_changed() {

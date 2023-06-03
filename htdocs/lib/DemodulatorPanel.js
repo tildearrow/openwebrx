@@ -197,9 +197,11 @@ DemodulatorPanel.prototype.collectParams = function() {
 };
 
 DemodulatorPanel.prototype.startDemodulator = function() {
-    if (!Modes.initComplete() || !this.center_freq) return;
     var params = this.collectParams();
-    this._apply(params);
+    this.setMagicKey(params.magic_key);
+
+    if (Modes.initComplete() && this.center_freq)
+        this._apply(params);
 };
 
 DemodulatorPanel.prototype.stopDemodulator = function() {
@@ -212,7 +214,6 @@ DemodulatorPanel.prototype.stopDemodulator = function() {
 }
 
 DemodulatorPanel.prototype._apply = function(params) {
-    this.setMagicKey(params.magic_key);
     if (params.secondary_mod) {
         this.setMode(params.secondary_mod, params.mod)
     } else {

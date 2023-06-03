@@ -296,10 +296,15 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                     if "params" in message and "sdr" in message["params"]:
                         self.setSdr(message["params"]["sdr"])
                 elif message["type"] == "selectprofile":
+                    # Locked source's profile can only be changed with a key
                     if "params" in message and "profile" in message["params"]:
-                        profile = message["params"]["profile"].split("|")
+                        params  = message["params"]
+                        profile = params["profile"].split("|")
+                        magic   = self.stack["magic_key"]
+                        key     = params["key"] if "key" in params else None
                         self.setSdr(profile[0])
-                        self.sdr.activateProfile(profile[1])
+                        if not self.sdr.isLocked() or magic == "" or key == magic:
+                            self.sdr.activateProfile(profile[1])
                 elif message["type"] == "setfrequency":
                     # If the magic key is set in the settings, only allow
                     # changes if it matches the received key
