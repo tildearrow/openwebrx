@@ -139,6 +139,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "tuning_precision",
         "ui_opacity",
         "ui_frame",
+        "ui_swap_wheel",
         "allow_center_freq_changes",
         "allow_audio_recording",
         "magic_key",

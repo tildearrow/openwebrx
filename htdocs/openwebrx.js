@@ -36,6 +36,7 @@ var tuning_step_default = 1;
 var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
+var swap_wheel = false;
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -430,8 +431,8 @@ function scale_canvas_mousewheel(evt) {
     var demodulators = getDemodulators();
     var event_handled = false;
     for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.wheel(evt.pageX, dir, adjustWidth);
-    // If not handled by demodulators, default to tuning
-    if (!event_handled) tuneBySteps(dir? -1:1);
+    // If not handled by demodulators, default to tuning or zooming
+    if (!event_handled) canvas_mousewheel(evt);
 }
 
 function scale_px_from_freq(f, range) {
@@ -908,7 +909,10 @@ function canvas_mousewheel(evt) {
     var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
 
     // Zoom when mouse button down, tune otherwise
-    if ((canvas_mouse2_down > 0) || evt.shiftKey) {
+    // (optionally, invert this behavior)
+    var zoom_me = (canvas_mouse2_down > 0) || evt.shiftKey?
+        !swap_wheel : swap_wheel;
+    if (zoom_me) {
         zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
     } else {
         tuneBySteps(dir? -1:1);
@@ -1090,6 +1094,10 @@ function on_ws_recv(evt) {
                         if ('ui_frame' in config) {
                             var x = config['ui_frame'];
                             $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
+                        }
+
+                        if ('ui_swap_wheel' in config) {
+                            swap_wheel = config['ui_swap_wheel'];
                         }
 
                         if ('allow_audio_recording' in config) {

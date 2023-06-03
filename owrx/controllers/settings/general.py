@@ -194,6 +194,10 @@ class GeneralSettingsController(SettingsFormController):
                     "ui_frame",
                     "Show frame around receiver panel",
                 ),
+                CheckboxInput(
+                    "ui_swap_wheel",
+                    "Make mouse wheel control zoom, tune by holding wheel down",
+                ),
                 DropdownInput(
                     "tuning_precision",
                     "Tuning precision",
