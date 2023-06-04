@@ -305,6 +305,8 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                         self.setSdr(profile[0])
                         if not self.sdr.isLocked() or magic == "" or key == magic:
                             self.sdr.activateProfile(profile[1])
+                        else:
+                            self.sdr.activateProfile(self.sdr.getProfileId(), force=True)
                 elif message["type"] == "setfrequency":
                     # If the magic key is set in the settings, only allow
                     # changes if it matches the received key
