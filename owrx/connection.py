@@ -303,13 +303,13 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                         magic   = self.stack["magic_key"]
                         key     = params["key"] if "key" in params else None
                         self.setSdr(profile[0])
+                        # If source not locked, or no magic key, or it matches...
                         if not self.sdr.isLocked() or magic == "" or key == magic:
+                            # Select a new profile
                             self.sdr.activateProfile(profile[1])
-<<<<<<< HEAD
                         else:
+                            # Force update back to the current profile
                             self.sdr.activateProfile(self.sdr.getProfileId(), force=True)
-=======
->>>>>>> 10673b4d1eb49ad8d948d7fd31f2165643cabaa8
                 elif message["type"] == "setfrequency":
                     # If the magic key is set in the settings, only allow
                     # changes if it matches the received key
