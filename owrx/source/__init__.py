@@ -239,10 +239,10 @@ class SdrSource(ABC):
     def getCommand(self):
         return [self.getCommandMapper().map(self.getCommandValues())]
 
-    def activateProfile(self, profile_id):
+    def activateProfile(self, profile_id, force=False):
         logger.debug("activating profile {0} for {1}".format(profile_id, self.getId()))
         try:
-            self.profileCarousel.switch(profile_id)
+            self.profileCarousel.switch(profile_id, force=force)
             self.setCenterFreq(self.profileCarousel["center_freq"])
         except KeyError:
             logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
@@ -574,7 +574,7 @@ class SdrDeviceDescription(object):
             ),
             CheckboxInput(
                 "key_locked",
-                "Protect access to this device with a magic key",
+                "Require magic key to switch profiles on this device",
             ),
             GainInput("rf_gain", "Device gain", self.hasAgc()),
             NumberInput(
