@@ -1208,25 +1208,19 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-page-message .address {
     width: 120px;
-    font-weight: bold;
-    text-align: left;
-    color: #000;
+    text-align: center;
 }
 
 #openwebrx-panel-page-message .mode {
     width: 120px;
-    font-weight: normal;
     text-align: center;
-    color: #000;
 }
 
 #openwebrx-panel-page-message .timestamp {
     width: 346px;
     max-width: 486px;
-    font-weight: bold;
-    color: #000;
-    text-align: right;
     white-space: pre;
+    text-align: center;
 }
 
 #openwebrx-panel-page-message .message {
@@ -1265,7 +1259,7 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-hfdl-message .data {
     width: 326px;
-    text-align: left;
+    text-align: center;
 }
 
 #openwebrx-panel-hfdl-message .message {
@@ -1285,31 +1279,23 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-ism-message .address {
     width: 120px;
-    font-weight: bold;
-    text-align: left;
-    color: #000;
+    text-align: center;
 }
 
 #openwebrx-panel-ism-message .device {
     width: 160px;
-    font-weight: normal;
     text-align: center;
-    color: #000;
 }
 
 #openwebrx-panel-ism-message .timestamp {
     width: 306px;
     max-width: 486px;
-    font-weight: bold;
-    color: #000;
-    text-align: right;
     white-space: pre;
+    text-align: center;
 }
 
 #openwebrx-panel-ism-message .attr {
     width: 283px;
-    font-weight: normal;
-    text-align: right;
     padding-left: 10px;
     padding-right: 10px;
 }

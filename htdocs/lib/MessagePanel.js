@@ -285,7 +285,9 @@ PageMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>Pager&nbsp;Messages</th>' +
+                '<th class="address">CapCode</th>' +
+                '<th class="mode">Mode</th>' +
+                '<th class="timestamp">Time</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -306,9 +308,9 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
         '<tr>' +
             '<td class="address">' + msg.address + '</td>' +
             '<td class="mode">' + msg.mode + msg.baud + '</td>' +
-            '<td class="timestamp">' + msg.timestamp + '</td>' +
+            '<td class="timestamp" style="text-align:right;">' + msg.timestamp + '</td>' +
         '</tr>'
-    ).css('background-color', color));
+    ).css('background-color', color).css('color', '#000'));
 
     // Append message body (text)
     if (msg.hasOwnProperty('message')) {
@@ -373,7 +375,7 @@ HfdlMessagePanel.prototype.render = function() {
                 '<th class="timestamp">Time</th>' +
                 '<th class="flight">Flight</th>' +
                 '<th class="aircraft">Aircraft</th>' +
-                '<th class="position">Data</th>' +
+                '<th class="data">Data</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -404,7 +406,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
             '<td class="timestamp">' + tstamp + '</td>' +
             '<td class="flight">' + this.linkify(flight) + '</td>' +
             '<td class="aircraft">' + this.linkify(aircraft) + '</td>' +
-            '<td class="data">' + data + '</td>' +
+            '<td class="data" style="text-align:left;">' + data + '</td>' +
         '</tr>'
     ).css('background-color', color).css('color', '#000'));
 
@@ -444,7 +446,9 @@ IsmMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>Device&nbsp;Messages</th>' +
+                '<th class="address">ID</th>' +
+                '<th class="device">Device</th>' +
+                '<th class="timestamp">Time</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -473,9 +477,9 @@ IsmMessagePanel.prototype.pushMessage = function(msg) {
         '<tr>' +
             '<td class="address">' + address + '</td>' +
             '<td class="device">' + device + '</td>' +
-            '<td class="timestamp" colspan="2">' + tstamp + '</td>' +
+            '<td class="timestamp" style="text-align:right;" colspan="2">' + tstamp + '</td>' +
         '</tr>'
-    ).css('background-color', color));
+    ).css('background-color', color).css('color', '#000'));
 
     // Append attributes in pairs, skip basic information
     var last = null;
