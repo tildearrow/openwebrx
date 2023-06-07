@@ -84,9 +84,16 @@ class EasDemodulator(MultimonDemodulator):
 class SelCallDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
         super().__init__(
-# These aappear to be rarely used and very similar, so they trigger at once
-#            "ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI",
             ["DTMF", "EEA", "EIA", "CCIR"],
+            SelCallParser(service=service),
+            withSquelch = True
+        )
+
+
+class ZveiDemodulator(MultimonDemodulator):
+    def __init__(self, service: bool = False):
+        super().__init__(
+            ["ZVEI1", "ZVEI2", "ZVEI3", "DZVEI", "PZVEI"],
             SelCallParser(service=service),
             withSquelch = True
         )

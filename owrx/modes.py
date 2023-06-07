@@ -188,6 +188,13 @@ class Modes(object):
             squelch=True
         ),
         DigitalMode(
+            "zvei",
+            "Zvei",
+            underlying=["nfm"],
+            requirements=["selcall"],
+            squelch=True
+        ),
+        DigitalMode(
             "ism",
             "ISM",
             underlying=["nfm"],
