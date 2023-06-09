@@ -1,5 +1,6 @@
 **1.2.19**
 - Added separate ZVEI decoder for German SELCALL modes.
+- Added device option to require magic key for profile changes.
 - Added option to swap mouse wheel between tuning and zooming.
 - Added optional frame to bookmark dialogs.
 - Updated column names and formatting for PAGE, HFDL, ISM panels.
