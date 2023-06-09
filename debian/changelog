@@ -1,3 +1,15 @@
+openwebrx (1.2.19) bullseye jammy; urgency=low
+
+  * Added separate ZVEI decoder for German SELCALL modes.
+  * Added option to swap mouse wheel between tuning and zooming.
+  * Added optional frame to bookmark dialogs.
+  * Updated column names and formatting for PAGE, HFDL, ISM panels.
+  * Updated rtl-433 invocation to be compatible with older versions.
+  * Renamed HFDL background service output to "HFDL-*".
+  * Changed "pocsag" mode to "page" in bands.json.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 10 Jun 2023 16:12:00 +0000
+
 openwebrx (1.2.18) bullseye jammy; urgency=low
 
   * Integrated rtl-433 and dumphfdl decoder tools.

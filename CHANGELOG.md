@@ -1,3 +1,12 @@
+**1.2.19**
+- Added separate ZVEI decoder for German SELCALL modes.
+- Added option to swap mouse wheel between tuning and zooming.
+- Added optional frame to bookmark dialogs.
+- Updated column names and formatting for PAGE, HFDL, ISM panels.
+- Updated rtl-433 invocation to be compatible with older versions.
+- Renamed HFDL background service output to "HFDL-*".
+- Changed "pocsag" mode to "page" in bands.json.
+
 **1.2.18**
 - Integrated rtl-433 and dumphfdl decoder tools.
 - Added universal PAGE decoder (POCSAG + FLEX) via multimon-ng.
