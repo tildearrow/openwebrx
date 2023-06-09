@@ -1094,6 +1094,7 @@ function on_ws_recv(evt) {
                         if ('ui_frame' in config) {
                             var x = config['ui_frame'];
                             $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
+                            $('#openwebrx-dialog-bookmark').css('border', x? '2px solid':'');
                         }
 
                         if ('ui_swap_wheel' in config) {
