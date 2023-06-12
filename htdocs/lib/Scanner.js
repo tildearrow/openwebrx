@@ -44,24 +44,33 @@ Scanner.prototype.scan = function() {
     var $slider = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
     this.threshold = $slider.val() - 13.0;
 
+    // This is going to be our starting scan location
+    var current = 0;
+
     // If there is currently selected bookmark...
     if (this.current>=0) {
         // Check if its current level still exceeds threshold
         var level = this.bookmarks[this.current].level;
-        if (level>this.threshold) return; else this.current = -1;
+        if (level>this.threshold) return;
+        // If current bookmark no longer relevant, scan further
+        current = this.current;
+        this.current = -1;
     }
 
     // For every shown bookmark...
     for(var j=0 ; j<this.bookmarks.length ; ++j) {
-        var b = this.bookmarks[j];
+        var b = this.bookmarks[current];
 
         //console.log("SCAN: " + b.name + " at " + b.frequency + ": " + b.level);
 
         // If level exceeds threshold, tune to the bookmark
         if (b.level>this.threshold && this.tuneBookmark(b)) {
-            this.current = j;
+            this.current = current;
             return;
         }
+
+        // Go to the next bookmark
+        current = (current + 1) % this.bookmarks.length;
     }
 };
 
