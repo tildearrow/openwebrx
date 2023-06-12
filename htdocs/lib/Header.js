@@ -14,7 +14,15 @@ function Header(el) {
 };
 
 Header.prototype.setDetails = function(details) {
-    this.el.find('.webrx-rx-title').html(details['receiver_name']);
+    // Set receiver name
+    var title = this.el.find('.webrx-rx-title');
+    title.html(details['receiver_name']);
+
+    // If receiver name has readable text, use it for window title
+    var titleText = title.prop('textContent');
+    if (titleText.length>0) document.title = 'OpenWebRX+ | ' + titleText;
+
+    // Set the rest of details
     this.el.find('.webrx-rx-desc').html(details['receiver_location'] + ' | Loc: ' + details['locator'] + ', ASL: ' + details['receiver_asl'] + ' m');
     this.el.find('.webrx-rx-photo-title').html(details['photo_title']);
     this.el.find('.webrx-rx-photo-desc').html(details['photo_desc']);
