@@ -71,6 +71,8 @@ class SoapyConnectorSource(ConnectorSource, metaclass=ABCMeta):
         return values
 
     def onPropertyChange(self, changes):
+        # Make sure we do not damage the original dictonary
+        changes  = changes.copy()
         mappings = self.getSoapySettingsMappings()
         settings = {}
         # Delete properties that are converted into settings
