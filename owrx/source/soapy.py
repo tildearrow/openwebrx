@@ -73,11 +73,14 @@ class SoapyConnectorSource(ConnectorSource, metaclass=ABCMeta):
     def onPropertyChange(self, changes):
         mappings = self.getSoapySettingsMappings()
         settings = {}
-        for prop, value in changes.items():
+        # Delete properties that are converted into settings
+        for prop in list(changes):
             if prop in mappings.keys():
-                settings[mappings[prop]] = self.convertSoapySettingsValue(value)
+                settings[mappings[prop]] = self.convertSoapySettingsValue(changes.pop(prop))
+        # If any properties got converted, add them as "settings" property
         if settings:
             changes["settings"] = ",".join("{0}={1}".format(k, v) for k, v in settings.items())
+        # Apply actual changes
         super().onPropertyChange(changes)
 
 
