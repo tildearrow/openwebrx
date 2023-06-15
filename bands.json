@@ -181,6 +181,15 @@
     "tags": ["hamradio"]
   },
   {
+    "name": "8m",
+    "lower_bound": 40660000,
+    "upper_bound": 40700000,
+    "frequencies": {
+      "ft8": 40680000
+    },
+    "tags": ["hamradio"]
+  },
+  {
     "name": "6m",
     "lower_bound": 50030000,
     "upper_bound": 51000000,
