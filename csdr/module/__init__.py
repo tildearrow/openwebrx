@@ -133,7 +133,7 @@ class PopenModule(AutoStartModule, metaclass=ABCMeta):
             # Try terminating normally, kill if failed to terminate
             try:
                 self.process.terminate()
-                self.process.wait(10)
+                self.process.wait(3)
             except TimeoutExpired:
                 self.process.kill()
             self.process = None
