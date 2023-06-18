@@ -7,7 +7,7 @@ from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser, HfdlP
 
 class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
-        self.sampleRate = 48000
+        self.sampleRate = 250000
         self.parser = IsmParser(service=service)
         workers = [
             Agc(Format.COMPLEX_FLOAT),

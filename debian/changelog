@@ -1,11 +1,15 @@
 openwebrx (1.2.20) bullseye jammy; urgency=low
 
+  * Increased ISM mode bandwidth from 48kHz to 250kHz.
   * Added admin-defined receiver name (if any) to the window title.
   * Made scanner continue scan from the last active bookmark.
+  * Fixed CSDR crashing OWRX at >48kHz NFM deemphasis bandwidths.
   * Fixed Soapy extra settings being sent as individual values.
   * Fixed Settings icon getting cut off in Chrome on Android.
   * Fixed number input dialog shifting the UI on mobile devices.
-  * Fixed accidetal resize on mobile devices.
+  * Fixed accidental resize on mobile devices.
+  * Optimized CW decoder, RTTY, SSTV, FAX operation in CSDR.
+  * Now killing slave process if it does not quit in 3 seconds.
   * Added 8m amateur band.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 17 Jun 2023 16:12:00 +0000

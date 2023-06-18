@@ -198,7 +198,7 @@ class Modes(object):
             "ism",
             "ISM",
             underlying=["nfm"],
-            bandpass=Bandpass(-24000, 24000),
+            bandpass=Bandpass(-125000, 125000),
             requirements=["ism"],
             service=True,
             squelch=False

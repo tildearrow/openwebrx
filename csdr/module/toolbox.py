@@ -3,7 +3,7 @@ from csdr.module import PopenModule
 
 
 class Rtl433Module(PopenModule):
-    def __init__(self, sampleRate: int = 48000, jsonOutput: bool = False):
+    def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
         self.sampleRate = sampleRate
         self.jsonOutput = jsonOutput
         super().__init__()
@@ -12,11 +12,6 @@ class Rtl433Module(PopenModule):
         return [
             "rtl_433", "-r", "cs16:-", "-s", str(self.sampleRate),
             "-M", "time:utc", "-F", "json" if self.jsonOutput else "kv",
-# These need 48kHz, 24kHz is not enough for them
-#            "-R", "-80",  "-R", "-149", "-R", "-154", "-R", "-160",
-#            "-R", "-161",
-# These need >48kHz bandwidth
-#            "-R", "-167", "-R", "-178",
             "-A",
         ]
 
