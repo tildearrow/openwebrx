@@ -1,3 +1,16 @@
+**1.2.20**
+- Increased ISM mode bandwidth from 48kHz to 250kHz.
+- Added admin-defined receiver name (if any) to the window title.
+- Made scanner continue scan from the last active bookmark.
+- Fixed CSDR crashing OWRX at >48kHz NFM deemphasis bandwidths.
+- Fixed Soapy extra settings being sent as individual values.
+- Fixed Settings icon getting cut off in Chrome on Android.
+- Fixed number input dialog shifting the UI on mobile devices.
+- Fixed accidental resize on mobile devices.
+- Optimized CW decoder, RTTY, SSTV, FAX operation in CSDR.
+- Now killing slave process if it does not quit in 3 seconds.
+- Added 8m amateur band.
+
 **1.2.19**
 - Added separate ZVEI decoder for German SELCALL modes.
 - Added device option to require magic key for profile changes.
