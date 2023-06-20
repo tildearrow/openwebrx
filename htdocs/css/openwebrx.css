@@ -1283,12 +1283,12 @@ img.openwebrx-mirror-img
 }
 
 #openwebrx-panel-ism-message .device {
-    width: 160px;
+    width: 220px;
     text-align: center;
 }
 
 #openwebrx-panel-ism-message .timestamp {
-    width: 306px;
+    width: 246px;
     max-width: 486px;
     white-space: pre;
     text-align: center;
