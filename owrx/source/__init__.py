@@ -147,6 +147,10 @@ class SdrSource(ABC):
         # finally, accept global config properties from the top-level config
         self.props.addLayer(4, Config.get())
 
+        # make sure that when center_freq is changed in the profile,
+        # that change gets propagated to the top layer
+        self.profileCarousel.filter("center_freq").wire(self._handleCenterFreqChanged)
+
         self.sdrProps = self.props.filter(*self.getEventNames())
 
         self.wireEvents()
@@ -185,6 +189,12 @@ class SdrSource(ABC):
                 c.onEnable()
             else:
                 c.onDisable()
+
+    def _handleCenterFreqChanged(self, changes):
+        # make sure profile center_freq changes are propagated
+        # to the top layer
+        if "center_freq" in changes and changes["center_freq"] is not PropertyDeleted:
+            self.setCenterFreq(changes["center_freq"])
 
     def isFailed(self):
         return self.failed
