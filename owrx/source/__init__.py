@@ -191,8 +191,7 @@ class SdrSource(ABC):
                 c.onDisable()
 
     def _handleCenterFreqChanged(self, changes):
-        # make sure profile center_freq changes are propagated
-        # to the top layer
+        # propagate profile center_freq changes to the top layer
         if "center_freq" in changes and changes["center_freq"] is not PropertyDeleted:
             self.setCenterFreq(changes["center_freq"])
 
@@ -253,7 +252,6 @@ class SdrSource(ABC):
         logger.debug("activating profile {0} for {1}".format(profile_id, self.getId()))
         try:
             self.profileCarousel.switch(profile_id, force=force)
-            self.setCenterFreq(self.profileCarousel["center_freq"])
         except KeyError:
             logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
 
