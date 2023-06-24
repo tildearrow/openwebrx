@@ -143,7 +143,12 @@ CpuProgressBar.prototype.getDefaultText = function() {
 };
 
 CpuProgressBar.prototype.setUsage = function(usage) {
-    this.set(usage, "Server CPU [" + Math.round(usage * 100) + "%]", usage > .85);
+    const temp = this.temp? " / " + this.temp + "&deg;C" : "";
+    this.set(usage, "Server CPU [" + Math.round(usage * 100) + "%" + temp + "]", usage > .85);
+};
+
+CpuProgressBar.prototype.setTemp = function(temp) {
+    this.temp = temp;
 };
 
 ProgressBar.types = {

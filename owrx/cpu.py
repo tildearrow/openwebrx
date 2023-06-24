@@ -30,12 +30,27 @@ class CpuUsageThread(threading.Thread):
         while self.doRun:
             try:
                 cpu_usage = self.get_cpu_usage()
+                temperature = self.get_temperature()
             except:
                 cpu_usage = 0
+                temperature = 0
             for c in self.clients:
+                c.write_temperature(temperature)
                 c.write_cpu_usage(cpu_usage)
             self.endEvent.wait(timeout=3)
         logger.debug("cpu usage thread shut down")
+
+    def get_temperature(self):
+        try:
+            f = open("/sys/class/hwmon/hwmon0/device/temp", "r")
+        except:
+            return 0  # Workaround, possibly we're on a Mac
+        line = f.readline()
+        f.close()
+        try:
+            return int(line) // 1000
+        except:
+            return 0
 
     def get_cpu_usage(self):
         try:

@@ -1129,6 +1129,9 @@ function on_ws_recv(evt) {
                     case "cpuusage":
                         $('#openwebrx-bar-server-cpu').progressbar().setUsage(json['value']);
                         break;
+                    case "temperature":
+                        $('#openwebrx-bar-server-cpu').progressbar().setTemp(json['value']);
+                        break;
                     case "clients":
                         $('#openwebrx-bar-clients').progressbar().setClients(json['value']);
                         break;
