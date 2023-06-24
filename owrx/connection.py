@@ -415,6 +415,9 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
     def write_cpu_usage(self, usage):
         self.mp_send({"type": "cpuusage", "value": usage})
 
+    def write_temperature(self, temp):
+        self.mp_send({"type": "temperature", "value": temp})
+
     def write_clients(self, clients):
         self.mp_send({"type": "clients", "value": clients})
 
