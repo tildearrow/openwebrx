@@ -753,6 +753,16 @@ img.openwebrx-mirror-img
 	border-radius: 3px;
 }
 
+#openwebrx-clock-utc
+{
+	color: #aaa;
+	display: inline-block;
+	font-size: 10pt;
+	float: left;
+	margin-left: 5px;
+	font-family: 'roboto-mono';
+}
+
 #openwebrx-smeter-db
 {
 	color: #aaa;

@@ -1596,6 +1596,10 @@ function openwebrx_init() {
     bookmarks = new BookmarkBar();
     scanner = new Scanner(bookmarks, 1000);
     initSliders();
+
+    // Run clock
+    setInterval(clock_changed, 60000);
+    clock_changed();
 }
 
 function initSliders() {
@@ -1994,4 +1998,12 @@ function nr_changed() {
             "nr_threshold": nr_threshold
         }
     }));
+}
+
+function clock_changed() {
+    // Display UTC clock
+    const now = new Date();
+    const hours = ("00" + now.getUTCHours()).slice(-2);
+    const minutes = ("00" + now.getUTCMinutes()).slice(-2);
+    $("#openwebrx-clock-utc").html(`${hours}:${minutes} UTC`);
 }
