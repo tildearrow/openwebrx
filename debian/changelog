@@ -1,3 +1,13 @@
+openwebrx (1.2.21) bullseye jammy; urgency=low
+
+  * Added CPU temperature to the CPU load display.
+  * Added UTC clock to the receiver panel.
+  * Fixed secondary waterfall requiring FFT compression.
+  * Fixed center_freq changes not propagating up.
+  * Made ISM device model column wider.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 1 Jul 2023 16:12:00 +0000
+
 openwebrx (1.2.20) bullseye jammy; urgency=low
 
   * Increased ISM mode bandwidth from 48kHz to 250kHz.
