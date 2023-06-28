@@ -1,0 +1,1502 @@
+[
+    {
+        "name" : "DDH47",
+        "frequency" : 147300,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDH9",
+        "frequency" : 11039000,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDH8",
+        "frequency" : 14467300,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDK2",
+        "frequency" : 4583000,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDH7",
+        "frequency" : 7646000,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDK9",
+        "frequency" : 10100800,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "NOAA-1",
+        "frequency" : 162400000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "NOAA-2",
+        "frequency" : 162425000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "NOAA-3",
+        "frequency" : 162450000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "NOAA-4",
+        "frequency" : 162475000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "NOAA-5",
+        "frequency" : 162500000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "NOAA-6",
+        "frequency" : 162525000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "NOAA-7",
+        "frequency" : 162550000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 5508000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 6559000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 8927000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 10081000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 11327000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 13276000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 17919000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-1 - San Francisco",
+        "frequency" : 21934000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 5514000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 6565000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 8912000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 8936000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 10027000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 11312000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 11348000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 13276000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 13312000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 13324000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 17919000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-2 - Molokai",
+        "frequency" : 21937000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 3900000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 5720000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 6712000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 8977000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 11184000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 15025000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-3 - Reykjavik",
+        "frequency" : 17985000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 5652000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 6661000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 8912000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 11387000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 13276000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 17919000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-4 - Riverhead",
+        "frequency" : 21931000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-5 - Auckland",
+        "frequency" : 5583000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-5 - Auckland",
+        "frequency" : 6535000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-5 - Auckland",
+        "frequency" : 8921000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-5 - Auckland",
+        "frequency" : 10084000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-5 - Auckland",
+        "frequency" : 13351000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-5 - Auckland",
+        "frequency" : 17916000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 5655000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 6535000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 8825000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 10066000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 13270000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 17928000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-6 - Hat Yai",
+        "frequency" : 21949000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 2998000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 3455000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 5547000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 6532000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 8843000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 8942000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 10081000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-7 - Shannon",
+        "frequency" : 11384000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 3016000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 4681000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 5529000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 8834000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 11321000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 13321000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 17922000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-8 - Johannesburg",
+        "frequency" : 21949000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 2944000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 2992000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 3007000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 3497000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 4654000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 4687000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 5529000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 5538000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 5544000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 6646000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 8927000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 8936000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 10027000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 10093000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 11354000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 17919000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 17934000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 21928000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-9 - Barrow",
+        "frequency" : 21937000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 2941000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 5502000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 6619000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 8939000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 10060000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 13342000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 17958000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-10 - Muan",
+        "frequency" : 21931000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-11 - Albrook",
+        "frequency" : 5589000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-11 - Albrook",
+        "frequency" : 6589000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-11 - Albrook",
+        "frequency" : 8894000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-11 - Albrook",
+        "frequency" : 10063000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-11 - Albrook",
+        "frequency" : 13264000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-11 - Albrook",
+        "frequency" : 17901000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 4660000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 6628000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 8957000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 11318000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 13315000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 17916000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-13 - Santa Cruz",
+        "frequency" : 21997000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 5622000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 6596000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 8886000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 10087000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 13321000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 17912000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-14 - Krasnoyarsk",
+        "frequency" : 21990000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-15 - Al Muharraq",
+        "frequency" : 5544000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-15 - Al Muharraq",
+        "frequency" : 8885000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-15 - Al Muharraq",
+        "frequency" : 10075000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-15 - Al Muharraq",
+        "frequency" : 13354000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-15 - Al Muharraq",
+        "frequency" : 17967000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-15 - Al Muharraq",
+        "frequency" : 21982000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 5451000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 6652000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 8927000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 11306000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 13312000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 17919000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-16 - Agana",
+        "frequency" : 21928000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-17 - Gran Cararias",
+        "frequency" : 6529000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-17 - Gran Cararias",
+        "frequency" : 8948000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-17 - Gran Cararias",
+        "frequency" : 11348000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-17 - Gran Cararias",
+        "frequency" : 13303000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-17 - Gran Cararias",
+        "frequency" : 17928000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "GS-17 - Gran Cararias",
+        "frequency" : 21955000,
+        "modulation" : "hfdl"
+    },
+    {
+        "name" : "JMH - Tokyo",
+        "frequency" : 3622500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JMH2 - Tokyo",
+        "frequency" : 7795000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JMH4 - Tokyo",
+        "frequency" : 13988500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "PVK - Pevek",
+        "frequency" : 148,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "HLL2 - Seoul",
+        "frequency" : 3585000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "HLL2 - Seoul",
+        "frequency" : 5857500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "HLL2 - Seoul",
+        "frequency" : 7433500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "HLL2 - Seoul",
+        "frequency" : 9165000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "HLL2 - Seoul",
+        "frequency" : 13570000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "HSW64 - Bangkok",
+        "frequency" : 7395000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JJC - Kyodo News",
+        "frequency" : 4316000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JJC - Kyodo News",
+        "frequency" : 8467500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JJC - Kyodo News",
+        "frequency" : 12745500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JJC - Kyodo News",
+        "frequency" : 16971000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JJC - Kyodo News",
+        "frequency" : 17069600,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "JJC - Kyodo News",
+        "frequency" : 22542000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "9VF - Kyodo News",
+        "frequency" : 16035000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "9VF - Kyodo News",
+        "frequency" : 17430000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "XSQ - Guangzhou",
+        "frequency" : 4199750,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "XSQ - Guangzhou",
+        "frequency" : 8412500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "XSQ - Guangzhou",
+        "frequency" : 12629250,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "XSQ - Guangzhou",
+        "frequency" : 16826250,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CBV - Valparaiso Playa Ancha",
+        "frequency" : 4228000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CBV - Valparaiso Playa Ancha",
+        "frequency" : 8677000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CBV - Valparaiso Playa Ancha",
+        "frequency" : 17146400,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CBM - Punta Arenas Maganalles",
+        "frequency" : 4322000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CBM - Punta Arenas Maganalles",
+        "frequency" : 8696000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CFH - Halifax",
+        "frequency" : 122500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CFH - Halifax",
+        "frequency" : 4271000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CFH - Halifax",
+        "frequency" : 6496400,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CFH - Halifax",
+        "frequency" : 10536000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CFH - Halifax",
+        "frequency" : 13510000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VFF - Iqalut",
+        "frequency" : 3253000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VFF - Iqalut",
+        "frequency" : 7710000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VFR - Resolute",
+        "frequency" : 7710000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VFR - Resolute",
+        "frequency" : 3253000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VCO - Sydney",
+        "frequency" : 4416000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VCO - Sydney",
+        "frequency" : 6915100,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VFA - Inuvik",
+        "frequency" : 4292000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VFA - Inuvik",
+        "frequency" : 8456000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NOJ - Kodiak",
+        "frequency" : 2054000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NOJ - Kodiak",
+        "frequency" : 4298000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NOJ - Kodiak",
+        "frequency" : 8459000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NOJ - Kodiak",
+        "frequency" : 12412500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMC - Point Reyes",
+        "frequency" : 4346000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMC - Point Reyes",
+        "frequency" : 8682000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMC - Point Reyes",
+        "frequency" : 12786000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMC - Point Reyes",
+        "frequency" : 17151200,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMC - Point Reyes",
+        "frequency" : 22527000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMG - New Orleans",
+        "frequency" : 4317900,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMG - New Orleans",
+        "frequency" : 8503900,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMG - New Orleans",
+        "frequency" : 12789900,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMG - New Orleans",
+        "frequency" : 17146400,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMF - Boston",
+        "frequency" : 4235000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMF - Boston",
+        "frequency" : 6340500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMF - Boston",
+        "frequency" : 9110000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "NMF - Boston",
+        "frequency" : 12750000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMC - Charleville",
+        "frequency" : 2628000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMC - Charleville",
+        "frequency" : 5100000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMC - Charleville",
+        "frequency" : 11030000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMC - Charleville",
+        "frequency" : 13920000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMC - Charleville",
+        "frequency" : 20469000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMW - Wiluna",
+        "frequency" : 5755000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMW - Wiluna",
+        "frequency" : 7535000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMW - Wiluna",
+        "frequency" : 10555000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMW - Wiluna",
+        "frequency" : 15615000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "VMW - Wiluna",
+        "frequency" : 18060000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "ZKLF - Wellington",
+        "frequency" : 3247400,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "ZKLF - Wellington",
+        "frequency" : 5807000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "ZKLF - Wellington",
+        "frequency" : 9459000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "ZKLF - Wellington",
+        "frequency" : 13550500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "ZKLF - Wellington",
+        "frequency" : 16340100,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "KVM70 - Honolulu",
+        "frequency" : 9982500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "KVM70 - Honolulu",
+        "frequency" : 11090000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "KVM70 - Honolulu",
+        "frequency" : 16135000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "SVJ4 - Athens",
+        "frequency" : 4481000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "SVJ4 - Athens",
+        "frequency" : 8105000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "RBW41 - Murmansk",
+        "frequency" : 5336000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "RBW41 - Murmansk",
+        "frequency" : 6445500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "RBW41 - Murmansk",
+        "frequency" : 7908800,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "RBW48 - Murmansk",
+        "frequency" : 10130000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "DDH3 - Hamburg",
+        "frequency" : 3855000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "DDK3 - Hamburg",
+        "frequency" : 7880000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "DDK6 - Hamburg",
+        "frequency" : 13882500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "GYA - Nothwood",
+        "frequency" : 2618500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "GYA - Nothwood",
+        "frequency" : 4610000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "GYA - Nothwood",
+        "frequency" : 8040000,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "GYA - Nothwood",
+        "frequency" : 11086500,
+        "modulation" : "fax"
+    },
+    {
+        "name" : "CB1",
+        "frequency" : 26965000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB2",
+        "frequency" : 26975000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB3",
+        "frequency" : 26985000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB4 - Offroading",
+        "frequency" : 27005000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB5",
+        "frequency" : 27015000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB6",
+        "frequency" : 27025000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB7",
+        "frequency" : 27035000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB8",
+        "frequency" : 27055000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB9 - Emergencies",
+        "frequency" : 27065000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB10 - Truckers",
+        "frequency" : 27075000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB11",
+        "frequency" : 27085000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB12",
+        "frequency" : 27105000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB13 - Marine/RV",
+        "frequency" : 27115000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB14 - Walkie-Talkies",
+        "frequency" : 27125000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB15",
+        "frequency" : 27135000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB16",
+        "frequency" : 27155000,
+        "modulation" : "lsb"
+    },
+    {
+        "name" : "CB17 - Truckers",
+        "frequency" : 27165000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB18",
+        "frequency" : 27175000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB19 - Truckers",
+        "frequency" : 27185000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB20",
+        "frequency" : 27205000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB21 - Truckers",
+        "frequency" : 27215000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB22",
+        "frequency" : 27225000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB23",
+        "frequency" : 27255000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB24",
+        "frequency" : 27235000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB25",
+        "frequency" : 27245000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB26",
+        "frequency" : 27265000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB27",
+        "frequency" : 27275000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB28",
+        "frequency" : 27285000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB29",
+        "frequency" : 27295000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB30",
+        "frequency" : 27305000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB31",
+        "frequency" : 27315000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB32",
+        "frequency" : 27325000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB33",
+        "frequency" : 27335000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB34",
+        "frequency" : 27345000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB35",
+        "frequency" : 27355000,
+        "modulation" : "am"
+    },
+    {
+        "name" : "CB36",
+        "frequency" : 27365000,
+        "modulation" : "ssb"
+    },
+    {
+        "name" : "CB37",
+        "frequency" : 27375000,
+        "modulation" : "ssb"
+    },
+    {
+        "name" : "CB38",
+        "frequency" : 27385000,
+        "modulation" : "ssb"
+    },
+    {
+        "name" : "CB39",
+        "frequency" : 27395000,
+        "modulation" : "ssb"
+    },
+    {
+        "name" : "CB40",
+        "frequency" : 27405000,
+        "modulation" : "ssb"
+    },
+    {
+        "name" : "GMRS1",
+        "frequency" : 462562500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS2",
+        "frequency" : 462587500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS3",
+        "frequency" : 462612500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS4",
+        "frequency" : 462637500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS5",
+        "frequency" : 462662500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS6",
+        "frequency" : 462687500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS7",
+        "frequency" : 462712500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS8",
+        "frequency" : 467562500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS9",
+        "frequency" : 467587500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS10",
+        "frequency" : 467612500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS11",
+        "frequency" : 467637500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS12",
+        "frequency" : 467662500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS13",
+        "frequency" : 467687500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS14",
+        "frequency" : 467712500,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS15",
+        "frequency" : 462550000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS16",
+        "frequency" : 462575000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS17",
+        "frequency" : 462600000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS18",
+        "frequency" : 462625000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS19",
+        "frequency" : 462650000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS20",
+        "frequency" : 462675000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS21",
+        "frequency" : 462700000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS22",
+        "frequency" : 462725000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS15R",
+        "frequency" : 467550000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS16R",
+        "frequency" : 467575000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS17R",
+        "frequency" : 467600000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS18R",
+        "frequency" : 467625000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS19R",
+        "frequency" : 467650000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS20R",
+        "frequency" : 467675000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS21R",
+        "frequency" : 467700000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "GMRS22R",
+        "frequency" : 467725000,
+        "modulation" : "nfm"
+    }
+]

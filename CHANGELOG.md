@@ -1,6 +1,7 @@
 **1.2.21**
 - Added CPU temperature to the CPU load display.
 - Added UTC clock to the receiver panel.
+- Added default bookmarks.json file with some common bookmarks.
 - Fixed secondary waterfall requiring FFT compression.
 - Fixed center_freq changes not propagating up.
 - Made ISM device model column wider.
