@@ -4,6 +4,7 @@
 - Added default bookmarks.json file with some common bookmarks.
 - Fixed secondary waterfall requiring FFT compression.
 - Fixed center_freq changes not propagating up.
+- Extended 2m and 70cm bands to reflect US definitions.
 - Made ISM device model column wider.
 
 **1.2.20**

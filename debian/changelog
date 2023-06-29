@@ -5,6 +5,7 @@ openwebrx (1.2.21) bullseye jammy; urgency=low
   * Added default bookmarks.json file with some common bookmarks.
   * Fixed secondary waterfall requiring FFT compression.
   * Fixed center_freq changes not propagating up.
+  * Extended 2m and 70cm bands to reflect US definitions.
   * Made ISM device model column wider.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 1 Jul 2023 16:12:00 +0000
