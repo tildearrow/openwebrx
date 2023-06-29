@@ -212,6 +212,15 @@ class Modes(object):
             service=True,
             squelch=False
         ),
+        DigitalMode(
+            "vdl2",
+            "VDL2",
+            underlying=["nfm"],
+            bandpass=Bandpass(-105000, 105000),
+            requirements=["vdl2"],
+            service=True,
+            squelch=False
+        ),
     ]
 
     @staticmethod
