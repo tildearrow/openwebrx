@@ -327,6 +327,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "hfdl":
             from csdr.chain.toolbox import HfdlDemodulator
             return HfdlDemodulator(service=True)
+        elif mod == "vdl2":
+            from csdr.chain.toolbox import Vdl2Demodulator
+            return Vdl2Demodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 
