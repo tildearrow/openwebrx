@@ -61,3 +61,23 @@ class DumpHfdlModule(PopenModule):
         return Format.CHAR
 
 
+class DumpVdl2Module(PopenModule):
+    def __init__(self, sampleRate: int = 210000, jsonOutput: bool = False):
+        self.sampleRate = sampleRate
+        self.jsonOutput = jsonOutput
+        super().__init__()
+
+    def getCommand(self):
+        return [
+            "dumpvdl2", "--iq-file", "-", "--sample-format", "S16_LE",
+            "--oversample", str(self.sampleRate // 105000), "--output",
+            "decoded:%s:file:path=-" % ("json" if self.jsonOutput else "text"),
+            "--decode-fragments", "--utc"
+        ]
+
+    def getInputFormat(self) -> Format:
+        return Format.COMPLEX_FLOAT
+
+    def getOutputFormat(self) -> Format:
+        return Format.CHAR
+
