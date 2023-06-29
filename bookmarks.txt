@@ -1,3 +1,30 @@
+Squeaky Wheel|day||5473|USB
+Squeaky Wheel|night||3828|USB
+Goose|day|Ohvat-98|4310|USB
+Goose|night|Ohvat-98|3012|USB
+Pip|day||5448|USB
+Pip|night||3756|USB
+Buzzer|UVB-76||4625|USB
+Air Horn|||4020|USB
+D Marker||Fazan-37|3240|USB
+T Marker||Osnova-98|4182|USB
+
+Time|WWV, WWVH, BPM||2500|USB
+Time|CHU|Canada|3330|USB
+Time|RWM|Moscow|4996|USB
+Time|EBC|Cadiz|4998|USB
+Time|WWV, WWVH, BPM||5000|USB
+Time|CHU|Canada|7850|USB
+Time|RWM|Moscow|9996|USB
+Time|WWV, WWVH, BPM||10000|USB
+Time|PLC|Jakarta|11440|USB
+Time|CHU|Canada|14670|USB
+Time|RWM|Moscow|14996|USB
+Time|WWV, WWVH, BPM||15000|USB
+Time|EBC|Cadiz|15006|USB
+Time|WWV|Fort Collins|20000|USB
+Time|WWV, OIZ||25000|USB
+
 DDH47|||147.3|RTTY450
 DDH9|||11039|RTTY450
 DDH8|||14467.3|RTTY450
