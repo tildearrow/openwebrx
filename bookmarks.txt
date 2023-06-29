@@ -1,3 +1,11 @@
+#
+# This file gets converted to the default bookmarks.json with the
+# makebookmarks.pl PERL script.
+#
+
+#
+# Shortwave curiosities
+#
 Squeaky Wheel|day||5473|USB
 Squeaky Wheel|night||3828|USB
 Goose|day|Ohvat-98|4310|USB
@@ -9,6 +17,9 @@ Air Horn|||4020|USB
 D Marker||Fazan-37|3240|USB
 T Marker||Osnova-98|4182|USB
 
+#
+# Time signals
+#
 Time|WWV, WWVH, BPM||2500|USB
 Time|CHU|Canada|3330|USB
 Time|RWM|Moscow|4996|USB
@@ -25,6 +36,9 @@ Time|EBC|Cadiz|15006|USB
 Time|WWV|Fort Collins|20000|USB
 Time|WWV, OIZ||25000|USB
 
+#
+# German weather service RTTY broadcasts
+#
 DDH47|||147.3|RTTY450
 DDH9|||11039|RTTY450
 DDH8|||14467.3|RTTY450
@@ -32,6 +46,9 @@ DDK2|||4583|RTTY450
 DDH7|||7646|RTTY450
 DDK9|||10100.8|RTTY450
 
+#
+# NOAA weather broadcasts
+#
 NOAA-1|||162400|NFM
 NOAA-2|||162425|NFM
 NOAA-3|||162450|NFM
@@ -40,6 +57,9 @@ NOAA-5|||162500|NFM
 NOAA-6|||162525|NFM
 NOAA-7|||162550|NFM
 
+#
+# HFDL ground stations
+#
 GS-1|San Francisco|California|5508|HFDL
 GS-1|San Francisco|California|6559|HFDL
 GS-1|San Francisco|California|8927|HFDL
@@ -170,6 +190,9 @@ GS-17|Gran Cararias|Spain|13303|HFDL
 GS-17|Gran Cararias|Spain|17928|HFDL
 GS-17|Gran Cararias|Spain|21955|HFDL
 
+#
+# Weather fax stations
+#
 JMH|Tokyo|Japan|3622.5|FAX
 JMH2|Tokyo|Japan|7795|FAX
 JMH4|Tokyo|Japan|13988.5|FAX
@@ -259,6 +282,9 @@ GYA|Nothwood|UK|4610|FAX
 GYA|Nothwood|UK|8040|FAX
 GYA|Nothwood|UK|11086.5|FAX
 
+#
+# CB channels
+#
 CB1|||26965|AM
 CB2|||26975|AM
 CB3|||26985|AM
@@ -300,6 +326,9 @@ CB38|||27385|SSB
 CB39|||27395|SSB
 CB40|||27405|SSB
 
+#
+# GMRS channels
+#
 GMRS1|||462562.5|NFM
 GMRS2|||462587.5|NFM
 GMRS3|||462612.5|NFM
@@ -330,3 +359,23 @@ GMRS19R|||467650|NFM
 GMRS20R|||467675|NFM
 GMRS21R|||467700|NFM
 GMRS22R|||467725|NFM
+
+#
+# PMR channels
+#
+PMR1|||446006.25|NFM
+PMR2|||446018.75|NFM
+PMR3|||446031.25|NFM
+PMR4|||446043.75|NFM
+PMR5|||446056.25|NFM
+PMR6|||446068.75|NFM
+PMR7|||446081.25|NFM
+PMR8|||446093.75|NFM
+PMR9|||446106.25|NFM
+PMR10|||446118.75|NFM
+PMR11|||446131.25|NFM
+PMR12|||446143.75|NFM
+PMR13|||446156.25|NFM
+PMR14|||446168.75|NFM
+PMR15|||446181.25|NFM
+PMR16|||446193.75|NFM
