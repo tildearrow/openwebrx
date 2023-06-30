@@ -139,6 +139,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/MetaPanel.js",
             "lib/Spectrum.js",
             "lib/Scanner.js",
+            "lib/Clock.js",
         ],
         "map.js": [
             "lib/jquery-3.2.1.min.js",
