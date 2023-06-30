@@ -8,6 +8,7 @@ class CoreConfig(object):
         "core": {
             "data_directory": "/var/lib/openwebrx",
             "temporary_directory": "/tmp",
+            "temperature_sensor": "/sys/class/thermal/thermal_zone0/temp",
         },
         "web": {
             "port": 8073,
@@ -32,6 +33,7 @@ class CoreConfig(object):
         self.data_directory = config.get("core", "data_directory")
         CoreConfig.checkDirectory(self.data_directory, "data_directory")
         self.temporary_directory = config.get("core", "temporary_directory")
+        self.temperature_sensor = config.get("core", "temperature_sensor")
         CoreConfig.checkDirectory(self.temporary_directory, "temporary_directory")
         self.web_port = config.getint("web", "port")
         self.aprs_symbols_path = config.get("aprs", "symbols_path")
@@ -53,6 +55,9 @@ class CoreConfig(object):
 
     def get_temporary_directory(self):
         return self.temporary_directory
+
+    def get_temperature_sensor(self):
+        return self.temperature_sensor
 
     def get_aprs_symbols_path(self):
         return self.aprs_symbols_path

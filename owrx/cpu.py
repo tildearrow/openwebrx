@@ -1,4 +1,7 @@
+from owrx.config.core import CoreConfig
+
 import threading
+import os.path
 
 import logging
 
@@ -21,6 +24,20 @@ class CpuUsageThread(threading.Thread):
         self.doRun = True
         self.last_worktime = 0
         self.last_idletime = 0
+
+        # Determine where to read CPU temperature from
+        tempFile0 = CoreConfig().get_temperature_sensor()
+        tempFile1 = "/sys/class/thermal/thermal_zone0/temp"
+        tempFile2 = "/sys/class/hwmon/hwmon0/device/temp"
+        if tempFile0 is not None and os.path.isfile(tempFile0):
+            self.tempFile = tempFile0
+        elif os.path.isfile(tempFile1):
+            self.tempFile = tempFile1
+        elif os.path.isfile(tempFile2):
+            self.tempFile = tempFile2
+        else:
+            self.tempFile = None
+
         self.endEvent = threading.Event()
         self.startLock = threading.Lock()
         super().__init__()
@@ -41,12 +58,17 @@ class CpuUsageThread(threading.Thread):
         logger.debug("cpu usage thread shut down")
 
     def get_temperature(self):
+        # Must have temperature file
+        if self.tempFile is None:
+            return 0
+        # Try opening and reading file
         try:
-            f = open("/sys/class/hwmon/hwmon0/device/temp", "r")
+            f = open(self.tempFile, "r")
         except:
-            return 0  # Workaround, possibly we're on a Mac
+            return 0
         line = f.readline()
         f.close()
+        # Try parsing read temperature
         try:
             return int(line) // 1000
         except:
