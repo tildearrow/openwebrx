@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
 from owrx.config.core import CoreConfig
 import json
+import os.path
 import os
 
 import logging
@@ -9,10 +10,11 @@ logger = logging.getLogger(__name__)
 
 
 class Bookmark(object):
-    def __init__(self, j):
+    def __init__(self, j, srcFile: str = None):
         self.name = j["name"]
         self.frequency = j["frequency"]
         self.modulation = j["modulation"]
+        self.srcFile = srcFile
 
     def getName(self):
         return self.name
@@ -22,6 +24,9 @@ class Bookmark(object):
 
     def getModulation(self):
         return self.modulation
+
+    def getSrcFile(self):
+        return self.srcFile
 
     def __dict__(self):
         return {
@@ -61,7 +66,20 @@ class Bookmarks(object):
         self.file_modified = None
         self.bookmarks = []
         self.subscriptions = []
-        self.fileList = [Bookmarks._getBookmarksFile(), "/etc/openwebrx/bookmarks.json", "bookmarks.json"]
+        # Known bookmark files, starting with the main file
+        self.fileList = [
+            Bookmarks._getBookmarksFile(),
+            "bookmarks.json",
+            "/etc/openwebrx/bookmarks.json",
+        ]
+        # Find additional bookmark files in the bookmarks.d folder
+        try:
+            self.fileList += [ file
+                for file in os.listdir("/etc/openwebrx/bookmarks.d")
+                if os.path.isfile(file) and file.endswith(".json")
+            ]
+        except Exception:
+            pass
 
     def _refresh(self):
         modified = self._getFileModifiedTimestamp()
@@ -74,29 +92,31 @@ class Bookmarks(object):
         timestamp = 0
         for file in self.fileList:
             try:
-                timestamp = os.path.getmtime(file)
-                break
+                timestamp = max(timestamp, os.path.getmtime(file))
             except FileNotFoundError:
                 pass
         return datetime.fromtimestamp(timestamp, timezone.utc)
 
     def _loadBookmarks(self):
+        mainFile = Bookmarks._getBookmarksFile()
+        result = []
+        # Collect bookmarks from all files in the result
         for file in self.fileList:
+            # Main file bookmarks will not have srcFile set
+            srcFile = file if file != mainFile else None
             try:
                 with open(file, "r") as f:
                     content = f.read()
                 if content:
                     bookmarks_json = json.loads(content)
-                    return [Bookmark(d) for d in bookmarks_json]
+                    result += [Bookmark(d, srcFile) for d in bookmarks_json]
             except FileNotFoundError:
                 pass
             except json.JSONDecodeError:
                 logger.exception("error while parsing bookmarks file %s", file)
-                return []
             except Exception:
                 logger.exception("error while processing bookmarks from %s", file)
-                return []
-        return []
+        return result
 
     def getBookmarks(self, range=None):
         self._refresh()
@@ -112,8 +132,12 @@ class Bookmarks(object):
         return "{data_directory}/bookmarks.json".format(data_directory=coreConfig.get_data_directory())
 
     def store(self):
-        # don't write directly to file to avoid corruption on exceptions
-        jsonContent = json.dumps([b.__dict__() for b in self.bookmarks], indent=4)
+        # Don't write directly to file to avoid corruption on exceptions
+        # Only save main file bookmarks, i.e. ones with no srcFle
+        jsonContent = json.dumps(
+            [b.__dict__() for b in self.bookmarks if b.getSrcFile() is None],
+            indent=4
+        )
         with open(Bookmarks._getBookmarksFile(), "w") as file:
             file.write(jsonContent)
         self.file_modified = self._getFileModifiedTimestamp()
