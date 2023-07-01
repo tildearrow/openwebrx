@@ -2,6 +2,8 @@ from owrx.config.core import CoreConfig
 
 import threading
 import os.path
+import os
+import re
 
 import logging
 
@@ -26,17 +28,37 @@ class CpuUsageThread(threading.Thread):
         self.last_idletime = 0
 
         # Determine where to read CPU temperature from
-        tempFile0 = CoreConfig().get_temperature_sensor()
-        tempFile1 = "/sys/class/thermal/thermal_zone0/temp"
-        tempFile2 = "/sys/class/hwmon/hwmon0/device/temp"
-        if tempFile0 is not None and os.path.isfile(tempFile0):
-            self.tempFile = tempFile0
-        elif os.path.isfile(tempFile1):
-            self.tempFile = tempFile1
-        elif os.path.isfile(tempFile2):
-            self.tempFile = tempFile2
+        tempFile = CoreConfig().get_temperature_sensor()
+        if tempFile is not None and os.path.isfile(tempFile):
+            self.tempFile = tempFile
         else:
             self.tempFile = None
+
+        # Check sensors in /sys/class/thermal
+        if self.tempFile is None:
+            tempRoot = "/sys/class/thermal"
+            try:
+                for file in os.listdir(tempRoot):
+                    if re.match(r"thermal_zone\d+", file):
+                        tempFile = tempRoot + "/" + file + "/temp"
+                        if os.path.isfile(tempFile):
+                            self.tempFile = tempFile
+                            break
+            except Exception:
+                pass
+
+        # Check monitors in /sys/class/hwmon
+        if self.tempFile is None:
+            tempRoot = "/sys/class/hwmon"
+            try:
+                for file in os.listdir(tempRoot):
+                    if re.match(r"hwmon\d+", file):
+                        tempFile = tempRoot + "/" + file + "/device/temp"
+                        if os.path.isfile(tempFile):
+                            self.tempFile = tempFile
+                            break
+            except Exception:
+                pass
 
         self.endEvent = threading.Event()
         self.startLock = threading.Lock()
