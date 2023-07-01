@@ -74,9 +74,9 @@ class Bookmarks(object):
         ]
         # Find additional bookmark files in the bookmarks.d folder
         try:
-            self.fileList += [ file
-                for file in os.listdir("/etc/openwebrx/bookmarks.d")
-                if os.path.isfile(file) and file.endswith(".json")
+            bookmarksDir = "/etc/openwebrx/bookmarks.d"
+            self.fileList += [ bookmarksDir + "/" + file
+                for file in os.listdir(bookmarksDir) if file.endswith(".json")
             ]
         except Exception:
             pass
