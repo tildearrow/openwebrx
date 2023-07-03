@@ -169,7 +169,9 @@ class SdrSource(ABC):
         self.failed = False
         self.busyState = SdrBusyState.IDLE
         self.restartTimer = None
-        self.startRetries = 0
+        self.maxRetries = 10
+        self.retryDelay = 60
+        self.retryCount = 0
 
         self.validateProfiles()
 
@@ -294,7 +296,7 @@ class SdrSource(ABC):
 
     def _scheduleRestart(self):
         self._cancelRestart()
-        self.restartTimer = threading.Timer(60, self.start)
+        self.restartTimer = threading.Timer(self.retryDelay, self.start)
         self.restartTimer.start()
 
     def getBuffer(self):
@@ -358,7 +360,7 @@ class SdrSource(ABC):
                 else:
                     failed = True
                 self.setState(SdrSourceState.STOPPED)
-                self.startRetries = 0
+                self.retryCount = 0
 
             self.monitor = threading.Thread(target=wait_for_process_to_end, name="source_monitor")
             self.monitor.start()
@@ -387,16 +389,21 @@ class SdrSource(ABC):
                 logger.exception("Exception during postStart()")
                 failed = True
 
+        # count startup retries
+        self.retryCount = self.retryCount + 1
+
         if not failed:
             # startup succeeded
+            logger.debug("Source running after {0} start attempts.".format(self.retryCount))
             self.setState(SdrSourceState.RUNNING)
-            self.startRetries = 0
-        elif self.startRetries < 10:
+            self.retryCount = 0
+        elif self.retryCount < self.maxRetries:
             # startup failed, retry in a minute
-            self.startRetries = self.startRetries + 1
+            logger.debug("Source start attempt {0}/{1} failed.".format(self.retryCount, self.maxRetries))
             self._scheduleRestart()
         else:
             # startup repeatedly failed, consider device failed
+            logger.debug("Source repeatedly failed to start, writing it off.")
             self.fail()
 
     def preStart(self):
