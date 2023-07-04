@@ -118,6 +118,10 @@ class Bookmarks(object):
                 logger.exception("error while processing bookmarks from %s", file)
         return result
 
+    def getEditableBookmarks(self):
+        self._refresh()
+        return [b for b in self.bookmarks if b.srcFile is None]
+
     def getBookmarks(self, range=None):
         self._refresh()
         if range is None:

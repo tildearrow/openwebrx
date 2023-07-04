@@ -22,7 +22,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
         return variables
 
     def render_table(self):
-        bookmarks = Bookmarks.getSharedInstance().getBookmarks()
+        bookmarks = Bookmarks.getSharedInstance().getEditableBookmarks()
         emptyText = """
             <tr class="emptytext"><td colspan="4">
                 No bookmarks in storage. You can add new bookmarks using the buttons below. 
@@ -86,7 +86,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
     def _findBookmark(self, bookmark_id):
         bookmarks = Bookmarks.getSharedInstance()
         try:
-            return next(b for b in bookmarks.getBookmarks() if id(b) == bookmark_id)
+            return next(b for b in bookmarks.getEditableBookmarks() if id(b) == bookmark_id)
         except StopIteration:
             return None
 
