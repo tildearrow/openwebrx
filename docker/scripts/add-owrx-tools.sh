@@ -1,6 +1,6 @@
 #!/bin/bash
 set -euxo pipefail
-export MAKEFLAGS="-j4"
+export MAKEFLAGS="-j12"
 
 function cmakebuild() {
   cd $1
@@ -25,7 +25,8 @@ apt-get -y install --no-install-recommends $STATIC_PACKAGES $BUILD_PACKAGES
 
 git clone https://github.com/jketterl/js8py.git
 pushd js8py
-git checkout 0.1.2
+# latest develop as of 2022-11-30 (structured callsign data)
+git checkout f7e394b7892d26cbdcce5d43c0b4081a2a6a48f6
 python3 setup.py install
 popd
 rm -rf js8py
@@ -46,11 +47,11 @@ cp codecserver/conf/codecserver.conf /usr/local/etc/codecserver
 cmakebuild codecserver 0.2.0
 
 git clone https://github.com/jketterl/digiham.git
-cmakebuild digiham 0.6.0
+cmakebuild digiham 0.6.1
 
 git clone https://github.com/jketterl/pydigiham.git
 cd pydigiham
-git checkout 0.6.0
+git checkout 0.6.1
 ./setup.py install
 cd ..
 rm -rf pydigiham
