@@ -394,7 +394,8 @@ class SdrSource(ABC):
 
         if not failed:
             # startup succeeded
-            logger.debug("Source running after {0} start attempts.".format(self.retryCount))
+            if self.retryCount > 1:
+                logger.debug("Source running after {0} start attempts.".format(self.retryCount))
             self.setState(SdrSourceState.RUNNING)
             self.retryCount = 0
         elif self.retryCount < self.maxRetries:
