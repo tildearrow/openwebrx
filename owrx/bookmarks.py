@@ -119,6 +119,7 @@ class Bookmarks(object):
         return result
 
     def getEditableBookmarks(self):
+        # Only return bookmarks that can be saved
         self._refresh()
         return [b for b in self.bookmarks if b.srcFile is None]
 

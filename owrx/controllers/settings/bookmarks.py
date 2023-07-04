@@ -86,7 +86,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
     def _findBookmark(self, bookmark_id):
         bookmarks = Bookmarks.getSharedInstance()
         try:
-            return next(b for b in bookmarks.getEditableBookmarks() if id(b) == bookmark_id)
+            return next(b for b in bookmarks.getBookmarks() if id(b) == bookmark_id)
         except StopIteration:
             return None
 
