@@ -43,7 +43,7 @@ fi
 if [[ -z ${FULL_BUILD:-} || ${1:-} == 'clean' ]]; then
   echo "Cleaning from $0"
   apt-get -y purge --autoremove $BUILD_PACKAGES
-  if [[ -z $FULL_BUILD ]]; then
+  if [[ -z ${FULL_BUILD:-} ]]; then
     apt-get clean
     rm -rf /var/lib/apt/lists/*
   fi
