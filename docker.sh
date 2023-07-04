@@ -19,13 +19,15 @@ usage () {
   echo "Usage: ${0} [command]"
   echo "Available commands:"
   echo "  help       Show this usage information"
-  echo "  build      Build all docker images"
-  echo "  push       Push built docker images to the docker hub"
+  echo "  buildn     Build full docker nightly image"
+  echo "  buildr     Build full docker release image"
+  echo "  pushn      Push built docker nightly image to the docker hub"
+  echo "  pushr      Push built docker release image to the docker hub"
   echo "  manifest   Compile the docker hub manifest (combines arm and x86 tags into one)"
   echo "  tag        Tag a release"
 }
 
-build () {
+buildn () {
   # build the base images
   echo -ne "\n\nBuilding the base image.\n\n"
   time docker build --pull -t ${DH_PROJECT}-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-base .
@@ -50,13 +52,39 @@ build () {
   docker tag ${DH_USERNAME}/${DH_PROJECT}-full ${DH_USERNAME}/${DH_PROJECT}-nightly
 }
 
-push () {
+pushn () {
   #for image in ${IMAGES}; do
   #  docker push ${DH_USERNAME}/${image}:${ARCHTAG}
   #done
   docker push ${DH_USERNAME}/${DH_PROJECT}-nightly:${NIGHTLY_BUILD}
   docker push ${DH_USERNAME}/${DH_PROJECT}-nightly
 }
+
+buildr () {
+  if [[ -z ${1:-} ]] ; then
+    echo "Usage: ${0} buildr [version]"
+    echo "NOTE: The version will be used for tagging."
+    echo "The image will be build from the current packages in the apt-repo."
+    echo; echo;
+    return
+  fi
+
+  echo -ne "\n\nBuilding release image: $1.\n\n"
+	docker build --pull --build-arg VERSION=$1 -t ${DH_USERNAME}/${DH_PROJECT}:${1} -f docker/deb_based/Dockerfile .
+
+  docker tag ${DH_USERNAME}/${DH_PROJECT}:${1} ${DH_USERNAME}/${DH_PROJECT}
+}
+
+pushr () {
+  if [[ -z ${1:-} ]] ; then
+    echo "Usage: ${0} pushr [version]"
+    echo; echo;
+    return
+  fi
+  docker push ${DH_USERNAME}/${DH_PROJECT}:${1}
+  docker push ${DH_USERNAME}/${DH_PROJECT}
+}
+
 
 manifest () {
   for image in ${IMAGES}; do
@@ -110,11 +138,17 @@ run () {
 }
 
 case ${1:-} in
-  build)
-    build
+  buildn)
+    buildn
     ;;
-  push)
-    push
+  pushn)
+    pushn
+    ;;
+  buildr)
+    buildr ${@:2}
+    ;;
+  pushr)
+    pushr ${@:2}
     ;;
   manifest)
     manifest
