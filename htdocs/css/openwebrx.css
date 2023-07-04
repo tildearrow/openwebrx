@@ -310,7 +310,8 @@ input[type=range]:disabled {
 {
     /*overflow-y:auto;*/
     height: 125px;
-    width: 619px
+    max-width: 619px;
+    width: 100%;
 }
 
 .nano .nano-pane   { background: #444; }
