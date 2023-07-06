@@ -168,6 +168,10 @@ class SdrSource(ABC):
         props.filter("enabled").wire(self._handleEnableChanged)
         self.failed = False
         self.busyState = SdrBusyState.IDLE
+        self.restartTimer = None
+        self.maxRetries = 10
+        self.retryDelay = 60
+        self.retryCount = 0
 
         self.validateProfiles()
 
@@ -285,6 +289,16 @@ class SdrSource(ABC):
                 self.tcpSource = TcpSource(self.port, self._getTcpSourceFormat())
         return self.tcpSource
 
+    def _cancelRestart(self):
+        if self.restartTimer:
+            self.restartTimer.cancel()
+            self.restartTimer = None
+
+    def _scheduleRestart(self):
+        self._cancelRestart()
+        self.restartTimer = threading.Timer(self.retryDelay, self.start)
+        self.restartTimer.start()
+
     def getBuffer(self):
         if self.buffer is None:
             self.buffer = Buffer(Format.COMPLEX_FLOAT)
@@ -301,12 +315,14 @@ class SdrSource(ABC):
 
     def start(self):
         with self.modificationLock:
+            # make sure we do not restart twice
+            self._cancelRestart()
+
             if self.monitor:
                 return
 
-# @@@
-#            if self.isFailed():
-#                return
+            if self.isFailed():
+                return
 
             try:
                 self.preStart()
@@ -339,10 +355,12 @@ class SdrSource(ABC):
                 self.process = None
                 self.monitor = None
                 if self.getState() is SdrSourceState.RUNNING:
+                    # @@@ TODO: get back to this and figure out what to do!
                     self.fail()
                 else:
                     failed = True
                 self.setState(SdrSourceState.STOPPED)
+                self.retryCount = 0
 
             self.monitor = threading.Thread(target=wait_for_process_to_end, name="source_monitor")
             self.monitor.start()
@@ -371,10 +389,23 @@ class SdrSource(ABC):
                 logger.exception("Exception during postStart()")
                 failed = True
 
-        if failed:
-            self.fail()
-        else:
+        # count startup retries
+        self.retryCount = self.retryCount + 1
+
+        if not failed:
+            # startup succeeded
+            if self.retryCount > 1:
+                logger.debug("Source running after {0} start attempts.".format(self.retryCount))
             self.setState(SdrSourceState.RUNNING)
+            self.retryCount = 0
+        elif self.retryCount < self.maxRetries:
+            # startup failed, retry in a minute
+            logger.debug("Source start attempt {0}/{1} failed.".format(self.retryCount, self.maxRetries))
+            self._scheduleRestart()
+        else:
+            # startup repeatedly failed, consider device failed
+            logger.debug("Source repeatedly failed to start, writing it off.")
+            self.fail()
 
     def preStart(self):
         """
@@ -396,6 +427,9 @@ class SdrSource(ABC):
 
     def stop(self):
         with self.modificationLock:
+            # make sure we do not restart after stop
+            self._cancelRestart()
+
             if self.process is not None:
                 self.setState(SdrSourceState.STOPPING)
                 try:
