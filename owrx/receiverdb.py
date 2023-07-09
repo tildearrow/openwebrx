@@ -8,6 +8,8 @@ import threading
 import logging
 import json
 import re
+import os
+import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -64,30 +66,40 @@ class ReceiverDatabase(object):
     def _refreshThread(self):
         logger.debug("Starting receiver database refresh...")
 
-        #self._loadReceivers()
-        # Scrape websites for receivers
-        self.receivers = {}
-        self.receivers.update(self.scrapeKiwiSDR())
-        self.receivers.update(self.scrapeWebSDR())
+        # This file contains cached database
+        file = self._getReceiversFile()
+        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
-        # Save parsed data into a file
-        file = ReceiverDatabase._getReceiversFile()
-        logger.debug("Saving {0} receivers to '{1}'...".format(len(self.receivers), file))
-        try:
-            with open(file, "w") as f:
-                json.dump(self, f, cls=ReceiverJSONEncoder, indent=2)
-        except Exception as e:
-            logger.debug("Exception: {0}".format(e))
+        # Try loading cached database from file first, unless stale
+        if time.time() - ts < 60*60*24:
+            logger.debug("Loading database from '{0}'...".format(file))
+            self.receivers = self.loadFromFile(file)
+        else:
+            self.receivers = {}
+
+        # Scrape websites for receivers, if the list if empty
+        if not self.receivers:
+            logger.debug("Scraping KiwiSDR web site...")
+            self.receivers.update(self.scrapeKiwiSDR())
+            logger.debug("Scraping WebSDR web site...")
+            self.receivers.update(self.scrapeWebSDR())
+            # Save parsed data into a file
+            logger.debug("Saving {0} receivers to '{1}'...".format(len(self.receivers), file))
+            try:
+                with open(file, "w") as f:
+                    json.dump(self, f, cls=ReceiverJSONEncoder, indent=2)
+            except Exception as e:
+                logger.debug("Exception: {0}".format(e))
 
         # Update map with receivers
         logger.debug("Updating map...")
-        self._updateMap()
+        self.updateMap()
 
         # Done
         logger.debug("Done refreshing receiver database.")
         self.thread = None
 
-    def _loadReceivers(self, fileName: str = None):
+    def loadFromFile(self, fileName: str = None):
         # Get filename
         if fileName is None:
             fileName = self._getReceiversFile()
@@ -99,22 +111,19 @@ class ReceiverDatabase(object):
             if content:
                 db = json.loads(content)
         except Exception as e:
-            logger.debug("Exception: {0}".format(e))
+            logger.debug("loadFromFile() exception: {0}".format(e))
             return
 
-        # Clear current database
-        self.receivers = []
+        # Process receivers list
+        result = {}
+        for key in db.keys():
+            attrs = db[key]
+            result[key] = ReceiverLocation(attrs["lat"], attrs["lon"], attrs)
 
-        # Fill database with the read data
-        for entry in db:
-            if "gps" in entry:
-                m = re.match(r"\(\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*\)", entry["gps"])
-                if m:
-                    self.receivers += [
-                        ReceiverLocation(float(m.group(1)), float(m.group(2)), entry)
-                    ]
+        # Done
+        return result
 
-    def _updateMap(self):
+    def updateMap(self):
         for r in self.receivers.values():
             Map.getSharedInstance().updateLocation(r.getId(), r, "Internet")
 
