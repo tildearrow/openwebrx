@@ -18,6 +18,7 @@ from owrx.reporting import ReportingEngine
 from owrx.version import openwebrx_version
 from owrx.audio.queue import DecoderQueue
 from owrx.admin import add_admin_parser, run_admin_action
+from owrx.receiverdb import ReceiverDatabase
 import signal
 import argparse
 import ssl
@@ -111,6 +112,8 @@ Support and info:       https://groups.io/g/openwebrx
     SdrService.getAllSources()
 
     Services.start()
+
+    ReceiverDatabase.getSharedInstance().refresh()
 
     try:
         # This is our HTTP server
