@@ -36,12 +36,13 @@ buildn () {
   #echo -ne "\n\nBuilding soapysdr image.\n\n"
   #docker build --build-arg ARCHTAG=${ARCHTAG} --build-arg PROJECT=${DH_PROJECT} -t ${DH_PROJECT}-soapysdr-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-soapysdr .
 
+  GIT_HASH=$(git rev-parse --short master)
   for image in ${IMAGES}; do
     i=$(echo ${image} | rev | cut -d- -f1 | rev)
     # "openwebrx" is a special image that gets tag-aliased later on
     if [[ ! -z "${i}" && "${i}" != "${DH_PROJECT}" ]] ; then
       echo -ne "\n\nBuilding ${i} image.\n\n"
-      docker build --build-arg ARCHTAG=$ARCHTAG --build-arg PROJECT=${DH_PROJECT} -t ${DH_USERNAME}/${image}:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-${i} .
+      docker build --build-arg GIT_HASH=${GIT_HASH} --build-arg ARCHTAG=$ARCHTAG --build-arg PROJECT=${DH_PROJECT} -t ${DH_USERNAME}/${image}:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-${i} .
     fi
   done
 
