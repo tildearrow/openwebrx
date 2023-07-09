@@ -21,6 +21,9 @@ RUN export FULL_BUILD=1 && \
 
 COPY docker/files/services/sdrplay /etc/services.d/sdrplay
 
+# this build-arg will reset the cache here, so we will have a fresh copy of the files
+ARG GIT_HASH=0
+RUN echo "$GIT_HASH" > /build-hash
 RUN date > /build-date
 RUN date +%s > /build-stamp
 
