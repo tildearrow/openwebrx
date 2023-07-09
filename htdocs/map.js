@@ -154,8 +154,8 @@ $(function(){
                     marker.gain     = update.location.gain;
                     marker.device   = update.location.device;
                     marker.aircraft = update.location.aircraft;
-                    marker.receiver = update.location.receiver;
                     marker.antenna  = update.location.antenna;
+                    marker.users    = update.location.users;
                     marker.directivity = update.location.directivity;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
@@ -524,18 +524,18 @@ $(function(){
         }
 
         if (marker.device) {
-            detailsString += makeListItem('Device',
-                marker.device.device + " by " +
-                marker.device.manufacturer
+            detailsString += makeListItem('Device', marker.device.manufacturer?
+              marker.device.device + " by " + marker.device.manufacturer
+            : marker.device
             );
         }
 
-        //if (marker.receiver) {
-        //    detailsString += makeListItem('Receiver', marker.receiver);
-        //}
-
         //if (marker.antenna) {
         //    detailsString += makeListItem('Antenna', marker.antenna);
+        //}
+
+        //if (marker.users) {
+        //    detailsString += makeListItem('Users', marker.users);
         //}
 
         if (marker.height) {
