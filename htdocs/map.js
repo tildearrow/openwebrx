@@ -145,6 +145,7 @@ $(function(){
                     marker.mode     = update.mode;
                     marker.hops     = update.hops;
                     marker.band     = update.band;
+                    marker.url      = update.location.url;
                     marker.comment  = update.location.comment;
                     marker.weather  = update.location.weather;
                     marker.altitude = update.location.altitude;
@@ -153,6 +154,8 @@ $(function(){
                     marker.gain     = update.location.gain;
                     marker.device   = update.location.device;
                     marker.aircraft = update.location.aircraft;
+                    marker.receiver = update.location.receiver;
+                    marker.antenna  = update.location.antenna;
                     marker.directivity = update.location.directivity;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
@@ -363,17 +366,18 @@ $(function(){
         return infowindow;
     }
 
-    var linkifyCallsign = function(callsign) {
-        var url = null;
-
+    var linkifyCallsign = function(callsign, url = null) {
+        // Leave passed URLs as they are
+        if (url && (url != ''))
+        { /* leave as is */ }
         // 9-character strings may be AIS MMSI numbers
-        if(callsign.match(new RegExp('^[0-9]{9}$')))
+        else if (callsign.match(new RegExp('^[0-9]{9}$')))
             url = vessel_url;
         // 3 characters and a number may be a flight number
-        else if(callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
+        else if (callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
             url = flight_url;
         // 2 characters and a long number may be a flight number
-        else if(callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
+        else if (callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
             url = flight_url;
         // Everything else is a HAM callsign
         else
@@ -455,12 +459,17 @@ $(function(){
         var infowindow = getInfoWindow();
         infowindow.callsign = callsign;
         var marker = markers[callsign];
-        var timestring = moment(marker.lastseen).fromNow();
+        var timeString = moment(marker.lastseen).fromNow();
         var commentString = "";
         var weatherString = "";
         var detailsString = "";
         var hopsString = "";
         var distance = "";
+        var urlString = null;
+
+        if (marker.url) {
+            urlString = marker.url;
+        }
 
         if (marker.comment) {
             commentString += '<p>' + makeListTitle('Comment') + '<div>' +
@@ -521,6 +530,14 @@ $(function(){
             );
         }
 
+        //if (marker.receiver) {
+        //    detailsString += makeListItem('Receiver', marker.receiver);
+        //}
+
+        //if (marker.antenna) {
+        //    detailsString += makeListItem('Antenna', marker.antenna);
+        //}
+
         if (marker.height) {
             detailsString += makeListItem('Height', marker.height.toFixed(0) + ' m');
         }
@@ -574,8 +591,8 @@ $(function(){
         }
 
         infowindow.setContent(
-            '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
-            '<div align="center">' + timestring + ' using ' + marker.mode +
+            '<h3>' + linkifyCallsign(callsign, urlString) + distance + '</h3>' +
+            '<div align="center">' + timeString + ' using ' + marker.mode +
             ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
             commentString + weatherString + detailsString + hopsString
         );
