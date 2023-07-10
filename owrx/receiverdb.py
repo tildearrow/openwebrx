@@ -83,6 +83,8 @@ class ReceiverDatabase(object):
             self.receivers.update(self.scrapeKiwiSDR())
             logger.debug("Scraping WebSDR web site...")
             self.receivers.update(self.scrapeWebSDR())
+            logger.debug("Scraping OpenWebRX web site...")
+            self.receivers.update(self.scrapeOWRX())
             # Save parsed data into a file
             logger.debug("Saving {0} receivers to '{1}'...".format(len(self.receivers), file))
             try:
@@ -98,6 +100,14 @@ class ReceiverDatabase(object):
         # Done
         logger.debug("Done refreshing receiver database.")
         self.thread = None
+
+    def getSymbol(self, type: str):
+        if type.startswith("KiwiSDR"):
+            return getSymbolData('/', '/')
+        elif type.startswith("WebSDR"):
+            return getSymbolData('/', '\\')
+        else:
+            return getSymbolData('<', '\\')
 
     def loadFromFile(self, fileName: str = None):
         # Get filename
@@ -127,6 +137,47 @@ class ReceiverDatabase(object):
         for r in self.receivers.values():
             Map.getSharedInstance().updateLocation(r.getId(), r, "Internet")
 
+    def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
+        patternJson = re.compile(r"^\s*var\s+receivers\s+=\s+(\[.*\]);\s*$")
+        result = {}
+        try:
+            data = None
+            for line in urllib.request.urlopen(url).readlines():
+                # Convert read bytes to a string
+                line = line.decode('utf-8')
+                # When we encounter a URL...
+                m = patternJson.match(line)
+                if m:
+                    data = json.loads(m.group(1))
+                    break
+            if data is not None:
+                for entry in data:
+                    lat = entry["location"]["coordinates"][1]
+                    lon = entry["location"]["coordinates"][0]
+                    for r in entry["receivers"]:
+                        if "version" in r:
+                            dev = r["type"] + " " + r["version"]
+                        else:
+                            dev = r["type"]
+                        rl = ReceiverLocation(lat, lon, {
+                            "type"    : "latlon",
+                            "lat"     : lat,
+                            "lon"     : lon,
+                            "comment" : r["label"],
+                            "url"     : r["url"],
+                            "device"  : dev,
+                            "symbol"  : self.getSymbol(dev)
+                        })
+                        result[rl.getId()] = rl
+                        # Offset colocated receivers by ~500m
+                        lon = lon + 0.0005
+
+        except Exception as e:
+            logger.debug("scrapeOWRX() exception: {0}".format(e))
+
+        # Done
+        return result
+
     def scrapeWebSDR(self, url: str = "http://websdr.ewi.utwente.nl/~~websdrlistk?v=1&fmt=2&chseq=0"):
         result = {}
         try:
@@ -146,7 +197,7 @@ class ReceiverDatabase(object):
                         "url"     : entry["url"],
                         #"users"   : int(entry["users"]),
                         "device"  : "WebSDR",
-                        "symbol"  : getSymbolData('/', '\\')
+                        "symbol"  : self.getSymbol("WebSDR")
                     })
                     result[rl.getId()] = rl
 
@@ -191,7 +242,7 @@ class ReceiverDatabase(object):
                                 "altitude": int(entry["asl"]),
                                 "antenna" : entry["antenna"],
                                 "device"  : entry["sw_version"],
-                                "symbol"  : getSymbolData('/', '/')
+                                "symbol"  : self.getSymbol("KiwiSDR")
                             })
                             result[rl.getId()] = rl
                     # Clear current entry
