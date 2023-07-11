@@ -41,6 +41,13 @@ $(function(){
     var vessel_url = null;
     var flight_url = null;
 
+    // colors used for features
+    var featureColors = {
+        'KiwiSDR'   : '#800000',
+        'WebSDR'    : '#000080',
+        'OpenWebRX' : '#006000'
+    };
+
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
     var getColor = function(id){
@@ -109,7 +116,7 @@ $(function(){
     }
 
     var processUpdates = function(updates) {
-        if (typeof(AprsMarker) == 'undefined') {
+        if ((typeof(AprsMarker) == 'undefined') || (typeof(FeatureMarker) == 'undefined')) {
             updateQueue = updateQueue.concat(updates);
             return;
         }
@@ -145,7 +152,6 @@ $(function(){
                     marker.mode     = update.mode;
                     marker.hops     = update.hops;
                     marker.band     = update.band;
-                    marker.url      = update.location.url;
                     marker.comment  = update.location.comment;
                     marker.weather  = update.location.weather;
                     marker.altitude = update.location.altitude;
@@ -154,9 +160,50 @@ $(function(){
                     marker.gain     = update.location.gain;
                     marker.device   = update.location.device;
                     marker.aircraft = update.location.aircraft;
-                    marker.antenna  = update.location.antenna;
-                    marker.users    = update.location.users;
                     marker.directivity = update.location.directivity;
+
+                    if (expectedCallsign && expectedCallsign == update.callsign) {
+                        map.panTo(pos);
+                        showMarkerInfoWindow(update.callsign, pos);
+                        expectedCallsign = false;
+                    }
+
+                    if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
+                        showMarkerInfoWindow(infowindow.callsign, pos);
+                    }
+                break;
+                case 'feature':
+                    var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
+                    var marker;
+                    var markerClass = google.maps.Marker;
+                    var options = {}
+                    if (update.location.symbol) {
+                        markerClass = FeatureMarker;
+                        options.symbol = update.location.symbol;
+                        options.color  = update.mode in featureColors?
+                            featureColors[update.mode] : '#000000';
+                    }
+                    if (markers[update.callsign]) {
+                        marker = markers[update.callsign];
+                    } else {
+                        marker = new markerClass();
+                        marker.addListener('click', function(){
+                            showMarkerInfoWindow(update.callsign, pos);
+                        });
+                        markers[update.callsign] = marker;
+                    }
+                    marker.setOptions($.extend({
+                        position: pos,
+                        map: map,
+                        title: update.callsign
+                    }, options, getMarkerOpacityOptions(update.lastseen) ));
+                    marker.lastseen = update.lastseen;
+                    marker.mode     = update.mode;
+                    marker.url      = update.location.url;
+                    marker.comment  = update.location.comment;
+                    marker.altitude = update.location.altitude;
+                    marker.device   = update.location.device;
+                    marker.antenna  = update.location.antenna;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -267,8 +314,16 @@ $(function(){
                                     setInterval(function() { nite.refresh() }, 10000); // every 10s
                                 });
                                 $.getScript('static/lib/AprsMarker.js').done(function(){
-                                    processUpdates(updateQueue);
-                                    updateQueue = [];
+                                    if(typeof(FeatureMarker) != 'undefined') {
+                                        processUpdates(updateQueue);
+                                        updateQueue = [];
+                                    }
+                                });
+                                $.getScript('static/lib/FeatureMarker.js').done(function(){
+                                    if(typeof(AprsMarker) != 'undefined') {
+                                        processUpdates(updateQueue);
+                                        updateQueue = [];
+                                    }
                                 });
 
                                 var $legend = $(".openwebrx-map-legend");
@@ -684,6 +739,25 @@ $(function(){
                 filterRectangles(function(r) {
                     return r[key] === selector;
                 });
+            }
+        });
+
+        $content = $legend.find('.features');
+        $content.on('click', 'li', function() {
+            var $el = $(this);
+            $lis = $content.find('li');
+            if ($lis.hasClass('disabled') && !$el.hasClass('disabled')) {
+                $lis.removeClass('disabled');
+                // @@@ ADD CODE HERE
+            } else {
+                $el.removeClass('disabled');
+                $lis.filter(function() {
+                    return this != $el[0]
+                }).addClass('disabled');
+
+                var key = colorMode.slice(2);
+                var selector = $el.data('selector');
+                // @@@ ADD CODE HERE
             }
         });
     }
