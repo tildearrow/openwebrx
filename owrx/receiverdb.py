@@ -28,6 +28,9 @@ class ReceiverLocation(LatLngLocation):
     def getId(self):
         return re.sub(r"^.*://(.*)[/:].*$", r"\1", self.attrs["url"])
 
+    def getMode(self):
+        return re.sub(r"^([A-Za-z]+).*$", r"\1", self.attrs["device"])
+
     def __dict__(self):
         return self.attrs
 
@@ -90,6 +93,7 @@ class ReceiverDatabase(object):
             try:
                 with open(file, "w") as f:
                     json.dump(self, f, cls=ReceiverJSONEncoder, indent=2)
+                    f.close()
             except Exception as e:
                 logger.debug("Exception: {0}".format(e))
 
@@ -101,13 +105,13 @@ class ReceiverDatabase(object):
         logger.debug("Done refreshing receiver database.")
         self.thread = None
 
-    def getSymbol(self, type: str):
+    def getColor(self, type: str):
         if type.startswith("KiwiSDR"):
-            return getSymbolData('/', '/')
+            return "#800000"
         elif type.startswith("WebSDR"):
-            return getSymbolData('/', '\\')
+            return "#000080"
         else:
-            return getSymbolData('<', '\\')
+            return "#006000"
 
     def loadFromFile(self, fileName: str = None):
         # Get filename
@@ -118,6 +122,7 @@ class ReceiverDatabase(object):
         try:
             with open(fileName, "r") as f:
                 content = f.read()
+                f.close()
             if content:
                 db = json.loads(content)
         except Exception as e:
@@ -135,7 +140,7 @@ class ReceiverDatabase(object):
 
     def updateMap(self):
         for r in self.receivers.values():
-            Map.getSharedInstance().updateLocation(r.getId(), r, "Internet")
+            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode())
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
         patternJson = re.compile(r"^\s*var\s+receivers\s+=\s+(\[.*\]);\s*$")
@@ -160,13 +165,14 @@ class ReceiverDatabase(object):
                         else:
                             dev = r["type"]
                         rl = ReceiverLocation(lat, lon, {
-                            "type"    : "latlon",
+                            "type"    : "feature",
                             "lat"     : lat,
                             "lon"     : lon,
                             "comment" : r["label"],
                             "url"     : r["url"],
                             "device"  : dev,
-                            "symbol"  : self.getSymbol(dev)
+                            "symbol"  : "&tridot;",
+                            "color"   : self.getColor(dev)
                         })
                         result[rl.getId()] = rl
                         # Offset colocated receivers by ~500m
@@ -190,14 +196,15 @@ class ReceiverDatabase(object):
                     lat = entry["lat"]
                     lon = entry["lon"]
                     rl  = ReceiverLocation(lat, lon, {
-                        "type"    : "latlon",
+                        "type"    : "feature",
                         "lat"     : lat,
                         "lon"     : lon,
                         "comment" : entry["desc"],
                         "url"     : entry["url"],
                         #"users"   : int(entry["users"]),
                         "device"  : "WebSDR",
-                        "symbol"  : self.getSymbol("WebSDR")
+                        "symbol"  : "&tridot;",
+                        "color"   : self.getColor("WebSDR")
                     })
                     result[rl.getId()] = rl
 
@@ -231,7 +238,7 @@ class ReceiverDatabase(object):
                             lat = float(m.group(1))
                             lon = float(m.group(2))
                             rl = ReceiverLocation(lat, lon, {
-                                "type"    : "latlon",
+                                "type"    : "feature",
                                 "lat"     : lat,
                                 "lon"     : lon,
                                 "comment" : entry["name"],
@@ -241,8 +248,9 @@ class ReceiverDatabase(object):
                                 "loc"     : entry["loc"],
                                 "altitude": int(entry["asl"]),
                                 "antenna" : entry["antenna"],
-                                "device"  : entry["sw_version"],
-                                "symbol"  : self.getSymbol("KiwiSDR")
+                                "device"  : re.sub("_v", " ", entry["sw_version"]),
+                                "symbol"  : "&tridot;",
+                                "color"   : self.getColor("KiwiSDR")
                             })
                             result[rl.getId()] = rl
                     # Clear current entry
