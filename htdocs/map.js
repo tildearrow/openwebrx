@@ -41,8 +41,8 @@ $(function(){
     var vessel_url = null;
     var flight_url = null;
 
-    // Features functionality
-    var features = null;
+    // marker manager
+    var markmanager = null;
 
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
@@ -138,11 +138,11 @@ $(function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
-                        features.addType(update.mode);
+                        markmanager.addType(update.mode);
                     }
                     marker.setOptions($.extend({
                         position: pos,
-                        map: features.isEnabled(update.mode)? map : undefined,
+                        map: markmanager.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
                     marker.lastseen = update.lastseen;
@@ -178,12 +178,12 @@ $(function(){
                     if (update.location.symbol) {
                         options.symbol = update.location.symbol;
                     } else {
-                        options.symbol = features.getSymbol(update.mode);
+                        options.symbol = markmanager.getSymbol(update.mode);
                     }
                     if (update.location.color) {
                         options.color = update.location.color;
                     } else {
-                        options.color = features.getColor(update.mode);
+                        options.color = markmanager.getColor(update.mode);
                     }
 
                     // If new item, create a new feature marker for it
@@ -195,13 +195,13 @@ $(function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
-                        features.addType(update.mode);
+                        markmanager.addType(update.mode);
                     }
 
                     // Apply marker options
                     marker.setOptions($.extend({
                         position: pos,
-                        map: features.isEnabled(update.mode)? map : undefined,
+                        map: markmanager.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
                     }, options));
 
@@ -324,14 +324,14 @@ $(function(){
                                 });
                                 $.getScript('static/lib/AprsMarker.js').done(function(){
                                     if(typeof(FeatureMarker) != 'undefined') {
-                                        features = new Features();
+                                        markmanager = new MarkerManager();
                                         processUpdates(updateQueue);
                                         updateQueue = [];
                                     }
                                 });
-                                $.getScript('static/lib/MapFeatures.js').done(function(){
+                                $.getScript('static/lib/MarkerManager.js').done(function(){
                                     if(typeof(AprsMarker) != 'undefined') {
-                                        features = new MapFeatures();
+                                        markmanager = new MarkerManager();
                                         processUpdates(updateQueue);
                                         updateQueue = [];
                                     }
@@ -762,7 +762,7 @@ $(function(){
             } else {
                 $el.addClass('disabled');
             }
-            features.toggle(map, markers, $el.data('selector'), onoff);
+            markmanager.toggle(map, markers, $el.data('selector'), onoff);
         });
     }
 

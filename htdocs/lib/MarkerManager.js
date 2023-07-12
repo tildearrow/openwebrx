@@ -1,8 +1,8 @@
 //
-// Map Features Management
+// Map Markers Management
 //
 
-function MapFeatures() {
+function MarkerManager() {
     // Currently known features
     this.types = {};
 
@@ -31,22 +31,22 @@ function MapFeatures() {
     };
 }
 
-MapFeatures.prototype.getColor = function(type) {
+MarkerManager.prototype.getColor = function(type) {
     // Default color is black
     return type in this.colors? this.colors[type] : '#000000';
 };
 
-MapFeatures.prototype.getSymbol = function(type) {
+MarkerManager.prototype.getSymbol = function(type) {
     // Default symbol is a rombus
     return type in this.symbols? this.symbols[type] : '&#9671;';
 };
 
-MapFeatures.prototype.isEnabled = function(type) {
+MarkerManager.prototype.isEnabled = function(type) {
     // Features are shown by default
     return type in this.enabled? this.enabled[type] : true;
 };
 
-MapFeatures.prototype.toggle = function(map, markers, type, onoff) {
+MarkerManager.prototype.toggle = function(map, markers, type, onoff) {
     // Keep track of each feature table being show or hidden
     this.enabled[type] = onoff;
 
@@ -56,7 +56,7 @@ MapFeatures.prototype.toggle = function(map, markers, type, onoff) {
     });
 };
 
-MapFeatures.prototype.addType = function(type) {
+MarkerManager.prototype.addType = function(type) {
     // Do not add feature twice
     if (type in this.types) return;
 
