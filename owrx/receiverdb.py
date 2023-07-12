@@ -26,7 +26,7 @@ class ReceiverLocation(LatLngLocation):
         super().__init__(lat, lon)
 
     def getId(self):
-        return re.sub(r"^.*://(.*)[/:].*$", r"\1", self.attrs["url"])
+        return re.sub(r"^.*://(.*?)(/.*)?$", r"\1", self.attrs["url"])
 
     def getMode(self):
         return re.sub(r"^([A-Za-z]+).*$", r"\1", self.attrs["device"])
@@ -170,9 +170,7 @@ class ReceiverDatabase(object):
                             "lon"     : lon,
                             "comment" : r["label"],
                             "url"     : r["url"],
-                            "device"  : dev,
-                            "symbol"  : "&tridot;",
-                            "color"   : self.getColor(dev)
+                            "device"  : dev
                         })
                         result[rl.getId()] = rl
                         # Offset colocated receivers by ~500m
@@ -202,9 +200,7 @@ class ReceiverDatabase(object):
                         "comment" : entry["desc"],
                         "url"     : entry["url"],
                         #"users"   : int(entry["users"]),
-                        "device"  : "WebSDR",
-                        "symbol"  : "&tridot;",
-                        "color"   : self.getColor("WebSDR")
+                        "device"  : "WebSDR"
                     })
                     result[rl.getId()] = rl
 
@@ -248,9 +244,7 @@ class ReceiverDatabase(object):
                                 "loc"     : entry["loc"],
                                 "altitude": int(entry["asl"]),
                                 "antenna" : entry["antenna"],
-                                "device"  : re.sub("_v", " ", entry["sw_version"]),
-                                "symbol"  : "&tridot;",
-                                "color"   : self.getColor("KiwiSDR")
+                                "device"  : re.sub("_v", " ", entry["sw_version"])
                             })
                             result[rl.getId()] = rl
                     # Clear current entry
