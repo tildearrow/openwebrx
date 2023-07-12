@@ -753,8 +753,8 @@ $(function(){
             }
         });
 
-        $content = $legend.find('.features');
-        $content.on('click', 'li', function() {
+        $content1 = $legend.find('.features');
+        $content1.on('click', 'li', function() {
             var $el = $(this);
             var onoff = $el.hasClass('disabled');
             if (onoff) {
