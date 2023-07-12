@@ -41,12 +41,8 @@ $(function(){
     var vessel_url = null;
     var flight_url = null;
 
-    // colors used for features
-    var featureColors = {
-        'KiwiSDR'   : '#800000',
-        'WebSDR'    : '#000080',
-        'OpenWebRX' : '#006000'
-    };
+    // Features functionality
+    var features = null;
 
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
@@ -142,10 +138,11 @@ $(function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
+                        features.addType(update.mode);
                     }
                     marker.setOptions($.extend({
                         position: pos,
-                        map: map,
+                        map: features.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
                     marker.lastseen = update.lastseen;
@@ -174,29 +171,41 @@ $(function(){
                 break;
                 case 'feature':
                     var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
-                    var marker;
-                    var markerClass = google.maps.Marker;
                     var options = {}
+                    var marker;
+
+                    // If no symbol or color supplied, use defaults by type
                     if (update.location.symbol) {
-                        markerClass = FeatureMarker;
                         options.symbol = update.location.symbol;
-                        options.color  = update.mode in featureColors?
-                            featureColors[update.mode] : '#000000';
+                    } else {
+                        options.symbol = features.getSymbol(update.mode);
                     }
+                    if (update.location.color) {
+                        options.color = update.location.color;
+                    } else {
+                        options.color = features.getColor(update.mode);
+                    }
+
+                    // If new item, create a new feature marker for it
                     if (markers[update.callsign]) {
                         marker = markers[update.callsign];
                     } else {
-                        marker = new markerClass();
+                        marker = new FeatureMarker();
                         marker.addListener('click', function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
+                        features.addType(update.mode);
                     }
+
+                    // Apply marker options
                     marker.setOptions($.extend({
                         position: pos,
-                        map: map,
+                        map: features.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
-                    }, options, getMarkerOpacityOptions(update.lastseen) ));
+                    }, options));
+
+                    // Get attributes
                     marker.lastseen = update.lastseen;
                     marker.mode     = update.mode;
                     marker.url      = update.location.url;
@@ -315,12 +324,14 @@ $(function(){
                                 });
                                 $.getScript('static/lib/AprsMarker.js').done(function(){
                                     if(typeof(FeatureMarker) != 'undefined') {
+                                        features = new Features();
                                         processUpdates(updateQueue);
                                         updateQueue = [];
                                     }
                                 });
                                 $.getScript('static/lib/FeatureMarker.js').done(function(){
                                     if(typeof(AprsMarker) != 'undefined') {
+                                        features = new Features();
                                         processUpdates(updateQueue);
                                         updateQueue = [];
                                     }
@@ -745,20 +756,13 @@ $(function(){
         $content = $legend.find('.features');
         $content.on('click', 'li', function() {
             var $el = $(this);
-            $lis = $content.find('li');
-            if ($lis.hasClass('disabled') && !$el.hasClass('disabled')) {
-                $lis.removeClass('disabled');
-                // @@@ ADD CODE HERE
-            } else {
+            var onoff = $el.hasClass('disabled');
+            if (onoff) {
                 $el.removeClass('disabled');
-                $lis.filter(function() {
-                    return this != $el[0]
-                }).addClass('disabled');
-
-                var key = colorMode.slice(2);
-                var selector = $el.data('selector');
-                // @@@ ADD CODE HERE
+            } else {
+                $el.addClass('disabled');
             }
+            features.toggle(map, markers, $el.data('selector'), onoff);
         });
     }
 
