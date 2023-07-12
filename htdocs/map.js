@@ -329,9 +329,9 @@ $(function(){
                                         updateQueue = [];
                                     }
                                 });
-                                $.getScript('static/lib/FeatureMarker.js').done(function(){
+                                $.getScript('static/lib/MapFeatures.js').done(function(){
                                     if(typeof(AprsMarker) != 'undefined') {
-                                        features = new Features();
+                                        features = new MapFeatures();
                                         processUpdates(updateQueue);
                                         updateQueue = [];
                                     }
