@@ -15,21 +15,21 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class ReceiverJSONEncoder(JSONEncoder):
+class MyJSONEncoder(JSONEncoder):
     def default(self, obj):
         return obj.toJSON()
 
 
-class ReceiverLocation(LatLngLocation):
+class MarkerLocation(LatLngLocation):
     def __init__(self, lat: float, lon: float, attrs):
         self.attrs = attrs
         super().__init__(lat, lon)
 
     def getId(self):
-        return re.sub(r"^.*://(.*?)(/.*)?$", r"\1", self.attrs["url"])
+        return self.attrs["id"]
 
     def getMode(self):
-        return re.sub(r"^([A-Za-z]+).*$", r"\1", self.attrs["device"])
+        return self.attrs["mode"]
 
     def __dict__(self):
         return self.attrs
@@ -38,28 +38,46 @@ class ReceiverLocation(LatLngLocation):
         return self.attrs
 
 
-class ReceiverDatabase(object):
+class Markers(object):
     sharedInstance = None
     creationLock = threading.Lock()
 
     @staticmethod
     def getSharedInstance():
-        with ReceiverDatabase.creationLock:
-            if ReceiverDatabase.sharedInstance is None:
-                ReceiverDatabase.sharedInstance = ReceiverDatabase()
-        return ReceiverDatabase.sharedInstance
+        with Markers.creationLock:
+            if Markers.sharedInstance is None:
+                Markers.sharedInstance = Markers()
+        return Markers.sharedInstance
+
+#    @staticmethod
+#    def _getCacheFile():
+#        coreConfig = CoreConfig()
+#        return "{data_directory}/markers.json".format(data_directory=coreConfig.get_temporary_directory())
 
     @staticmethod
-    def _getReceiversFile():
+    def _getMarkersFile():
         coreConfig = CoreConfig()
-        return "{data_directory}/receivers.json".format(data_directory=coreConfig.get_temporary_directory())
+        return "{data_directory}/markers.json".format(data_directory=coreConfig.get_data_directory())
 
     def __init__(self):
-        self.receivers = {}
+        self.markers = {}
         self.thread = None
+        # Known database files
+        self.fileList = [
+            "markers.json",
+            "/etc/openwebrx/markers.json",
+        ]
+        # Find additional marker files in the markers.d folder
+        try:
+            markersDir = "/etc/openwebrx/markers.d"
+            self.fileList += [ markersDir + "/" + file
+                for file in os.listdir(markersDir) if file.endswith(".json")
+            ]
+        except Exception:
+            pass
 
     def toJSON(self):
-        return self.receivers
+        return self.markers
 
     def refresh(self):
         if self.thread is None:
@@ -67,79 +85,73 @@ class ReceiverDatabase(object):
             self.thread.start()
 
     def _refreshThread(self):
-        logger.debug("Starting receiver database refresh...")
+        logger.debug("Starting marker database refresh...")
+
+        # No markers yet
+        self.markers = {}
+
+        # Load markers from local files
+        for file in self.fileList:
+            if os.path.isfile(file):
+                logger.debug("Loading markers from '{0}'...".format(file))
+                self.markers.update(self.loadMarkers(file))
 
         # This file contains cached database
-        file = self._getReceiversFile()
+        file = self._getMarkersFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
         # Try loading cached database from file first, unless stale
         if time.time() - ts < 60*60*24:
-            logger.debug("Loading database from '{0}'...".format(file))
-            self.receivers = self.loadFromFile(file)
+            logger.debug("Loading cached markers from '{0}'...".format(file))
+            self.markers.update(self.loadMarkers(file))
         else:
-            self.receivers = {}
-
-        # Scrape websites for receivers, if the list if empty
-        if not self.receivers:
+            # Scrape websites for data
             logger.debug("Scraping KiwiSDR web site...")
-            self.receivers.update(self.scrapeKiwiSDR())
+            self.markers.update(self.scrapeKiwiSDR())
             logger.debug("Scraping WebSDR web site...")
-            self.receivers.update(self.scrapeWebSDR())
+            self.markers.update(self.scrapeWebSDR())
             logger.debug("Scraping OpenWebRX web site...")
-            self.receivers.update(self.scrapeOWRX())
+            self.markers.update(self.scrapeOWRX())
+            #logger.debug("Scraping MWList web site...")
+            #self.markers.update(self.scrapeMWList())
             # Save parsed data into a file
-            logger.debug("Saving {0} receivers to '{1}'...".format(len(self.receivers), file))
+            logger.debug("Saving {0} markers to '{1}'...".format(len(self.markers), file))
             try:
                 with open(file, "w") as f:
-                    json.dump(self, f, cls=ReceiverJSONEncoder, indent=2)
+                    json.dump(self, f, cls=MyJSONEncoder, indent=2)
                     f.close()
             except Exception as e:
                 logger.debug("Exception: {0}".format(e))
 
-        # Update map with receivers
+        # Update map with markers
         logger.debug("Updating map...")
         self.updateMap()
 
         # Done
-        logger.debug("Done refreshing receiver database.")
+        logger.debug("Done refreshing marker database.")
         self.thread = None
 
-    def getColor(self, type: str):
-        if type.startswith("KiwiSDR"):
-            return "#800000"
-        elif type.startswith("WebSDR"):
-            return "#000080"
-        else:
-            return "#006000"
-
-    def loadFromFile(self, fileName: str = None):
-        # Get filename
-        if fileName is None:
-            fileName = self._getReceiversFile()
-
-        # Load receivers list from JSON file
+    def loadMarkers(self, fileName: str):
+        # Load markers list from JSON file
         try:
             with open(fileName, "r") as f:
-                content = f.read()
+                db = json.load(f)
                 f.close()
-            if content:
-                db = json.loads(content)
         except Exception as e:
-            logger.debug("loadFromFile() exception: {0}".format(e))
+            logger.debug("loadMarkers() exception: {0}".format(e))
             return
 
-        # Process receivers list
+        # Process markers list
         result = {}
         for key in db.keys():
             attrs = db[key]
-            result[key] = ReceiverLocation(attrs["lat"], attrs["lon"], attrs)
+            result[key] = MarkerLocation(attrs["lat"], attrs["lon"], attrs)
 
         # Done
         return result
 
     def updateMap(self):
-        for r in self.receivers.values():
+        for r in self.markers.values():
             Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode())
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
@@ -164,8 +176,10 @@ class ReceiverDatabase(object):
                             dev = r["type"] + " " + r["version"]
                         else:
                             dev = r["type"]
-                        rl = ReceiverLocation(lat, lon, {
+                        rl = MarkerLocation(lat, lon, {
                             "type"    : "feature",
+                            "mode"    : r["type"],
+                            "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", r["url"]),
                             "lat"     : lat,
                             "lon"     : lon,
                             "comment" : r["label"],
@@ -193,8 +207,10 @@ class ReceiverDatabase(object):
                     # Save accumulated attributes, use hostname as key
                     lat = entry["lat"]
                     lon = entry["lon"]
-                    rl  = ReceiverLocation(lat, lon, {
+                    rl  = MarkerLocation(lat, lon, {
                         "type"    : "feature",
+                        "mode"    : "WebSDR",
+                        "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"]),
                         "lat"     : lat,
                         "lon"     : lon,
                         "comment" : entry["desc"],
@@ -233,8 +249,10 @@ class ReceiverDatabase(object):
                             # Save accumulated attributes, use hostname as key
                             lat = float(m.group(1))
                             lon = float(m.group(2))
-                            rl = ReceiverLocation(lat, lon, {
+                            rl = MarkerLocation(lat, lon, {
                                 "type"    : "feature",
+                                "mode"    : "KiwiSDR",
+                                "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"]),
                                 "lat"     : lat,
                                 "lon"     : lon,
                                 "comment" : entry["name"],
@@ -258,6 +276,38 @@ class ReceiverDatabase(object):
 
         except Exception as e:
             logger.debug("scrapeKiwiSDR() exception: {0}".format(e))
+
+        # Done
+        return result
+
+    def scrapeMWList(self, url: str = "http://www.mwlist.org/shortwave_transmitter_sites.php"):
+        result = {}
+        try:
+            patternLoc = re.compile(r".*\['\d+',\s+'(.*?)',\s+(\S+),\s+(\S+),\s+'(\S+)',\s+(\d+)\].*")
+            patternUrl = re.compile(r".*<a\s+.*\s+href='(\S+locationid=)(\d+)'>.*")
+
+            for line in urllib.request.urlopen(url).readlines():
+                # Convert read bytes to a string
+                line = line.decode('utf-8')
+                # When we encounter a location...
+                m = patternLoc.match(line)
+                if m is not None:
+                    rl = MarkerLocation(lat, lon, {
+                        "type"    : "feature",
+                        "mode"    : "MWList",
+                        "id"      : m.group(5),
+                        "lat"     : m.group(2),
+                        "lon"     : m.group(3),
+                        "comment" : m.group(1) + "(" + m.group(4) + ")"
+                    })
+                    result[rl.getId()] = rl
+                else:
+                    m = patternUrl.match(line)
+                    if m is not None and m.group(2) in result:
+                        result[m.group(2)].attrs["url"] = m.group(1) + m.group(2)
+
+        except Exception as e:
+            logger.debug("scrapeMWList() exception: {0}".format(e))
 
         # Done
         return result

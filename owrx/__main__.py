@@ -18,7 +18,7 @@ from owrx.reporting import ReportingEngine
 from owrx.version import openwebrx_version
 from owrx.audio.queue import DecoderQueue
 from owrx.admin import add_admin_parser, run_admin_action
-from owrx.receiverdb import ReceiverDatabase
+from owrx.markers import Markers
 import signal
 import argparse
 import ssl
@@ -113,7 +113,8 @@ Support and info:       https://groups.io/g/openwebrx
 
     Services.start()
 
-    ReceiverDatabase.getSharedInstance().refresh()
+    # Instantiate and refresh marker database
+    Markers.getSharedInstance().refresh()
 
     try:
         # This is our HTTP server
