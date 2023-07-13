@@ -49,13 +49,8 @@ class Markers(object):
                 Markers.sharedInstance = Markers()
         return Markers.sharedInstance
 
-#    @staticmethod
-#    def _getCacheFile():
-#        coreConfig = CoreConfig()
-#        return "{data_directory}/markers.json".format(data_directory=coreConfig.get_temporary_directory())
-
     @staticmethod
-    def _getMarkersFile():
+    def _getCachedMarkersFile():
         coreConfig = CoreConfig()
         return "{data_directory}/markers.json".format(data_directory=coreConfig.get_data_directory())
 
@@ -97,7 +92,7 @@ class Markers(object):
                 self.markers.update(self.loadMarkers(file))
 
         # This file contains cached database
-        file = self._getMarkersFile()
+        file = self._getCachedMarkersFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
         # Try loading cached database from file first, unless stale
@@ -215,7 +210,7 @@ class Markers(object):
                         "lon"     : lon,
                         "comment" : entry["desc"],
                         "url"     : entry["url"],
-                        #"users"   : int(entry["users"]),
+                        "users"   : int(entry["users"]),
                         "device"  : "WebSDR"
                     })
                     result[rl.getId()] = rl
@@ -257,8 +252,8 @@ class Markers(object):
                                 "lon"     : lon,
                                 "comment" : entry["name"],
                                 "url"     : entry["url"],
-                                #"users"   : int(entry["users"]),
-                                #"maxusers": int(entry["users_max"]),
+                                "users"   : int(entry["users"]),
+                                "maxusers": int(entry["users_max"]),
                                 "loc"     : entry["loc"],
                                 "altitude": int(entry["asl"]),
                                 "antenna" : entry["antenna"],

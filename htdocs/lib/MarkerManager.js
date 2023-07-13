@@ -15,9 +15,10 @@ function MarkerManager() {
 
     // Symbols used for features
     this.symbols = {
-        'KiwiSDR'   : '&triminus;',
+        'KiwiSDR'   : '&tridot;',
         'WebSDR'    : '&tridot;',
-        'OpenWebRX' : '&triplus;',
+        'OpenWebRX' : '&tridot;',
+        'MWList'    : '&#9678;',
         'APRS'      : '&#9872;',
         'AIS'       : '&apacir;',
         'HFDL'      : '&#9992;'
@@ -27,7 +28,8 @@ function MarkerManager() {
     this.enabled = {
         'KiwiSDR'   : false,
         'WebSDR'    : false,
-        'OpenWebRX' : false
+        'OpenWebRX' : false,
+        'MWList'    : false
     };
 }
 

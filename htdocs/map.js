@@ -206,7 +206,8 @@ $(function(){
                     }, options));
 
                     // Get attributes
-                    marker.lastseen = update.lastseen;
+                    //features have no expiration date
+                    //marker.lastseen = update.lastseen;
                     marker.mode     = update.mode;
                     marker.url      = update.location.url;
                     marker.comment  = update.location.comment;
@@ -596,14 +597,6 @@ $(function(){
             );
         }
 
-        //if (marker.antenna) {
-        //    detailsString += makeListItem('Antenna', marker.antenna);
-        //}
-
-        //if (marker.users) {
-        //    detailsString += makeListItem('Users', marker.users);
-        //}
-
         if (marker.height) {
             detailsString += makeListItem('Height', marker.height.toFixed(0) + ' m');
         }
@@ -712,13 +705,15 @@ $(function(){
             m.setOptions(getRectangleOpacityOptions(m.lastseen));
         });
         $.each(markers, function(callsign, m) {
-            var age = now - m.lastseen;
-            if (age > retention_time) {
-                delete markers[callsign];
-                m.setMap();
-                return;
+            if (m.lastseen) {
+                var age = now - m.lastseen;
+                if (age > retention_time) {
+                    delete markers[callsign];
+                    m.setMap();
+                    return;
+                }
+                m.setOptions(getMarkerOpacityOptions(m.lastseen));
             }
-            m.setOptions(getMarkerOpacityOptions(m.lastseen));
         });
     }, 1000);
 
