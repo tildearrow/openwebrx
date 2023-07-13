@@ -1,7 +1,8 @@
 from owrx.config.core import CoreConfig
-from owrx.map import Map, LatLngLocation
+from owrx.map import Map, LatLngLocation, MarkerLocation
 from owrx.aprs import getSymbolData
 from json import JSONEncoder
+from owrx.eibi import EIBI
 
 import urllib
 import threading
@@ -18,24 +19,6 @@ logger.setLevel(logging.DEBUG)
 class MyJSONEncoder(JSONEncoder):
     def default(self, obj):
         return obj.toJSON()
-
-
-class MarkerLocation(LatLngLocation):
-    def __init__(self, lat: float, lon: float, attrs):
-        self.attrs = attrs
-        super().__init__(lat, lon)
-
-    def getId(self):
-        return self.attrs["id"]
-
-    def getMode(self):
-        return self.attrs["mode"]
-
-    def __dict__(self):
-        return self.attrs
-
-    def toJSON(self):
-        return self.attrs
 
 
 class Markers(object):
@@ -91,6 +74,10 @@ class Markers(object):
                 logger.debug("Loading markers from '{0}'...".format(file))
                 self.markers.update(self.loadMarkers(file))
 
+        # Load markers from the EIBI database
+        logger.debug("Loading EIBI transmitter locations...")
+        self.markers.update(EIBI.getLocations())
+
         # This file contains cached database
         file = self._getCachedMarkersFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
@@ -107,8 +94,6 @@ class Markers(object):
             self.markers.update(self.scrapeWebSDR())
             logger.debug("Scraping OpenWebRX web site...")
             self.markers.update(self.scrapeOWRX())
-            #logger.debug("Scraping MWList web site...")
-            #self.markers.update(self.scrapeMWList())
             # Save parsed data into a file
             logger.debug("Saving {0} markers to '{1}'...".format(len(self.markers), file))
             try:
@@ -271,38 +256,6 @@ class Markers(object):
 
         except Exception as e:
             logger.debug("scrapeKiwiSDR() exception: {0}".format(e))
-
-        # Done
-        return result
-
-    def scrapeMWList(self, url: str = "http://www.mwlist.org/shortwave_transmitter_sites.php"):
-        result = {}
-        try:
-            patternLoc = re.compile(r".*\['\d+',\s+'(.*?)',\s+(\S+),\s+(\S+),\s+'(\S+)',\s+(\d+)\].*")
-            patternUrl = re.compile(r".*<a\s+.*\s+href='(\S+locationid=)(\d+)'>.*")
-
-            for line in urllib.request.urlopen(url).readlines():
-                # Convert read bytes to a string
-                line = line.decode('utf-8')
-                # When we encounter a location...
-                m = patternLoc.match(line)
-                if m is not None:
-                    rl = MarkerLocation(lat, lon, {
-                        "type"    : "feature",
-                        "mode"    : "MWList",
-                        "id"      : m.group(5),
-                        "lat"     : m.group(2),
-                        "lon"     : m.group(3),
-                        "comment" : m.group(1) + "(" + m.group(4) + ")"
-                    })
-                    result[rl.getId()] = rl
-                else:
-                    m = patternUrl.match(line)
-                    if m is not None and m.group(2) in result:
-                        result[m.group(2)].attrs["url"] = m.group(1) + m.group(2)
-
-        except Exception as e:
-            logger.debug("scrapeMWList() exception: {0}".format(e))
 
         # Done
         return result

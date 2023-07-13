@@ -153,3 +153,22 @@ class LocatorLocation(Location):
 
     def __dict__(self):
         return {"type": "locator", "locator": self.locator}
+
+
+class MarkerLocation(Location):
+    def __init__(self, lat: float, lon: float, attrs):
+        self.lat = lat
+        self.lon = lon
+        self.attrs = attrs
+
+    def getId(self):
+        return self.attrs["id"]
+
+    def getMode(self):
+        return self.attrs["mode"]
+
+    def __dict__(self):
+        return self.attrs
+
+    def toJSON(self):
+        return self.attrs
