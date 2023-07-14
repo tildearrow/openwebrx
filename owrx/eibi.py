@@ -1,8 +1,41 @@
+from owrx.config.core import CoreConfig
 from owrx.map import MarkerLocation
+from datetime import datetime
+from json import JSONEncoder
 
-import urllib.parse
+import urllib
+import threading
+import logging
+import json
+import re
+import os
+import time
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.DEBUG)
+
+
+class MyJSONEncoder(JSONEncoder):
+    def default(self, obj):
+        return obj.toJSON()
+
 
 class EIBI(object):
+    sharedInstance = None
+    creationLock = threading.Lock()
+
+    @staticmethod
+    def getSharedInstance():
+        with EIBI.creationLock:
+            if EIBI.sharedInstance is None:
+                EIBI.sharedInstance = EIBI()
+        return EIBI.sharedInstance
+
+    @staticmethod
+    def _getCachedScheduleFile():
+        coreConfig = CoreConfig()
+        return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
+
     @staticmethod
     def getLocations():
         #url = "https://www.short-wave.info/index.php?txsite="
@@ -14,7 +47,7 @@ class EIBI(object):
             lon = entry["lon"]
             rl  = MarkerLocation(lat, lon, {
                 "type" : "feature",
-                "mode" : "EIBI",
+                "mode" : "Station",
                 "id"   : entry["name"],
                 "lat"  : lat,
                 "lon"  : lon,
@@ -25,30 +58,142 @@ class EIBI(object):
         return result
 
     def __init__(self):
-        pass
+        self.schedule = []
+        self.thread = None
+
+    def toJSON(self):
+        return self.schedule
+
+    def refresh(self):
+        if self.thread is None:
+            self.thread = threading.Thread(target=self._refreshThread)
+            self.thread.start()
+
+    def _refreshThread(self):
+        logger.debug("Starting EIBI schedule refresh...")
+
+        # This file contains cached schedule
+        file = self._getCachedScheduleFile()
+        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
+
+        # Try loading cached schedule from file first, unless stale
+        if time.time() - ts < 60*60*24*30:
+            logger.debug("Loading cached schedule from '{0}'...".format(file))
+            self.schedule = self.loadSchedule(file)
+        else:
+            # Scrape EIBI website for data
+            logger.debug("Scraping EIBI web site...")
+            self.schedule = self.scrape()
+            # Save parsed data into a file
+            logger.debug("Saving {0} schedule entries to '{1}'...".format(len(self.schedule), file))
+            try:
+                with open(file, "w") as f:
+                    json.dump(self, f, cls=MyJSONEncoder, indent=2)
+                    f.close()
+            except Exception as e:
+                logger.debug("Exception: {0}".format(e))
+
+        # Done
+        logger.debug("Done refreshing schedule.")
+        self.thread = None
+
+    def loadSchedule(self, fileName: str):
+        # Load schedule from JSON file
+        try:
+            with open(fileName, "r") as f:
+                result = json.load(f)
+                f.close()
+        except Exception as e:
+            logger.debug("loadSchedule() exception: {0}".format(e))
+            result = []
+        # Done
+        return result
+
+    def findBySource(self, src: str):
+        # Get entries active at the current time
+        now = datetime.utcnow()
+        now = now.hour * 100 + now.minute
+        result = []
+        # Search for entries originating from given source at current time
+        for entry in self.schedule:
+            if entry["time1"] <= now and entry["time2"] > now:
+                if entry["itu"] + entry["src"] == src:
+                    result.append(entry)
+        # Done
+        return result
+
+    def findCurrent(self, freq1: int, freq2: int):
+        # Get entries active at the current time
+        now = datetime.utcnow()
+        now = now.hour * 100 + now.minute
+        return self.find(freq1, freq2, now, now)
+
+    def find(self, freq1: int, freq2: int, time1: int, time2: int):
+        result = []
+        # Search for entries within given frequency and time ranges
+        for entry in self.schedule:
+            f = entry["freq"]
+            if f >= freq1 and f <= freq2:
+                if entry["time1"] <= time2 and entry["time2"] > time1:
+                    result.append(entry)
+        # Done
+        return result
+
+    def convertDays(self, days: str):
+        # Replace day names with digits, remove commas
+        days = re.sub("Mo", "1", days)
+        days = re.sub("Tu", "2", days)
+        days = re.sub("We", "3", days)
+        days = re.sub("Th", "4", days)
+        days = re.sub("Fr", "5", days)
+        days = re.sub("Sa", "6", days)
+        days = re.sub("Su", "7", days)
+        days = re.sub(r"[^0-9\-]", "", days)
+        # Empty strings mean every day of the week
+        if days == "":
+            return "1234567"
+        # Parse input string
+        span = True
+        curr = 1
+        out  = ""
+        for j in range(len(days)):
+            if days[j] == "-":
+                span = True
+            else:
+                next = int(days[j])
+                while curr < next:
+                  out  += str(curr) if span else "."
+                  curr += 1
+                span = False
+        # Add final days
+        while curr < 8:
+            out  += str(curr) if span else "."
+            curr += 1
+        # Done
+        return out
 
     def scrape(self, url: str = "http://www.eibispace.de/dx/sked-a23.csv"):
         result = []
         try:
             # This is out CSV pattern
-            pattern = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(.*);(.*)$")
+            pattern = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(.*);(.*);(.*)$")
 
             for line in urllib.request.urlopen(url).readlines():
                 # Convert read bytes to a string
-                line = line.decode('utf-8')
+                line = line.decode('cp1252').rstrip()
                 # When we encounter a location...
                 m = pattern.match(line)
                 if m is not None:
-                    result.push({
+                    result.append({
                         "freq"  : int(float(m.group(1)) * 1000),
-                        "time1" : m.group(2),
-                        "time2" : m.group(3),
-                        "days"  : m.group(4),
+                        "time1" : int(m.group(2)),
+                        "time2" : int(m.group(3)),
+                        "days"  : self.convertDays(m.group(4)),
                         "itu"   : m.group(5),
                         "name"  : m.group(6),
                         "lang"  : m.group(7),
                         "tgt"   : m.group(8),
-                        "rmks"  : m.group(9),
+                        "src"   : m.group(9),
                         "p"     : m.group(10),
                         "start" : m.group(11),
                         "stop"  : m.group(12),

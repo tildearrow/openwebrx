@@ -1,5 +1,5 @@
 from owrx.config.core import CoreConfig
-from owrx.map import Map, LatLngLocation, MarkerLocation
+from owrx.map import Map, MarkerLocation
 from owrx.aprs import getSymbolData
 from json import JSONEncoder
 from owrx.eibi import EIBI
