@@ -1,8 +1,8 @@
 from owrx.config.core import CoreConfig
-from owrx.map import Map, MarkerLocation
+from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
 from json import JSONEncoder
-from owrx.eibi import EIBI
+from owrx.eibi import EIBI_Locations
 
 import urllib
 import threading
@@ -19,6 +19,23 @@ logger.setLevel(logging.DEBUG)
 class MyJSONEncoder(JSONEncoder):
     def default(self, obj):
         return obj.toJSON()
+
+
+class MarkerLocation(Location):
+    def __init__(self, attrs):
+        self.attrs = attrs
+
+    def getId(self):
+        return self.attrs["id"]
+
+    def getMode(self):
+        return self.attrs["mode"]
+
+    def __dict__(self):
+        return self.attrs
+
+    def toJSON(self):
+        return self.attrs
 
 
 class Markers(object):
@@ -68,16 +85,6 @@ class Markers(object):
         # No markers yet
         self.markers = {}
 
-        # Load markers from local files
-        for file in self.fileList:
-            if os.path.isfile(file):
-                logger.debug("Loading markers from '{0}'...".format(file))
-                self.markers.update(self.loadMarkers(file))
-
-        # Load markers from the EIBI database
-        logger.debug("Loading EIBI transmitter locations...")
-        self.markers.update(EIBI.getLocations())
-
         # This file contains cached database
         file = self._getCachedMarkersFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
@@ -88,20 +95,33 @@ class Markers(object):
             self.markers.update(self.loadMarkers(file))
         else:
             # Scrape websites for data
+            cache = {}
             logger.debug("Scraping KiwiSDR web site...")
-            self.markers.update(self.scrapeKiwiSDR())
+            cache.update(self.scrapeKiwiSDR())
             logger.debug("Scraping WebSDR web site...")
-            self.markers.update(self.scrapeWebSDR())
+            cache.update(self.scrapeWebSDR())
             logger.debug("Scraping OpenWebRX web site...")
-            self.markers.update(self.scrapeOWRX())
+            cache.update(self.scrapeOWRX())
             # Save parsed data into a file
             logger.debug("Saving {0} markers to '{1}'...".format(len(self.markers), file))
             try:
                 with open(file, "w") as f:
-                    json.dump(self, f, cls=MyJSONEncoder, indent=2)
+                    json.dump(cache, f, cls=MyJSONEncoder, indent=2)
                     f.close()
             except Exception as e:
                 logger.debug("Exception: {0}".format(e))
+            # Add scraped data to the database
+            self.markers.update(cache)
+
+        # Load markers from the EIBI database
+        logger.debug("Loading EIBI transmitter locations...")
+        self.markers.update(self.loadEIBI())
+
+        # Load markers from local files
+        for file in self.fileList:
+            if os.path.isfile(file):
+                logger.debug("Loading markers from '{0}'...".format(file))
+                self.markers.update(self.loadMarkers(file))
 
         # Update map with markers
         logger.debug("Updating map...")
@@ -125,8 +145,27 @@ class Markers(object):
         result = {}
         for key in db.keys():
             attrs = db[key]
-            result[key] = MarkerLocation(attrs["lat"], attrs["lon"], attrs)
+            result[key] = MarkerLocation(attrs)
 
+        # Done
+        return result
+
+    def loadEIBI(self):
+        #url = "https://www.short-wave.info/index.php?txsite="
+        url = "https://www.google.com/search?q="
+        result = {}
+        # Load transmitter sites from EIBI database
+        for entry in EIBI_Locations:
+            rl = MarkerLocation({
+                "type"    : "feature",
+                "mode"    : "Stations",
+                "comment" : "Transmitter",
+                "id"      : entry["name"],
+                "lat"     : entry["lat"],
+                "lon"     : entry["lon"],
+                "url"     : url + urllib.parse.quote_plus(entry["name"])
+            })
+            result[rl.getId()] = rl
         # Done
         return result
 
@@ -156,7 +195,7 @@ class Markers(object):
                             dev = r["type"] + " " + r["version"]
                         else:
                             dev = r["type"]
-                        rl = MarkerLocation(lat, lon, {
+                        rl = MarkerLocation({
                             "type"    : "feature",
                             "mode"    : r["type"],
                             "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", r["url"]),
@@ -187,7 +226,7 @@ class Markers(object):
                     # Save accumulated attributes, use hostname as key
                     lat = entry["lat"]
                     lon = entry["lon"]
-                    rl  = MarkerLocation(lat, lon, {
+                    rl  = MarkerLocation({
                         "type"    : "feature",
                         "mode"    : "WebSDR",
                         "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"]),
@@ -229,7 +268,7 @@ class Markers(object):
                             # Save accumulated attributes, use hostname as key
                             lat = float(m.group(1))
                             lon = float(m.group(2))
-                            rl = MarkerLocation(lat, lon, {
+                            rl = MarkerLocation({
                                 "type"    : "feature",
                                 "mode"    : "KiwiSDR",
                                 "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"]),

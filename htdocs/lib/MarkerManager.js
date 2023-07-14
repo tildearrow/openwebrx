@@ -18,7 +18,7 @@ function MarkerManager() {
         'KiwiSDR'   : '&tridot;',
         'WebSDR'    : '&tridot;',
         'OpenWebRX' : '&tridot;',
-        'Station'   : '&#9678;',
+        'Stations'  : '&#9678;',
         'APRS'      : '&#9872;',
         'AIS'       : '&apacir;',
         'HFDL'      : '&#9992;'
@@ -29,7 +29,7 @@ function MarkerManager() {
         'KiwiSDR'   : false,
         'WebSDR'    : false,
         'OpenWebRX' : false,
-        'Station'   : false
+        'Stations'  : false
     };
 }
 

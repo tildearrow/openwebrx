@@ -1,5 +1,4 @@
 from owrx.config.core import CoreConfig
-from owrx.map import MarkerLocation
 from datetime import datetime
 from json import JSONEncoder
 
@@ -35,27 +34,6 @@ class EIBI(object):
     def _getCachedScheduleFile():
         coreConfig = CoreConfig()
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
-
-    @staticmethod
-    def getLocations():
-        #url = "https://www.short-wave.info/index.php?txsite="
-        url = "https://www.google.com/search?q="
-        result = {}
-        # List all the EIBI locations
-        for entry in EIBI_Locations:
-            lat = entry["lat"]
-            lon = entry["lon"]
-            rl  = MarkerLocation(lat, lon, {
-                "type" : "feature",
-                "mode" : "Station",
-                "id"   : entry["name"],
-                "lat"  : lat,
-                "lon"  : lon,
-                "url"  : url + urllib.parse.quote_plus(entry["name"])
-            })
-            result[rl.getId()] = rl
-        # Done
-        return result
 
     def __init__(self):
         self.schedule = []
