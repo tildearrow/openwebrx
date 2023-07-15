@@ -649,7 +649,7 @@ $(function(){
         }
 
         infowindow.setContent(
-            '<h3>' + linkifyCallsign(callsign, urlString) + distance + '</h3>' +
+            '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
             '<div align="center">' + timeString + ' using ' + marker.mode +
             ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
             commentString + weatherString + detailsString + hopsString
