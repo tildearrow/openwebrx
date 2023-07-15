@@ -192,7 +192,7 @@ $(function(){
                     } else {
                         marker = new FeatureMarker();
                         marker.addListener('click', function(){
-                            showMarkerInfoWindow(update.callsign, pos);
+                            showFeatureInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
                         markmanager.addType(update.mode);
@@ -217,12 +217,12 @@ $(function(){
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
-                        showMarkerInfoWindow(update.callsign, pos);
+                        showFeatureInfoWindow(update.callsign, pos);
                         expectedCallsign = false;
                     }
 
                     if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
-                        showMarkerInfoWindow(infowindow.callsign, pos);
+                        showFeatureInfoWindow(infowindow.callsign, pos);
                     }
                 break;
                 case 'locator':
@@ -476,6 +476,10 @@ $(function(){
         return Math.round(d);
     }
 
+    var truncate = function(str, count) {
+        return str.length > count? str.slice(0, count) + '&mldr;' : str;
+    }
+
     var infowindow;
     var showLocatorInfoWindow = function(locator, pos) {
         var infowindow = getInfoWindow();
@@ -532,11 +536,6 @@ $(function(){
         var detailsString = "";
         var hopsString = "";
         var distance = "";
-        var urlString = null;
-
-        if (marker.url) {
-            urlString = marker.url;
-        }
 
         if (marker.comment) {
             commentString += '<p>' + makeListTitle('Comment') + '<div>' +
@@ -654,6 +653,56 @@ $(function(){
             '<div align="center">' + timeString + ' using ' + marker.mode +
             ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
             commentString + weatherString + detailsString + hopsString
+        );
+
+        infowindow.open(map, marker);
+    }
+
+    var showFeatureInfoWindow = function(name, pos) {
+        var infowindow = getInfoWindow();
+        infowindow.callsign = name;
+        var marker = markers[name];
+        var commentString = "";
+        var detailsString = "";
+        var nameString = "";
+        var distance = "";
+
+        if (marker.url) {
+            nameString += linkifyCallsign(name, marker.url);
+        } else {
+            nameString += name;
+        }
+
+        if (marker.comment) {
+            commentString += '<div align="center">' + marker.comment + '</div>';
+        }
+
+        if (marker.altitude) {
+            detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
+        }
+
+        if (marker.device) {
+            detailsString += makeListItem('Device', marker.device.manufacturer?
+              marker.device.device + " by " + marker.device.manufacturer
+            : marker.device
+            );
+        }
+
+        if (marker.antenna) {
+            detailsString += makeListItem('Antenna', truncate(marker.antenna, 24));
+        }
+
+        if (detailsString.length > 0) {
+            detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
+        }
+
+        if (receiverMarker) {
+            distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
+        }
+
+        infowindow.setContent(
+            '<h3>' + nameString + distance + '</h3>' +
+            commentString + detailsString
         );
 
         infowindow.open(map, marker);
