@@ -171,7 +171,7 @@ class Markers(object):
 
     def updateMap(self):
         for r in self.markers.values():
-            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode())
+            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), permanent=True)
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
         patternJson = re.compile(r"^\s*var\s+receivers\s+=\s+(\[.*\]);\s*$")
