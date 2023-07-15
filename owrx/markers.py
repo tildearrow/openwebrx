@@ -111,8 +111,8 @@ class Markers(object):
                 self.markers.update(self.loadMarkers(file))
 
         # Load markers from the EIBI database
-        logger.debug("Loading EIBI transmitter locations...")
-        self.markers.update(self.loadEIBI())
+        #logger.debug("Loading EIBI transmitter locations...")
+        #self.markers.update(self.loadEIBI())
 
         # This file contains cached database
         file = self._getCachedMarkersFile()
