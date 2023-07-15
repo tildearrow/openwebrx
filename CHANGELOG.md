@@ -1,3 +1,20 @@
+**1.2.23**
+- Added OpenWebRX, WebSDR, and KiwiSDR locations to the map.
+- Added periodic updates of online SDR locations from the web.
+- Added ability to toggle map markers, by type.
+- Started adding support for EIBI shortwave schedules.
+
+**1.2.22**
+- Added proper support for multiple bookmark files.
+- Place extra bookmark files into /etc/openwebrx/bookmarks.d.
+- Only /var/lib/openwebrx/bookmarks.json file is UI-editable.
+- Synchronized UTC clock changes with the minute changes.
+- Made SDR sources retry startup up to ten times, if it fails.
+- Made status bar, log, and console scale on mobile devices.
+- Made OWRX discover /sys node containing CPU temperature.
+- Multiple improvements to the Docker build, made by LZ2SLL.
+- Added LPD433 band, KDR444, RHA68, MURS bookmarks.
+
 **1.2.21**
 - Added CPU temperature to the CPU load display.
 - Added UTC clock to the receiver panel.
