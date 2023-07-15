@@ -1,3 +1,12 @@
+openwebrx (1.2.23) bullseye jammy; urgency=low
+
+  * Added OpenWebRX, WebSDR, and KiwiSDR locations to the map.
+  * Added periodic updates of online SDR locations from the web.
+  * Added ability to toggle map markers, by type.
+  * Started adding support for EIBI shortwave schedules.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 15 Jul 2023 16:12:00 +0000
+
 openwebrx (1.2.22) bullseye jammy; urgency=low
 
   * Added proper support for multiple bookmark files.
