@@ -31,52 +31,70 @@ class EIBI(object):
         return EIBI.sharedInstance
 
     @staticmethod
+    def start():
+        EIBI.getSharedInstance().startThread()
+
+    @staticmethod
+    def stop():
+        EIBI.getSharedInstance().stopThread()
+
+    @staticmethod
     def _getCachedScheduleFile():
         coreConfig = CoreConfig()
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
 
     def __init__(self):
+        self.refreshPeriod = 60*60*24*30
+        self.event = threading.Event()
         self.schedule = []
         self.thread = None
 
     def toJSON(self):
         return self.schedule
 
-    def refresh(self):
+    # Start the main thread
+    def startThread(self):
         if self.thread is None:
+            self.event.clear()
             self.thread = threading.Thread(target=self._refreshThread)
             self.thread.start()
 
+    # Stop the main thread
+    def stopThread(self):
+        if self.thread is not None:
+            self.event.set()
+            self.thread.join()
+
+    # This is the actual thread function
     def _refreshThread(self):
-        logger.debug("Starting EIBI schedule refresh...")
+        logger.debug("Starting EIBI main thread...")
 
         # This file contains cached schedule
         file = self._getCachedScheduleFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
         # Try loading cached schedule from file first, unless stale
-        if time.time() - ts < 60*60*24*30:
+        if time.time() - ts < self.refreshPeriod:
             logger.debug("Loading cached schedule from '{0}'...".format(file))
             self.schedule = self.loadSchedule(file)
         else:
-            # Scrape EIBI website for data
-            logger.debug("Scraping EIBI web site...")
-            self.schedule = self.scrape()
-            # Save parsed data into a file
-            logger.debug("Saving {0} schedule entries to '{1}'...".format(len(self.schedule), file))
-            try:
-                with open(file, "w") as f:
-                    json.dump(self, f, cls=MyJSONEncoder, indent=2)
-                    f.close()
-            except Exception as e:
-                logger.debug("Exception: {0}".format(e))
+            self.schedule = self.updateSchedule()
+
+        while not self.event.is_set():
+            # Sleep until it is time to update schedule
+            self.event.wait(self.refreshPeriod)
+            # If not terminated yet...
+            if not self.event.is_set():
+                # Update schedule
+                logger.debug("Refreshing schedule...")
+                self.schedule = self.updateSchedule()
 
         # Done
-        logger.debug("Done refreshing schedule.")
+        logger.debug("Stopped EIBI main thread.")
         self.thread = None
 
+    # Load schedule from a given JSON file
     def loadSchedule(self, fileName: str):
-        # Load schedule from JSON file
         try:
             with open(fileName, "r") as f:
                 result = json.load(f)
@@ -86,6 +104,23 @@ class EIBI(object):
             result = []
         # Done
         return result
+
+    # Update schedule
+    def updateSchedule(self):
+        # Scrape EIBI database file
+        logger.debug("Scraping EIBI website...")
+        file     = self._getCachedScheduleFile()
+        schedule = self.scrape()
+        # Save parsed data into a file
+        logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
+        try:
+            with open(file, "w") as f:
+                json.dump(schedule, f, cls=MyJSONEncoder, indent=2)
+                f.close()
+        except Exception as e:
+            logger.debug("updateSchedule() exception: {0}".format(e))
+        # Done
+        return schedule
 
     def findBySource(self, src: str):
         # Get entries active at the current time

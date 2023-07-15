@@ -50,11 +50,21 @@ class Markers(object):
         return Markers.sharedInstance
 
     @staticmethod
+    def start():
+        Markers.getSharedInstance().startThread()
+
+    @staticmethod
+    def stop():
+        Markers.getSharedInstance().stopThread()
+
+    @staticmethod
     def _getCachedMarkersFile():
         coreConfig = CoreConfig()
         return "{data_directory}/markers.json".format(data_directory=coreConfig.get_data_directory())
 
     def __init__(self):
+        self.refreshPeriod = 60*60*24
+        self.event = threading.Event()
         self.markers = {}
         self.thread = None
         # Known database files
@@ -74,48 +84,25 @@ class Markers(object):
     def toJSON(self):
         return self.markers
 
-    def refresh(self):
+    # Start the main thread
+    def startThread(self):
         if self.thread is None:
+            self.event.clear()
             self.thread = threading.Thread(target=self._refreshThread)
             self.thread.start()
 
+    # Stop the main thread
+    def stopThread(self):
+        if self.thread is not None:
+            self.event.set()
+            self.thread.join()
+
+    # This is the actual thread function
     def _refreshThread(self):
-        logger.debug("Starting marker database refresh...")
+        logger.debug("Starting marker database thread...")
 
         # No markers yet
         self.markers = {}
-
-        # This file contains cached database
-        file = self._getCachedMarkersFile()
-        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
-
-        # Try loading cached database from file first, unless stale
-        if time.time() - ts < 60*60*24:
-            logger.debug("Loading cached markers from '{0}'...".format(file))
-            self.markers.update(self.loadMarkers(file))
-        else:
-            # Scrape websites for data
-            cache = {}
-            logger.debug("Scraping KiwiSDR web site...")
-            cache.update(self.scrapeKiwiSDR())
-            logger.debug("Scraping WebSDR web site...")
-            cache.update(self.scrapeWebSDR())
-            logger.debug("Scraping OpenWebRX web site...")
-            cache.update(self.scrapeOWRX())
-            # Save parsed data into a file
-            logger.debug("Saving {0} markers to '{1}'...".format(len(self.markers), file))
-            try:
-                with open(file, "w") as f:
-                    json.dump(cache, f, cls=MyJSONEncoder, indent=2)
-                    f.close()
-            except Exception as e:
-                logger.debug("Exception: {0}".format(e))
-            # Add scraped data to the database
-            self.markers.update(cache)
-
-        # Load markers from the EIBI database
-        logger.debug("Loading EIBI transmitter locations...")
-        self.markers.update(self.loadEIBI())
 
         # Load markers from local files
         for file in self.fileList:
@@ -123,14 +110,39 @@ class Markers(object):
                 logger.debug("Loading markers from '{0}'...".format(file))
                 self.markers.update(self.loadMarkers(file))
 
-        # Update map with markers
-        logger.debug("Updating map...")
-        self.updateMap()
+        # Load markers from the EIBI database
+        logger.debug("Loading EIBI transmitter locations...")
+        self.markers.update(self.loadEIBI())
 
-        # Done
-        logger.debug("Done refreshing marker database.")
+        # This file contains cached database
+        file = self._getCachedMarkersFile()
+        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
+
+        # Try loading cached database from file first, unless stale
+        if time.time() - ts < self.refreshPeriod:
+            logger.debug("Loading cached markers from '{0}'...".format(file))
+            self.markers.update(self.loadMarkers(file))
+        else:
+            # Add scraped data to the database
+            self.markers.update(self.updateCache())
+
+        while not self.event.is_set():
+            # Update map with markers
+            logger.debug("Updating map...")
+            self.updateMap()
+            # Sleep until it is time to update schedule
+            self.event.wait(self.refreshPeriod)
+            # If not terminated yet...
+            if not self.event.is_set():
+                # Scrape data, updating cache
+                logger.debug("Refreshing marker database...")
+                self.markers.update(self.updateCache())
+
+        # Done with the thread
+        logger.debug("Stopped marker database thread.")
         self.thread = None
 
+    # Load markers from a given file
     def loadMarkers(self, fileName: str):
         # Load markers list from JSON file
         try:
@@ -150,6 +162,37 @@ class Markers(object):
         # Done
         return result
 
+    # Update markers on the map
+    def updateMap(self):
+        for r in self.markers.values():
+            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), permanent=True)
+
+    # Scrape online databases, updating cache file
+    def updateCache(self):
+        # Scrape websites for data
+        file  = self._getCachedMarkersFile()
+        cache = {}
+        logger.debug("Scraping KiwiSDR website...")
+        cache.update(self.scrapeKiwiSDR())
+        logger.debug("Scraping WebSDR website...")
+        cache.update(self.scrapeWebSDR())
+        logger.debug("Scraping OpenWebRX website...")
+        cache.update(self.scrapeOWRX())
+        # Save parsed data into a file
+        logger.debug("Saving {0} markers to '{1}'...".format(len(cache), file))
+        try:
+            with open(file, "w") as f:
+                json.dump(cache, f, cls=MyJSONEncoder, indent=2)
+                f.close()
+        except Exception as e:
+            logger.debug("updateCache() exception: {0}".format(e))
+        # Done
+        return cache
+
+    #
+    # Following functions scrape data from websites and internal databases
+    #
+
     def loadEIBI(self):
         #url = "https://www.short-wave.info/index.php?txsite="
         url = "https://www.google.com/search?q="
@@ -168,10 +211,6 @@ class Markers(object):
             result[rl.getId()] = rl
         # Done
         return result
-
-    def updateMap(self):
-        for r in self.markers.values():
-            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), permanent=True)
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
         patternJson = re.compile(r"^\s*var\s+receivers\s+=\s+(\[.*\]);\s*$")

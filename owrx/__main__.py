@@ -115,10 +115,10 @@ Support and info:       https://groups.io/g/openwebrx
     Services.start()
 
     # Instantiate and refresh marker database
-    Markers.getSharedInstance().refresh()
+    Markers.start()
 
     # Instantiate and refresh broadcasting schedule
-    EIBI.getSharedInstance().refresh()
+    EIBI.start()
 
     try:
         # This is our HTTP server
@@ -142,6 +142,8 @@ Support and info:       https://groups.io/g/openwebrx
         pass
 
     WebSocketConnection.closeAll()
+    EIBI.stop()
+    Markers.stop()
     Services.stop()
     SdrService.stopAllSources()
     ReportingEngine.stopAll()
