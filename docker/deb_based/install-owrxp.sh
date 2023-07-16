@@ -22,7 +22,7 @@ echo "+ Install S6 services..."
 wget https://github.com/just-containers/s6-overlay/releases/download/v1.21.8.0/s6-overlay-${PLATFORM}.tar.gz
 tar xzf s6-overlay-${PLATFORM}.tar.gz -C /
 rm s6-overlay-${PLATFORM}.tar.gz
-cp /files/services/sdrplay /etc/services.d/
+cp -a /files/services/sdrplay /etc/services.d/
 sed -ri 's/^python3 openwebrx.py/openwebrx/' /run.sh
 
 echo "+ Add repos and update..."
