@@ -18,6 +18,8 @@ from owrx.reporting import ReportingEngine
 from owrx.version import openwebrx_version
 from owrx.audio.queue import DecoderQueue
 from owrx.admin import add_admin_parser, run_admin_action
+from owrx.markers import Markers
+from owrx.eibi import EIBI
 import signal
 import argparse
 import ssl
@@ -112,6 +114,12 @@ Support and info:       https://groups.io/g/openwebrx
 
     Services.start()
 
+    # Instantiate and refresh marker database
+    Markers.start()
+
+    # Instantiate and refresh broadcasting schedule
+    EIBI.start()
+
     try:
         # This is our HTTP server
         server = ThreadedHttpServer(("0.0.0.0", coreConfig.get_web_port()), RequestHandler)
@@ -134,6 +142,8 @@ Support and info:       https://groups.io/g/openwebrx
         pass
 
     WebSocketConnection.closeAll()
+    EIBI.stop()
+    Markers.stop()
     Services.stop()
     SdrService.stopAllSources()
     ReportingEngine.stopAll()

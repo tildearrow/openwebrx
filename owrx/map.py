@@ -78,12 +78,16 @@ class Map(object):
         except ValueError:
             pass
 
-    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, hops: list[str] = []):
+    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, hops: list[str] = [], permanent: bool = False):
         pm = Config.get()
         ignoreIndirect = pm["map_ignore_indirect_reports"]
         preferRecent = pm["map_prefer_recent_reports"]
         needBroadcast = False
         ts = datetime.now()
+
+        # if location is permanent, shift its timestamp into the future
+        if permanent:
+            ts = ts + timedelta(weeks=1000)
 
         with self.positionsLock:
             # ignore indirect reports if ignoreIndirect set
@@ -153,3 +157,4 @@ class LocatorLocation(Location):
 
     def __dict__(self):
         return {"type": "locator", "locator": self.locator}
+

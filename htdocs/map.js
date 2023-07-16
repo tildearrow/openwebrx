@@ -41,6 +41,9 @@ $(function(){
     var vessel_url = null;
     var flight_url = null;
 
+    // marker manager
+    var markmanager = null;
+
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
     var getColor = function(id){
@@ -109,7 +112,7 @@ $(function(){
     }
 
     var processUpdates = function(updates) {
-        if (typeof(AprsMarker) == 'undefined') {
+        if ((typeof(AprsMarker) == 'undefined') || (typeof(FeatureMarker) == 'undefined')) {
             updateQueue = updateQueue.concat(updates);
             return;
         }
@@ -135,10 +138,11 @@ $(function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
+                        markmanager.addType(update.mode);
                     }
                     marker.setOptions($.extend({
                         position: pos,
-                        map: map,
+                        map: markmanager.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
                     marker.lastseen = update.lastseen;
@@ -163,6 +167,62 @@ $(function(){
 
                     if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
                         showMarkerInfoWindow(infowindow.callsign, pos);
+                    }
+                break;
+                case 'feature':
+                    var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
+                    var options = {}
+                    var marker;
+
+                    // If no symbol or color supplied, use defaults by type
+                    if (update.location.symbol) {
+                        options.symbol = update.location.symbol;
+                    } else {
+                        options.symbol = markmanager.getSymbol(update.mode);
+                    }
+                    if (update.location.color) {
+                        options.color = update.location.color;
+                    } else {
+                        options.color = markmanager.getColor(update.mode);
+                    }
+
+                    // If new item, create a new feature marker for it
+                    if (markers[update.callsign]) {
+                        marker = markers[update.callsign];
+                    } else {
+                        marker = new FeatureMarker();
+                        marker.addListener('click', function(){
+                            showFeatureInfoWindow(update.callsign, pos);
+                        });
+                        markers[update.callsign] = marker;
+                        markmanager.addType(update.mode);
+                    }
+
+                    // Apply marker options
+                    marker.setOptions($.extend({
+                        position: pos,
+                        map: markmanager.isEnabled(update.mode)? map : undefined,
+                        title: update.callsign
+                    }, options));
+
+                    // Get attributes
+                    //features have no expiration date
+                    //marker.lastseen = update.lastseen;
+                    marker.mode     = update.mode;
+                    marker.url      = update.location.url;
+                    marker.comment  = update.location.comment;
+                    marker.altitude = update.location.altitude;
+                    marker.device   = update.location.device;
+                    marker.antenna  = update.location.antenna;
+
+                    if (expectedCallsign && expectedCallsign == update.callsign) {
+                        map.panTo(pos);
+                        showFeatureInfoWindow(update.callsign, pos);
+                        expectedCallsign = false;
+                    }
+
+                    if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
+                        showFeatureInfoWindow(infowindow.callsign, pos);
                     }
                 break;
                 case 'locator':
@@ -264,8 +324,18 @@ $(function(){
                                     setInterval(function() { nite.refresh() }, 10000); // every 10s
                                 });
                                 $.getScript('static/lib/AprsMarker.js').done(function(){
-                                    processUpdates(updateQueue);
-                                    updateQueue = [];
+                                    if(typeof(FeatureMarker) != 'undefined') {
+                                        markmanager = new MarkerManager();
+                                        processUpdates(updateQueue);
+                                        updateQueue = [];
+                                    }
+                                });
+                                $.getScript('static/lib/MarkerManager.js').done(function(){
+                                    if(typeof(AprsMarker) != 'undefined') {
+                                        markmanager = new MarkerManager();
+                                        processUpdates(updateQueue);
+                                        updateQueue = [];
+                                    }
                                 });
 
                                 var $legend = $(".openwebrx-map-legend");
@@ -363,17 +433,18 @@ $(function(){
         return infowindow;
     }
 
-    var linkifyCallsign = function(callsign) {
-        var url = null;
-
+    var linkifyCallsign = function(callsign, url = null) {
+        // Leave passed URLs as they are
+        if (url && (url != ''))
+        { /* leave as is */ }
         // 9-character strings may be AIS MMSI numbers
-        if(callsign.match(new RegExp('^[0-9]{9}$')))
+        else if (callsign.match(new RegExp('^[0-9]{9}$')))
             url = vessel_url;
         // 3 characters and a number may be a flight number
-        else if(callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
+        else if (callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
             url = flight_url;
         // 2 characters and a long number may be a flight number
-        else if(callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
+        else if (callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
             url = flight_url;
         // Everything else is a HAM callsign
         else
@@ -403,6 +474,10 @@ $(function(){
             Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
         ));
         return Math.round(d);
+    }
+
+    var truncate = function(str, count) {
+        return str.length > count? str.slice(0, count) + '&mldr;' : str;
     }
 
     var infowindow;
@@ -455,7 +530,7 @@ $(function(){
         var infowindow = getInfoWindow();
         infowindow.callsign = callsign;
         var marker = markers[callsign];
-        var timestring = moment(marker.lastseen).fromNow();
+        var timeString = moment(marker.lastseen).fromNow();
         var commentString = "";
         var weatherString = "";
         var detailsString = "";
@@ -515,9 +590,9 @@ $(function(){
         }
 
         if (marker.device) {
-            detailsString += makeListItem('Device',
-                marker.device.device + " by " +
-                marker.device.manufacturer
+            detailsString += makeListItem('Device', marker.device.manufacturer?
+              marker.device.device + " by " + marker.device.manufacturer
+            : marker.device
             );
         }
 
@@ -575,9 +650,59 @@ $(function(){
 
         infowindow.setContent(
             '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
-            '<div align="center">' + timestring + ' using ' + marker.mode +
+            '<div align="center">' + timeString + ' using ' + marker.mode +
             ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
             commentString + weatherString + detailsString + hopsString
+        );
+
+        infowindow.open(map, marker);
+    }
+
+    var showFeatureInfoWindow = function(name, pos) {
+        var infowindow = getInfoWindow();
+        infowindow.callsign = name;
+        var marker = markers[name];
+        var commentString = "";
+        var detailsString = "";
+        var nameString = "";
+        var distance = "";
+
+        if (marker.url) {
+            nameString += linkifyCallsign(name, marker.url);
+        } else {
+            nameString += name;
+        }
+
+        if (marker.comment) {
+            commentString += '<div align="center">' + marker.comment + '</div>';
+        }
+
+        if (marker.altitude) {
+            detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
+        }
+
+        if (marker.device) {
+            detailsString += makeListItem('Device', marker.device.manufacturer?
+              marker.device.device + " by " + marker.device.manufacturer
+            : marker.device
+            );
+        }
+
+        if (marker.antenna) {
+            detailsString += makeListItem('Antenna', truncate(marker.antenna, 24));
+        }
+
+        if (detailsString.length > 0) {
+            detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
+        }
+
+        if (receiverMarker) {
+            distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
+        }
+
+        infowindow.setContent(
+            '<h3>' + nameString + distance + '</h3>' +
+            commentString + detailsString
         );
 
         infowindow.open(map, marker);
@@ -629,13 +754,15 @@ $(function(){
             m.setOptions(getRectangleOpacityOptions(m.lastseen));
         });
         $.each(markers, function(callsign, m) {
-            var age = now - m.lastseen;
-            if (age > retention_time) {
-                delete markers[callsign];
-                m.setMap();
-                return;
+            if (m.lastseen) {
+                var age = now - m.lastseen;
+                if (age > retention_time) {
+                    delete markers[callsign];
+                    m.setMap();
+                    return;
+                }
+                m.setOptions(getMarkerOpacityOptions(m.lastseen));
             }
-            m.setOptions(getMarkerOpacityOptions(m.lastseen));
         });
     }, 1000);
 
@@ -668,6 +795,18 @@ $(function(){
                     return r[key] === selector;
                 });
             }
+        });
+
+        $content1 = $legend.find('.features');
+        $content1.on('click', 'li', function() {
+            var $el = $(this);
+            var onoff = $el.hasClass('disabled');
+            if (onoff) {
+                $el.removeClass('disabled');
+            } else {
+                $el.addClass('disabled');
+            }
+            markmanager.toggle(map, markers, $el.data('selector'), onoff);
         });
     }
 

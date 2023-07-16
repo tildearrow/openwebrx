@@ -58,6 +58,17 @@ ul {
     border-style: solid;
 }
 
+.openwebrx-map-legend li.square .feature {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+    border-width: 0;
+    border-style: none;
+    font-size: 24px;
+    text-align: center;
+}
+
 .openwebrx-map-legend select {
     background-color: #FFF;
     border-color: #DDD;
