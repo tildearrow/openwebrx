@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 set -euxo pipefail
-export MAKEFLAGS="-j12"
 
 cd /tmp
 

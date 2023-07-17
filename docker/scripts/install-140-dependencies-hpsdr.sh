@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euxo pipefail
-export MAKEFLAGS="-j12"
 
 BUILD_PACKAGES="git wget gcc libc6-dev"
 

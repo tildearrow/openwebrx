@@ -1,6 +1,7 @@
 ARG ARCHTAG
 ARG PROJECT
 FROM ${PROJECT}-soapysdr-base:$ARCHTAG
+ARG MAKEFLAGS
 
 COPY docker/scripts/install-dependencies-radioberry.sh /
 RUN /install-dependencies-radioberry.sh &&\
