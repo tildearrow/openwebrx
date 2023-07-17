@@ -2,7 +2,7 @@ from owrx.config.core import CoreConfig
 from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
 from json import JSONEncoder
-from owrx.eibi import EIBI_Locations
+from owrx.eibi import EIBI_Locations, EIBI
 
 import urllib
 import threading
@@ -107,12 +107,7 @@ class Markers(object):
         # Load markers from local files
         for file in self.fileList:
             if os.path.isfile(file):
-                logger.debug("Loading markers from '{0}'...".format(file))
                 self.markers.update(self.loadMarkers(file))
-
-        # Load markers from the EIBI database
-        #logger.debug("Loading EIBI transmitter locations...")
-        #self.markers.update(self.loadEIBI())
 
         # This file contains cached database
         file = self._getCachedMarkersFile()
@@ -120,11 +115,14 @@ class Markers(object):
 
         # Try loading cached database from file first, unless stale
         if time.time() - ts < self.refreshPeriod:
-            logger.debug("Loading cached markers from '{0}'...".format(file))
             self.markers.update(self.loadMarkers(file))
         else:
             # Add scraped data to the database
             self.markers.update(self.updateCache())
+
+        # Load markers from the EIBI database
+        time.sleep(30)
+        self.markers.update(self.loadEIBI())
 
         while not self.event.is_set():
             # Update map with markers
@@ -143,10 +141,11 @@ class Markers(object):
         self.thread = None
 
     # Load markers from a given file
-    def loadMarkers(self, fileName: str):
+    def loadMarkers(self, file: str):
+        logger.debug("Loading markers from '{0}'...".format(file))
         # Load markers list from JSON file
         try:
-            with open(fileName, "r") as f:
+            with open(file, "r") as f:
                 db = json.load(f)
                 f.close()
         except Exception as e:
@@ -160,6 +159,7 @@ class Markers(object):
             result[key] = MarkerLocation(attrs)
 
         # Done
+        logger.debug("Loaded {0} markers from '{1}'.".format(len(result), file))
         return result
 
     # Update markers on the map
@@ -194,11 +194,12 @@ class Markers(object):
     #
 
     def loadEIBI(self):
+        logger.debug("Loading EIBI transmitter locations...")
         #url = "https://www.short-wave.info/index.php?txsite="
         url = "https://www.google.com/search?q="
         result = {}
         # Load transmitter sites from EIBI database
-        for entry in EIBI_Locations:
+        for entry in EIBI.getSharedInstance().currentTransmitters().values():
             rl = MarkerLocation({
                 "type"    : "feature",
                 "mode"    : "Stations",
@@ -206,10 +207,12 @@ class Markers(object):
                 "id"      : entry["name"],
                 "lat"     : entry["lat"],
                 "lon"     : entry["lon"],
-                "url"     : url + urllib.parse.quote_plus(entry["name"])
+                "url"     : url + urllib.parse.quote_plus(entry["name"]),
+                "schedule": entry["schedule"]
             })
             result[rl.getId()] = rl
         # Done
+        logger.debug("Loaded {0} EIBI transmitter locations.".format(len(result)))
         return result
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):

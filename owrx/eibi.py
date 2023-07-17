@@ -46,6 +46,7 @@ class EIBI(object):
     def __init__(self):
         self.refreshPeriod = 60*60*24*30
         self.event = threading.Event()
+        self.lock = threading.Lock()
         self.schedule = []
         self.thread = None
 
@@ -74,11 +75,11 @@ class EIBI(object):
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
         # Try loading cached schedule from file first, unless stale
-        if time.time() - ts < self.refreshPeriod:
-            logger.debug("Loading cached schedule from '{0}'...".format(file))
-            self.schedule = self.loadSchedule(file)
-        else:
-            self.schedule = self.updateSchedule()
+        with self.lock:
+            if time.time() - ts < self.refreshPeriod:
+                self.schedule = self.loadSchedule(file)
+            else:
+                self.schedule = self.updateSchedule()
 
         while not self.event.is_set():
             # Sleep until it is time to update schedule
@@ -87,22 +88,25 @@ class EIBI(object):
             if not self.event.is_set():
                 # Update schedule
                 logger.debug("Refreshing schedule...")
-                self.schedule = self.updateSchedule()
+                with self.lock:
+                    self.schedule = self.updateSchedule()
 
         # Done
         logger.debug("Stopped EIBI main thread.")
         self.thread = None
 
     # Load schedule from a given JSON file
-    def loadSchedule(self, fileName: str):
+    def loadSchedule(self, file: str):
+        logger.debug("Loading schedule from '{0}'...".format(file))
         try:
-            with open(fileName, "r") as f:
+            with open(file, "r") as f:
                 result = json.load(f)
                 f.close()
         except Exception as e:
             logger.debug("loadSchedule() exception: {0}".format(e))
             result = []
         # Done
+        logger.debug("Loaded {0} entries from '{1}'...".format(len(result), file))
         return result
 
     # Update schedule
@@ -122,33 +126,66 @@ class EIBI(object):
         # Done
         return schedule
 
+    # Find all current broadcasts for a given source
     def findBySource(self, src: str):
         # Get entries active at the current time
         now = datetime.utcnow()
         now = now.hour * 100 + now.minute
         result = []
         # Search for entries originating from given source at current time
-        for entry in self.schedule:
-            if entry["time1"] <= now and entry["time2"] > now:
-                if entry["itu"] + entry["src"] == src:
-                    result.append(entry)
+        with self.lock:
+            for entry in self.schedule:
+                if entry["time1"] <= now and entry["time2"] > now:
+                    if entry["itu"] + entry["src"] == src:
+                        result.append(entry)
         # Done
         return result
 
+    # Find all current broadcasts for a given frequency range
     def findCurrent(self, freq1: int, freq2: int):
         # Get entries active at the current time
         now = datetime.utcnow()
         now = now.hour * 100 + now.minute
         return self.find(freq1, freq2, now, now)
 
+    # Find all broadcasts for given frequency and time ranges
     def find(self, freq1: int, freq2: int, time1: int, time2: int):
         result = []
         # Search for entries within given frequency and time ranges
-        for entry in self.schedule:
-            f = entry["freq"]
-            if f >= freq1 and f <= freq2:
-                if entry["time1"] <= time2 and entry["time2"] > time1:
-                    result.append(entry)
+        with self.lock:
+            for entry in self.schedule:
+                f = entry["freq"]
+                if f >= freq1 and f <= freq2:
+                    if entry["time1"] <= time2 and entry["time2"] > time1:
+                        result.append(entry)
+        # Done
+        return result
+
+    # Create list of currently broadcasting locations
+    def currentTransmitters(self):
+        # Get entries active at the current time
+        now = datetime.utcnow()
+        day = str(now.weekday() + 1)
+        now = now.hour * 100 + now.minute
+        result = {}
+        # Search for current entries
+        with self.lock:
+            for entry in self.schedule:
+                # For every current schedule entry...
+                if entry["time1"] <= now and entry["time2"] > now and day in entry["days"]:
+                    src = entry["itu"] + entry["src"]
+                    # Find all matching transmitter locations
+                    for loc in EIBI_Locations:
+                        if loc["code"] == src:
+                            # Add location to the result
+                            name = loc["name"]
+                            logger.debug("Found {0} .. {1} .. {2} from {3} ({4})".format(
+                                entry["time1"], now, entry["time2"], name, src))
+                            if name not in result:
+                                result[name] = loc.copy()
+                                result[name]["schedule"] = []
+                            # Add schedule entry to the location
+                            result[name]["schedule"].append(entry)
         # Done
         return result
 
@@ -197,8 +234,25 @@ class EIBI(object):
                 # When we encounter a location...
                 m = pattern.match(line)
                 if m is not None:
+                    # Guess modulation by language and name fields
+                    name = m.group(6).lower()
+                    lang = m.group(7)
+                    mode = (
+                        "hfdl"    if lang == "-HF" else
+                        "rtty450" if lang == "-TY" else
+                        "cw"      if lang == "-CW" else
+                        "fax"     if " fax"   in name else
+                        "usb"     if "volmet" in name else
+                        "usb"     if "ldoc"   in name else
+                        "usb"     if "car-"   in name else
+                        "usb"     if "nat-"   in name else
+                        "usb"     if " usb"   in name else
+                        "usb"     if "fsk"    in name else
+                        "am")
+                    # Append a new entry to the result
                     result.append({
                         "freq"  : int(float(m.group(1)) * 1000),
+                        "mode"  : mode,
                         "time1" : int(m.group(2)),
                         "time2" : int(m.group(3)),
                         "days"  : self.convertDays(m.group(4)),

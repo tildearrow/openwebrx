@@ -214,6 +214,7 @@ $(function(){
                     marker.altitude = update.location.altitude;
                     marker.device   = update.location.device;
                     marker.antenna  = update.location.antenna;
+                    marker.schedule = update.location.schedule;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -457,7 +458,7 @@ $(function(){
             return '<a target="callsign_info" href="' +
                 url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
                 '">' + callsign + '</a>';
-    };
+    }
 
     var distanceKm = function(p1, p2) {
         // Earth radius in km
@@ -521,7 +522,8 @@ $(function(){
 
     var makeListItem = function(name, value) {
         return '<div style="border-bottom:1px dotted;">'
-            + '<span>' + name + '</span>'
+            + '<span>' + name.replace(/[ \r\n]+/gm, '&nbsp;')
+            + '</span>&nbsp;&nbsp;&nbsp;&nbsp;'
             + '<span style="float:right;">' + value + '</span>'
             + '</div>';
     }
@@ -664,6 +666,7 @@ $(function(){
         var marker = markers[name];
         var commentString = "";
         var detailsString = "";
+        var scheduleString = "";
         var nameString = "";
         var distance = "";
 
@@ -692,8 +695,23 @@ $(function(){
             detailsString += makeListItem('Antenna', truncate(marker.antenna, 24));
         }
 
+        if (marker.schedule) {
+            for (var j=0 ; j<marker.schedule.length ; ++j) {
+                var freq = marker.schedule[j].freq;
+                var mode = marker.schedule[j].mode;
+                freq = '<a target="owrx_receiver" href="/#freq=' + freq
+                    + ',mod=' + (mode? mode : 'am') + '">'
+                    + Math.round(marker.schedule[j].freq/1000) + 'kHz</a>';
+                scheduleString += makeListItem(marker.schedule[j].name, freq);
+            }
+        }
+
         if (detailsString.length > 0) {
             detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
+        }
+
+        if (scheduleString.length > 0) {
+            scheduleString = '<p>' + makeListTitle('Schedule') + scheduleString + '</p>';
         }
 
         if (receiverMarker) {
@@ -702,7 +720,7 @@ $(function(){
 
         infowindow.setContent(
             '<h3>' + nameString + distance + '</h3>' +
-            commentString + detailsString
+            commentString + detailsString + scheduleString
         );
 
         infowindow.open(map, marker);
