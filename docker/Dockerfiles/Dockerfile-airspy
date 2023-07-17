@@ -1,7 +1,7 @@
 ARG ARCHTAG
 ARG PROJECT
-ARG MAKEFLAGS
 FROM ${PROJECT}-soapysdr-base:$ARCHTAG
+ARG MAKEFLAGS
 
 COPY docker/scripts/install-dependencies-airspy.sh /
 RUN /install-dependencies-airspy.sh &&\

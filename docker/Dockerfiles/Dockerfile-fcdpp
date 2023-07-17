@@ -1,7 +1,7 @@
 ARG ARCHTAG
 ARG PROJECT
-ARG MAKEFLAGS
 FROM ${PROJECT}-soapysdr-base:$ARCHTAG
+ARG MAKEFLAGS
 
 COPY docker/scripts/install-dependencies-fcdpp.sh /
 RUN /install-dependencies-fcdpp.sh &&\
