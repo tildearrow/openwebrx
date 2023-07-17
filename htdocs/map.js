@@ -206,8 +206,7 @@ $(function(){
                     }, options));
 
                     // Get attributes
-                    //features have no expiration date
-                    //marker.lastseen = update.lastseen;
+                    marker.lastseen = update.lastseen;
                     marker.mode     = update.mode;
                     marker.url      = update.location.url;
                     marker.comment  = update.location.comment;
@@ -699,9 +698,15 @@ $(function(){
             for (var j=0 ; j<marker.schedule.length ; ++j) {
                 var freq = marker.schedule[j].freq;
                 var mode = marker.schedule[j].mode;
-                freq = '<a target="owrx_receiver" href="/#freq=' + freq
+                var tune = mode === 'cw'?      freq - 800
+                         : mode === 'fax'?     freq - 1500
+                         : mode === 'rtty450'? freq - 1000
+                         : freq;
+
+                freq = '<a target="owrx_receiver" href="/#freq=' + tune
                     + ',mod=' + (mode? mode : 'am') + '">'
                     + Math.round(marker.schedule[j].freq/1000) + 'kHz</a>';
+
                 scheduleString += makeListItem(marker.schedule[j].name, freq);
             }
         }
@@ -772,15 +777,13 @@ $(function(){
             m.setOptions(getRectangleOpacityOptions(m.lastseen));
         });
         $.each(markers, function(callsign, m) {
-            if (m.lastseen) {
-                var age = now - m.lastseen;
-                if (age > retention_time) {
-                    delete markers[callsign];
-                    m.setMap();
-                    return;
-                }
-                m.setOptions(getMarkerOpacityOptions(m.lastseen));
+            var age = now - m.lastseen;
+            if (age > retention_time) {
+                delete markers[callsign];
+                m.setMap();
+                return;
             }
+            m.setOptions(getMarkerOpacityOptions(m.lastseen));
         });
     }, 1000);
 

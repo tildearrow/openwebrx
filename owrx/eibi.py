@@ -44,6 +44,8 @@ class EIBI(object):
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
 
     def __init__(self):
+        self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
+        self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
         self.refreshPeriod = 60*60*24*30
         self.event = threading.Event()
         self.lock = threading.Lock()
@@ -74,12 +76,17 @@ class EIBI(object):
         file = self._getCachedScheduleFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
-        # Try loading cached schedule from file first, unless stale
         with self.lock:
+            # If cached schedule is fresh...
             if time.time() - ts < self.refreshPeriod:
+                # Load it from the cached file
                 self.schedule = self.loadSchedule(file)
             else:
-                self.schedule = self.updateSchedule()
+                # Load schedule form the web
+                schedule = self.updateSchedule()
+                # Only update cache if we've got something from the web
+                if len(schedule) > 0:
+                    self.schedule = schedule
 
         while not self.event.is_set():
             # Sleep until it is time to update schedule
@@ -89,7 +96,11 @@ class EIBI(object):
                 # Update schedule
                 logger.debug("Refreshing schedule...")
                 with self.lock:
-                    self.schedule = self.updateSchedule()
+                    # Load schedule form the web
+                    schedule = self.updateSchedule()
+                    # Only update cache if we've got something from the web
+                    if len(schedule) > 0:
+                        self.schedule = schedule
 
         # Done
         logger.debug("Stopped EIBI main thread.")
@@ -112,17 +123,17 @@ class EIBI(object):
     # Update schedule
     def updateSchedule(self):
         # Scrape EIBI database file
-        logger.debug("Scraping EIBI website...")
         file     = self._getCachedScheduleFile()
         schedule = self.scrape()
         # Save parsed data into a file
-        logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
-        try:
-            with open(file, "w") as f:
-                json.dump(schedule, f, cls=MyJSONEncoder, indent=2)
-                f.close()
-        except Exception as e:
-            logger.debug("updateSchedule() exception: {0}".format(e))
+        if len(schedule) > 0:
+            logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
+            try:
+                with open(file, "w") as f:
+                    json.dump(schedule, f, cls=MyJSONEncoder, indent=2)
+                    f.close()
+            except Exception as e:
+                logger.debug("updateSchedule() exception: {0}".format(e))
         # Done
         return schedule
 
@@ -164,23 +175,29 @@ class EIBI(object):
     # Create list of currently broadcasting locations
     def currentTransmitters(self):
         # Get entries active at the current time
-        now = datetime.utcnow()
-        day = str(now.weekday() + 1)
-        now = now.hour * 100 + now.minute
+        now  = datetime.utcnow()
+        day  = now.weekday()
+        date = now.year * 10000 + now.month * 100 + now.day
+        now  = now.hour * 100 + now.minute
         result = {}
         # Search for current entries
         with self.lock:
             for entry in self.schedule:
-                # For every current schedule entry...
-                if entry["time1"] <= now and entry["time2"] > now and day in entry["days"]:
+                # Check if entry is currently active
+                entryActive = (
+                    entry["days"][day] != "."
+                and (entry["time1"] <= now and entry["time2"] > now)
+                and (entry["date1"] == 0 or entry["date1"] <= date)
+                and (entry["date2"] == 0 or entry["date2"] >= date)
+                )
+                # For evere currently active schedule entry...
+                if entryActive:
                     src = entry["itu"] + entry["src"]
                     # Find all matching transmitter locations
                     for loc in EIBI_Locations:
                         if loc["code"] == src:
                             # Add location to the result
                             name = loc["name"]
-                            logger.debug("Found {0} .. {1} .. {2} from {3} ({4})".format(
-                                entry["time1"], now, entry["time2"], name, src))
                             if name not in result:
                                 result[name] = loc.copy()
                                 result[name]["schedule"] = []
@@ -189,81 +206,110 @@ class EIBI(object):
         # Done
         return result
 
-    def convertDays(self, days: str):
-        # Replace day names with digits, remove commas
-        days = re.sub("Mo", "1", days)
-        days = re.sub("Tu", "2", days)
-        days = re.sub("We", "3", days)
-        days = re.sub("Th", "4", days)
-        days = re.sub("Fr", "5", days)
-        days = re.sub("Sa", "6", days)
-        days = re.sub("Su", "7", days)
-        days = re.sub(r"[^0-9\-]", "", days)
-        # Empty strings mean every day of the week
-        if days == "":
-            return "1234567"
-        # Parse input string
-        span = True
-        curr = 1
-        out  = ""
-        for j in range(len(days)):
-            if days[j] == "-":
-                span = True
-            else:
-                next = int(days[j])
-                while curr < next:
-                  out  += str(curr) if span else "."
-                  curr += 1
-                span = False
-        # Add final days
-        while curr < 8:
-            out  += str(curr) if span else "."
-            curr += 1
-        # Done
-        return out
+    def convertDate(self, date: str):
+        # No-date is a common case
+        if date == "":
+            return 0
+        # Remove last-seen data
+        date = re.sub(r"\[.*\]", "", date)
+        # Match day/month
+        m = re.match(r"^(\d\d)(\d\d)$", date)
+        if m is None:
+            return 0
+        else:
+            now   = datetime.utcnow()
+            month = int(m.group(2))
+            day   = int(m.group(1))
+            year  = (
+                now.year + 1 if (now.month >= 11) and (month < now.month) else
+                now.year - 1 if (now.month <= 3)  and (month > now.month) else
+                now.year
+            )
+            return year * 10000 + month * 100 + day
 
-    def scrape(self, url: str = "http://www.eibispace.de/dx/sked-a23.csv"):
+    def convertDays(self, days: str):
+        # Look up and process special cases
+        if days in EIBI_SpecialDays:
+            return EIBI_SpecialDays[days]
+        # Start with empty result
+        result = [ ".", ".", ".", ".", ".", ".", "."]
+        # Extract day spans
+        m = self.patternDays.match(days)
+        if m is not None:
+            x = EIBI_Days[m.group(2)]
+            y = EIBI_Days[m.group(3)]
+            result[y - 1] = str(y)
+            while x != y:
+                result[x - 1] = str(x)
+                x = x + 1 if x < 7 else 1
+            # Remove extracted span
+            days = m.group(1) + m.group(4)
+        # Extract singular days
+        for day in EIBI_Days.keys():
+            if day in days:
+                x = EIBI_Days[day]
+                result[x - 1] = str(x)
+        # Done
+        return "".join(result)
+
+    def scrape(self, url: str = "http://www.eibispace.de/dx/sked-{0}.csv"):
+        # Figure out CSV file name based on the current date
+        # SUMMER: Apr - Oct - sked-aNN.csv
+        # WINTER: Nov - Mar - sked-bNN.csv
+        now = datetime.utcnow()
+        url = url.format(
+            ("a" if now.month >= 4 and now.month <= 10 else "b") +
+            str((now.year if now.month >= 4 else now.year - 1) % 100)
+        )
+
+        # Fetch and parse CSV file
         result = []
         try:
-            # This is out CSV pattern
-            pattern = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(.*);(.*);(.*)$")
-
+            logger.debug("Scraping '{0}'...".format(url))
             for line in urllib.request.urlopen(url).readlines():
                 # Convert read bytes to a string
                 line = line.decode('cp1252').rstrip()
+
                 # When we encounter a location...
-                m = pattern.match(line)
+                m = self.patternCSV.match(line)
                 if m is not None:
-                    # Guess modulation by language and name fields
+                    days = m.group(4)
                     name = m.group(6).lower()
                     lang = m.group(7)
+
+                    # Guess modulation, default to AM
                     mode = (
                         "hfdl"    if lang == "-HF" else
                         "rtty450" if lang == "-TY" else
                         "cw"      if lang == "-CW" else
-                        "fax"     if " fax"   in name else
-                        "usb"     if "volmet" in name else
-                        "usb"     if "ldoc"   in name else
-                        "usb"     if "car-"   in name else
-                        "usb"     if "nat-"   in name else
+                        "usb"     if days == "USB" else
+                        "lsb"     if days == "LSB" else
+                        "hfdl"    if "hfdl"   in name else # HFDL
+                        "fax"     if " fax"   in name else # Weather FAX
+                        "usb"     if "volmet" in name else # Weather
+                        "usb"     if "cross " in name else # Weather
+                        "usb"     if " ldoc"  in name else # Aircraft
+                        "usb"     if " car-"  in name else # Aircraft
+                        "usb"     if " nat-"  in name else # Aircraft
                         "usb"     if " usb"   in name else
                         "usb"     if "fsk"    in name else
                         "am")
+
                     # Append a new entry to the result
                     result.append({
                         "freq"  : int(float(m.group(1)) * 1000),
                         "mode"  : mode,
                         "time1" : int(m.group(2)),
                         "time2" : int(m.group(3)),
-                        "days"  : self.convertDays(m.group(4)),
+                        "days"  : self.convertDays(days),
                         "itu"   : m.group(5),
                         "name"  : m.group(6),
                         "lang"  : m.group(7),
                         "tgt"   : m.group(8),
                         "src"   : m.group(9),
-                        "p"     : m.group(10),
-                        "start" : m.group(11),
-                        "stop"  : m.group(12),
+                        "pers"  : int(m.group(10)),
+                        "date1" : self.convertDate(m.group(11)),
+                        "date2" : self.convertDate(m.group(12)),
                     })
 
         except Exception as e:
@@ -272,6 +318,36 @@ class EIBI(object):
         # Done
         return result
 
+
+#
+# Normal days of the week
+#
+EIBI_Days = {
+  "Mo" : 1,
+  "Tu" : 2,
+  "We" : 3,
+  "Th" : 4,
+  "Fr" : 5,
+  "Sa" : 6,
+  "Su" : 7,
+}
+
+#
+# Special Codes for the days field
+#
+EIBI_SpecialDays = {
+  ""     : "1234567", # Empty field means whole week
+  "LSB"  : "1234567", # Upper side band transmission
+  "USB"  : "1234567", # Upper side band transmission
+  "alt"  : "xxxxxxx", # Alternative frequency, usually not in use
+  "irr"  : "xxxxxxx", # Irregular operation
+  "Haj"  : "xxxxxxx", # Special Haj broadcast
+  "Ram"  : "xxxxxxx", # Special Ramadan schedule
+  "tent" : "xxxxxxx", # Tentatively, check and report your observations
+  "test" : "xxxxxxx", # Test operation, may cease at any time
+  "harm" : ".......", # Harmonic signal (multiples of fundamental frequency)
+  "imod" : ".......", # Intermodulation signal
+}
 
 #
 # Country Codes
