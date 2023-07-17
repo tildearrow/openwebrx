@@ -1577,6 +1577,9 @@ var bookmarks;
 var audioEngine;
 
 function openwebrx_init() {
+    // Name used by map links to tune receiver
+    frames.name = 'openwebrx-rx';
+
     audioEngine = new AudioEngine(audio_buffer_maximal_length_sec, audioReporter);
     var $overlay = $('#openwebrx-autoplay-overlay');
     $overlay.on('click', function(){

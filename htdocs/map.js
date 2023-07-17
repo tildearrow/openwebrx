@@ -703,7 +703,7 @@ $(function(){
                          : mode === 'rtty450'? freq - 1000
                          : freq;
 
-                freq = '<a target="owrx_receiver" href="/#freq=' + tune
+                freq = '<a target="openwebrx-rx" href="/#freq=' + tune
                     + ',mod=' + (mode? mode : 'am') + '">'
                     + Math.round(marker.schedule[j].freq/1000) + 'kHz</a>';
 
