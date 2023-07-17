@@ -1,3 +1,4 @@
+ARG MAKEFLAGS
 FROM debian:bullseye-slim
 
 COPY docker/files/js8call/js8call-hamlib.patch \

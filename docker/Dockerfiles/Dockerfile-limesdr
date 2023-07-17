@@ -1,5 +1,6 @@
 ARG ARCHTAG
 ARG PROJECT
+ARG MAKEFLAGS
 FROM ${PROJECT}-soapysdr-base:$ARCHTAG
 
 COPY docker/scripts/install-dependencies-limesdr.sh /
