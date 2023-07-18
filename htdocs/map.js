@@ -44,6 +44,9 @@ $(function(){
     // marker manager
     var markmanager = null;
 
+    // clock
+    var clock = new Clock($("#openwebrx-clock-utc"));
+
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
     var getColor = function(id){

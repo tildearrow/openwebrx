@@ -14,11 +14,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class MyJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        return obj.toJSON()
-
-
 class EIBI(object):
     sharedInstance = None
     creationLock = threading.Lock()
@@ -47,64 +42,27 @@ class EIBI(object):
         self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
         self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
         self.refreshPeriod = 60*60*24*30
-        self.event = threading.Event()
         self.lock = threading.Lock()
         self.schedule = []
-        self.thread = None
 
-    def toJSON(self):
-        return self.schedule
-
-    # Start the main thread
-    def startThread(self):
-        if self.thread is None:
-            self.event.clear()
-            self.thread = threading.Thread(target=self._refreshThread)
-            self.thread.start()
-
-    # Stop the main thread
-    def stopThread(self):
-        if self.thread is not None:
-            self.event.set()
-            self.thread.join()
-
-    # This is the actual thread function
-    def _refreshThread(self):
-        logger.debug("Starting EIBI main thread...")
-
+    # Load cached schedule or refresh it from the web
+    def refresh(self):
         # This file contains cached schedule
         file = self._getCachedScheduleFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
         with self.lock:
-            # If cached schedule is fresh...
-            if time.time() - ts < self.refreshPeriod:
-                # Load it from the cached file
-                self.schedule = self.loadSchedule(file)
-            else:
-                # Load schedule form the web
+            # If cached schedule is stale...
+            if time.time() - ts >= self.refreshPeriod:
+                # Load updated schedule from the web
                 schedule = self.updateSchedule()
-                # Only update cache if we've got something from the web
-                if len(schedule) > 0:
+                # Only update current schedule if updated from the web
+                if schedule:
                     self.schedule = schedule
 
-        while not self.event.is_set():
-            # Sleep until it is time to update schedule
-            self.event.wait(self.refreshPeriod)
-            # If not terminated yet...
-            if not self.event.is_set():
-                # Update schedule
-                logger.debug("Refreshing schedule...")
-                with self.lock:
-                    # Load schedule form the web
-                    schedule = self.updateSchedule()
-                    # Only update cache if we've got something from the web
-                    if len(schedule) > 0:
-                        self.schedule = schedule
-
-        # Done
-        logger.debug("Stopped EIBI main thread.")
-        self.thread = None
+            # If no current schedule, load it from cached file
+            if not self.schedule:
+                self.schedule = self.loadSchedule(file)
 
     # Load schedule from a given JSON file
     def loadSchedule(self, file: str):
@@ -126,11 +84,11 @@ class EIBI(object):
         file     = self._getCachedScheduleFile()
         schedule = self.scrape()
         # Save parsed data into a file
-        if len(schedule) > 0:
+        if schedule:
             logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
             try:
                 with open(file, "w") as f:
-                    json.dump(schedule, f, cls=MyJSONEncoder, indent=2)
+                    json.dump(schedule, f, indent=2)
                     f.close()
             except Exception as e:
                 logger.debug("updateSchedule() exception: {0}".format(e))
@@ -173,13 +131,13 @@ class EIBI(object):
         return result
 
     # Create list of currently broadcasting locations
-    def currentTransmitters(self):
+    def currentTransmitters(self, hours: int = 1):
         # Get entries active at the current time + 1 hour
         now  = datetime.utcnow()
         day  = now.weekday()
         date = now.year * 10000 + now.month * 100 + now.day
         t1   = now.hour * 100 + now.minute
-        t2   = t1 + 100
+        t2   = t1 + hours * 100
         result = {}
         # Search for current entries
         with self.lock:
@@ -187,10 +145,15 @@ class EIBI(object):
                 # Check if entry is currently active
                 entryActive = (
                     entry["days"][day] != "."
-                and (entry["time1"] < t2 and entry["time2"] > t1)
                 and (entry["date1"] == 0 or entry["date1"] <= date)
                 and (entry["date2"] == 0 or entry["date2"] >= date)
                 )
+                # Check the hours, rolling over to the next day
+                if entryActive:
+                    e1 = entry["time1"]
+                    e2 = entry["time2"]
+                    e2 = e2 if e2 > e1 else e2 + 2400
+                    entryActive = e1 < t2 and e2 > t1
                 # For evere currently active schedule entry...
                 if entryActive:
                     src = entry["itu"] + entry["src"]

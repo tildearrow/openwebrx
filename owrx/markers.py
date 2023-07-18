@@ -124,9 +124,8 @@ class Markers(object):
         if not self.rxmarkers:
             self.rxmarkers = self.loadMarkers(file)
 
-        # Load new transmitters schedule from the EIBI
-        time.sleep(30)
-        self.txmarkers = self.loadEIBI()
+        # Load current schedule from the EIBI database
+        self.txmarkers = self.loadCurrentTransmitters()
 
         # Update map with markers
         logger.debug("Updating map...")
@@ -146,7 +145,7 @@ class Markers(object):
 
             # Load new transmitters schedule from the EIBI
             logger.debug("Refreshing transmitters schedule..")
-            tx = self.loadEIBI()
+            tx = self.loadCurrentTransmitters()
 
             # Check if we need to exit
             if self.event.is_set():
@@ -235,8 +234,9 @@ class Markers(object):
         cache.update(self.scrapeWebSDR())
         logger.debug("Scraping OpenWebRX website...")
         cache.update(self.scrapeOWRX())
+
         # Save parsed data into a file, if there is anything to save
-        if len(cache) > 0:
+        if cache:
             logger.debug("Saving {0} markers to '{1}'...".format(len(cache), file))
             try:
                 with open(file, "w") as f:
@@ -244,6 +244,7 @@ class Markers(object):
                     f.close()
             except Exception as e:
                 logger.debug("updateCache() exception: {0}".format(e))
+
         # Done
         return cache
 
@@ -251,11 +252,14 @@ class Markers(object):
     # Following functions scrape data from websites and internal databases
     #
 
-    def loadEIBI(self):
-        logger.debug("Loading EIBI transmitter locations...")
+    def loadCurrentTransmitters(self):
         #url = "https://www.short-wave.info/index.php?txsite="
         url = "https://www.google.com/search?q="
         result = {}
+
+        # Refresh / load EIBI database, as needed
+        EIBI.getSharedInstance().refresh()
+
         # Load transmitter sites from EIBI database
         for entry in EIBI.getSharedInstance().currentTransmitters().values():
             rl = MarkerLocation({
@@ -269,8 +273,9 @@ class Markers(object):
                 "schedule": entry["schedule"]
             })
             result[rl.getId()] = rl
+
         # Done
-        logger.debug("Loaded {0} EIBI transmitter locations.".format(len(result)))
+        logger.debug("Loaded {0} transmitters from EIBI.".format(len(result)))
         return result
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
