@@ -703,11 +703,15 @@ $(function(){
                          : mode === 'rtty450'? freq - 1000
                          : freq;
 
-                freq = '<a target="owrx_receiver" href="/#freq=' + tune
+                var name = ("0000" + marker.schedule[j].time1).slice(-4)
+                    + "-" + ("0000" + marker.schedule[j].time2).slice(-4)
+                    + "&nbsp;&nbsp;" + marker.schedule[j].name;
+
+                freq = '<a target="openwebrx-rx" href="/#freq=' + tune
                     + ',mod=' + (mode? mode : 'am') + '">'
                     + Math.round(marker.schedule[j].freq/1000) + 'kHz</a>';
 
-                scheduleString += makeListItem(marker.schedule[j].name, freq);
+                scheduleString += makeListItem(name, freq);
             }
         }
 

@@ -174,11 +174,12 @@ class EIBI(object):
 
     # Create list of currently broadcasting locations
     def currentTransmitters(self):
-        # Get entries active at the current time
+        # Get entries active at the current time + 1 hour
         now  = datetime.utcnow()
         day  = now.weekday()
         date = now.year * 10000 + now.month * 100 + now.day
-        now  = now.hour * 100 + now.minute
+        t1   = now.hour * 100 + now.minute
+        t2   = t1 + 100
         result = {}
         # Search for current entries
         with self.lock:
@@ -186,7 +187,7 @@ class EIBI(object):
                 # Check if entry is currently active
                 entryActive = (
                     entry["days"][day] != "."
-                and (entry["time1"] <= now and entry["time2"] > now)
+                and (entry["time1"] < t2 and entry["time2"] > t1)
                 and (entry["date1"] == 0 or entry["date1"] <= date)
                 and (entry["date2"] == 0 or entry["date2"] >= date)
                 )
