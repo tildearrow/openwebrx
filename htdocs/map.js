@@ -523,9 +523,8 @@ $(function(){
     }
 
     var makeListItem = function(name, value) {
-        return '<div style="border-bottom:1px dotted;">'
-            + '<span>' + name.replace(/[ \r\n]+/gm, '&nbsp;')
-            + '</span>&nbsp;&nbsp;&nbsp;&nbsp;'
+        return '<div style="border-bottom:1px dotted;white-space:nowrap;">'
+            + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
             + '<span style="float:right;">' + value + '</span>'
             + '</div>';
     }
@@ -707,7 +706,7 @@ $(function(){
                          : freq;
 
                 var name = ("0000" + marker.schedule[j].time1).slice(-4)
-                    + "-" + ("0000" + marker.schedule[j].time2).slice(-4)
+                    + "&#8209;" + ("0000" + marker.schedule[j].time2).slice(-4)
                     + "&nbsp;&nbsp;" + marker.schedule[j].name;
 
                 freq = '<a target="openwebrx-rx" href="/#freq=' + tune

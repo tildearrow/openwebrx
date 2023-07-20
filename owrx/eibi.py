@@ -64,6 +64,16 @@ class EIBI(object):
             if not self.schedule:
                 self.schedule = self.loadSchedule(file)
 
+    # Save schedule to a given JSON file
+    def saveSchedule(self, file: str, schedule):
+        logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
+        try:
+            with open(file, "w") as f:
+                json.dump(schedule, f, indent=2)
+                f.close()
+        except Exception as e:
+            logger.debug("saveSchedule() exception: {0}".format(e))
+
     # Load schedule from a given JSON file
     def loadSchedule(self, file: str):
         logger.debug("Loading schedule from '{0}'...".format(file))
@@ -85,13 +95,7 @@ class EIBI(object):
         schedule = self.scrape()
         # Save parsed data into a file
         if schedule:
-            logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
-            try:
-                with open(file, "w") as f:
-                    json.dump(schedule, f, indent=2)
-                    f.close()
-            except Exception as e:
-                logger.debug("updateSchedule() exception: {0}".format(e))
+            self.saveSchedule(file, schedule)
         # Done
         return schedule
 
@@ -167,6 +171,7 @@ class EIBI(object):
                                 result[name]["schedule"] = []
                             # Add schedule entry to the location
                             result[name]["schedule"].append(entry)
+
         # Done
         return result
 
@@ -237,6 +242,7 @@ class EIBI(object):
                 # When we encounter a location...
                 m = self.patternCSV.match(line)
                 if m is not None:
+                    freq = int(float(m.group(1)) * 1000)
                     days = m.group(4)
                     name = m.group(6).lower()
                     lang = m.group(7)
@@ -250,6 +256,7 @@ class EIBI(object):
                         "lsb"     if days == "LSB" else
                         "hfdl"    if "hfdl"   in name else # HFDL
                         "fax"     if " fax"   in name else # Weather FAX
+                        "rtty450" if "rtty"   in name else # Weather RTTY
                         "usb"     if "volmet" in name else # Weather
                         "usb"     if "cross " in name else # Weather
                         "usb"     if " ldoc"  in name else # Aircraft
@@ -257,18 +264,19 @@ class EIBI(object):
                         "usb"     if " nat-"  in name else # Aircraft
                         "usb"     if " usb"   in name else
                         "usb"     if "fsk"    in name else
+                        "usb"     if freq < 7000000   else # Services
                         "am")
 
                     # Append a new entry to the result
                     result.append({
-                        "freq"  : int(float(m.group(1)) * 1000),
+                        "freq"  : freq,
                         "mode"  : mode,
                         "time1" : int(m.group(2)),
                         "time2" : int(m.group(3)),
                         "days"  : self.convertDays(days),
                         "itu"   : m.group(5),
                         "name"  : m.group(6),
-                        "lang"  : m.group(7),
+                        "lang"  : lang,
                         "tgt"   : m.group(8),
                         "src"   : m.group(9),
                         "pers"  : int(m.group(10)),

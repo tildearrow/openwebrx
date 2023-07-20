@@ -196,6 +196,16 @@ class Markers(object):
         logger.debug("Stopped marker database thread.")
         self.thread = None
 
+    # Save markers to a given file
+    def saveMarkers(self, file: str, markers):
+        logger.debug("Saving {0} markers to '{1}'...".format(len(markers), file))
+        try:
+            with open(file, "w") as f:
+                json.dump(markers, f, cls=MyJSONEncoder, indent=2)
+                f.close()
+        except Exception as e:
+            logger.debug("saveMarkers() exception: {0}".format(e))
+
     # Load markers from a given file
     def loadMarkers(self, file: str):
         logger.debug("Loading markers from '{0}'...".format(file))
@@ -237,13 +247,7 @@ class Markers(object):
 
         # Save parsed data into a file, if there is anything to save
         if cache:
-            logger.debug("Saving {0} markers to '{1}'...".format(len(cache), file))
-            try:
-                with open(file, "w") as f:
-                    json.dump(cache, f, cls=MyJSONEncoder, indent=2)
-                    f.close()
-            except Exception as e:
-                logger.debug("updateCache() exception: {0}".format(e))
+            self.saveMarkers(file, cache)
 
         # Done
         return cache
