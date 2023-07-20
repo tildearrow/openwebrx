@@ -1,6 +1,7 @@
 FROM debian:bullseye-slim
 ARG VERSION
 LABEL OpenWebRX+ with All Receivers and Demodulators
+ARG MAKEFLAGS
 
 ADD docker/files /files
 
