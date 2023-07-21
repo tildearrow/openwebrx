@@ -1,4 +1,5 @@
 FROM debian:bullseye-slim
+ARG MAKEFLAGS
 
 COPY docker/files/js8call/js8call-hamlib.patch \
      docker/files/wsjtx/wsjtx.patch \

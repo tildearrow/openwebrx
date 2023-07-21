@@ -14,6 +14,7 @@ IMAGES="${DH_PROJECT}-full ${DH_PROJECT}"
 ALL_ARCHS="x86_64 armv7l aarch64"
 TAG=${TAG:-"latest"}
 ARCHTAG="${TAG}-${ARCH}"
+MAKEFLAGS="${MAKEFLAGS:-"-j4"}"
 
 usage () {
   echo "Usage: ${0} [command]"
@@ -30,11 +31,11 @@ usage () {
 buildn () {
   # build the base images
   echo -ne "\n\nBuilding the base image.\n\n"
-  time docker build --pull -t ${DH_PROJECT}-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-base .
+  time docker build --pull --build-arg MAKEFLAGS="$MAKEFLAGS" -t ${DH_PROJECT}-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-base .
 
   # AF: uncomment next 2 lines if you're building all images
   #echo -ne "\n\nBuilding soapysdr image.\n\n"
-  #docker build --build-arg ARCHTAG=${ARCHTAG} --build-arg PROJECT=${DH_PROJECT} -t ${DH_PROJECT}-soapysdr-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-soapysdr .
+  #docker build --build-arg ARCHTAG=${ARCHTAG} --build-arg PROJECT=${DH_PROJECT} --build-arg MAKEFLAGS="$MAKEFLAGS" -t ${DH_PROJECT}-soapysdr-base:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-soapysdr .
 
   GIT_HASH=$(git rev-parse --short master)
   for image in ${IMAGES}; do
@@ -42,7 +43,7 @@ buildn () {
     # "openwebrx" is a special image that gets tag-aliased later on
     if [[ ! -z "${i}" && "${i}" != "${DH_PROJECT}" ]] ; then
       echo -ne "\n\nBuilding ${i} image.\n\n"
-      docker build --build-arg GIT_HASH=${GIT_HASH} --build-arg ARCHTAG=$ARCHTAG --build-arg PROJECT=${DH_PROJECT} -t ${DH_USERNAME}/${image}:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-${i} .
+      docker build --build-arg GIT_HASH=${GIT_HASH} --build-arg ARCHTAG=$ARCHTAG --build-arg PROJECT=${DH_PROJECT} --build-arg MAKEFLAGS="$MAKEFLAGS" -t ${DH_USERNAME}/${image}:${ARCHTAG} -f docker/Dockerfiles/Dockerfile-${i} .
     fi
   done
 
@@ -71,7 +72,7 @@ buildr () {
   fi
 
   echo -ne "\n\nBuilding release image: $1.\n\n"
-	docker build --pull --build-arg VERSION=$1 -t ${DH_USERNAME}/${DH_PROJECT}:${1} -f docker/deb_based/Dockerfile .
+	docker build --pull --build-arg VERSION=$1 --build-arg MAKEFLAGS="$MAKEFLAGS" -t ${DH_USERNAME}/${DH_PROJECT}:${1} -f docker/deb_based/Dockerfile .
 
   docker tag ${DH_USERNAME}/${DH_PROJECT}:${1} ${DH_USERNAME}/${DH_PROJECT}
 }

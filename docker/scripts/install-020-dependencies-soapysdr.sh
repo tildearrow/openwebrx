@@ -1,6 +1,5 @@
 #!/bin/bash
 set -euxo pipefail
-export MAKEFLAGS="-j12"
 
 function cmakebuild() {
   cd $1
