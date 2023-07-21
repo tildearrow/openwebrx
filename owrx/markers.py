@@ -266,15 +266,35 @@ class Markers(object):
 
         # Load transmitter sites from EIBI database
         for entry in EIBI.getSharedInstance().currentTransmitters().values():
+            # Extract target regions and languages, removing duplicates
+            schedule = entry["schedule"]
+            langs   = {}
+            targets = {}
+            comment = ""
+            langstr = ""
+            for row in schedule:
+                lang   = row["lang"]
+                target = row["tgt"]
+                if target not in targets:
+                    targets[target] = True
+                    comment += (", " if comment else " to ") + target
+                if lang not in langs:
+                    langs[lang] = True
+                    langstr += (", " if langstr else "") + re.sub(r":.*$", "", lang)
+
+            # Compose comment
+            comment = "Transmitting" + comment if comment else "Transmitter"
+            comment = comment + " (" + langstr + ")" if langstr else comment
+
             rl = MarkerLocation({
                 "type"    : "feature",
                 "mode"    : "Stations",
-                "comment" : "Transmitter",
+                "comment" : comment,
                 "id"      : entry["name"],
                 "lat"     : entry["lat"],
                 "lon"     : entry["lon"],
                 "url"     : url + urllib.parse.quote_plus(entry["name"]),
-                "schedule": entry["schedule"]
+                "schedule": schedule
             })
             result[rl.getId()] = rl
 

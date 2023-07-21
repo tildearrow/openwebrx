@@ -90,9 +90,9 @@ class EIBI(object):
 
     # Update schedule
     def updateSchedule(self):
-        # Scrape EIBI database file
+        # Load EIBI database file from the web
         file     = self._getCachedScheduleFile()
-        schedule = self.scrape()
+        schedule = self.loadFromWeb()
         # Save parsed data into a file
         if schedule:
             self.saveSchedule(file, schedule)
@@ -221,7 +221,7 @@ class EIBI(object):
         # Done
         return "".join(result)
 
-    def scrape(self, url: str = "http://www.eibispace.de/dx/sked-{0}.csv"):
+    def loadFromWeb(self, url: str = "http://www.eibispace.de/dx/sked-{0}.csv"):
         # Figure out CSV file name based on the current date
         # SUMMER: Apr - Oct - sked-aNN.csv
         # WINTER: Nov - Mar - sked-bNN.csv
@@ -246,6 +246,7 @@ class EIBI(object):
                     days = m.group(4)
                     name = m.group(6).lower()
                     lang = m.group(7)
+                    trgt = m.group(8)
 
                     # Guess modulation, default to AM
                     mode = (
@@ -267,6 +268,14 @@ class EIBI(object):
                         "usb"     if freq < 7000000   else # Services
                         "am")
 
+                    # Convert language code to language
+                    if lang in EIBI_Languages:
+                        lang = EIBI_Languages[lang]["name"]
+
+                    # Convert target country code to target country
+                    if trgt in EIBI_Countries:
+                        trgt = EIBI_Countries[trgt]
+
                     # Append a new entry to the result
                     result.append({
                         "freq"  : freq,
@@ -277,7 +286,7 @@ class EIBI(object):
                         "itu"   : m.group(5),
                         "name"  : m.group(6),
                         "lang"  : lang,
-                        "tgt"   : m.group(8),
+                        "tgt"   : trgt,
                         "src"   : m.group(9),
                         "pers"  : int(m.group(10)),
                         "date1" : self.convertDate(m.group(11)),
@@ -285,7 +294,7 @@ class EIBI(object):
                     })
 
         except Exception as e:
-            logger.debug("scrape() exception: {0}".format(e))
+            logger.debug("loadFromWeb() exception: {0}".format(e))
 
         # Done
         return result
@@ -325,6 +334,66 @@ EIBI_SpecialDays = {
 # Country Codes
 #
 EIBI_Countries = {
+  # Regions
+  "Af" : "Africa",
+  "Am" : "Americas",
+  "As" : "Asia",
+  "C..": "Central ..",
+  "CAf": "Central Africa",
+  "CAm": "Central America",
+  "CAs": "Central Asia",
+  "CEu": "Central Europe",
+  "Car": "Caribbean, Gulf of Mexico, Florida Waters",
+  "Cau": "Caucasus",
+  "CIS": "Commonwealth of Independent States (former Soviet Union)",
+  "CNA": "Central North America",
+  "E..": "East ..",
+  "EAf": "Eastern Africa",
+  "EAs": "Eastern Asia",
+  "EEu": "Eastern Europe",
+  "ENA": "Eastern North America",
+  "ENE": "East-Northeast",
+  "ESE": "East-Southeast",
+  "Eu" : "Europe, incl. North Africa / Middle East",
+  "FE" : "Far East",
+  "Glo": "World",
+  "In" : "Indian Subcontinent",
+  "LAm": "Latin America",
+  "ME" : "Middle East",
+  "N..": "North ..",
+  "NAf": "North Africa",
+  "NAm": "North America",
+  "NAs": "North Asia",
+  "NEu": "North Europe",
+  "NAO": "North Atlantic Ocean",
+  "NE" : "Northeast",
+  "NNE": "North-Northeast",
+  "NNW": "North-Northwest",
+  "NW" : "Northwest",
+  "Oc" : "Oceania (Australia, New Zealand, Pacific Ocean)",
+  "S..": "South ..",
+  "SAf": "South Africa",
+  "SAm": "South America",
+  "SAs": "South Asia",
+  "SEu": "South Europe",
+  "SAO": "South Atlantic Ocean",
+  "SE" : "Southeast",
+  "SEA": "South East Asia",
+  "SEE": "South East Europe",
+  "Sib": "Siberia",
+  "SSE": "South-Southeast",
+  "SSW": "South-Southwest",
+  "SW" : "Southwest",
+  "Tib": "Tibet",
+  "W..": "West ..",
+  "WAf": "Western Africa",
+  "WAs": "Western Asia",
+  "WEu": "Western Europe",
+  "WIO": "Western Indian Ocean",
+  "WNA": "Western North America",
+  "WNW": "West-Northwest",
+  "WSW": "West-Southwest",
+  # ITU codes start here
   "ABW": "Aruba",
   "AFG": "Afghanistan",
   "AFS": "South Africa",
@@ -369,17 +438,17 @@ EIBI_Countries = {
   "BTN": "Bhutan",
   "BUL": "Bulgaria",
   "BVT": "Bouvet",
-  "CAB": "Cabinda *",
+  "CAB": "Cabinda",
   "CAF": "Central African Republic",
   "CAN": "Canada",
   "CBG": "Cambodia",
-  "CEU": "Ceuta *",
+  "CEU": "Ceuta",
   "CG7": "Guantanamo Bay",
   "CHL": "Chile",
-  "CHN": "China (People's Republic)",
-  "CHR": "Christmas Island (Indian Ocean)",
+  "CHN": "People's Republic of China",
+  "CHR": "Christmas Island in Indian Ocean",
   "CKH": "Cook Island",
-  "CLA": "Clandestine stations *",
+  "CLA": "Clandestine stations",
   "CLM": "Colombia",
   "CLN": "Sri Lanka",
   "CME": "Cameroon",
@@ -409,7 +478,7 @@ EIBI_Countries = {
   "ERI": "Eritrea",
   "EST": "Estonia",
   "ETH": "Ethiopia",
-  "EUR": "Iles Europe & Bassas da India *",
+  "EUR": "Iles Europe & Bassas da India",
   "F":   "France",
   "FIN": "Finland",
   "FJI": "Fiji",
@@ -425,7 +494,7 @@ EIBI_Countries = {
   "GMB": "Gambia",
   "GNB": "Guinea-Bissau",
   "GNE": "Equatorial Guinea",
-  "GPG": "Galapagos *",
+  "GPG": "Galapagos",
   "GRC": "Greece",
   "GRD": "Grenada",
   "GRL": "Greenland",
@@ -434,7 +503,7 @@ EIBI_Countries = {
   "GUI": "Guinea",
   "GUM": "Guam / Guahan",
   "GUY": "Guyana",
-  "HKG": "Hong Kong, part of China",
+  "HKG": "Hong Kong",
   "HMD": "Heard & McDonald Islands",
   "HND": "Honduras",
   "HNG": "Hungary",
@@ -453,16 +522,16 @@ EIBI_Countries = {
   "ISL": "Iceland",
   "ISR": "Israel",
   "IW":  "International Waters",
-  "IWA": "Ogasawara (Bonin, Iwo Jima) *",
+  "IWA": "Ogasawara (Bonin, Iwo Jima)",
   "J":   "Japan",
   "JAR": "Jarvis Island",
-  "JDN": "Juan de Nova *",
+  "JDN": "Juan de Nova",
   "JMC": "Jamaica",
-  "JMY": "Jan Mayen *",
+  "JMY": "Jan Mayen",
   "JON": "Johnston Island",
   "JOR": "Jordan",
-  "JUF": "Juan Fernandez Island *",
-  "KAL": "Kaliningrad *",
+  "JUF": "Juan Fernandez Island",
+  "KAL": "Kaliningrad",
   "KAZ": "Kazakstan / Kazakhstan",
   "KEN": "Kenya",
   "KER": "Kerguelen",
@@ -491,7 +560,7 @@ EIBI_Countries = {
   "MDG": "Madagascar",
   "MDR": "Madeira",
   "MDW": "Midway Islands",
-  "MEL": "Melilla *",
+  "MEL": "Melilla",
   "MEX": "Mexico",
   "MHL": "Marshall Islands",
   "MKD": "Macedonia (F.Y.R.)",
@@ -536,7 +605,7 @@ EIBI_Countries = {
   "POR": "Portugal",
   "PRG": "Paraguay",
   "PRU": "Peru",
-  "PRV": "Okino-Tori-Shima (Parece Vela) *",
+  "PRV": "Okino-Tori-Shima (Parece Vela)",
   "PSE": "Palestine",
   "PTC": "Pitcairn",
   "PTR": "Puerto Rico",
@@ -547,11 +616,11 @@ EIBI_Countries = {
   "RRW": "Rwanda",
   "RUS": "Russian Federation",
   "S":   "Sweden",
-  "SAP": "San Andres & Providencia *",
+  "SAP": "San Andres & Providencia",
   "SDN": "Sudan",
   "SEN": "Senegal",
   "SEY": "Seychelles",
-  "SGA": "South Georgia Islands *",
+  "SGA": "South Georgia Islands",
   "SHN": "Saint Helena",
   "SLM": "Solomon Islands",
   "SLV": "El Salvador",
@@ -559,17 +628,17 @@ EIBI_Countries = {
   "SMO": "Samoa",
   "SMR": "San Marino",
   "SNG": "Singapore",
-  "SOK": "South Orkney Islands *",
+  "SOK": "South Orkney Islands",
   "SOM": "Somalia",
   "SPM": "Saint Pierre et Miquelon",
   "SRB": "Serbia",
   "SRL": "Sierra Leone",
   "SSD": "South Sudan",
-  "SSI": "South Sandwich Islands *",
+  "SSI": "South Sandwich Islands",
   "STP": "Sao Tome & Principe",
   "SUI": "Switzerland",
   "SUR": "Suriname",
-  "SVB": "Svalbard *",
+  "SVB": "Svalbard",
   "SVK": "Slovakia",
   "SVN": "Slovenia",
   "SWZ": "Swaziland",
@@ -589,12 +658,12 @@ EIBI_Countries = {
   "TUN": "Tunisia",
   "TUR": "Turkey",
   "TUV": "Tuvalu",
-  "TWN": "Taiwan *",
+  "TWN": "Taiwan",
   "TZA": "Tanzania",
   "UAE": "United Arab Emirates",
   "UGA": "Uganda",
   "UKR": "Ukraine",
-  "UN":  "United Nations *",
+  "UN":  "United Nations",
   "URG": "Uruguay",
   "USA": "United States of America",
   "UZB": "Uzbekistan",
@@ -761,6 +830,8 @@ EIBI_Languages = {
   "DY":  { "name": "Dyula/Jula: Burkina Faso (1m), Ivory Coast (1.5m), Mali (50,000)", "code": "dyu" },
   "DZ":  { "name": "Dzongkha: Bhutan (0.2m)", "code": "dzo" },
   "E":   { "name": "English: UK (60m), USA (225m), India (200m), others", "code": "eng" },
+  "E,F": { "name": "English, French" },
+  "E,S": { "name": "English, Spanish" },
   "EC":  { "name": "Eastern Cham: Vietnam (70,000)", "code": "cjm" },
   "EGY": { "name": "Egyptian Arabic: Egypt (52m)", "code": "arz" },
   "EO":  { "name": "Esperanto: Constructed language (2m)", "code": "epo" },
