@@ -280,7 +280,7 @@ class Markers(object):
                     comment += (", " if comment else " to ") + target
                 if lang not in langs:
                     langs[lang] = True
-                    langstr += (", " if langstr else "") + re.sub(r":.*$", "", lang)
+                    langstr += (", " if langstr else "") + re.sub(r"(:|\s*\().*$", "", lang)
 
             # Compose comment
             comment = "Transmitting" + comment if comment else "Transmitter"
