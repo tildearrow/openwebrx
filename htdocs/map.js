@@ -44,6 +44,9 @@ $(function(){
     // marker manager
     var markmanager = null;
 
+    // clock
+    var clock = new Clock($("#openwebrx-clock-utc"));
+
     var colorKeys = {};
     var colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
     var getColor = function(id){
@@ -206,14 +209,14 @@ $(function(){
                     }, options));
 
                     // Get attributes
-                    //features have no expiration date
-                    //marker.lastseen = update.lastseen;
+                    marker.lastseen = update.lastseen;
                     marker.mode     = update.mode;
                     marker.url      = update.location.url;
                     marker.comment  = update.location.comment;
                     marker.altitude = update.location.altitude;
                     marker.device   = update.location.device;
                     marker.antenna  = update.location.antenna;
+                    marker.schedule = update.location.schedule;
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -457,7 +460,7 @@ $(function(){
             return '<a target="callsign_info" href="' +
                 url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
                 '">' + callsign + '</a>';
-    };
+    }
 
     var distanceKm = function(p1, p2) {
         // Earth radius in km
@@ -520,8 +523,8 @@ $(function(){
     }
 
     var makeListItem = function(name, value) {
-        return '<div style="border-bottom:1px dotted;">'
-            + '<span>' + name + '</span>'
+        return '<div style="border-bottom:1px dotted;white-space:nowrap;">'
+            + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
             + '<span style="float:right;">' + value + '</span>'
             + '</div>';
     }
@@ -664,6 +667,7 @@ $(function(){
         var marker = markers[name];
         var commentString = "";
         var detailsString = "";
+        var scheduleString = "";
         var nameString = "";
         var distance = "";
 
@@ -692,8 +696,33 @@ $(function(){
             detailsString += makeListItem('Antenna', truncate(marker.antenna, 24));
         }
 
+        if (marker.schedule) {
+            for (var j=0 ; j<marker.schedule.length ; ++j) {
+                var freq = marker.schedule[j].freq;
+                var mode = marker.schedule[j].mode;
+                var tune = mode === 'cw'?      freq - 800
+                         : mode === 'fax'?     freq - 1500
+                         : mode === 'rtty450'? freq - 1000
+                         : freq;
+
+                var name = ("0000" + marker.schedule[j].time1).slice(-4)
+                    + "&#8209;" + ("0000" + marker.schedule[j].time2).slice(-4)
+                    + "&nbsp;&nbsp;" + marker.schedule[j].name;
+
+                freq = '<a target="openwebrx-rx" href="/#freq=' + tune
+                    + ',mod=' + (mode? mode : 'am') + '">'
+                    + Math.round(marker.schedule[j].freq/1000) + 'kHz</a>';
+
+                scheduleString += makeListItem(name, freq);
+            }
+        }
+
         if (detailsString.length > 0) {
             detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
+        }
+
+        if (scheduleString.length > 0) {
+            scheduleString = '<p>' + makeListTitle('Schedule') + scheduleString + '</p>';
         }
 
         if (receiverMarker) {
@@ -702,7 +731,7 @@ $(function(){
 
         infowindow.setContent(
             '<h3>' + nameString + distance + '</h3>' +
-            commentString + detailsString
+            commentString + detailsString + scheduleString
         );
 
         infowindow.open(map, marker);
@@ -754,15 +783,13 @@ $(function(){
             m.setOptions(getRectangleOpacityOptions(m.lastseen));
         });
         $.each(markers, function(callsign, m) {
-            if (m.lastseen) {
-                var age = now - m.lastseen;
-                if (age > retention_time) {
-                    delete markers[callsign];
-                    m.setMap();
-                    return;
-                }
-                m.setOptions(getMarkerOpacityOptions(m.lastseen));
+            var age = now - m.lastseen;
+            if (age > retention_time) {
+                delete markers[callsign];
+                m.setMap();
+                return;
             }
+            m.setOptions(getMarkerOpacityOptions(m.lastseen));
         });
     }, 1000);
 

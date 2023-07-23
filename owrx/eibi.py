@@ -14,11 +14,6 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class MyJSONEncoder(JSONEncoder):
-    def default(self, obj):
-        return obj.toJSON()
-
-
 class EIBI(object):
     sharedInstance = None
     creationLock = threading.Lock()
@@ -44,185 +39,362 @@ class EIBI(object):
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
 
     def __init__(self):
+        self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
+        self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
         self.refreshPeriod = 60*60*24*30
-        self.event = threading.Event()
+        self.lock = threading.Lock()
         self.schedule = []
-        self.thread = None
 
-    def toJSON(self):
-        return self.schedule
-
-    # Start the main thread
-    def startThread(self):
-        if self.thread is None:
-            self.event.clear()
-            self.thread = threading.Thread(target=self._refreshThread)
-            self.thread.start()
-
-    # Stop the main thread
-    def stopThread(self):
-        if self.thread is not None:
-            self.event.set()
-            self.thread.join()
-
-    # This is the actual thread function
-    def _refreshThread(self):
-        logger.debug("Starting EIBI main thread...")
-
+    # Load cached schedule or refresh it from the web
+    def refresh(self):
         # This file contains cached schedule
         file = self._getCachedScheduleFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
-        # Try loading cached schedule from file first, unless stale
-        if time.time() - ts < self.refreshPeriod:
-            logger.debug("Loading cached schedule from '{0}'...".format(file))
-            self.schedule = self.loadSchedule(file)
-        else:
-            self.schedule = self.updateSchedule()
+        with self.lock:
+            # If cached schedule is stale...
+            if time.time() - ts >= self.refreshPeriod:
+                # Load updated schedule from the web
+                schedule = self.updateSchedule()
+                # Only update current schedule if updated from the web
+                if schedule:
+                    self.schedule = schedule
 
-        while not self.event.is_set():
-            # Sleep until it is time to update schedule
-            self.event.wait(self.refreshPeriod)
-            # If not terminated yet...
-            if not self.event.is_set():
-                # Update schedule
-                logger.debug("Refreshing schedule...")
-                self.schedule = self.updateSchedule()
+            # If no current schedule, load it from cached file
+            if not self.schedule:
+                self.schedule = self.loadSchedule(file)
 
-        # Done
-        logger.debug("Stopped EIBI main thread.")
-        self.thread = None
+    # Save schedule to a given JSON file
+    def saveSchedule(self, file: str, schedule):
+        logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
+        try:
+            with open(file, "w") as f:
+                json.dump(schedule, f, indent=2)
+                f.close()
+        except Exception as e:
+            logger.debug("saveSchedule() exception: {0}".format(e))
 
     # Load schedule from a given JSON file
-    def loadSchedule(self, fileName: str):
+    def loadSchedule(self, file: str):
+        logger.debug("Loading schedule from '{0}'...".format(file))
         try:
-            with open(fileName, "r") as f:
+            with open(file, "r") as f:
                 result = json.load(f)
                 f.close()
         except Exception as e:
             logger.debug("loadSchedule() exception: {0}".format(e))
             result = []
         # Done
+        logger.debug("Loaded {0} entries from '{1}'...".format(len(result), file))
         return result
 
     # Update schedule
     def updateSchedule(self):
-        # Scrape EIBI database file
-        logger.debug("Scraping EIBI website...")
+        # Load EIBI database file from the web
         file     = self._getCachedScheduleFile()
-        schedule = self.scrape()
+        schedule = self.loadFromWeb()
         # Save parsed data into a file
-        logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
-        try:
-            with open(file, "w") as f:
-                json.dump(schedule, f, cls=MyJSONEncoder, indent=2)
-                f.close()
-        except Exception as e:
-            logger.debug("updateSchedule() exception: {0}".format(e))
+        if schedule:
+            self.saveSchedule(file, schedule)
         # Done
         return schedule
 
+    # Find all current broadcasts for a given source
     def findBySource(self, src: str):
         # Get entries active at the current time
         now = datetime.utcnow()
         now = now.hour * 100 + now.minute
         result = []
         # Search for entries originating from given source at current time
-        for entry in self.schedule:
-            if entry["time1"] <= now and entry["time2"] > now:
-                if entry["itu"] + entry["src"] == src:
-                    result.append(entry)
+        with self.lock:
+            for entry in self.schedule:
+                if entry["time1"] <= now and entry["time2"] > now:
+                    if entry["itu"] + entry["src"] == src:
+                        result.append(entry)
         # Done
         return result
 
+    # Find all current broadcasts for a given frequency range
     def findCurrent(self, freq1: int, freq2: int):
         # Get entries active at the current time
         now = datetime.utcnow()
         now = now.hour * 100 + now.minute
         return self.find(freq1, freq2, now, now)
 
+    # Find all broadcasts for given frequency and time ranges
     def find(self, freq1: int, freq2: int, time1: int, time2: int):
         result = []
         # Search for entries within given frequency and time ranges
-        for entry in self.schedule:
-            f = entry["freq"]
-            if f >= freq1 and f <= freq2:
-                if entry["time1"] <= time2 and entry["time2"] > time1:
-                    result.append(entry)
+        with self.lock:
+            for entry in self.schedule:
+                f = entry["freq"]
+                if f >= freq1 and f <= freq2:
+                    if entry["time1"] <= time2 and entry["time2"] > time1:
+                        result.append(entry)
         # Done
         return result
 
-    def convertDays(self, days: str):
-        # Replace day names with digits, remove commas
-        days = re.sub("Mo", "1", days)
-        days = re.sub("Tu", "2", days)
-        days = re.sub("We", "3", days)
-        days = re.sub("Th", "4", days)
-        days = re.sub("Fr", "5", days)
-        days = re.sub("Sa", "6", days)
-        days = re.sub("Su", "7", days)
-        days = re.sub(r"[^0-9\-]", "", days)
-        # Empty strings mean every day of the week
-        if days == "":
-            return "1234567"
-        # Parse input string
-        span = True
-        curr = 1
-        out  = ""
-        for j in range(len(days)):
-            if days[j] == "-":
-                span = True
-            else:
-                next = int(days[j])
-                while curr < next:
-                  out  += str(curr) if span else "."
-                  curr += 1
-                span = False
-        # Add final days
-        while curr < 8:
-            out  += str(curr) if span else "."
-            curr += 1
-        # Done
-        return out
+    # Create list of currently broadcasting locations
+    def currentTransmitters(self, hours: int = 1):
+        # Get entries active at the current time + 1 hour
+        now  = datetime.utcnow()
+        day  = now.weekday()
+        date = now.year * 10000 + now.month * 100 + now.day
+        t1   = now.hour * 100 + now.minute
+        t2   = t1 + hours * 100
+        result = {}
+        # Search for current entries
+        with self.lock:
+            for entry in self.schedule:
+                # Check if entry is currently active
+                entryActive = (
+                    entry["days"][day] != "."
+                and (entry["date1"] == 0 or entry["date1"] <= date)
+                and (entry["date2"] == 0 or entry["date2"] >= date)
+                )
+                # Check the hours, rolling over to the next day
+                if entryActive:
+                    e1 = entry["time1"]
+                    e2 = entry["time2"]
+                    e2 = e2 if e2 > e1 else e2 + 2400
+                    entryActive = e1 < t2 and e2 > t1
+                # For evere currently active schedule entry...
+                if entryActive:
+                    src = entry["itu"] + entry["src"]
+                    # Find all matching transmitter locations
+                    for loc in EIBI_Locations:
+                        if loc["code"] == src:
+                            # Add location to the result
+                            name = loc["name"]
+                            if name not in result:
+                                result[name] = loc.copy()
+                                result[name]["schedule"] = []
+                            # Add schedule entry to the location
+                            result[name]["schedule"].append(entry)
 
-    def scrape(self, url: str = "http://www.eibispace.de/dx/sked-a23.csv"):
+        # Done
+        return result
+
+    def convertDate(self, date: str):
+        # No-date is a common case
+        if date == "":
+            return 0
+        # Remove last-seen data
+        date = re.sub(r"\[.*\]", "", date)
+        # Match day/month
+        m = re.match(r"^(\d\d)(\d\d)$", date)
+        if m is None:
+            return 0
+        else:
+            now   = datetime.utcnow()
+            month = int(m.group(2))
+            day   = int(m.group(1))
+            year  = (
+                now.year + 1 if (now.month >= 11) and (month < now.month) else
+                now.year - 1 if (now.month <= 3)  and (month > now.month) else
+                now.year
+            )
+            return year * 10000 + month * 100 + day
+
+    def convertDays(self, days: str):
+        # Look up and process special cases
+        if days in EIBI_SpecialDays:
+            return EIBI_SpecialDays[days]
+        # Start with empty result
+        result = [ ".", ".", ".", ".", ".", ".", "."]
+        # Extract day spans
+        m = self.patternDays.match(days)
+        if m is not None:
+            x = EIBI_Days[m.group(2)]
+            y = EIBI_Days[m.group(3)]
+            result[y - 1] = str(y)
+            while x != y:
+                result[x - 1] = str(x)
+                x = x + 1 if x < 7 else 1
+            # Remove extracted span
+            days = m.group(1) + m.group(4)
+        # Extract singular days
+        for day in EIBI_Days.keys():
+            if day in days:
+                x = EIBI_Days[day]
+                result[x - 1] = str(x)
+        # Done
+        return "".join(result)
+
+    def loadFromWeb(self, url: str = "http://www.eibispace.de/dx/sked-{0}.csv"):
+        # Figure out CSV file name based on the current date
+        # SUMMER: Apr - Oct - sked-aNN.csv
+        # WINTER: Nov - Mar - sked-bNN.csv
+        now = datetime.utcnow()
+        url = url.format(
+            ("a" if now.month >= 4 and now.month <= 10 else "b") +
+            str((now.year if now.month >= 4 else now.year - 1) % 100)
+        )
+
+        # Fetch and parse CSV file
         result = []
         try:
-            # This is out CSV pattern
-            pattern = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(.*);(.*);(.*)$")
-
+            logger.debug("Scraping '{0}'...".format(url))
             for line in urllib.request.urlopen(url).readlines():
                 # Convert read bytes to a string
                 line = line.decode('cp1252').rstrip()
+
                 # When we encounter a location...
-                m = pattern.match(line)
+                m = self.patternCSV.match(line)
                 if m is not None:
+                    freq = int(float(m.group(1)) * 1000)
+                    days = m.group(4)
+                    name = m.group(6).lower()
+                    lang = m.group(7)
+                    trgt = m.group(8)
+
+                    # Guess modulation, default to AM
+                    mode = (
+                        "hfdl"    if lang == "-HF"     else
+                        "rtty450" if lang == "-TY"     else
+                        "cw"      if lang == "-CW"     else
+                        "usb"     if days == "USB"     else
+                        "lsb"     if days == "LSB"     else
+                        "hfdl"    if "hfdl"    in name else # HFDL
+                        "drm"     if "digital" in name else # DRM
+                        "fax"     if " fax"    in name else # Weather FAX
+                        "rtty450" if "rtty"    in name else # Weather RTTY
+                        "usb"     if "volmet"  in name else # Weather
+                        "usb"     if "cross "  in name else # Weather
+                        "usb"     if " ldoc"   in name else # Aircraft
+                        "usb"     if " car-"   in name else # Aircraft
+                        "usb"     if " nat-"   in name else # Aircraft
+                        "usb"     if " usb"    in name else
+                        "usb"     if "fsk"     in name else
+                        "usb"     if freq < 7000000    else # Services
+                        "am")
+
+                    # Convert language code to language
+                    if lang in EIBI_Languages:
+                        lang = EIBI_Languages[lang]["name"]
+
+                    # Convert target country code to target country
+                    if trgt in EIBI_Countries:
+                        trgt = EIBI_Countries[trgt]
+
+                    # Append a new entry to the result
                     result.append({
-                        "freq"  : int(float(m.group(1)) * 1000),
+                        "freq"  : freq,
+                        "mode"  : mode,
                         "time1" : int(m.group(2)),
                         "time2" : int(m.group(3)),
-                        "days"  : self.convertDays(m.group(4)),
+                        "days"  : self.convertDays(days),
                         "itu"   : m.group(5),
                         "name"  : m.group(6),
-                        "lang"  : m.group(7),
-                        "tgt"   : m.group(8),
+                        "lang"  : lang,
+                        "tgt"   : trgt,
                         "src"   : m.group(9),
-                        "p"     : m.group(10),
-                        "start" : m.group(11),
-                        "stop"  : m.group(12),
+                        "pers"  : int(m.group(10)),
+                        "date1" : self.convertDate(m.group(11)),
+                        "date2" : self.convertDate(m.group(12)),
                     })
 
         except Exception as e:
-            logger.debug("scrape() exception: {0}".format(e))
+            logger.debug("loadFromWeb() exception: {0}".format(e))
 
         # Done
         return result
 
+
+#
+# Normal days of the week
+#
+EIBI_Days = {
+  "Mo" : 1,
+  "Tu" : 2,
+  "We" : 3,
+  "Th" : 4,
+  "Fr" : 5,
+  "Sa" : 6,
+  "Su" : 7,
+}
+
+#
+# Special Codes for the days field
+#
+EIBI_SpecialDays = {
+  ""     : "1234567", # Empty field means whole week
+  "LSB"  : "1234567", # Upper side band transmission
+  "USB"  : "1234567", # Upper side band transmission
+  "alt"  : "xxxxxxx", # Alternative frequency, usually not in use
+  "irr"  : "xxxxxxx", # Irregular operation
+  "Haj"  : "xxxxxxx", # Special Haj broadcast
+  "Ram"  : "xxxxxxx", # Special Ramadan schedule
+  "tent" : "xxxxxxx", # Tentatively, check and report your observations
+  "test" : "xxxxxxx", # Test operation, may cease at any time
+  "harm" : ".......", # Harmonic signal (multiples of fundamental frequency)
+  "imod" : ".......", # Intermodulation signal
+}
 
 #
 # Country Codes
 #
 EIBI_Countries = {
+  # Regions
+  "Af" : "Africa",
+  "Am" : "Americas",
+  "As" : "Asia",
+  "C..": "Central ..",
+  "CAf": "Central Africa",
+  "CAm": "Central America",
+  "CAs": "Central Asia",
+  "CEu": "Central Europe",
+  "Car": "Caribbean, Gulf of Mexico, Florida Waters",
+  "Cau": "Caucasus",
+  "CIS": "Commonwealth of Independent States (former Soviet Union)",
+  "CNA": "Central North America",
+  "E..": "East ..",
+  "EAf": "Eastern Africa",
+  "EAs": "Eastern Asia",
+  "EEu": "Eastern Europe",
+  "ENA": "Eastern North America",
+  "ENE": "East-Northeast",
+  "ESE": "East-Southeast",
+  "Eu" : "Europe, incl. North Africa / Middle East",
+  "FE" : "Far East",
+  "Glo": "World",
+  "In" : "Indian Subcontinent",
+  "LAm": "Latin America",
+  "ME" : "Middle East",
+  "N..": "North ..",
+  "NAf": "North Africa",
+  "NAm": "North America",
+  "NAs": "North Asia",
+  "NEu": "North Europe",
+  "NAO": "North Atlantic Ocean",
+  "NE" : "Northeast",
+  "NNE": "North-Northeast",
+  "NNW": "North-Northwest",
+  "NW" : "Northwest",
+  "Oc" : "Oceania (Australia, New Zealand, Pacific Ocean)",
+  "S..": "South ..",
+  "SAf": "South Africa",
+  "SAm": "South America",
+  "SAs": "South Asia",
+  "SEu": "South Europe",
+  "SAO": "South Atlantic Ocean",
+  "SE" : "Southeast",
+  "SEA": "South East Asia",
+  "SEE": "South East Europe",
+  "Sib": "Siberia",
+  "SSE": "South-Southeast",
+  "SSW": "South-Southwest",
+  "SW" : "Southwest",
+  "Tib": "Tibet",
+  "W..": "West ..",
+  "WAf": "Western Africa",
+  "WAs": "Western Asia",
+  "WEu": "Western Europe",
+  "WIO": "Western Indian Ocean",
+  "WNA": "Western North America",
+  "WNW": "West-Northwest",
+  "WSW": "West-Southwest",
+  # ITU codes start here
   "ABW": "Aruba",
   "AFG": "Afghanistan",
   "AFS": "South Africa",
@@ -267,17 +439,17 @@ EIBI_Countries = {
   "BTN": "Bhutan",
   "BUL": "Bulgaria",
   "BVT": "Bouvet",
-  "CAB": "Cabinda *",
+  "CAB": "Cabinda",
   "CAF": "Central African Republic",
   "CAN": "Canada",
   "CBG": "Cambodia",
-  "CEU": "Ceuta *",
+  "CEU": "Ceuta",
   "CG7": "Guantanamo Bay",
   "CHL": "Chile",
-  "CHN": "China (People's Republic)",
-  "CHR": "Christmas Island (Indian Ocean)",
+  "CHN": "People's Republic of China",
+  "CHR": "Christmas Island in Indian Ocean",
   "CKH": "Cook Island",
-  "CLA": "Clandestine stations *",
+  "CLA": "Clandestine stations",
   "CLM": "Colombia",
   "CLN": "Sri Lanka",
   "CME": "Cameroon",
@@ -307,7 +479,7 @@ EIBI_Countries = {
   "ERI": "Eritrea",
   "EST": "Estonia",
   "ETH": "Ethiopia",
-  "EUR": "Iles Europe & Bassas da India *",
+  "EUR": "Iles Europe & Bassas da India",
   "F":   "France",
   "FIN": "Finland",
   "FJI": "Fiji",
@@ -323,7 +495,7 @@ EIBI_Countries = {
   "GMB": "Gambia",
   "GNB": "Guinea-Bissau",
   "GNE": "Equatorial Guinea",
-  "GPG": "Galapagos *",
+  "GPG": "Galapagos",
   "GRC": "Greece",
   "GRD": "Grenada",
   "GRL": "Greenland",
@@ -332,7 +504,7 @@ EIBI_Countries = {
   "GUI": "Guinea",
   "GUM": "Guam / Guahan",
   "GUY": "Guyana",
-  "HKG": "Hong Kong, part of China",
+  "HKG": "Hong Kong",
   "HMD": "Heard & McDonald Islands",
   "HND": "Honduras",
   "HNG": "Hungary",
@@ -351,16 +523,16 @@ EIBI_Countries = {
   "ISL": "Iceland",
   "ISR": "Israel",
   "IW":  "International Waters",
-  "IWA": "Ogasawara (Bonin, Iwo Jima) *",
+  "IWA": "Ogasawara (Bonin, Iwo Jima)",
   "J":   "Japan",
   "JAR": "Jarvis Island",
-  "JDN": "Juan de Nova *",
+  "JDN": "Juan de Nova",
   "JMC": "Jamaica",
-  "JMY": "Jan Mayen *",
+  "JMY": "Jan Mayen",
   "JON": "Johnston Island",
   "JOR": "Jordan",
-  "JUF": "Juan Fernandez Island *",
-  "KAL": "Kaliningrad *",
+  "JUF": "Juan Fernandez Island",
+  "KAL": "Kaliningrad",
   "KAZ": "Kazakstan / Kazakhstan",
   "KEN": "Kenya",
   "KER": "Kerguelen",
@@ -389,7 +561,7 @@ EIBI_Countries = {
   "MDG": "Madagascar",
   "MDR": "Madeira",
   "MDW": "Midway Islands",
-  "MEL": "Melilla *",
+  "MEL": "Melilla",
   "MEX": "Mexico",
   "MHL": "Marshall Islands",
   "MKD": "Macedonia (F.Y.R.)",
@@ -434,7 +606,7 @@ EIBI_Countries = {
   "POR": "Portugal",
   "PRG": "Paraguay",
   "PRU": "Peru",
-  "PRV": "Okino-Tori-Shima (Parece Vela) *",
+  "PRV": "Okino-Tori-Shima (Parece Vela)",
   "PSE": "Palestine",
   "PTC": "Pitcairn",
   "PTR": "Puerto Rico",
@@ -445,11 +617,11 @@ EIBI_Countries = {
   "RRW": "Rwanda",
   "RUS": "Russian Federation",
   "S":   "Sweden",
-  "SAP": "San Andres & Providencia *",
+  "SAP": "San Andres & Providencia",
   "SDN": "Sudan",
   "SEN": "Senegal",
   "SEY": "Seychelles",
-  "SGA": "South Georgia Islands *",
+  "SGA": "South Georgia Islands",
   "SHN": "Saint Helena",
   "SLM": "Solomon Islands",
   "SLV": "El Salvador",
@@ -457,17 +629,17 @@ EIBI_Countries = {
   "SMO": "Samoa",
   "SMR": "San Marino",
   "SNG": "Singapore",
-  "SOK": "South Orkney Islands *",
+  "SOK": "South Orkney Islands",
   "SOM": "Somalia",
   "SPM": "Saint Pierre et Miquelon",
   "SRB": "Serbia",
   "SRL": "Sierra Leone",
   "SSD": "South Sudan",
-  "SSI": "South Sandwich Islands *",
+  "SSI": "South Sandwich Islands",
   "STP": "Sao Tome & Principe",
   "SUI": "Switzerland",
   "SUR": "Suriname",
-  "SVB": "Svalbard *",
+  "SVB": "Svalbard",
   "SVK": "Slovakia",
   "SVN": "Slovenia",
   "SWZ": "Swaziland",
@@ -487,12 +659,12 @@ EIBI_Countries = {
   "TUN": "Tunisia",
   "TUR": "Turkey",
   "TUV": "Tuvalu",
-  "TWN": "Taiwan *",
+  "TWN": "Taiwan",
   "TZA": "Tanzania",
   "UAE": "United Arab Emirates",
   "UGA": "Uganda",
   "UKR": "Ukraine",
-  "UN":  "United Nations *",
+  "UN":  "United Nations",
   "URG": "Uruguay",
   "USA": "United States of America",
   "UZB": "Uzbekistan",
@@ -659,6 +831,8 @@ EIBI_Languages = {
   "DY":  { "name": "Dyula/Jula: Burkina Faso (1m), Ivory Coast (1.5m), Mali (50,000)", "code": "dyu" },
   "DZ":  { "name": "Dzongkha: Bhutan (0.2m)", "code": "dzo" },
   "E":   { "name": "English: UK (60m), USA (225m), India (200m), others", "code": "eng" },
+  "E,F": { "name": "English, French" },
+  "E,S": { "name": "English, Spanish" },
   "EC":  { "name": "Eastern Cham: Vietnam (70,000)", "code": "cjm" },
   "EGY": { "name": "Egyptian Arabic: Egypt (52m)", "code": "arz" },
   "EO":  { "name": "Esperanto: Constructed language (2m)", "code": "epo" },

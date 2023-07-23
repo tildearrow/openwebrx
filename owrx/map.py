@@ -87,7 +87,7 @@ class Map(object):
 
         # if location is permanent, shift its timestamp into the future
         if permanent:
-            ts = ts + timedelta(weeks=1000)
+            ts = ts + timedelta(weeks=500)
 
         with self.positionsLock:
             # ignore indirect reports if ignoreIndirect set

@@ -2,7 +2,8 @@ from owrx.config.core import CoreConfig
 from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
 from json import JSONEncoder
-from owrx.eibi import EIBI_Locations
+from owrx.eibi import EIBI_Locations, EIBI
+from datetime import datetime
 
 import urllib
 import threading
@@ -65,7 +66,9 @@ class Markers(object):
     def __init__(self):
         self.refreshPeriod = 60*60*24
         self.event = threading.Event()
-        self.markers = {}
+        self.fmarkers = {}
+        self.wmarkers = {}
+        self.smarkers = {}
         self.thread = None
         # Known database files
         self.fileList = [
@@ -80,9 +83,6 @@ class Markers(object):
             ]
         except Exception:
             pass
-
-    def toJSON(self):
-        return self.markers
 
     # Start the main thread
     def startThread(self):
@@ -102,51 +102,116 @@ class Markers(object):
         logger.debug("Starting marker database thread...")
 
         # No markers yet
-        self.markers = {}
+        self.markers   = {}
+        self.rxmarkers = {}
+        self.txmarkers = {}
 
-        # Load markers from local files
+        # Load miscellaneous markers from local files
         for file in self.fileList:
             if os.path.isfile(file):
-                logger.debug("Loading markers from '{0}'...".format(file))
                 self.markers.update(self.loadMarkers(file))
 
-        # Load markers from the EIBI database
-        #logger.debug("Loading EIBI transmitter locations...")
-        #self.markers.update(self.loadEIBI())
-
-        # This file contains cached database
+        # This file contains cached receivers database
         file = self._getCachedMarkersFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
-        # Try loading cached database from file first, unless stale
-        if time.time() - ts < self.refreshPeriod:
-            logger.debug("Loading cached markers from '{0}'...".format(file))
-            self.markers.update(self.loadMarkers(file))
-        else:
-            # Add scraped data to the database
-            self.markers.update(self.updateCache())
+        # If cached receivers database stale, update it
+        if time.time() - ts >= self.refreshPeriod:
+            self.rxmarkers = self.updateCache()
+            ts = os.path.getmtime(file) if os.path.isfile(file) else 0
+
+        # If receivers database update did not run or failed, use cache
+        if not self.rxmarkers:
+            self.rxmarkers = self.loadMarkers(file)
+
+        # Load current schedule from the EIBI database
+        self.txmarkers = self.loadCurrentTransmitters()
+
+        # Update map with markers
+        logger.debug("Updating map...")
+        self.updateMap(self.markers)
+        self.updateMap(self.rxmarkers)
+        self.updateMap(self.txmarkers)
+
+        #
+        # Main Loop
+        #
 
         while not self.event.is_set():
-            # Update map with markers
-            logger.debug("Updating map...")
-            self.updateMap()
-            # Sleep until it is time to update schedule
-            self.event.wait(self.refreshPeriod)
-            # If not terminated yet...
-            if not self.event.is_set():
-                # Scrape data, updating cache
-                logger.debug("Refreshing marker database...")
-                self.markers.update(self.updateCache())
+            # Wait for the head of the next hour
+            self.event.wait((60 - datetime.utcnow().minute) * 60)
+            if self.event.is_set():
+                break
+
+            # Load new transmitters schedule from the EIBI
+            logger.debug("Refreshing transmitters schedule..")
+            tx = self.loadCurrentTransmitters()
+
+            # Check if we need to exit
+            if self.event.is_set():
+                break
+
+            # Remove station markers that have no transmissions
+            map  = Map.getSharedInstance()
+            notx = [x for x in self.txmarkers.keys() if x not in tx]
+            for key in notx:
+                map.removeLocation(key)
+                del self.txmarkers[key]
+
+            # Update station markers that have transmissions
+            for key in tx.keys():
+                r = tx[key]
+                map.updateLocation(r.getId(), r, r.getMode(), permanent=True)
+                self.txmarkers[key] = r
+
+            # Done with the schedule
+            notx = None
+            tx   = None
+
+            # Check if we need to exit
+            if self.event.is_set():
+                break
+
+            # Update cached receivers data
+            if time.time() - ts >= self.refreshPeriod:
+                logger.debug("Refreshing receivers database...")
+                rx = self.updateCache()
+                ts = os.path.getmtime(file)
+                if rx:
+                    # Remove receiver markers that no longer exist
+                    norx = [x for x in self.rxmarkers.keys() if x not in rx]
+                    for key in norx:
+                        map.removeLocation(key)
+                        del self.rxmarkers[key]
+                    # Update receiver markers that are online
+                    for key in rx.keys():
+                        r = rx[key]
+                        map.updateLocation(r.getId(), r, r.getMode(), permanent=True)
+                        self.rxmarkers[key] = r
+                    # Done updating receivers
+                    norx = None
+                    rx   = None
 
         # Done with the thread
         logger.debug("Stopped marker database thread.")
         self.thread = None
 
+    # Save markers to a given file
+    def saveMarkers(self, file: str, markers):
+        logger.debug("Saving {0} markers to '{1}'...".format(len(markers), file))
+        try:
+            with open(file, "w") as f:
+                json.dump(markers, f, cls=MyJSONEncoder, indent=2)
+                f.close()
+        except Exception as e:
+            logger.debug("saveMarkers() exception: {0}".format(e))
+
     # Load markers from a given file
-    def loadMarkers(self, fileName: str):
+    def loadMarkers(self, file: str):
+        logger.debug("Loading markers from '{0}'...".format(file))
         # Load markers list from JSON file
         try:
-            with open(fileName, "r") as f:
+            with open(file, "r") as f:
                 db = json.load(f)
                 f.close()
         except Exception as e:
@@ -160,11 +225,12 @@ class Markers(object):
             result[key] = MarkerLocation(attrs)
 
         # Done
+        logger.debug("Loaded {0} markers from '{1}'.".format(len(result), file))
         return result
 
-    # Update markers on the map
-    def updateMap(self):
-        for r in self.markers.values():
+    # Update given markers on the map
+    def updateMap(self, markers):
+        for r in markers.values():
             Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), permanent=True)
 
     # Scrape online databases, updating cache file
@@ -178,14 +244,11 @@ class Markers(object):
         cache.update(self.scrapeWebSDR())
         logger.debug("Scraping OpenWebRX website...")
         cache.update(self.scrapeOWRX())
-        # Save parsed data into a file
-        logger.debug("Saving {0} markers to '{1}'...".format(len(cache), file))
-        try:
-            with open(file, "w") as f:
-                json.dump(cache, f, cls=MyJSONEncoder, indent=2)
-                f.close()
-        except Exception as e:
-            logger.debug("updateCache() exception: {0}".format(e))
+
+        # Save parsed data into a file, if there is anything to save
+        if cache:
+            self.saveMarkers(file, cache)
+
         # Done
         return cache
 
@@ -193,23 +256,50 @@ class Markers(object):
     # Following functions scrape data from websites and internal databases
     #
 
-    def loadEIBI(self):
+    def loadCurrentTransmitters(self):
         #url = "https://www.short-wave.info/index.php?txsite="
         url = "https://www.google.com/search?q="
         result = {}
+
+        # Refresh / load EIBI database, as needed
+        EIBI.getSharedInstance().refresh()
+
         # Load transmitter sites from EIBI database
-        for entry in EIBI_Locations:
+        for entry in EIBI.getSharedInstance().currentTransmitters().values():
+            # Extract target regions and languages, removing duplicates
+            schedule = entry["schedule"]
+            langs   = {}
+            targets = {}
+            comment = ""
+            langstr = ""
+            for row in schedule:
+                lang   = row["lang"]
+                target = row["tgt"]
+                if target not in targets:
+                    targets[target] = True
+                    comment += (", " if comment else " to ") + target
+                if lang not in langs:
+                    langs[lang] = True
+                    langstr += (", " if langstr else "") + re.sub(r"(:|\s*\().*$", "", lang)
+
+            # Compose comment
+            comment = "Transmitting" + comment if comment else "Transmitter"
+            comment = comment + " (" + langstr + ")" if langstr else comment
+
             rl = MarkerLocation({
                 "type"    : "feature",
                 "mode"    : "Stations",
-                "comment" : "Transmitter",
+                "comment" : comment,
                 "id"      : entry["name"],
                 "lat"     : entry["lat"],
                 "lon"     : entry["lon"],
-                "url"     : url + urllib.parse.quote_plus(entry["name"])
+                "url"     : url + urllib.parse.quote_plus(entry["name"]),
+                "schedule": schedule
             })
             result[rl.getId()] = rl
+
         # Done
+        logger.debug("Loaded {0} transmitters from EIBI.".format(len(result)))
         return result
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):

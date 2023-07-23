@@ -1,3 +1,10 @@
+**1.2.24**
+- Added support for EIBI shortwave schedules.
+- Schedules updated monthly from the EIBI website.
+- Map shows currently active transmitters, with 1-hour schedules.
+- You can instantly tune by clicking on a schedule entry.
+- Your current SDR profile must contain the clicked frequency.
+
 **1.2.23**
 - Added OpenWebRX, WebSDR, and KiwiSDR locations to the map.
 - Added periodic updates of online SDR locations from the web.

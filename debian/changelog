@@ -1,3 +1,13 @@
+openwebrx (1.2.24) bullseye jammy; urgency=low
+
+  * Added support for EIBI shortwave schedules.
+  * Schedules updated monthly from the EIBI website.
+  * Map shows currently active transmitters, with 1-hour schedules.
+  * You can instantly tune by clicking on a schedule entry.
+  * Your current SDR profile must contain the clicked frequency.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 22 Jul 2023 16:12:00 +0000
+
 openwebrx (1.2.23) bullseye jammy; urgency=low
 
   * Added OpenWebRX, WebSDR, and KiwiSDR locations to the map.

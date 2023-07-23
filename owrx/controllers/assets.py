@@ -145,6 +145,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/jquery-3.2.1.min.js",
             "lib/chroma.min.js",
             "lib/Header.js",
+            "lib/Clock.js",
             "map.js",
         ],
         "settings.js": [

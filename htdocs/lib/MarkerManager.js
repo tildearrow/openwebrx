@@ -10,7 +10,7 @@ function MarkerManager() {
     this.colors = {
         'KiwiSDR'   : '#800000',
         'WebSDR'    : '#000080',
-        'OpenWebRX' : '#006000'
+        'OpenWebRX' : '#004000'
     };
 
     // Symbols used for features
