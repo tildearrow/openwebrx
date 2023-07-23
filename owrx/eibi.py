@@ -250,22 +250,23 @@ class EIBI(object):
 
                     # Guess modulation, default to AM
                     mode = (
-                        "hfdl"    if lang == "-HF" else
-                        "rtty450" if lang == "-TY" else
-                        "cw"      if lang == "-CW" else
-                        "usb"     if days == "USB" else
-                        "lsb"     if days == "LSB" else
-                        "hfdl"    if "hfdl"   in name else # HFDL
-                        "fax"     if " fax"   in name else # Weather FAX
-                        "rtty450" if "rtty"   in name else # Weather RTTY
-                        "usb"     if "volmet" in name else # Weather
-                        "usb"     if "cross " in name else # Weather
-                        "usb"     if " ldoc"  in name else # Aircraft
-                        "usb"     if " car-"  in name else # Aircraft
-                        "usb"     if " nat-"  in name else # Aircraft
-                        "usb"     if " usb"   in name else
-                        "usb"     if "fsk"    in name else
-                        "usb"     if freq < 7000000   else # Services
+                        "hfdl"    if lang == "-HF"     else
+                        "rtty450" if lang == "-TY"     else
+                        "cw"      if lang == "-CW"     else
+                        "usb"     if days == "USB"     else
+                        "lsb"     if days == "LSB"     else
+                        "hfdl"    if "hfdl"    in name else # HFDL
+                        "drm"     if "digital" in name else # DRM
+                        "fax"     if " fax"    in name else # Weather FAX
+                        "rtty450" if "rtty"    in name else # Weather RTTY
+                        "usb"     if "volmet"  in name else # Weather
+                        "usb"     if "cross "  in name else # Weather
+                        "usb"     if " ldoc"   in name else # Aircraft
+                        "usb"     if " car-"   in name else # Aircraft
+                        "usb"     if " nat-"   in name else # Aircraft
+                        "usb"     if " usb"    in name else
+                        "usb"     if "fsk"     in name else
+                        "usb"     if freq < 7000000    else # Services
                         "am")
 
                     # Convert language code to language
