@@ -36,6 +36,7 @@ if [[ -z ${1:-} ]]; then
 
   rm -rf hpsdrconnector
   rm -rf go
+  rm -rf ~/go ~/.cache
   rm $PACKAGE
 fi
 

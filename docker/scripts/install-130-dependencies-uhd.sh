@@ -46,7 +46,7 @@ if [[ -z ${1:-} ]]; then
       cmake -DCMAKE_BUILD_TYPE=Release -DENABLE_UTILS=OFF -DENABLE_PYTHON_API=OFF -DENABLE_EXAMPLES=OFF -DENABLE_TESTS=OFF -DENABLE_OCTOCLOCK=OFF -DENABLE_MAN_PAGES=OFF -DSTRIP_BINARIES=ON ..
       ;;
   esac
-  make
+  MAKEFLAGS="-j2" make
   make install
   cd ../../..
   rm -rf uhd
