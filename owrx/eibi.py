@@ -41,7 +41,7 @@ class EIBI(object):
     def __init__(self):
         self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
         self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
-        self.refreshPeriod = 60*60*24*30
+        self.refreshPeriod = 60*60*24*7
         self.lock = threading.Lock()
         self.schedule = []
 
@@ -146,31 +146,35 @@ class EIBI(object):
         # Search for current entries
         with self.lock:
             for entry in self.schedule:
-                # Check if entry is currently active
-                entryActive = (
-                    entry["days"][day] != "."
-                and (entry["date1"] == 0 or entry["date1"] <= date)
-                and (entry["date2"] == 0 or entry["date2"] >= date)
-                )
-                # Check the hours, rolling over to the next day
-                if entryActive:
-                    e1 = entry["time1"]
-                    e2 = entry["time2"]
-                    e2 = e2 if e2 > e1 else e2 + 2400
-                    entryActive = e1 < t2 and e2 > t1
-                # For evere currently active schedule entry...
-                if entryActive:
-                    src = entry["itu"] + entry["src"]
-                    # Find all matching transmitter locations
-                    for loc in EIBI_Locations:
-                        if loc["code"] == src:
-                            # Add location to the result
-                            name = loc["name"]
-                            if name not in result:
-                                result[name] = loc.copy()
-                                result[name]["schedule"] = []
-                            # Add schedule entry to the location
-                            result[name]["schedule"].append(entry)
+                try:
+                    # Check if entry is currently active
+                    entryActive = (
+                        entry["days"][day] != "."
+                    and (entry["date1"] == 0 or entry["date1"] <= date)
+                    and (entry["date2"] == 0 or entry["date2"] >= date)
+                    )
+                    # Check the hours, rolling over to the next day
+                    if entryActive:
+                        e1 = entry["time1"]
+                        e2 = entry["time2"]
+                        e2 = e2 if e2 > e1 else e2 + 2400
+                        entryActive = e1 < t2 and e2 > t1
+                    # For every currently active schedule entry...
+                    if entryActive:
+                        src = entry["itu"] + entry["src"]
+                        # Find all matching transmitter locations
+                        for loc in EIBI_Locations:
+                            if loc["code"] == src:
+                                # Add location to the result
+                                name = loc["name"]
+                                if name not in result:
+                                    result[name] = loc.copy()
+                                    result[name]["schedule"] = []
+                                # Add schedule entry to the location
+                                result[name]["schedule"].append(entry)
+
+                except Exception as e:
+                    logger.debug("currentTransmitters() exception: {0}".format(e))
 
         # Done
         return result
