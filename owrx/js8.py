@@ -99,15 +99,20 @@ class Js8Parser(AudioChopperParser):
 
             frame = Js8().parse_message(msg)
 
+            if "ssid" in frame.source:
+                callsign = "{callsign}-{ssid}".format(frame.source)
+            else:
+                callsign = frame.source["callsign"]
+
             self.pushDecode(band)
 
             if (isinstance(frame, Js8FrameHeartbeat) or isinstance(frame, Js8FrameCompound)) and frame.grid:
                 Map.getSharedInstance().updateLocation(
-                    frame.callsign, LocatorLocation(frame.grid), "JS8", band
+                    callsign, LocatorLocation(frame.grid), "JS8", band
                 )
                 ReportingEngine.getSharedInstance().spot(
                     {
-                        "callsign": frame.callsign,
+                        "callsign": callsign,
                         "mode": "JS8",
                         "locator": frame.grid,
                         "freq": freq + frame.freq,
