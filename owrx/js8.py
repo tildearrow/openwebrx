@@ -99,11 +99,10 @@ class Js8Parser(AudioChopperParser):
 
             frame = Js8().parse_message(msg)
 
-            callsign = frame.source["callsign"]
-
             self.pushDecode(band)
 
             if (isinstance(frame, Js8FrameHeartbeat) or isinstance(frame, Js8FrameCompound)) and frame.grid:
+                callsign = frame.source["callsign"]
                 Map.getSharedInstance().updateLocation(
                     callsign, LocatorLocation(frame.grid), "JS8", band
                 )
