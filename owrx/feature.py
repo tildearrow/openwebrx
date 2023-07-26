@@ -87,6 +87,7 @@ class FeatureDetector(object):
         "selcall": ["multimon"],
         "ism": ["rtl433"],
         "hfdl": ["dumphfdl"],
+        "vdl2": ["dumpvdl2"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
@@ -604,4 +605,12 @@ class FeatureDetector(object):
         to compile it from source.
         """
         return self.command_is_runnable("dumphfdl --help")
+
+    def has_dumpvdl2(self):
+        """
+        OpenWebRX uses the [dumphfdl](https://github.com/szpajder/dumpvdl2) tool to decode VDL2
+        aircraft communications. Dumpvdl2 is not yet available as a package and thus you will have
+        to compile it from source.
+        """
+        return self.command_is_runnable("dumpvdl2 --help")
 
