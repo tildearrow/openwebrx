@@ -99,10 +99,7 @@ class Js8Parser(AudioChopperParser):
 
             frame = Js8().parse_message(msg)
 
-            if "ssid" in frame.source:
-                callsign = "{callsign}-{ssid}".format(frame.source)
-            else:
-                callsign = frame.source["callsign"]
+            callsign = frame.source["callsign"]
 
             self.pushDecode(band)
 
