@@ -1,4 +1,4 @@
-from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
+from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver, FixedIfSampleRateChain
 from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module
 from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
 from pycsdr.types import Format
@@ -121,9 +121,9 @@ class HfdlDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.parser.setDialFrequency(frequency)
 
 
-class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
+class Vdl2Demodulator(ServiceDemodulator, FixedIfSampleRateChain, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
-        self.sampleRate = 210000
+        self.sampleRate = 1050000
         #self.parser = Vdl2Parser(service=service)
         workers = [
             Agc(Format.COMPLEX_FLOAT),
@@ -133,8 +133,12 @@ class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
         # Connect all the workers
         super().__init__(workers)
 
-    def getFixedAudioRate(self) -> int:
+    def getFixedIfSampleRate(self) -> int:
         return self.sampleRate
+
+    def getFixedAudioRate(self) -> int:
+        # This is not really used
+        return 8000
 
     def supportsSquelch(self) -> bool:
         return False
