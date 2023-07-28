@@ -1,3 +1,10 @@
+//
+// Marker.linkify() uses these URLs
+//
+var callsign_url = null;
+var vessel_url   = null;
+var flight_url   = null;
+
 $(function(){
     var query = window.location.search.replace(/^\?/, '').split('&').map(function(v){
         var s = v.split('=');
@@ -37,9 +44,6 @@ $(function(){
     var retention_time = 2 * 60 * 60 * 1000;
     var strokeOpacity = 0.8;
     var fillOpacity = 0.35;
-    var callsign_url = null;
-    var vessel_url = null;
-    var flight_url = null;
 
     // marker manager
     var markmanager = null;
@@ -148,19 +152,9 @@ $(function(){
                         map: markmanager.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
                     }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
-                    marker.lastseen = update.lastseen;
-                    marker.mode     = update.mode;
-                    marker.hops     = update.hops;
-                    marker.band     = update.band;
-                    marker.comment  = update.location.comment;
-                    marker.weather  = update.location.weather;
-                    marker.altitude = update.location.altitude;
-                    marker.height   = update.location.height;
-                    marker.power    = update.location.power;
-                    marker.gain     = update.location.gain;
-                    marker.device   = update.location.device;
-                    marker.aircraft = update.location.aircraft;
-                    marker.directivity = update.location.directivity;
+
+                    // Update marker attributes
+                    marker.update(update);
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
@@ -195,7 +189,7 @@ $(function(){
                     } else {
                         marker = new FeatureMarker();
                         marker.addListener('click', function(){
-                            showFeatureInfoWindow(update.callsign, pos);
+                            showMarkerInfoWindow(update.callsign, pos);
                         });
                         markers[update.callsign] = marker;
                         markmanager.addType(update.mode);
@@ -208,24 +202,17 @@ $(function(){
                         title: update.callsign
                     }, options));
 
-                    // Get attributes
-                    marker.lastseen = update.lastseen;
-                    marker.mode     = update.mode;
-                    marker.url      = update.location.url;
-                    marker.comment  = update.location.comment;
-                    marker.altitude = update.location.altitude;
-                    marker.device   = update.location.device;
-                    marker.antenna  = update.location.antenna;
-                    marker.schedule = update.location.schedule;
+                    // Update marker attributes
+                    marker.update(update);
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
                         map.panTo(pos);
-                        showFeatureInfoWindow(update.callsign, pos);
+                        showMarkerInfoWindow(update.callsign, pos);
                         expectedCallsign = false;
                     }
 
                     if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
-                        showFeatureInfoWindow(infowindow.callsign, pos);
+                        showMarkerInfoWindow(infowindow.callsign, pos);
                     }
                 break;
                 case 'locator':
@@ -326,19 +313,11 @@ $(function(){
                                     nite.init(map);
                                     setInterval(function() { nite.refresh() }, 10000); // every 10s
                                 });
-                                $.getScript('static/lib/AprsMarker.js').done(function(){
-                                    if(typeof(FeatureMarker) != 'undefined') {
-                                        markmanager = new MarkerManager();
-                                        processUpdates(updateQueue);
-                                        updateQueue = [];
-                                    }
-                                });
+
                                 $.getScript('static/lib/MarkerManager.js').done(function(){
-                                    if(typeof(AprsMarker) != 'undefined') {
-                                        markmanager = new MarkerManager();
-                                        processUpdates(updateQueue);
-                                        updateQueue = [];
-                                    }
+                                    markmanager = new MarkerManager();
+                                    processUpdates(updateQueue);
+                                    updateQueue = [];
                                 });
 
                                 var $legend = $(".openwebrx-map-legend");
@@ -436,53 +415,6 @@ $(function(){
         return infowindow;
     }
 
-    var linkifyCallsign = function(callsign, url = null) {
-        // Leave passed URLs as they are
-        if (url && (url != ''))
-        { /* leave as is */ }
-        // 9-character strings may be AIS MMSI numbers
-        else if (callsign.match(new RegExp('^[0-9]{9}$')))
-            url = vessel_url;
-        // 3 characters and a number may be a flight number
-        else if (callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
-            url = flight_url;
-        // 2 characters and a long number may be a flight number
-        else if (callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
-            url = flight_url;
-        // Everything else is a HAM callsign
-        else
-            url = callsign_url;
-
-        // Must have valid lookup URL
-        if ((url == null) || (url == ''))
-            return callsign;
-        else
-            return '<a target="callsign_info" href="' +
-                url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
-                '">' + callsign + '</a>';
-    }
-
-    var distanceKm = function(p1, p2) {
-        // Earth radius in km
-        var R = 6371.0;
-        // Convert degrees to radians
-        var rlat1 = p1.lat() * (Math.PI/180);
-        var rlat2 = p2.lat() * (Math.PI/180);
-        // Compute difference in radians
-        var difflat = rlat2-rlat1;
-        var difflon = (p2.lng()-p1.lng()) * (Math.PI/180);
-        // Compute distance
-        d = 2 * R * Math.asin(Math.sqrt(
-            Math.sin(difflat/2) * Math.sin(difflat/2) +
-            Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
-        ));
-        return Math.round(d);
-    }
-
-    var truncate = function(str, count) {
-        return str.length > count? str.slice(0, count) + '&mldr;' : str;
-    }
-
     var infowindow;
     var showLocatorInfoWindow = function(locator, pos) {
         var infowindow = getInfoWindow();
@@ -495,14 +427,14 @@ $(function(){
             return b.lastseen - a.lastseen;
         });
         var distance = receiverMarker?
-            " at " + distanceKm(receiverMarker.position, pos) + " km" : "";
+            " at " + Marker.distanceKm(receiverMarker.position, pos) + " km" : "";
         infowindow.setContent(
             '<h3>Locator: ' + locator + distance + '</h3>' +
             '<div>Active Callsigns:</div>' +
             '<ul>' +
                 inLocator.map(function(i){
                     var timestring = moment(i.lastseen).fromNow();
-                    var message = linkifyCallsign(i.callsign) + ' (' + timestring + ' using ' + i.mode;
+                    var message = Marker.linkify(i.callsign) + ' (' + timestring + ' using ' + i.mode;
                     if (i.band) message += ' on ' + i.band;
                     message += ')';
                     return '<li>' + message + '</li>'
@@ -513,155 +445,7 @@ $(function(){
         infowindow.open(map);
     };
 
-    var degToCompass = function(deg) {
-        dir = ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"];
-        return dir[Math.floor((deg/22.5) + 0.5) % 16];
-    }
-
-    var makeListTitle = function(name) {
-        return '<div style="border-bottom:2px solid;"><b>' + name + '</b></div>';
-    }
-
-    var makeListItem = function(name, value) {
-        return '<div style="border-bottom:1px dotted;white-space:nowrap;">'
-            + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
-            + '<span style="float:right;">' + value + '</span>'
-            + '</div>';
-    }
-
-    var showMarkerInfoWindow = function(callsign, pos) {
-        var infowindow = getInfoWindow();
-        infowindow.callsign = callsign;
-        var marker = markers[callsign];
-        var timeString = moment(marker.lastseen).fromNow();
-        var commentString = "";
-        var weatherString = "";
-        var detailsString = "";
-        var hopsString = "";
-        var distance = "";
-
-        if (marker.comment) {
-            commentString += '<p>' + makeListTitle('Comment') + '<div>' +
-                marker.comment + '</div></p>';
-        }
-
-        if (marker.weather) {
-            weatherString += '<p>' + makeListTitle('Weather');
-
-            if (marker.weather.temperature) {
-                weatherString += makeListItem('Temperature', marker.weather.temperature.toFixed(1) + ' oC');
-            }
-
-            if (marker.weather.humidity) {
-                weatherString += makeListItem('Humidity', marker.weather.humidity + '%');
-            }
-
-            if (marker.weather.barometricpressure) {
-                weatherString += makeListItem('Pressure', marker.weather.barometricpressure.toFixed(1) + ' mbar');
-            }
-
-            if (marker.weather.wind) {
-                if (marker.weather.wind.speed && (marker.weather.wind.speed>0)) {
-                    weatherString += makeListItem('Wind',
-                        degToCompass(marker.weather.wind.direction) + ' ' +
-                        marker.weather.wind.speed.toFixed(1) + ' km/h '
-                    );
-                }
-
-                if (marker.weather.wind.gust && (marker.weather.wind.gust>0)) {
-                    weatherString += makeListItem('Gusts', marker.weather.wind.gust.toFixed(1) + ' km/h');
-                }
-            }
-
-            if (marker.weather.rain && (marker.weather.rain.day>0)) {
-                weatherString += makeListItem('Rain',
-                    marker.weather.rain.hour.toFixed(0) + ' mm/h, ' +
-                    marker.weather.rain.day.toFixed(0) + ' mm/day'
-//                    marker.weather.rain.sincemidnight + ' mm since midnight'
-                );
-            }
-
-            if (marker.weather.snowfall) {
-                weatherString += makeListItem('Snow', marker.weather.snowfall.toFixed(1) + ' cm');
-            }
-
-            weatherString += '</p>';
-        }
-
-        if (marker.altitude) {
-            detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
-        }
-
-        if (marker.device) {
-            detailsString += makeListItem('Device', marker.device.manufacturer?
-              marker.device.device + " by " + marker.device.manufacturer
-            : marker.device
-            );
-        }
-
-        if (marker.height) {
-            detailsString += makeListItem('Height', marker.height.toFixed(0) + ' m');
-        }
-
-        if (marker.power) {
-            detailsString += makeListItem('Power', marker.power + " W");
-        }
-
-        if (marker.gain) {
-            detailsString += makeListItem('Gain', marker.gain + " dB");
-        }
-
-        if (marker.directivity) {
-            detailsString += makeListItem('Direction', marker.directivity);
-        }
-
-        if (marker.aircraft) {
-            detailsString += makeListItem('Aircraft', marker.aircraft);
-        }
-
-        // Combine course and speed if both present
-        if (marker.course && marker.speed) {
-            detailsString += makeListItem('Course',
-                degToCompass(marker.course) + " " +
-                marker.speed.toFixed(1) + " km/h"
-            );
-        } else {
-            if (marker.course) {
-                detailsString += makeListItem('Course', degToCompass(marker.course));
-            }
-            if (marker.speed) {
-                detailsString += makeListItem('Speed', marker.speed.toFixed(1) + " km/h");
-            }
-        }
-
-        if (detailsString.length > 0) {
-            detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
-        }
-
-        if (receiverMarker) {
-            distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
-        }
-
-        if (marker.hops && marker.hops.length > 0) {
-            var hops = marker.hops.toString().split(',');
-            hops.forEach(function(part, index, hops) {
-                hops[index] = linkifyCallsign(part);
-            });
-
-            hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
-        }
-
-        infowindow.setContent(
-            '<h3>' + linkifyCallsign(callsign) + distance + '</h3>' +
-            '<div align="center">' + timeString + ' using ' + marker.mode +
-            ( marker.band ? ' on ' + marker.band : '' ) + '</div>' +
-            commentString + weatherString + detailsString + hopsString
-        );
-
-        infowindow.open(map, marker);
-    }
-
-    var showFeatureInfoWindow = function(name, pos) {
+    var showMarkerInfoWindow = function(name, pos) {
         var infowindow = getInfoWindow();
         var marker = markers[name];
 

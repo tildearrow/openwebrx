@@ -91,8 +91,8 @@ MarkerManager.prototype.addType = function(type) {
 
 function Marker() {}
 
-// Wrap given callsign or other ID into a clickable link. When
-// URL not supplied, guess the correct URL by ID type.
+// Wrap given callsign or other ID into a clickable link.
+// When URL not supplied, guess the correct URL by ID type.
 Marker.linkify = function(callsign, url = null) {
     // Leave passed URLs as they are
     if (url && (url != ''))
@@ -117,7 +117,7 @@ Marker.linkify = function(callsign, url = null) {
         return '<a target="callsign_info" href="' +
             url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
             '">' + callsign + '</a>';
-}
+};
 
 // Compute distance, in kilometers, between two latlons.
 Marker.distanceKm = function(p1, p2) {
@@ -135,30 +135,31 @@ Marker.distanceKm = function(p1, p2) {
         Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
     ));
     return Math.round(d);
-}
+};
 
-// Truncate string to a given number of characters, adding "..."
-// to the end.
+// Truncate string to a given number of characters, adding "..." to the end.
 Marker.truncate = function(str, count) {
     return str.length > count? str.slice(0, count) + '&mldr;' : str;
-}
+};
 
 // Convert degrees to compass direction.
 Marker.degToCompass = function(deg) {
     dir = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
     return dir[Math.floor((deg/22.5) + 0.5) % 16];
-}
+};
 
+// Convert given name to an information section title.
 Marker.makeListTitle = function(name) {
     return '<div style="border-bottom:2px solid;"><b>' + name + '</b></div>';
-}
+};
 
+// Convert given name/value to an information section item.
 Marker.makeListItem = function(name, value) {
     return '<div style="border-bottom:1px dotted;white-space:nowrap;">'
         + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
         + '<span style="float:right;">' + value + '</span>'
         + '</div>';
-}
+};
 
 //
 // Feature Markers
@@ -167,6 +168,17 @@ Marker.makeListItem = function(name, value) {
 function FeatureMarker() {}
 
 FeatureMarker.prototype = new google.maps.OverlayView();
+
+FeatureMarker.prototype.update = function(update) {
+    this.lastseen = update.lastseen;
+    this.mode     = update.mode;
+    this.url      = update.location.url;
+    this.comment  = update.location.comment;
+    this.altitude = update.location.altitude;
+    this.device   = update.location.device;
+    this.antenna  = update.location.antenna;
+    this.schedule = update.location.schedule;
+};
 
 FeatureMarker.prototype.draw = function() {
     var div = this.div;
@@ -279,17 +291,118 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     return '<h3>' + nameString + distance + '</h3>'
         + commentString + detailsString + scheduleString;
-}
+};
 
 //
 // APRS Markers (also AIS and HFDL)
 //
 
-function NewAprsMarker() {}
+function AprsMarker() {}
 
-NewAprsMarker.prototype = new google.maps.OverlayView();
+AprsMarker.prototype = new google.maps.OverlayView();
 
-NewAprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
+AprsMarker.prototype.update = function(update) {
+    this.lastseen = update.lastseen;
+    this.mode     = update.mode;
+    this.hops     = update.hops;
+    this.band     = update.band;
+    this.comment  = update.location.comment;
+    this.weather  = update.location.weather;
+    this.altitude = update.location.altitude;
+    this.height   = update.location.height;
+    this.power    = update.location.power;
+    this.gain     = update.location.gain;
+    this.device   = update.location.device;
+    this.aircraft = update.location.aircraft;
+    this.directivity = update.location.directivity;
+};
+
+AprsMarker.prototype.draw = function() {
+    var div = this.div;
+    var overlay = this.overlay;
+    if (!div || !overlay) return;
+
+    if (this.symbol) {
+        var tableId = this.symbol.table === '/' ? 0 : 1;
+        div.style.background = 'url(aprs-symbols/aprs-symbols-24-' + tableId + '@2x.png)';
+        div.style['background-size'] = '384px 144px';
+        div.style['background-position-x'] = -(this.symbol.index % 16) * 24 + 'px';
+        div.style['background-position-y'] = -Math.floor(this.symbol.index / 16) * 24 + 'px';
+    }
+
+    if (!this.course) {
+        div.style.transform = null;
+    } else if (this.course > 180) {
+        div.style.transform = 'scalex(-1) rotate(' + (270 - this.course) + 'deg)'
+    } else {
+        div.style.transform = 'rotate(' + (this.course - 90) + 'deg)';
+    }
+
+    if (this.symbol.table !== '/' && this.symbol.table !== '\\') {
+        overlay.style.display = 'block';
+        overlay.style['background-position-x'] = -(this.symbol.tableindex % 16) * 24 + 'px';
+        overlay.style['background-position-y'] = -Math.floor(this.symbol.tableindex / 16) * 24 + 'px';
+    } else {
+        overlay.style.display = 'none';
+    }
+
+    if (this.opacity) {
+        div.style.opacity = this.opacity;
+    } else {
+        div.style.opacity = null;
+    }
+
+    var point = this.getProjection().fromLatLngToDivPixel(this.position);
+    if (point) {
+        div.style.left = point.x - 12 + 'px';
+        div.style.top = point.y - 12 + 'px';
+    }
+};
+
+AprsMarker.prototype.setOptions = function(options) {
+    google.maps.OverlayView.prototype.setOptions.apply(this, arguments);
+    this.draw();
+};
+
+AprsMarker.prototype.onAdd = function() {
+    var div = this.div = document.createElement('div');
+
+    div.style.position = 'absolute';
+    div.style.cursor = 'pointer';
+    div.style.width = '24px';
+    div.style.height = '24px';
+
+    var overlay = this.overlay = document.createElement('div');
+    overlay.style.width = '24px';
+    overlay.style.height = '24px';
+    overlay.style.background = 'url(aprs-symbols/aprs-symbols-24-2@2x.png)';
+    overlay.style['background-size'] = '384px 144px';
+    overlay.style.display = 'none';
+
+    div.appendChild(overlay);
+
+    var self = this;
+    google.maps.event.addDomListener(div, "click", function(event) {
+        event.stopPropagation();
+        google.maps.event.trigger(self, "click", event);
+    });
+
+    var panes = this.getPanes();
+    panes.overlayImage.appendChild(div);
+};
+
+AprsMarker.prototype.remove = function() {
+    if (this.div) {
+        this.div.parentNode.removeChild(this.div);
+        this.div = null;
+    }
+};
+
+AprsMarker.prototype.getAnchorPoint = function() {
+    return new google.maps.Point(0, -12);
+};
+
+AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var timeString = moment(this.lastseen).fromNow();
     var commentString = '';
     var weatherString = '';
@@ -320,7 +433,7 @@ NewAprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         if (this.weather.wind) {
             if (this.weather.wind.speed && (this.weather.wind.speed>0)) {
                 weatherString += Marker.makeListItem('Wind',
-                    degToCompass(this.weather.wind.direction) + ' ' +
+                    Marker.degToCompass(this.weather.wind.direction) + ' ' +
                     this.weather.wind.speed.toFixed(1) + ' km/h '
                 );
             }
@@ -383,7 +496,7 @@ NewAprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         );
     } else {
         if (this.course) {
-            detailsString += Marker.makeListItem('Course', degToCompass(this.course));
+            detailsString += Marker.makeListItem('Course', Marker.degToCompass(this.course));
         }
         if (this.speed) {
             detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' km/h');
@@ -411,4 +524,4 @@ NewAprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         + '<div align="center">' + timeString + ' using ' + this.mode
         + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString + hopsString;
-}
+};
