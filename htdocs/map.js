@@ -838,3 +838,11 @@ $(function(){
     }
 
 });
+
+function toggleElement(el_name) {
+    var el = document.getElementById(el_name);
+    if (el) {
+        el.style.display = el.style.display === 'none'?
+            'block' : 'none';
+    }
+}

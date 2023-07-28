@@ -15,17 +15,19 @@
     ${header}
     <div class="openwebrx-map"></div>
     <div class="openwebrx-map-legend">
-        <h3>Colors</h3>
-        <select id="openwebrx-map-colormode">
-            <option value="byband" selected="selected">By Band</option>
-            <option value="bymode">By Mode</option>
-            <option value="off">Off</option>
-        </select>
-        <div class="content"></div>
-        <h3 style="margin: 20px 0 0 0;">Features</h3>
-        <ul class="features">
-        </ul>
-        <h3 id="openwebrx-clock-utc" style="margin: 20px 0 0 0;">00:00 UTC</h3>
+        <div id="openwebrx-map-selectors">
+            <h3>Colors</h3>
+            <select id="openwebrx-map-colormode">
+                <option value="byband" selected="selected">By Band</option>
+                <option value="bymode">By Mode</option>
+                <option value="off">Off</option>
+            </select>
+            <div class="content"></div>
+            <h3 style="margin: 20px 0 0 0;">Features</h3>
+            <ul class="features">
+            </ul>
+        </div>
+        <h3 id="openwebrx-clock-utc" style="margin: 20px 0 0 0;" onclick="toggleElement('openwebrx-map-selectors');">00:00 UTC</h3>
     </div>
 </body>
 </html>
