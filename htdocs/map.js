@@ -663,77 +663,10 @@ $(function(){
 
     var showFeatureInfoWindow = function(name, pos) {
         var infowindow = getInfoWindow();
-        infowindow.callsign = name;
         var marker = markers[name];
-        var commentString = "";
-        var detailsString = "";
-        var scheduleString = "";
-        var nameString = "";
-        var distance = "";
 
-        if (marker.url) {
-            nameString += linkifyCallsign(name, marker.url);
-        } else {
-            nameString += name;
-        }
-
-        if (marker.comment) {
-            commentString += '<div align="center">' + marker.comment + '</div>';
-        }
-
-        if (marker.altitude) {
-            detailsString += makeListItem('Altitude', marker.altitude.toFixed(0) + ' m');
-        }
-
-        if (marker.device) {
-            detailsString += makeListItem('Device', marker.device.manufacturer?
-              marker.device.device + " by " + marker.device.manufacturer
-            : marker.device
-            );
-        }
-
-        if (marker.antenna) {
-            detailsString += makeListItem('Antenna', truncate(marker.antenna, 24));
-        }
-
-        if (marker.schedule) {
-            for (var j=0 ; j<marker.schedule.length ; ++j) {
-                var freq = marker.schedule[j].freq;
-                var mode = marker.schedule[j].mode;
-                var tune = mode === 'cw'?      freq - 800
-                         : mode === 'fax'?     freq - 1500
-                         : mode === 'rtty450'? freq - 1000
-                         : freq;
-
-                var name = ("0000" + marker.schedule[j].time1).slice(-4)
-                    + "&#8209;" + ("0000" + marker.schedule[j].time2).slice(-4)
-                    + "&nbsp;&nbsp;" + marker.schedule[j].name;
-
-                freq = '<a target="openwebrx-rx" href="/#freq=' + tune
-                    + ',mod=' + (mode? mode : 'am') + '">'
-                    + Math.round(marker.schedule[j].freq/1000) + 'kHz</a>';
-
-                scheduleString += makeListItem(name, freq);
-            }
-        }
-
-        if (detailsString.length > 0) {
-            detailsString = '<p>' + makeListTitle('Details') + detailsString + '</p>';
-        }
-
-        if (scheduleString.length > 0) {
-            scheduleString = '<p>' + makeListTitle('Schedule') + scheduleString + '</p>';
-        }
-
-        if (receiverMarker) {
-            distance = " at " + distanceKm(receiverMarker.position, marker.position) + " km";
-        }
-
-        infowindow.setContent(
-            '<h3>' + nameString + distance + '</h3>' +
-            commentString + detailsString + scheduleString
-        );
-
+        infowindow.callsign = name;
+        infowindow.setContent(marker.getInfoHTML(name, receiverMarker));
         infowindow.open(map, marker);
     }
 
