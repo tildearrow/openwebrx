@@ -167,7 +167,7 @@ Marker.makeListItem = function(name, value) {
 
 function FeatureMarker() {}
 
-FeatureMarker.prototype = new google.maps.OverlayView();
+FeatureMarker.prototype = new FeatureMarker();
 
 FeatureMarker.prototype.update = function(update) {
     this.lastseen = update.lastseen;
@@ -194,12 +194,7 @@ FeatureMarker.prototype.draw = function() {
     }
 };
 
-FeatureMarker.prototype.setOptions = function(options) {
-    google.maps.OverlayView.prototype.setOptions.apply(this, arguments);
-    this.draw();
-};
-
-FeatureMarker.prototype.onAdd = function() {
+FeatureMarker.prototype.create = function() {
     var div = this.div = document.createElement('div');
 
     // Marker size
@@ -214,14 +209,7 @@ FeatureMarker.prototype.onAdd = function() {
     div.style.fontSize   = this.symHeight + 'px';
     div.style.lineHeight = this.symHeight + 'px';
 
-    var self = this;
-    google.maps.event.addDomListener(div, 'click', function(event) {
-        event.stopPropagation();
-        google.maps.event.trigger(self, 'click', event);
-    });
-
-    var panes = this.getPanes();
-    panes.overlayImage.appendChild(div);
+    return div;
 };
 
 FeatureMarker.prototype.remove = function() {
@@ -231,8 +219,8 @@ FeatureMarker.prototype.remove = function() {
     }
 };
 
-FeatureMarker.prototype.getAnchorPoint = function() {
-    return new google.maps.Point(0, -this.symHeight/2);
+FeatureMarker.prototype.getAnchorOffset = function() {
+    return [0, -this.symHeight/2];
 };
 
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
@@ -299,7 +287,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
 function AprsMarker() {}
 
-AprsMarker.prototype = new google.maps.OverlayView();
+AprsMarker.prototype = new AprsMarker();
 
 AprsMarker.prototype.update = function(update) {
     this.lastseen = update.lastseen;
@@ -359,12 +347,7 @@ AprsMarker.prototype.draw = function() {
     }
 };
 
-AprsMarker.prototype.setOptions = function(options) {
-    google.maps.OverlayView.prototype.setOptions.apply(this, arguments);
-    this.draw();
-};
-
-AprsMarker.prototype.onAdd = function() {
+AprsMarker.prototype.create = function() {
     var div = this.div = document.createElement('div');
 
     div.style.position = 'absolute';
@@ -381,14 +364,7 @@ AprsMarker.prototype.onAdd = function() {
 
     div.appendChild(overlay);
 
-    var self = this;
-    google.maps.event.addDomListener(div, "click", function(event) {
-        event.stopPropagation();
-        google.maps.event.trigger(self, "click", event);
-    });
-
-    var panes = this.getPanes();
-    panes.overlayImage.appendChild(div);
+    return div;
 };
 
 AprsMarker.prototype.remove = function() {
@@ -398,8 +374,8 @@ AprsMarker.prototype.remove = function() {
     }
 };
 
-AprsMarker.prototype.getAnchorPoint = function() {
-    return new google.maps.Point(0, -12);
+AprsMarker.prototype.getAnchorOffset = function() {
+    return [0, -12];
 };
 
 AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
@@ -525,3 +501,42 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString + hopsString;
 };
+
+//
+// GoogleMaps-Specific Markers (derived from generic markers)
+//
+
+function GMarker() {}
+GMarker.prototype = new google.maps.OverlayView();
+
+GMarker.prototype.setOptions = function(options) {
+    google.maps.OverlayView.prototype.setOptions.apply(this, arguments);
+    this.draw();
+};
+
+GMarker.prototype.onAdd = function() {
+    // Create HTML elements representing the mark
+    var div = this.create();
+
+    var self = this;
+    google.maps.event.addDomListener(div, "click", function(event) {
+        event.stopPropagation();
+        google.maps.event.trigger(self, "click", event);
+    });
+
+    var panes = this.getPanes();
+    panes.overlayImage.appendChild(div);
+};
+
+GMarker.prototype.getAnchorPoint = function() {
+    var offset = this.getAnchorOffset();
+    return new google.maps.Point(offset[0], offset[1]);
+};
+
+// GoogleMaps-Specific FeatureMarker
+function GFeatureMarker() { $.extend(this, new FeatureMarker()); }
+GFeatureMarker.prototype = new GMarker();
+
+// GoogleMaps-Specific AprsMarker
+function GAprsMarker() { $.extend(this, new AprsMarker()); }
+GAprsMarker.prototype = new GMarker();
