@@ -3,17 +3,20 @@
 //
 
 function MarkerManager() {
-    // Currently known features
+    // Current markers
+    this.markers = {};
+
+    // Currently known marker types
     this.types = {};
 
-    // Colors used for features
+    // Colors used for marker types
     this.colors = {
         'KiwiSDR'   : '#800000',
         'WebSDR'    : '#000080',
         'OpenWebRX' : '#004000'
     };
 
-    // Symbols used for features
+    // Symbols used for marker types
     this.symbols = {
         'KiwiSDR'   : '&tridot;',
         'WebSDR'    : '&tridot;',
@@ -24,7 +27,7 @@ function MarkerManager() {
         'HFDL'      : '&#9992;'
     };
 
-    // Feature type shown/hidden status
+    // Marker type shown/hidden status
     this.enabled = {
         'KiwiSDR'   : false,
         'WebSDR'    : false,
@@ -48,13 +51,13 @@ MarkerManager.prototype.isEnabled = function(type) {
     return type in this.enabled? this.enabled[type] : true;
 };
 
-MarkerManager.prototype.toggle = function(map, markers, type, onoff) {
+MarkerManager.prototype.toggle = function(map, type, onoff) {
     // Keep track of each feature table being show or hidden
     this.enabled[type] = onoff;
 
     // Show or hide features on the map
-    $.each(markers, function(_, r) {
-        if (r.mode === type) r.setMap(onoff ? map : undefined);
+    $.each(this.markers, function(_, x) {
+        if (x.mode === type) x.setMap(onoff ? map : undefined);
     });
 };
 
@@ -83,6 +86,28 @@ MarkerManager.prototype.addType = function(type) {
             symbol + '</span>' + type + '</li>'
         );
     }
+};
+
+MarkerManager.prototype.find = function(id) {
+    return id in this.markers? this.markers[id] : null;
+};
+
+MarkerManager.prototype.add = function(id, marker) {
+    this.markers[id] = marker;
+};
+
+MarkerManager.prototype.ageAll = function() {
+    var now = new Date().getTime();
+    $.each(this.markers, function(id, x) {
+        if (!x.age(now - x.lastseen)) delete this.markers[id];
+    });
+};
+
+MarkerManager.prototype.clear = function() {
+    // Remove all markers from the map
+    $.each(this.markers, function(_, x) { x.setMap(); });
+    // Delete all markers
+    this.markers = {};
 };
 
 //
@@ -159,6 +184,14 @@ Marker.makeListItem = function(name, value) {
         + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
         + '<span style="float:right;">' + value + '</span>'
         + '</div>';
+};
+
+Marker.getOpacityScale = function(age) {
+    var scale = 1;
+    if (age >= retention_time / 2) {
+        scale = (retention_time - age) / (retention_time / 2);
+    }
+    return Math.max(0, Math.min(1, scale));
 };
 
 //
@@ -531,6 +564,16 @@ GMarker.prototype.onAdd = function() {
 GMarker.prototype.getAnchorPoint = function() {
     var offset = this.getAnchorOffset();
     return new google.maps.Point(offset[0], offset[1]);
+};
+
+GMarker.prototype.age = function(age) {
+    if(age <= retention_time) {
+        this.setOptions({ opacity: Marker.getOpacityScale(age) });
+        return true;
+    } else {
+        this.setMap();
+        return false;
+    }
 };
 
 // GoogleMaps-Specific FeatureMarker

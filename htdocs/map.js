@@ -1,9 +1,16 @@
-//
 // Marker.linkify() uses these URLs
-//
 var callsign_url = null;
 var vessel_url   = null;
 var flight_url   = null;
+
+// reasonable default; will be overriden by server
+var retention_time = 2 * 60 * 60 * 1000;
+
+// Function to toggle legend box on/off
+function toggleElement(el_name) {
+    var el = document.getElementById(el_name);
+    if (el) el.style.display = el.style.display === 'none'? 'block' : 'none';
+}
 
 $(function(){
     var query = window.location.search.replace(/^\?/, '').split('&').map(function(v){
@@ -35,13 +42,10 @@ $(function(){
     var ws_url = href + "ws/";
 
     var map;
-    var markers = {};
     var rectangles = {};
     var receiverMarker;
     var updateQueue = [];
 
-    // reasonable default; will be overriden by server
-    var retention_time = 2 * 60 * 60 * 1000;
     var strokeOpacity = 0.8;
     var fillOpacity = 0.35;
 
@@ -128,7 +132,7 @@ $(function(){
             switch (update.location.type) {
                 case 'latlon':
                     var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
-                    var marker;
+                    var marker = markmanager.find(update.callsign);
                     var markerClass = google.maps.Marker;
                     var aprsOptions = {}
                     if (update.location.symbol) {
@@ -137,22 +141,26 @@ $(function(){
                         aprsOptions.course = update.location.course;
                         aprsOptions.speed = update.location.speed;
                     }
-                    if (markers[update.callsign]) {
-                        marker = markers[update.callsign];
-                    } else {
+
+                    // If new item, create a new marker for it
+                    if (!marker) {
+                        marker = new markerClass();
                         markmanager.addType(update.mode);
-                        marker = markers[update.callsign] = new markerClass();
+                        markmanager.add(update.callsign, marker);
                         marker.addListener('click', function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
                     }
+
+                    // Apply marker options
                     marker.setOptions($.extend({
                         position: pos,
                         map: markmanager.isEnabled(update.mode)? map : undefined,
                         title: update.callsign
-                    }, aprsOptions, getMarkerOpacityOptions(update.lastseen) ));
+                    }, aprsOptions));
 
-                    // Update marker attributes
+                    // Update marker attributes and age
+                    marker.age(new Date().getTime() - update.lastseen);
                     marker.update(update);
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
@@ -167,8 +175,8 @@ $(function(){
                 break;
                 case 'feature':
                     var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
+                    var marker = markmanager.find(update.callsign);
                     var options = {}
-                    var marker;
 
                     // If no symbol or color supplied, use defaults by type
                     if (update.location.symbol) {
@@ -182,12 +190,11 @@ $(function(){
                         options.color = markmanager.getColor(update.mode);
                     }
 
-                    // If new item, create a new feature marker for it
-                    if (markers[update.callsign]) {
-                        marker = markers[update.callsign];
-                    } else {
+                    // If new item, create a new marker for it
+                    if (!marker) {
+                        marker = new GFeatureMarker();
                         markmanager.addType(update.mode);
-                        marker = markers[update.callsign] = new GFeatureMarker();
+                        markmanager.add(update.callsign, marker);
                         marker.addListener('click', function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
@@ -200,7 +207,8 @@ $(function(){
                         title: update.callsign
                     }, options));
 
-                    // Update marker attributes
+                    // Update marker attributes and age
+                    marker.age(new Date().getTime() - update.lastseen);
                     marker.update(update);
 
                     if (expectedCallsign && expectedCallsign == update.callsign) {
@@ -265,10 +273,9 @@ $(function(){
 
     var clearMap = function(){
         var reset = function(callsign, item) { item.setMap(); };
-        $.each(markers, reset);
-        $.each(rectangles, reset);
         receiverMarker.setMap();
-        markers = {};
+        markmanager.clear();
+        $.each(rectangles, reset);
         rectangles = {};
     };
 
@@ -445,7 +452,7 @@ $(function(){
 
     var showMarkerInfoWindow = function(name, pos) {
         var infowindow = getInfoWindow();
-        var marker = markers[name];
+        var marker = markmanager.find(name);
 
         infowindow.callsign = name;
         infowindow.setContent(marker.getInfoHTML(name, receiverMarker));
@@ -478,13 +485,6 @@ $(function(){
         };
     };
 
-    var getMarkerOpacityOptions = function(lastseen) {
-        var scale = getScale(lastseen);
-        return {
-            opacity: scale
-        };
-    };
-
     // fade out / remove positions after time
     setInterval(function(){
         var now = new Date().getTime();
@@ -497,15 +497,7 @@ $(function(){
             }
             m.setOptions(getRectangleOpacityOptions(m.lastseen));
         });
-        $.each(markers, function(callsign, m) {
-            var age = now - m.lastseen;
-            if (age > retention_time) {
-                delete markers[callsign];
-                m.setMap();
-                return;
-            }
-            m.setOptions(getMarkerOpacityOptions(m.lastseen));
-        });
+        markmanager.ageAll();
     }, 1000);
 
     var rectangleFilter = allRectangles = function() { return true; };
@@ -548,16 +540,8 @@ $(function(){
             } else {
                 $el.addClass('disabled');
             }
-            markmanager.toggle(map, markers, $el.data('selector'), onoff);
+            markmanager.toggle(map, $el.data('selector'), onoff);
         });
     }
 
 });
-
-function toggleElement(el_name) {
-    var el = document.getElementById(el_name);
-    if (el) {
-        el.style.display = el.style.display === 'none'?
-            'block' : 'none';
-    }
-}
