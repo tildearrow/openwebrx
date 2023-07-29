@@ -132,7 +132,7 @@ $(function(){
                     var markerClass = google.maps.Marker;
                     var aprsOptions = {}
                     if (update.location.symbol) {
-                        markerClass = AprsMarker;
+                        markerClass = GAprsMarker;
                         aprsOptions.symbol = update.location.symbol;
                         aprsOptions.course = update.location.course;
                         aprsOptions.speed = update.location.speed;
@@ -140,12 +140,11 @@ $(function(){
                     if (markers[update.callsign]) {
                         marker = markers[update.callsign];
                     } else {
-                        marker = new markerClass();
+                        markmanager.addType(update.mode);
+                        marker = markers[update.callsign] = new markerClass();
                         marker.addListener('click', function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
-                        markers[update.callsign] = marker;
-                        markmanager.addType(update.mode);
                     }
                     marker.setOptions($.extend({
                         position: pos,
@@ -187,12 +186,11 @@ $(function(){
                     if (markers[update.callsign]) {
                         marker = markers[update.callsign];
                     } else {
-                        marker = new FeatureMarker();
+                        markmanager.addType(update.mode);
+                        marker = markers[update.callsign] = new GFeatureMarker();
                         marker.addListener('click', function(){
                             showMarkerInfoWindow(update.callsign, pos);
                         });
-                        markers[update.callsign] = marker;
-                        markmanager.addType(update.mode);
                     }
 
                     // Apply marker options
