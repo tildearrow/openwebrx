@@ -112,7 +112,9 @@ MarkerManager.prototype.clear = function() {
 };
 
 //
-// Generic marker functionality
+// Generic Map Marker
+// Derived classes have to implement:
+//     setMap(), setMarkerOpacity()
 //
 
 function Marker() {}
@@ -187,6 +189,7 @@ Marker.makeListItem = function(name, value) {
         + '</div>';
 };
 
+// Get opacity value in the 0..1 range based on the given age.
 Marker.getOpacityScale = function(age) {
     var scale = 1;
     if (age >= retention_time / 2) {
@@ -195,13 +198,37 @@ Marker.getOpacityScale = function(age) {
     return Math.max(0, Math.min(1, scale));
 };
 
+// Set marker's opacity based on the supplied age. Returns TRUE
+// if the marker should still be visible, FALSE if it has to be
+// removed.
+Marker.prototype.age = function(age) {
+    if(age <= retention_time) {
+        this.setMarkerOpacity(Marker.getOpacityScale(age));
+        return true;
+    } else {
+        this.setMap();
+        return false;
+    }
+};
+
+// Remove visual marker element from its parent, if that element exists.
+Marker.prototype.remove = function() {
+    if (this.div) {
+        this.div.parentNode.removeChild(this.div);
+        this.div = null;
+    }
+};
+
 //
-// Feature Markers
+// Feature Marker
+//     Represents static map features, such as stations and receivers.
+// Derived classes have to implement:
+//     setMarkerOpacity()
 //
 
 function FeatureMarker() {}
 
-FeatureMarker.prototype = new FeatureMarker();
+FeatureMarker.prototype = new Marker();
 
 FeatureMarker.prototype.update = function(update) {
     this.lastseen = update.lastseen;
@@ -212,6 +239,12 @@ FeatureMarker.prototype.update = function(update) {
     this.device   = update.location.device;
     this.antenna  = update.location.antenna;
     this.schedule = update.location.schedule;
+
+    // Implementation-dependent function call
+    this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
+
+    // Age locator
+    this.age(new Date().getTime() - update.lastseen);
 };
 
 FeatureMarker.prototype.draw = function() {
@@ -244,13 +277,6 @@ FeatureMarker.prototype.create = function() {
     div.style.lineHeight = this.symHeight + 'px';
 
     return div;
-};
-
-FeatureMarker.prototype.remove = function() {
-    if (this.div) {
-        this.div.parentNode.removeChild(this.div);
-        this.div = null;
-    }
 };
 
 FeatureMarker.prototype.getAnchorOffset = function() {
@@ -316,12 +342,16 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 };
 
 //
-// APRS Markers (also AIS and HFDL)
+// APRS Marker
+//     Represents APRS transmitters, as well as AIS (vessels)
+//     and HFDL (planes).
+// Derived classes have to implement:
+//     setMarkerOpacity()
 //
 
 function AprsMarker() {}
 
-AprsMarker.prototype = new AprsMarker();
+AprsMarker.prototype = new Marker();
 
 AprsMarker.prototype.update = function(update) {
     this.lastseen = update.lastseen;
@@ -337,6 +367,12 @@ AprsMarker.prototype.update = function(update) {
     this.device   = update.location.device;
     this.aircraft = update.location.aircraft;
     this.directivity = update.location.directivity;
+
+    // Implementation-dependent function call
+    this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
+
+    // Age locator
+    this.age(new Date().getTime() - update.lastseen);
 };
 
 AprsMarker.prototype.draw = function() {
@@ -399,13 +435,6 @@ AprsMarker.prototype.create = function() {
     div.appendChild(overlay);
 
     return div;
-};
-
-AprsMarker.prototype.remove = function() {
-    if (this.div) {
-        this.div.parentNode.removeChild(this.div);
-        this.div = null;
-    }
 };
 
 AprsMarker.prototype.getAnchorOffset = function() {
@@ -543,8 +572,8 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 function GMarker() {}
 GMarker.prototype = new google.maps.OverlayView();
 
-GMarker.prototype.setOptions = function(options) {
-    google.maps.OverlayView.prototype.setOptions.apply(this, arguments);
+GMarker.prototype.setMarkerOptions = function(options) {
+    this.setOptions(options);
     this.draw();
 };
 
@@ -567,14 +596,15 @@ GMarker.prototype.getAnchorPoint = function() {
     return new google.maps.Point(offset[0], offset[1]);
 };
 
-GMarker.prototype.age = function(age) {
-    if(age <= retention_time) {
-        this.setOptions({ opacity: Marker.getOpacityScale(age) });
-        return true;
-    } else {
-        this.setMap();
-        return false;
-    }
+GMarker.prototype.setMarkerOpacity = function(opacity) {
+    this.setOptions({ opacity: opacity });
+};
+
+GMarker.prototype.setMarkerPosition = function(title, lat, lon) {
+    this.setOptions({
+        title    : title,
+        position : new google.maps.LatLng(lat, lon)
+    });
 };
 
 // GoogleMaps-Specific FeatureMarker
