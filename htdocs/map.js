@@ -165,8 +165,8 @@ $(function(){
                     if (!rectangle) {
                         rectangle = new GLocator();
                         locmanager.add(update.callsign, rectangle);
-                        rectangle.addListener('click', function() {
-                            showLocatorInfoWindow(this.locator, this.center);
+                        rectangle.rect.addListener('click', function() {
+                            showLocatorInfoWindow(rectangle.locator, rectangle.center);
                         });
                     }
 
