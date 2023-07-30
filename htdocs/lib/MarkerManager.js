@@ -98,8 +98,9 @@ MarkerManager.prototype.add = function(id, marker) {
 
 MarkerManager.prototype.ageAll = function() {
     var now = new Date().getTime();
-    $.each(this.markers, function(id, x) {
-        if (!x.age(now - x.lastseen)) delete this.markers[id];
+    var data = this.markers;
+    $.each(data, function(id, x) {
+        if (!x.age(now - x.lastseen)) delete data[id];
     });
 };
 
