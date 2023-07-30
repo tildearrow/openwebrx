@@ -170,18 +170,12 @@ $(function(){
                         });
                     }
 
-                    // Update locator attributes, center, and age
-                    rectangle.age(new Date().getTime() - update.lastseen);
+                    // Update locator attributes, center, age
                     rectangle.update(update);
 
-                    // Apply locator options
-                    var color = locmanager.getColor(rectangle);
-                    rectangle.setOptions({
-                        map : locmanager.filter(rectangle)? map : undefined,
-                        strokeColor  : color,
-                        strokeWeight : 2,
-                        fillColor    : color
-                    });
+                    // Assign locator to map and set its color
+                    rectangle.setMap(locmanager.filter(rectangle)? map : undefined);
+                    rectangle.setColor(locmanager.getColor(rectangle));
 
                     if (expectedLocator && expectedLocator == update.location.locator) {
                         map.panTo(rectangle.center);

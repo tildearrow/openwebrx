@@ -69,8 +69,7 @@ LocatorManager.prototype.setFilter = function(map, filterBy = null) {
 LocatorManager.prototype.reColor = function() {
     var self = this;
     $.each(this.rectangles, function(_, x) {
-        var color = self.getColor(x);
-        x.setOptions({ strokeColor: color, fillColor: color });
+        x.setColor(self.getColor(x));
     });
 };
 
@@ -170,7 +169,9 @@ LocatorManager.prototype.getInfoHTML = function(locator, pos, receiverMarker = n
 };
 
 //
-// Generic locator functionality
+// Generic Map Locator
+//     Derived classes have to implement:
+//     setMap(), setCenter(), setColor(), setOpacity()
 //
 
 function Locator() {}
@@ -190,21 +191,35 @@ Locator.prototype.update = function(update) {
 
     // Implementation-dependent function call
     this.setCenter(lat, lon);
+
+    // Age locator
+    this.age(new Date().getTime() - update.lastseen);
+};
+
+Locator.prototype.age = function(age) {
+    if (age <= retention_time) {
+        this.setOpacity(Marker.getOpacityScale(age));
+        return true;
+    } else {
+        this.setMap();
+        return false;
+    }
 };
 
 //
-// GoogleMaps-Specific Locators (derived from generic locators)
+// GoogleMaps-specific Map Locator (derived from generic locator)
 //
 
 function GLocator() {
     this.rect = new google.maps.Rectangle();
+    this.rect.setOptions({
+        strokeWeight : 2,
+        strokeColor  : "#FFFFFF",
+        fillColor    : "#FFFFFF"
+    });
 }
 
 GLocator.prototype = new Locator();
-
-GLocator.prototype.setOptions = function(options) {
-    this.rect.setOptions(options);
-};
 
 GLocator.prototype.setMap = function(map) {
     this.rect.setMap(map);
@@ -213,7 +228,7 @@ GLocator.prototype.setMap = function(map) {
 GLocator.prototype.setCenter = function(lat, lon) {
     this.center = new google.maps.LatLng({lat: lat, lng: lon});
 
-    this.setOptions({ bounds : {
+    this.rect.setOptions({ bounds : {
         north : lat - 0.5,
         south : lat + 0.5,
         west  : lon - 1.0,
@@ -221,16 +236,13 @@ GLocator.prototype.setCenter = function(lat, lon) {
     }});
 }
 
-GLocator.prototype.age = function(age) {
-    if (age <= retention_time) {
-        var scale  = Marker.getOpacityScale(age);
-        this.setOptions({
-            strokeOpacity : LocatorManager.strokeOpacity * scale,
-            fillOpacity   : LocatorManager.fillOpacity * scale
-        });
-        return true;
-    } else {
-        this.setMap();
-        return false;
-    }
+GLocator.prototype.setColor = function(color) {
+    this.rect.setOptions({ strokeColor: color, fillColor: color });
+};
+
+GLocator.prototype.setOpacity = function(opacity) {
+    this.rect.setOptions({
+        strokeOpacity : LocatorManager.strokeOpacity * opacity,
+        fillOpacity   : LocatorManager.fillOpacity * opacity
+    });
 };
