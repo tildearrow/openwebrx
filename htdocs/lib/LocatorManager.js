@@ -45,7 +45,7 @@ LocatorManager.prototype.ageAll = function() {
 
 LocatorManager.prototype.clear = function() {
     // Remove all rectangles from the map
-    $.each(this.markers, function(_, x) { x.setMap(); });
+    $.each(this.rectangles, function(_, x) { x.setMap(); });
     // Delete all rectangles
     this.rectangles = {};
 };
@@ -196,12 +196,18 @@ Locator.prototype.update = function(update) {
 // GoogleMaps-Specific Locators (derived from generic locators)
 //
 
-function GLocator() { $.extend(this, new Locator()); }
+function GLocator() {
+    this.rect = new google.maps.Rectangle();
+}
 
-GLocator.prototype = new google.maps.Rectangle();
+GLocator.prototype = new Locator();
 
 GLocator.prototype.setOptions = function(options) {
-    google.maps.Rectangle.prototype.setOptions.apply(this, arguments);
+    this.rect.setOptions(options);
+};
+
+GLocator.prototype.setMap = function(map) {
+    this.rect.setMap(map);
 };
 
 GLocator.prototype.setCenter = function(lat, lon) {
@@ -218,12 +224,10 @@ GLocator.prototype.setCenter = function(lat, lon) {
 GLocator.prototype.age = function(age) {
     if (age <= retention_time) {
         var scale  = Marker.getOpacityScale(age);
-        var stroke = LocatorManager.strokeOpacity * scale;
-        var fill   = LocatorManager.fillOpacity * scale;
-//        this.setOptions({
-//            strokeOpacity : stroke,
-//            fillOpacity   : fill
-//        });
+        this.setOptions({
+            strokeOpacity : LocatorManager.strokeOpacity * scale,
+            fillOpacity   : LocatorManager.fillOpacity * scale
+        });
         return true;
     } else {
         this.setMap();
