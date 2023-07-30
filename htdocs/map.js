@@ -66,10 +66,10 @@ $(function(){
         updates.forEach(function(update) {
             switch (update.location.type) {
                 case 'latlon':
-                    var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
                     var marker = markmanager.find(update.callsign);
                     var markerClass = google.maps.Marker;
                     var aprsOptions = {}
+
                     if (update.location.symbol) {
                         markerClass = GAprsMarker;
                         aprsOptions.symbol = update.location.symbol;
@@ -82,35 +82,32 @@ $(function(){
                         marker = new markerClass();
                         markmanager.addType(update.mode);
                         markmanager.add(update.callsign, marker);
-                        marker.addListener('click', function(){
-                            showMarkerInfoWindow(update.callsign, pos);
+                        marker.addListener('click', function() {
+                            showMarkerInfoWindow(update.callsign, marker.pos);
                         });
                     }
 
-                    // Apply marker options
-                    marker.setOptions($.extend({
-                        position: pos,
-                        map: markmanager.isEnabled(update.mode)? map : undefined,
-                        title: update.callsign
-                    }, aprsOptions));
-
                     // Update marker attributes and age
-                    marker.age(new Date().getTime() - update.lastseen);
                     marker.update(update);
 
+                    // Assign marker to map
+                    marker.setMap(markmanager.isEnabled(update.mode)? map : undefined);
+
+                    // Apply marker options
+                    marker.setMarkerOptions(aprsOptions);
+
                     if (expectedCallsign && expectedCallsign == update.callsign) {
-                        map.panTo(pos);
-                        showMarkerInfoWindow(update.callsign, pos);
+                        map.panTo(marker.pos);
+                        showMarkerInfoWindow(update.callsign, marker.pos);
                         expectedCallsign = false;
                     }
 
                     if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
-                        showMarkerInfoWindow(infowindow.callsign, pos);
+                        showMarkerInfoWindow(infowindow.callsign, marker.pos);
                     }
                 break;
 
                 case 'feature':
-                    var pos = new google.maps.LatLng(update.location.lat, update.location.lon);
                     var marker = markmanager.find(update.callsign);
                     var options = {}
 
@@ -131,30 +128,28 @@ $(function(){
                         marker = new GFeatureMarker();
                         markmanager.addType(update.mode);
                         markmanager.add(update.callsign, marker);
-                        marker.addListener('click', function(){
-                            showMarkerInfoWindow(update.callsign, pos);
+                        marker.addListener('click', function() {
+                            showMarkerInfoWindow(update.callsign, marker.pos);
                         });
                     }
 
-                    // Apply marker options
-                    marker.setOptions($.extend({
-                        position: pos,
-                        map: markmanager.isEnabled(update.mode)? map : undefined,
-                        title: update.callsign
-                    }, options));
-
                     // Update marker attributes and age
-                    marker.age(new Date().getTime() - update.lastseen);
                     marker.update(update);
 
+                    // Assign marker to map
+                    marker.setMap(markmanager.isEnabled(update.mode)? map : undefined);
+
+                    // Apply marker options
+                    marker.setMarkerOptions(options);
+
                     if (expectedCallsign && expectedCallsign == update.callsign) {
-                        map.panTo(pos);
-                        showMarkerInfoWindow(update.callsign, pos);
+                        map.panTo(marker.pos);
+                        showMarkerInfoWindow(update.callsign, marker.pos);
                         expectedCallsign = false;
                     }
 
                     if (infowindow && infowindow.callsign && infowindow.callsign == update.callsign) {
-                        showMarkerInfoWindow(infowindow.callsign, pos);
+                        showMarkerInfoWindow(infowindow.callsign, marker.pos);
                     }
                 break;
 
