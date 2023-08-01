@@ -270,7 +270,7 @@ class EIBI(object):
                         "usb"     if " nat-"   in name else # Aircraft
                         "usb"     if " usb"    in name else
                         "usb"     if "fsk"     in name else
-                        "usb"     if freq < 7000000    else # Services
+                        "usb"     if freq < 4800000    else # Services
                         "am")
 
                     # Convert language code to language
