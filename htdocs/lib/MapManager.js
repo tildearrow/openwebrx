@@ -21,9 +21,6 @@ function MapManager() {
     // Locators management (FT8, FT4, WSPR, etc)
     this.lman = new LocatorManager();
 
-    // Clock display
-    this.clock = new Clock($("#openwebrx-clock-utc"));
-
     // Toggle color modes on click
     $(function() {
         $('#openwebrx-map-colormode').on('change', function() {
@@ -31,8 +28,11 @@ function MapManager() {
         });
     });
 
-    // Toggle legend box on/off when clicking the clock
+    // Clock display
     $(function() {
+        // Create clock display
+        self.clock = new Clock($('#openwebrx-clock-utc'));
+        // Clicking clock display toggles legend box on/off
         $('#openwebrx-clock-utc').on('click', function() {
             var el = document.getElementById('openwebrx-map-selectors');
             if (el) {
