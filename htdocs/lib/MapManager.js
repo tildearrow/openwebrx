@@ -21,17 +21,17 @@ function MapManager() {
     // Locators management (FT8, FT4, WSPR, etc)
     this.lman = new LocatorManager();
 
-    // Toggle color modes on click
-    $(function() {
-        $('#openwebrx-map-colormode').on('change', function() {
-            self.lman.setColorMode(map, $(this).val());
-        });
-    });
+    // Fade out / remove positions after time
+    setInterval(function() {
+        self.lman.ageAll();
+        self.mman.ageAll();
+    }, 1000);
 
-    // Clock display
+    // When stuff loads...
     $(function() {
         // Create clock display
         self.clock = new Clock($('#openwebrx-clock-utc'));
+
         // Clicking clock display toggles legend box on/off
         $('#openwebrx-clock-utc').on('click', function() {
             var el = document.getElementById('openwebrx-map-selectors');
@@ -40,13 +40,12 @@ function MapManager() {
                     'block' : 'none';
             }
         });
-    });
 
-    // Fade out / remove positions after time
-    setInterval(function() {
-        self.lman.ageAll();
-        self.mman.ageAll();
-    }, 1000);
+        // Toggle color modes on click
+        $('#openwebrx-map-colormode').on('change', function() {
+            self.lman.setColorMode(map, $(this).val());
+        });
+    });
 
     // Connect web socket
     this.connect();
