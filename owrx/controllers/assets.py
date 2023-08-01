@@ -147,7 +147,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/Header.js",
             "lib/MapLocators.js",
             "lib/MapMarkers.js",
-            "lib/Map.js",
+            "lib/MapManager.js",
             "lib/Clock.js",
             "map.js",
         ],
