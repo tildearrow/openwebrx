@@ -82,18 +82,18 @@ function showReceiverInfoWindow(marker) {
 //
 
 MapManager.prototype.setReceiverName = function(name) {
-    if (this.receiverMarker) this.receiverMarker.setOptions({ title: name });
+    if (receiverMarker) receiverMarker.setOptions({ title: name });
 }
 
 MapManager.prototype.removeReceiver = function() {
-    if (this.receiverMarker) this.receiverMarker.setMap();
+    if (receiverMarker) receiverMarker.setMap();
 }
 
 MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
     var receiverPos = { lat: receiver_gps.lat, lng: receiver_gps.lon };
 
     if (map) {
-        this.receiverMarker.setOptions({
+        receiverMarker.setOptions({
             map      : map,
             position : receiverPos,
             config   : this.config

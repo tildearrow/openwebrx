@@ -141,7 +141,7 @@ MapManager.prototype.connect = function() {
         }
 
         // Try reconnecting after timeout
-        setTimeout(self.connect, self.reconnect_timeout);
+        setTimeout(function() { self.connect(); }, self.reconnect_timeout);
     };
 
     // When socket receives a message...
