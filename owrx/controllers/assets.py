@@ -151,6 +151,16 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/Clock.js",
             "map.js",
         ],
+        "mapLeaflet.js": [
+            "lib/jquery-3.2.1.min.js",
+            "lib/chroma.min.js",
+            "lib/Header.js",
+            "lib/MapLocators.js",
+            "lib/MapMarkers.js",
+            "lib/MapManager.js",
+            "lib/Clock.js",
+            "mapLeaflet.js",
+        ],
         "settings.js": [
             "lib/jquery-3.2.1.min.js",
             "lib/bootstrap.bundle.min.js",

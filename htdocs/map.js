@@ -149,7 +149,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
 MapManager.prototype.processUpdates = function(updates) {
     var self = this;
 
-    if (typeof(GMarker) == 'undefined') {
+    if (typeof(GMarker) === 'undefined') {
         updateQueue = updateQueue.concat(updates);
         return;
     }
@@ -174,7 +174,7 @@ MapManager.prototype.processUpdates = function(updates) {
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker.pos);
+                        showMarkerInfoWindow(update.callsign, marker.position);
                     });
                 }
 
@@ -188,13 +188,13 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMarkerOptions(aprsOptions);
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
-                    map.panTo(marker.pos);
-                    showMarkerInfoWindow(update.callsign, marker.pos);
+                    map.panTo(marker.position);
+                    showMarkerInfoWindow(update.callsign, marker.position);
                     expectedCallsign = false;
                 }
 
                 if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
-                    showMarkerInfoWindow(infoWindow.callsign, marker.pos);
+                    showMarkerInfoWindow(infoWindow.callsign, marker.position);
                 }
             break;
 
@@ -220,7 +220,7 @@ MapManager.prototype.processUpdates = function(updates) {
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker.pos);
+                        showMarkerInfoWindow(update.callsign, marker.position);
                     });
                 }
 
@@ -234,13 +234,13 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMarkerOptions(options);
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
-                    map.panTo(marker.pos);
-                    showMarkerInfoWindow(update.callsign, marker.pos);
+                    map.panTo(marker.position);
+                    showMarkerInfoWindow(update.callsign, marker.position);
                     expectedCallsign = false;
                 }
 
                 if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
-                    showMarkerInfoWindow(infoWindow.callsign, marker.pos);
+                    showMarkerInfoWindow(infoWindow.callsign, marker.position);
                 }
             break;
 
