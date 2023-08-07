@@ -44,9 +44,36 @@ GMarker.prototype.setMarkerPosition = function(title, lat, lon) {
 function GFeatureMarker() { $.extend(this, new FeatureMarker()); }
 GFeatureMarker.prototype = new GMarker();
 
+GFeatureMarker.prototype.draw = function() {
+    FeatureMarker.draw();
+
+    // Map and add location
+    var div = this.div;
+    if (div) {
+        var point = this.getProjection().fromLatLngToDivPixel(this.position);
+        if (point) {
+            div.style.left = point.x - this.symWidth / 2 + 'px';
+            div.style.top = point.y - this.symHeight / 2 + 'px';
+        }
+    }
+};
+
 // GoogleMaps-Specific AprsMarker
 function GAprsMarker() { $.extend(this, new AprsMarker()); }
 GAprsMarker.prototype = new GMarker();
+
+GApreMarker.prototype.draw = function() {
+    AprsMarker.draw();
+
+    var div = this.div;
+    if (div) {
+        var point = this.getProjection().fromLatLngToDivPixel(this.position);
+        if (point) {
+            div.style.left = point.x - 12 + 'px';
+            div.style.top = point.y - 12 + 'px';
+        }
+    }
+};
 
 //
 // GoogleMaps-Specific Locator

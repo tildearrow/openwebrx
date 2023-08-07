@@ -253,15 +253,6 @@ FeatureMarker.prototype.draw = function() {
 
     div.style.color = this.color? this.color : '#000000';
     div.innerHTML   = this.symbol? this.symbol : '&#9679;';
-
-    // AF: this is of GMaps
-    if (typeof this.getProjection !== 'undefined') {
-        var point = this.getProjection().fromLatLngToDivPixel(this.position);
-        if (point) {
-            div.style.left = point.x - this.symWidth / 2 + 'px';
-            div.style.top = point.y - this.symHeight / 2 + 'px';
-        }
-    }
 };
 
 FeatureMarker.prototype.create = function() {
@@ -411,15 +402,6 @@ AprsMarker.prototype.draw = function() {
         div.style.opacity = this.opacity;
     } else {
         div.style.opacity = null;
-    }
-
-    // AF: this is for GMaps
-    if (typeof this.getProjection !== 'undefined') {
-        var point = this.getProjection().fromLatLngToDivPixel(this.position);
-        if (point) {
-            div.style.left = point.x - 12 + 'px';
-            div.style.top = point.y - 12 + 'px';
-        }
     }
 };
 
