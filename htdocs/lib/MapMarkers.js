@@ -253,6 +253,8 @@ FeatureMarker.prototype.draw = function() {
 
     div.style.color = this.color? this.color : '#000000';
     div.innerHTML   = this.symbol? this.symbol : '&#9679;';
+
+    if (this.place) this.place();
 };
 
 FeatureMarker.prototype.create = function() {
@@ -403,6 +405,8 @@ AprsMarker.prototype.draw = function() {
     } else {
         div.style.opacity = null;
     }
+
+    if (this.place) this.place();
 };
 
 AprsMarker.prototype.create = function() {

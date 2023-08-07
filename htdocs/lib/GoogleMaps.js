@@ -44,10 +44,8 @@ GMarker.prototype.setMarkerPosition = function(title, lat, lon) {
 function GFeatureMarker() { $.extend(this, new FeatureMarker()); }
 GFeatureMarker.prototype = new GMarker();
 
-GFeatureMarker.prototype.draw = function() {
-    FeatureMarker.draw();
-
-    // Map and add location
+GFeatureMarker.prototype.place = function() {
+    // Project location and place symbol
     var div = this.div;
     if (div) {
         var point = this.getProjection().fromLatLngToDivPixel(this.position);
@@ -62,9 +60,8 @@ GFeatureMarker.prototype.draw = function() {
 function GAprsMarker() { $.extend(this, new AprsMarker()); }
 GAprsMarker.prototype = new GMarker();
 
-GApreMarker.prototype.draw = function() {
-    AprsMarker.draw();
-
+GAprsMarker.prototype.place = function() {
+    // Project location and place symbol
     var div = this.div;
     if (div) {
         var point = this.getProjection().fromLatLngToDivPixel(this.position);
