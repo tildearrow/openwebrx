@@ -1,5 +1,6 @@
 from owrx.controllers import Controller
 from owrx.details import ReceiverDetails
+from owrx.config import Config
 from string import Template
 import pkg_resources
 
@@ -42,7 +43,8 @@ class IndexController(WebpageController):
 class MapController(WebpageController):
     def indexAction(self):
         # TODO check if we have a google maps api key first?
-        self.serve_template("map-google.html", **self.template_variables())
+        pm = Config.get()
+        self.serve_template("map-%s.html" % pm["map_type"], **self.template_variables())
 
 
 class PolicyController(WebpageController):

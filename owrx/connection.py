@@ -486,6 +486,7 @@ class MapConnection(OpenWebRxClient):
         filtered_config = pm.filter(
             "google_maps_api_key",
             "receiver_gps",
+            "map_type",
             "map_position_retention_time",
             "map_ignore_indirect_reports",
             "map_prefer_recent_reports",

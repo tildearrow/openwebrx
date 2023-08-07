@@ -207,6 +207,14 @@ class GeneralSettingsController(SettingsFormController):
             ),
             Section(
                 "Map settings",
+                DropdownInput(
+                    "map_type",
+                    "Map type",
+                    options=[
+                        Option("google", "Google Maps"),
+                        Option("leaflet", "OpenStreetMap, etc."),
+                    ],
+                ),
                 TextInput(
                     "google_maps_api_key",
                     "Google Maps API key",
