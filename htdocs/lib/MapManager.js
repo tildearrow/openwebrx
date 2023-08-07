@@ -72,7 +72,9 @@ MapManager.prototype.process = function(e) {
                 break;
 
             case 'receiver_details':
-                $('.webrx-top-container').header().setDetails(json.value);
+                $().ready(function () { // make sure header is loaded
+                    $('.webrx-top-container').header().setDetails(json.value);
+                });
                 break;
 
             case "config":
