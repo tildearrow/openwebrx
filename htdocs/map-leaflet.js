@@ -92,12 +92,16 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
             // now load Leaflet JS
             $.getScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js').done(function () {
                 // create map
-                map = L.map('openwebrx-map').setView(receiverPos, 5);
+                map = L.map('openwebrx-map', { zoomControl: false }).setView(receiverPos, 5);
                 baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
                     maxZoom: 19,
                     noWrap: true,
                     attribution: '© OpenStreetMap'
                 }).addTo(map);
+
+                // add zoom control
+                new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
+
                 // add night overlay
                 $.getScript('https://unpkg.com/@joergdietrich/leaflet.terminator@1.0.0/L.Terminator.js').done(function () {
                     var pane = map.createPane('nite');
