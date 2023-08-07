@@ -19,9 +19,6 @@ var updateQueue = [];
 // Web socket connection management, message processing
 var mapManager = new MapManager();
 
-// icons cache
-var icons = {};
-
 var query = window.location.search.replace(/^\?/, '').split('&').map(function(v){
     var s = v.split('=');
     var r = {};
@@ -252,18 +249,8 @@ MapManager.prototype.processUpdates = function(updates) {
                 // If new item, create a new marker for it
                 if (!marker) {
                     marker = new LFeatureMarker();
-                    if (0) { // icons
-                        if (!icons[update.mode]) {
-                            icons[update.mode] = L.icon({
-                                iconUrl: 'static/gfx/icon-' + update.mode + '.png',
-                                iconSize: [24, 24],
-                            });
-                        }
-                        marker.setIcon(icons[update.mode]);
-                    } else { // symbols
-                        marker.div = marker.create();
-                        marker.setIcon(L.divIcon({ html: marker.div, className: 'dummy' }));
-                    }
+                    marker.div = marker.create();
+                    marker.setIcon(L.divIcon({ html: marker.div, className: 'dummy' }));
 
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
