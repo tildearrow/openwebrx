@@ -89,8 +89,10 @@ LLocator.prototype.addListener = function (e, f) {
     this._rect.on(e, f);
 };
 
-
+//
 // Position object
+//
+
 function posObj(pos) {
     if (typeof pos === 'undefined' || typeof pos[1] === 'undefined') {
         console.error('Cannot create position object with no LatLng.');
@@ -99,6 +101,6 @@ function posObj(pos) {
     this._lat = pos[0];
     this._lng = pos[1];
 }
+
 posObj.prototype.lat = function () { return this._lat; }
 posObj.prototype.lng = function () { return this._lng; }
-
