@@ -3,6 +3,113 @@ var callsign_url = null;
 var vessel_url   = null;
 var flight_url   = null;
 
+var baseLayer;
+var mapSources = [
+    {
+        name: 'OpenStreetMap',
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+        options: {
+            maxZoom: 19,
+            noWrap: true,
+            attribution: '© OpenStreetMap'
+        },
+    },
+    {
+        name: 'OpenTopoMap',
+        url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+        options: {
+            maxZoom: 17,
+            noWrap: true,
+            attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+        }
+    },
+    {
+        name: 'Esri WorldTopo',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}',
+        config: {
+            noWrap: true,
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
+        }
+    },
+    {
+        name: 'Esri WorldStreet',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}',
+        options: {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, DeLorme, NAVTEQ, USGS, Intermap, iPC, NRCAN, Esri Japan, METI, Esri China (Hong Kong), Esri (Thailand), TomTom, 2012'
+        }
+    },
+    {
+        name: 'Esri WorldImagery',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        options: {
+            attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+        }
+    },
+    {
+        name: 'Esri NatGeoWorld',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}',
+        options: {
+            attribution: 'Tiles &copy; Esri &mdash; National Geographic, Esri, DeLorme, NAVTEQ, UNEP-WCMC, USGS, NASA, ESA, METI, NRCAN, GEBCO, NOAA, iPC',
+            maxZoom: 16
+        }
+    },
+    {
+        name: 'Esri WorldGray',
+        url: 'https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}',
+        options: {
+            attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ',
+            maxZoom: 16
+        }
+    },
+    {
+        name: 'CartoDB Positron',
+        url: 'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        options: {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }
+    },
+    {
+        name: 'CartoDB DarkMatter',
+        url: 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+        options: {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }
+    },
+    {
+        name: 'CartoDB Voyager',
+        url: 'https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',
+        options: {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+            subdomains: 'abcd',
+            maxZoom: 20
+        }
+    },
+    {
+        name: 'Stadia Alidade',
+        url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png',
+        config: {
+            maxZoom: 20,
+            noWrap: true,
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+        },
+        info: 'In order to use Stadia maps, you must register. Once registered, you can whitelist your domain within your account settings.'
+    },
+    {
+        name: 'Stadia AlidadeDark',
+        url: 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png',
+        config: {
+            maxZoom: 20,
+            noWrap: true,
+            attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
+        },
+        info: 'In order to use Stadia maps, you must register. Once registered, you can whitelist your domain within your account settings.'
+    },
+];
+
 // reasonable default; will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;
 
@@ -78,10 +185,8 @@ MapManager.prototype.removeReceiver = function() {
 }
 
 MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
-    var receiverPos = [ receiver_gps.lat, receiver_gps.lon ];
-
     if (map) {
-        receiverMarker.setLatLng(receiverPos);
+        receiverMarker.setLatLng(receiver_gps.lat, receiver_gps.lon);
         receiverMarker.setMarkerOptions(this.config);
         receiverMarker.setMap(map);
     } else {
@@ -92,12 +197,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
             // now load Leaflet JS
             $.getScript('https://unpkg.com/leaflet@1.9.4/dist/leaflet.js').done(function () {
                 // create map
-                map = L.map('openwebrx-map', { zoomControl: false }).setView(receiverPos, 5);
-                baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    maxZoom: 19,
-                    noWrap: true,
-                    attribution: '© OpenStreetMap'
-                }).addTo(map);
+                map = L.map('openwebrx-map', { zoomControl: false }).setView([receiver_gps.lat, receiver_gps.lon], 5);
 
                 // add zoom control
                 new L.Control.Zoom({ position: 'bottomright' }).addTo(map);
@@ -115,46 +215,24 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
 
                 // create layerControl and add more maps
                 if (!layerControl) {
-                    var OpenTopoMap = L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-                        maxZoom: 17,
-                        noWrap: true,
-                        attribution: 'Map data: &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
-                    });
-                    var Stadia_AlidadeSmooth = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}{r}.png', {
-                        maxZoom: 20,
-                        noWrap: true,
-                        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
-                    });
-                    var Esri_WorldTopoMap = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {
-                        noWrap: true,
-                        attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ, TomTom, Intermap, iPC, USGS, FAO, NPS, NRCAN, GeoBase, Kadaster NL, Ordnance Survey, Esri Japan, METI, Esri China (Hong Kong), and the GIS User Community'
-                    });
-                    var Stadia_AlidadeSmoothDark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png', {
-                        maxZoom: 20,
-                        noWrap: true,
-                        attribution: '&copy; <a href="https://stadiamaps.com/">Stadia Maps</a>, &copy; <a href="https://openmaptiles.org/">OpenMapTiles</a> &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors'
-                    });
-
                     // used to open or collaps the layerControl by default
-                    function isMobile () {
-                        try { document.createEvent("TouchEvent"); return true; }
-                        catch (e) { return false; }
-                    }
+                    // function isMobile () {
+                    //     try { document.createEvent("TouchEvent"); return true; }
+                    //     catch (e) { return false; }
+                    // }
 
                     layerControl = L.control.layers({
-                        'OSM': baseLayer,
-                        'StadiaAlidade': Stadia_AlidadeSmooth,
-                        'StadiaAlidadeDark': Stadia_AlidadeSmoothDark,
-                        'EsriWorldTopo': Esri_WorldTopoMap,
-                        'OpenTopoMap': OpenTopoMap,
                     }, null, {
-                        collapsed: isMobile(), hideSingleBase: true, position: 'bottomleft'
+                        collapsed: false, //isMobile(), // we have collapsing already made in the utc clock
+                        hideSingleBase: true,
+                        position: 'bottomleft'
                     }
                     ).addTo(map);
 
                     // move legend div to our layerControl
-                    $('<div id="openwebrx-map-legend-separator" class="leaflet-control-layers-separator"></div>').insertAfter(layerControl._overlaysList);
-                    layerControl.legend = $('.openwebrx-map-legend').insertAfter($('#openwebrx-map-legend-separator'));
+                    layerControl.legend = $('.openwebrx-map-legend')
+                        .css({'padding': '0', 'margin': '0'})
+                        .insertAfter(layerControl._overlaysList);
                 } // layerControl
 
                 // Load and initialize OWRX-specific map item managers
@@ -165,7 +243,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
 
                     if (!receiverMarker) {
                         receiverMarker = new LMarker();
-                        receiverMarker.setMarkerPosition(self.config['receiver_name'], receiverPos[0], receiverPos[1]);
+                        receiverMarker.setMarkerPosition(self.config['receiver_name'], receiver_gps.lat, receiver_gps.lon);
                         receiverMarker.addListener('click', function () {
                             L.popup(receiverMarker.getPos(), {
                                 content: '<h3>' + self.config['receiver_name'] + '</h3>' +
@@ -175,6 +253,27 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
                         receiverMarker.setMarkerOptions(this.config);
                         receiverMarker.setMap(map);
                     }
+                });
+
+                $.each(mapSources, function (idx, ms) {
+                    $('#openwebrx-map-source').append(
+                        $('<option></option>')
+                            .attr('selected', idx == 0 ? true : false)
+                            .attr('value', idx)
+                            .attr('title', ms.info)
+                            .text(ms.name)
+                    );
+                    ms.layer = L.tileLayer(ms.url, ms.options);
+                    if (idx == 0) ms.layer.addTo(map);
+                });
+                $('#openwebrx-map-source').on('change', function (e) {
+                    var id = this.value;
+                    var m = mapSources[id];
+                    $.each(mapSources, function (idx, ms) {
+                        if (map.hasLayer(ms.layer))
+                            map.removeLayer(ms.layer);
+                    });
+                    map.addLayer(m.layer)
                 });
 
                 // Create map legend selectors
@@ -216,7 +315,14 @@ MapManager.prototype.processUpdates = function(updates) {
                         showMarkerInfoWindow(update.callsign, marker.getPos());
                     });
                     marker.div = marker.create();
-                    marker.setIcon(L.divIcon({ html: marker.div, className: 'dummy' }));
+                    var offset = marker.getAnchorOffset();
+                    offset[0] *= -1;
+                    offset[1] *= -1;
+                    marker.setIcon(L.divIcon({
+                        html: marker.div,
+                        iconAnchor: [offset[1], offset[0]],
+                        className: 'dummy'
+                    }));
                 }
 
                 // Update marker attributes and age
@@ -254,7 +360,17 @@ MapManager.prototype.processUpdates = function(updates) {
                 if (!marker) {
                     marker = new LFeatureMarker();
                     marker.div = marker.create();
-                    marker.setIcon(L.divIcon({ html: marker.div, className: 'dummy' }));
+                    // marker.div.style.width = 'auto';
+                    // marker.div.style.height = 'auto';
+                    // marker.div.style.lineHeight = 'inherit';
+                    var offset = marker.getAnchorOffset();
+                    offset[0] *= -1;
+                    offset[1] *= -1;
+                    marker.setIcon(L.divIcon({
+                        html: marker.div,
+                        iconAnchor: [offset[1], offset[0]],
+                        className: 'dummy'
+                    }));
 
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
