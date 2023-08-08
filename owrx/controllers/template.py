@@ -26,13 +26,13 @@ class WebpageController(TemplateController):
         return "../" * levels
 
     def header_variables(self):
-        variables = {"document_root": self.get_document_root()}
+        variables = { "document_root": self.get_document_root(), "map_type": "" }
         variables.update(ReceiverDetails().__dict__())
         return variables
 
     def template_variables(self):
         header = self.render_template("include/header.include.html", **self.header_variables())
-        return {"header": header, "document_root": self.get_document_root()}
+        return { "header": header, "document_root": self.get_document_root() }
 
 
 class IndexController(WebpageController):
@@ -43,8 +43,27 @@ class IndexController(WebpageController):
 class MapController(WebpageController):
     def indexAction(self):
         # TODO check if we have a google maps api key first?
+        self.serve_template("map-%s.html" % self.map_type(), **self.template_variables())
+
+    def header_variables(self):
+        # Invert map type for the "map" toolbar icon
+        variables = super().header_variables();
+        type = self.map_type()
+        if type == "google":
+            variables.update({ "map_type" : "?type=leaflet" })
+        elif type == "leaflet":
+            variables.update({ "map_type" : "?type=google" })
+        return variables
+
+    def map_type(self):
         pm = Config.get()
-        self.serve_template("map-%s.html" % pm["map_type"], **self.template_variables())
+        if "type" not in self.request.query:
+            type = pm["map_type"]
+        else:
+            type = self.request.query["type"][0]
+            if type not in ["google", "leaflet"]:
+                type = pm["map_type"]
+        return type
 
 
 class PolicyController(WebpageController):
