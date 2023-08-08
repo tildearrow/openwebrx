@@ -33,7 +33,7 @@ function MapManager() {
         self.clock = new Clock($('#openwebrx-clock-utc'));
 
         // Clicking clock display toggles legend box on/off
-        $('#openwebrx-clock-utc').on('click', function() {
+        $('#openwebrx-clock-utc').css('cursor', 'pointer').on('click', function() {
             var el = document.getElementById('openwebrx-map-selectors');
             if (el) {
                 el.style.display = el.style.display === 'none'?
