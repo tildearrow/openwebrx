@@ -1,3 +1,13 @@
+**1.2.25**
+- Refactored maps, extracting implementation independent code.
+- Added Leaflet-based maps by Stanislav Lechev (LZ2SLL).
+- OpenStreetMap and other free maps are available via Leaflet.
+- Default to Google or Leaflet maps via the Settings.
+- Clicking toolbar map button toggles between Google and Leaflet.
+- Clicking UTC clock display toggles map controls.
+- Added several more target areas to the EIBI parser.
+- Now assuming any EIBI entry below 4.8MHz to be USB (was 7MHz).
+
 **1.2.24**
 - Added support for EIBI shortwave schedules.
 - Schedules updated monthly from the EIBI website.
