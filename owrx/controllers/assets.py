@@ -141,12 +141,25 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/Scanner.js",
             "lib/Clock.js",
         ],
-        "map.js": [
+        "map-google.js": [
             "lib/jquery-3.2.1.min.js",
             "lib/chroma.min.js",
             "lib/Header.js",
+            "lib/MapLocators.js",
+            "lib/MapMarkers.js",
+            "lib/MapManager.js",
             "lib/Clock.js",
-            "map.js",
+            "map-google.js",
+        ],
+        "map-leaflet.js": [
+            "lib/jquery-3.2.1.min.js",
+            "lib/chroma.min.js",
+            "lib/Header.js",
+            "lib/MapLocators.js",
+            "lib/MapMarkers.js",
+            "lib/MapManager.js",
+            "lib/Clock.js",
+            "map-leaflet.js",
         ],
         "settings.js": [
             "lib/jquery-3.2.1.min.js",
