@@ -3,7 +3,6 @@ var callsign_url = null;
 var vessel_url   = null;
 var flight_url   = null;
 
-var baseLayer;
 var mapSources = [
     {
         name: 'OpenStreetMap',
