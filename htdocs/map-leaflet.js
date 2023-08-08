@@ -315,11 +315,9 @@ MapManager.prototype.processUpdates = function(updates) {
                     });
                     marker.div = marker.create();
                     var offset = marker.getAnchorOffset();
-                    offset[0] *= -1;
-                    offset[1] *= -1;
                     marker.setIcon(L.divIcon({
                         html: marker.div,
-                        iconAnchor: [offset[1], offset[0]],
+                        iconAnchor: [-offset[1], -offset[0]],
                         className: 'dummy'
                     }));
                 }
@@ -359,15 +357,10 @@ MapManager.prototype.processUpdates = function(updates) {
                 if (!marker) {
                     marker = new LFeatureMarker();
                     marker.div = marker.create();
-                    // marker.div.style.width = 'auto';
-                    // marker.div.style.height = 'auto';
-                    // marker.div.style.lineHeight = 'inherit';
                     var offset = marker.getAnchorOffset();
-                    offset[0] *= -1;
-                    offset[1] *= -1;
                     marker.setIcon(L.divIcon({
                         html: marker.div,
-                        iconAnchor: [offset[1], offset[0]],
+                        iconAnchor: [-offset[1], -offset[0]],
                         className: 'dummy'
                     }));
 
