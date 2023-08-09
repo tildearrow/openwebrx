@@ -309,7 +309,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                             self.sdr.activateProfile(profile[1])
                         else:
                             # Force update back to the current profile
-                            self.sdr.activateProfile(self.sdr.getProfileId(), force=True)
+                            self.resetSdr()
                 elif message["type"] == "setfrequency":
                     # If the magic key is set in the settings, only allow
                     # changes if it matches the received key
@@ -358,6 +358,13 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
             return
 
         self.sdr.addClient(self)
+
+    def resetSdr(self):
+        if self.sdr is not None:
+            self.stopDsp()
+            self.stack.removeLayerByPriority(0)
+            self.sdr.removeClient(self)
+            self.sdr.addClient(self)
 
     def handleSdrAvailable(self):
         self.getDsp().setProperties(self.connectionProperties)

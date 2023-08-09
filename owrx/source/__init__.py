@@ -252,10 +252,10 @@ class SdrSource(ABC):
     def getCommand(self):
         return [self.getCommandMapper().map(self.getCommandValues())]
 
-    def activateProfile(self, profile_id, force=False):
+    def activateProfile(self, profile_id):
         logger.debug("activating profile {0} for {1}".format(profile_id, self.getId()))
         try:
-            self.profileCarousel.switch(profile_id, force=force)
+            self.profileCarousel.switch(profile_id)
         except KeyError:
             logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
 
