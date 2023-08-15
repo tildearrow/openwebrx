@@ -1,4 +1,5 @@
 from owrx.config.core import CoreConfig
+from owrx.bookmarks import Bookmark
 from datetime import datetime
 from json import JSONEncoder
 
@@ -178,6 +179,54 @@ class EIBI(object):
 
         # Done
         return result
+
+    # Create list of current bookmarks for a frequency range
+    def currentBookmarks(self, frequencyRange, hours: int = 1):
+        # Make sure freq2>freq1
+        (f1, f2) = frequencyRange
+        if f1>f2:
+          f = f1
+          f1 = f2
+          f2 = f
+        # Get entries active at the current time + 1 hour
+        now  = datetime.utcnow()
+        day  = now.weekday()
+        date = now.year * 10000 + now.month * 100 + now.day
+        t1   = now.hour * 100 + now.minute
+        t2   = t1 + hours * 100
+        result = {}
+        logger.debug("Searching bookmarks for {0}-{1}kHz...".format(f1//1000, f2//1000))
+        # Search for current entries
+        with self.lock:
+            for entry in self.schedule:
+                try:
+                    # Check if entry active and within frequency range
+                    f = entry["freq"]
+                    entryActive = (
+                        f >= f1 and f <= f2 and entry["days"][day] != "."
+                    and (entry["date1"] == 0 or entry["date1"] <= date)
+                    and (entry["date2"] == 0 or entry["date2"] >= date)
+                    )
+                    # Check the hours, rolling over to the next day
+                    if entryActive:
+                        e1 = entry["time1"]
+                        e2 = entry["time2"]
+                        e2 = e2 if e2 > e1 else e2 + 2400
+                        entryActive = e1 < t2 and e2 > t1
+                    # For every currently active schedule entry...
+                    if entryActive:
+                        result[f] = Bookmark({
+                            "name"       : entry["name"],
+                            "modulation" : entry["mode"],
+                            "frequency"  : f
+                        }, srcFile = "EIBI")
+
+                except Exception as e:
+                    logger.debug("currentBookmarks() exception: {0}".format(e))
+
+        # Done
+        logger.debug("Found {0} bookmarks for {1}-{2}kHz.".format(len(result), f1//1000, f2//1000))
+        return result.values()
 
     def convertDate(self, date: str):
         # No-date is a common case
