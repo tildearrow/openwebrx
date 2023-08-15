@@ -8,6 +8,7 @@ from owrx.feature import FeatureDetector
 from owrx.version import openwebrx_version
 from owrx.bands import Bandplan
 from owrx.bookmarks import Bookmarks
+from owrx.eibi import EIBI
 from owrx.map import Map
 from owrx.property import PropertyStack, PropertyDeleted
 from owrx.modes import Modes, DigitalMode
@@ -212,6 +213,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 frequencyRange = (cf - srh, cf + srh)
                 dial_frequencies = Bandplan.getSharedInstance().collectDialFrequencies(frequencyRange)
                 bookmarks = [b.__dict__() for b in Bookmarks.getSharedInstance().getBookmarks(frequencyRange)]
+                bookmarks += [b.__dict__() for b in EIBI.getSharedInstance().currentBookmarks(frequencyRange)]
             self.write_dial_frequencies(dial_frequencies)
             self.write_bookmarks(bookmarks)
 

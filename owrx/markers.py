@@ -2,7 +2,7 @@ from owrx.config.core import CoreConfig
 from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
 from json import JSONEncoder
-from owrx.eibi import EIBI_Locations, EIBI
+from owrx.eibi import EIBI
 from datetime import datetime
 
 import urllib
