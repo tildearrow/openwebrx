@@ -194,15 +194,19 @@ class GeneralSettingsController(SettingsFormController):
                     "ui_frame",
                     "Show frame around receiver panel",
                 ),
-                CheckboxInput(
-                    "ui_swap_wheel",
-                    "Make mouse wheel control zoom, tune by holding wheel down",
-                ),
                 DropdownInput(
                     "tuning_precision",
                     "Tuning precision",
                     options=[Option(str(i), "{} Hz".format(10 ** i)) for i in range(0, 6)],
                     converter=IntConverter(),
+                ),
+                CheckboxInput(
+                    "ui_swap_wheel",
+                    "Make mouse wheel control zoom, tune by holding wheel down",
+                ),
+                CheckboxInput(
+                    "eibi_bookmarks",
+                    "Automatically create bookmarks based on the EIBI schedules",
                 ),
             ),
             Section(

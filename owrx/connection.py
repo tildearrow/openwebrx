@@ -213,7 +213,9 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 frequencyRange = (cf - srh, cf + srh)
                 dial_frequencies = Bandplan.getSharedInstance().collectDialFrequencies(frequencyRange)
                 bookmarks = [b.__dict__() for b in Bookmarks.getSharedInstance().getBookmarks(frequencyRange)]
-                bookmarks += [b.__dict__() for b in EIBI.getSharedInstance().currentBookmarks(frequencyRange)]
+                # Search EIBI schedule for bookmarks, if enabled
+                if self.stack["eibi_bookmarks"]:
+                    bookmarks += [b.__dict__() for b in EIBI.getSharedInstance().currentBookmarks(frequencyRange)]
             self.write_dial_frequencies(dial_frequencies)
             self.write_bookmarks(bookmarks)
 
