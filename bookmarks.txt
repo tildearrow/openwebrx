@@ -196,7 +196,7 @@ GS-17|Gran Cararias|Spain|21955|HFDL
 JMH|Tokyo|Japan|3622.5|FAX
 JMH2|Tokyo|Japan|7795|FAX
 JMH4|Tokyo|Japan|13988.5|FAX
-PVK|Pevek|Russia|0.148|FAX
+PVK|Pevek|Russia|148|FAX
 HLL2|Seoul|South Korea|3585|FAX
 HLL2|Seoul|South Korea|5857.5|FAX
 HLL2|Seoul|South Korea|7433.5|FAX
