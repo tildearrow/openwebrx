@@ -206,7 +206,7 @@ class GeneralSettingsController(SettingsFormController):
                 ),
                 CheckboxInput(
                     "eibi_bookmarks",
-                    "Automatically create bookmarks based on the EIBI schedules",
+                    "Automatically create bookmarks based on EIBI schedules",
                 ),
             ),
             Section(
