@@ -618,6 +618,10 @@ class SdrDeviceDescription(object):
                 "key_locked",
                 "Require magic key to switch profiles on this device",
             ),
+            CheckboxInput(
+                "eibi_bookmarks",
+                "Automatically create bookmarks based on EIBI schedules",
+            ),
             GainInput("rf_gain", "Device gain", self.hasAgc()),
             NumberInput(
                 "ppm",
@@ -671,7 +675,7 @@ class SdrDeviceDescription(object):
         return ["name", "center_freq", "samp_rate", "start_freq", "start_mod", "tuning_step"]
 
     def getProfileOptionalKeys(self):
-        return ["initial_squelch_level", "rf_gain", "lfo_offset", "waterfall_levels"]
+        return ["initial_squelch_level", "rf_gain", "lfo_offset", "waterfall_levels", "eibi_bookmarks"]
 
     def getDeviceSection(self):
         return OptionalSection(
