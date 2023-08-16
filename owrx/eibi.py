@@ -39,6 +39,18 @@ class EIBI(object):
         coreConfig = CoreConfig()
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
 
+    # Offset frequency for proper tuning
+    @staticmethod
+    def correctFreq(freq: int, mode: str) -> int:
+        if mode == "cw":
+            return freq - 800
+        elif mode == "fax":
+            return freq - 1500
+        elif mode == "rtty450":
+            return freq - 1000
+        else:
+            return freq
+
     def __init__(self):
         self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
         self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
@@ -218,7 +230,7 @@ class EIBI(object):
                         result[f] = Bookmark({
                             "name"       : entry["name"],
                             "modulation" : entry["mode"],
-                            "frequency"  : f
+                            "frequency"  : EIBI.correctFreq(f, entry["mode"])
                         }, srcFile = "EIBI")
 
                 except Exception as e:
