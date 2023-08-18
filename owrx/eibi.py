@@ -19,7 +19,7 @@ logger.setLevel(logging.DEBUG)
 #
 # Maximal distance on Earth surface (kilometers)
 #
-maxDist = 25000
+MAX_DISTANCE = 25000
 
 
 class EIBI(object):
@@ -221,7 +221,7 @@ class EIBI(object):
         return result
 
     # Create list of current bookmarks for a frequency range
-    def currentBookmarks(self, frequencyRange, hours: int = 1, rangeKm: int = maxDist):
+    def currentBookmarks(self, frequencyRange, hours: int = 1, rangeKm: int = MAX_DISTANCE):
         # Make sure freq2>freq1
         (f1, f2) = frequencyRange
         if f1>f2:
@@ -248,7 +248,7 @@ class EIBI(object):
             for entry in self.schedule:
                 try:
                     # No distance yet
-                    dist = maxDist
+                    dist = MAX_DISTANCE
 
                     # Check if entry active and within frequency range
                     f = entry["freq"]
@@ -278,7 +278,7 @@ class EIBI(object):
                             (f not in result or dist < result[f][1])
                         )
                         # Warn if location not found
-                        if dist == maxDist:
+                        if dist == MAX_DISTANCE:
                             logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
 
                     # Add entry to the result
