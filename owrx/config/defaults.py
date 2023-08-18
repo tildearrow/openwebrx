@@ -202,5 +202,5 @@ defaultConfig = PropertyLayer(
     wsprnet_enabled=False,
     wsprnet_callsign="N0CALL",
     paging_filter=True,
-    eibi_bookmarks=False,
+    eibi_bookmarks_range=0,
 ).readonly()

@@ -204,9 +204,14 @@ class GeneralSettingsController(SettingsFormController):
                     "ui_swap_wheel",
                     "Make mouse wheel control zoom, tune by holding wheel down",
                 ),
-                CheckboxInput(
-                    "eibi_bookmarks",
-                    "Automatically create bookmarks based on EIBI schedules",
+                NumberInput(
+                    "eibi_bookmarks_range",
+                    "Automatic bookmarks range",
+                    infotext="Specifies the distance from the receiver location to "
+                    + "search EIBI schedules for stations when creating automatic "
+                    + "bookmarks. Set to 0 to disable automatic bookmarks.",
+                    validator=RangeValidator(0, 25000),
+                    append="km",
                 ),
             ),
             Section(

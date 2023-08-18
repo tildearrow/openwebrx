@@ -1,4 +1,5 @@
 from owrx.config.core import CoreConfig
+from owrx.config import Config
 from owrx.bookmarks import Bookmark
 from datetime import datetime
 from json import JSONEncoder
@@ -10,9 +11,15 @@ import json
 import re
 import os
 import time
+import math
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+#
+# Maximal distance on Earth surface (kilometers)
+#
+maxDist = 25000
 
 
 class EIBI(object):
@@ -50,6 +57,23 @@ class EIBI(object):
             return freq - 1000
         else:
             return freq
+
+    # Compute distance, in kilometers, between two latlons.
+    @staticmethod
+    def distKm(p1, p2):
+        # Earth radius in km
+        earthR = 6371
+        # Convert degrees to radians
+        rlat1 = p1[0] * (math.pi/180)
+        rlat2 = p2[0] * (math.pi/180)
+        # Compute difference in radians
+        difflat = rlat2 - rlat1
+        difflon = (p2[1] - p1[1]) * (math.pi/180)
+        # Compute distance
+        return round(2 * earthR * math.asin(math.sqrt(
+            math.sin(difflat/2) * math.sin(difflat/2) +
+            math.cos(rlat1) * math.cos(rlat2) * math.sin(difflon/2) * math.sin(difflon/2)
+        )))
 
     def __init__(self):
         self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
@@ -174,7 +198,8 @@ class EIBI(object):
                         entryActive = e1 < t2 and e2 > t1
                     # For every currently active schedule entry...
                     if entryActive:
-                        src = entry["itu"] + entry["src"]
+                        src  = entry["itu"] + entry["src"]
+                        name = None
                         # Find all matching transmitter locations
                         for loc in EIBI_Locations:
                             if loc["code"] == src:
@@ -185,6 +210,9 @@ class EIBI(object):
                                     result[name]["schedule"] = []
                                 # Add schedule entry to the location
                                 result[name]["schedule"].append(entry)
+                        # Warn if location not found
+                        if not name:
+                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
 
                 except Exception as e:
                     logger.debug("currentTransmitters() exception: {0}".format(e))
@@ -193,13 +221,14 @@ class EIBI(object):
         return result
 
     # Create list of current bookmarks for a frequency range
-    def currentBookmarks(self, frequencyRange, hours: int = 1):
+    def currentBookmarks(self, frequencyRange, hours: int = 1, rangeKm: int = maxDist):
         # Make sure freq2>freq1
         (f1, f2) = frequencyRange
         if f1>f2:
           f = f1
           f1 = f2
           f2 = f
+
         # Get entries active at the current time + 1 hour
         now  = datetime.utcnow()
         day  = now.weekday()
@@ -207,11 +236,20 @@ class EIBI(object):
         t1   = now.hour * 100 + now.minute
         t2   = t1 + hours * 100
         result = {}
-        logger.debug("Searching bookmarks for {0}-{1}kHz...".format(f1//1000, f2//1000))
+
+        # Get receiver location for computing distance
+        pm = Config.get()
+        rxPos = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
+
+        logger.debug("Creating bookmarks for {0}-{1}kHz within {2}km...".format(f1//1000, f2//1000, rangeKm))
+
         # Search for current entries
         with self.lock:
             for entry in self.schedule:
                 try:
+                    # No distance yet
+                    dist = maxDist
+
                     # Check if entry active and within frequency range
                     f = entry["freq"]
                     entryActive = (
@@ -219,26 +257,49 @@ class EIBI(object):
                     and (entry["date1"] == 0 or entry["date1"] <= date)
                     and (entry["date2"] == 0 or entry["date2"] >= date)
                     )
+
                     # Check the hours, rolling over to the next day
                     if entryActive:
                         e1 = entry["time1"]
                         e2 = entry["time2"]
                         e2 = e2 if e2 > e1 else e2 + 2400
                         entryActive = e1 < t2 and e2 > t1
-                    # For every currently active schedule entry...
+
+                    # Find closest transmitter for this entry
                     if entryActive:
-                        result[f] = Bookmark({
-                            "name"       : entry["name"],
-                            "modulation" : entry["mode"],
-                            "frequency"  : EIBI.correctFreq(f, entry["mode"])
-                        }, srcFile = "EIBI")
+                        src  = entry["itu"] + entry["src"]
+                        for loc in EIBI_Locations:
+                            if loc["code"] == src:
+                                txPos = (loc["lat"], loc["lon"])
+                                dist  = min(dist, EIBI.distKm(rxPos, txPos))
+                        # Prefer closer transmitters, apply range
+                        entryActive = (
+                            (dist <= rangeKm) and
+                            (f not in result or dist < result[f][1])
+                        )
+                        # Warn if location not found
+                        if dist == maxDist:
+                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+
+                    # Add entry to the result
+                    if entryActive:
+                        #if f in result:
+                        #    logger.debug("Replacing '{0}' ({1}km) with '{2}' ({3}km)".format(
+                        #        result[f][0]["name"], result[f][1], entry["name"], dist
+                        #    ))
+                        result[f] = ( entry, dist )
 
                 except Exception as e:
                     logger.debug("currentBookmarks() exception: {0}".format(e))
 
-        # Done
-        logger.debug("Found {0} bookmarks for {1}-{2}kHz.".format(len(result), f1//1000, f2//1000))
-        return result.values()
+        logger.debug("Created {0} bookmarks for {1}-{2}kHz within {3}km.".format(len(result), f1//1000, f2//1000, rangeKm))
+
+        # Return bookmarks for all found entries
+        return [ Bookmark({
+            "name"       : result[f][0]["name"],
+            "modulation" : result[f][0]["mode"],
+            "frequency"  : EIBI.correctFreq(f, result[f][0]["mode"])
+        }, srcFile = "EIBI") for f in result.keys() ]
 
     def convertDate(self, date: str):
         # No-date is a common case

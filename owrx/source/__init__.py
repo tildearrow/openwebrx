@@ -15,7 +15,7 @@ from owrx.property.filter import ByLambda
 from owrx.form.input import Input, TextInput, NumberInput, CheckboxInput, ModesInput, ExponentialInput, DropdownInput, Option
 from owrx.form.input.converter import OptionalConverter, IntConverter
 from owrx.form.input.device import GainInput, SchedulerInput, WaterfallLevelsInput
-from owrx.form.input.validator import RequiredValidator
+from owrx.form.input.validator import RequiredValidator, RangeValidator
 from owrx.form.section import OptionalSection
 from owrx.feature import FeatureDetector
 from typing import List
@@ -618,10 +618,6 @@ class SdrDeviceDescription(object):
                 "key_locked",
                 "Require magic key to switch profiles on this device",
             ),
-            CheckboxInput(
-                "eibi_bookmarks",
-                "Automatically create bookmarks based on EIBI schedules",
-            ),
             GainInput("rf_gain", "Device gain", self.hasAgc()),
             NumberInput(
                 "ppm",
@@ -648,6 +644,12 @@ class SdrDeviceDescription(object):
                 converter=IntConverter(),
             ),
             NumberInput("initial_squelch_level", "Initial squelch level", append="dBFS"),
+            NumberInput(
+                "eibi_bookmarks_range",
+                "Automatic bookmarks range",
+                validator=RangeValidator(0, 25000),
+                append="km",
+            ),
         ]
 
     def hasAgc(self):
@@ -675,7 +677,7 @@ class SdrDeviceDescription(object):
         return ["name", "center_freq", "samp_rate", "start_freq", "start_mod", "tuning_step"]
 
     def getProfileOptionalKeys(self):
-        return ["initial_squelch_level", "rf_gain", "lfo_offset", "waterfall_levels", "eibi_bookmarks"]
+        return ["initial_squelch_level", "rf_gain", "lfo_offset", "waterfall_levels", "eibi_bookmarks_range"]
 
     def getDeviceSection(self):
         return OptionalSection(
