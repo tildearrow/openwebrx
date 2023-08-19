@@ -647,6 +647,9 @@ class SdrDeviceDescription(object):
             NumberInput(
                 "eibi_bookmarks_range",
                 "Automatic bookmarks range",
+                infotext="Specifies the distance from the receiver location to "
+                + "search EIBI schedules for stations when creating automatic "
+                + "bookmarks. Set to 0 to disable automatic bookmarks.",
                 validator=RangeValidator(0, 25000),
                 append="km",
             ),
