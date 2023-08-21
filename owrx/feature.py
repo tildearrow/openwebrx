@@ -610,7 +610,8 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [dumphfdl](https://github.com/szpajder/dumpvdl2) tool to decode VDL2
         aircraft communications. Dumpvdl2 is not yet available as a package and thus you will have
-        to compile it from source.
+        to compile it from source. Please, use the UNSTABLE branch, since it contains changes,
+        necessary for the OpenWebRX integration.
         """
         return self.command_is_runnable("dumpvdl2 --help")
 
