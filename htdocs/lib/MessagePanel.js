@@ -353,16 +353,9 @@ HfdlMessagePanel.prototype.setModeSUrl = function(url) {
     this.modes_url = url;
 };
 
-HfdlMessagePanel.prototype.linkify = function(id, url = null) {
+HfdlMessagePanel.prototype.linkify = function(id, url) {
     // Do not linkify empty strings
     if (id.len<=0) return id;
-
-    // 6 hexadecimal digits are an ICAO aircraft ID, not linkifying
-    // @@@ THIS BREAKS: AAxxxx, ACxxxx, AFxxxx, BAxxxx, BDxxxx, etc.
-    //if (id.match(new RegExp('^[0-9A-F]{6}$'))) return id;
-
-    // Everything else is a flight ID
-    url = url? url : this.flight_url;
 
     // Must have valid lookup URL
     if ((url == null) || (url == ''))

@@ -62,7 +62,7 @@ class DumpHfdlModule(PopenModule):
 
 
 class DumpVdl2Module(PopenModule):
-    def __init__(self, sampleRate: int = 1050000, jsonOutput: bool = False):
+    def __init__(self, sampleRate: int = 105000, jsonOutput: bool = False):
         self.sampleRate = sampleRate
         self.jsonOutput = jsonOutput
         super().__init__()
