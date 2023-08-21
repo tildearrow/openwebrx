@@ -24,6 +24,7 @@ function MarkerManager() {
         'WebSDR'    : '&tridot;',
         'OpenWebRX' : '&tridot;',
         'Stations'  : '&#9041;', //'&#9678;',
+        'Repeaters' : '&bowtie;',
         'APRS'      : '&#9872;',
         'AIS'       : '&apacir;',
         'HFDL'      : '&#9992;',
@@ -35,7 +36,8 @@ function MarkerManager() {
         'KiwiSDR'   : false,
         'WebSDR'    : false,
         'OpenWebRX' : false,
-        'Stations'  : false
+        'Stations'  : false,
+        'Repeaters' : false
     };
 }
 
@@ -241,10 +243,17 @@ FeatureMarker.prototype.update = function(update) {
     this.mode     = update.mode;
     this.url      = update.location.url;
     this.comment  = update.location.comment;
+    // Receivers
     this.altitude = update.location.altitude;
     this.device   = update.location.device;
     this.antenna  = update.location.antenna;
+    // EIBI
     this.schedule = update.location.schedule;
+    // Repeaters
+    this.freq     = update.location.freq;
+    this.status   = update.location.status;
+    this.updated  = update.location.updated;
+    this.mmode    = update.location.mmode;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -292,6 +301,11 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var scheduleString = '';
     var distance = '';
 
+    if(!this.url && this.freq) {
+        nameString = '<a target="openwebrx-rx" href="/#freq=' + this.freq
+        + ',mod=' + (this.mmode? this.mmode:'fm') + '">' + name + '</a>';
+    }
+
     if (this.altitude) {
         detailsString += Marker.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
@@ -304,6 +318,22 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     if (this.antenna) {
         detailsString += Marker.makeListItem('Antenna', Marker.truncate(this.antenna, 24));
+    }
+
+    if (this.freq) {
+        detailsString += Marker.makeListItem('Frequency', "" + (this.freq / 1000000.0) + "MHz");
+    }
+
+    if (this.mmode) {
+        detailsString += Marker.makeListItem('Modulation', this.mmode.toUpperCase());
+    }
+
+    if (this.status) {
+        detailsString += Marker.makeListItem('Status', this.status);
+    }
+
+    if (this.updated) {
+        detailsString += Marker.makeListItem('Updated', this.updated);
     }
 
     if (this.schedule) {

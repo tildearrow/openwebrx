@@ -206,11 +206,20 @@ class GeneralSettingsController(SettingsFormController):
                 ),
                 NumberInput(
                     "eibi_bookmarks_range",
-                    "Automatic bookmarks range",
+                    "Shortwave bookmarks range",
                     infotext="Specifies the distance from the receiver location to "
                     + "search EIBI schedules for stations when creating automatic "
-                    + "bookmarks. Set to 0 to disable automatic bookmarks.",
+                    + "bookmarks. Set to 0 to disable automatic EIBI bookmarks.",
                     validator=RangeValidator(0, 25000),
+                    append="km",
+                ),
+                NumberInput(
+                    "repeater_range",
+                    "Repeater search range",
+                    infotext="Specifies the distance from the receiver location to "
+                    + "search RepeaterBook.com for repeaters. Set to 0 to disable "
+                    + "repeater search.",
+                    validator=RangeValidator(0, 300),
                     append="km",
                 ),
             ),

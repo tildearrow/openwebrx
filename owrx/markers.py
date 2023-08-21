@@ -1,8 +1,9 @@
 from owrx.config.core import CoreConfig
+from owrx.version import openwebrx_version
 from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
-from json import JSONEncoder
 from owrx.eibi import EIBI
+from json import JSONEncoder
 from datetime import datetime
 
 import urllib
@@ -244,6 +245,8 @@ class Markers(object):
         cache.update(self.scrapeWebSDR())
         logger.debug("Scraping OpenWebRX website...")
         cache.update(self.scrapeOWRX())
+        logger.debug("Scraping RepeaterBook website...")
+        cache.update(self.scrapeRepeaterBook())
 
         # Save parsed data into a file, if there is anything to save
         if cache:
@@ -424,6 +427,58 @@ class Markers(object):
 
         except Exception as e:
             logger.debug("scrapeKiwiSDR() exception: {0}".format(e))
+
+        # Done
+        return result
+
+    def scrapeRepeaterBook(self, url: str = "https://www.repeaterbook.com/api/"):
+        result = {}
+        try:
+            url += "export.php?country=United%20States"
+            hdrs = { "User-Agent": "OpenWebRX+/" + openwebrx_version }
+            req  = urllib.request.Request(url, headers = hdrs)
+            data = urllib.request.urlopen(req).read().decode("utf-8")
+            data = json.loads(data)
+            # Ignore empty or invalid responses
+            if "results" not in data:
+                return result
+            # For every entry in the response...
+            for entry in data["results"]:
+                # Get location
+                lat  = float(entry["Lat"])
+                lon  = float(entry["Long"])
+                # Guess main operating mode, prefer free modes
+                if "FM Analog" in entry and entry["FM Analog"]=="Yes":
+                    mmode = "fm"
+                elif "M17" in entry and entry["M17"]=="Yes":
+                    mmode = "m17"
+                elif "DMR" in entry and entry["DMR"]=="Yes":
+                    mmode = "dmr"
+                elif "D-Star" in entry and entry["D-Star"]=="Yes":
+                    mmode = "dstar"
+                elif "System Fusion" in entry and entry["System Fusion"]=="Yes":
+                    mmode = "ysf"
+                elif "NXDN" in entry and entry["NXDN"]=="Yes":
+                    mmode = "nxdn"
+                else:
+                    mmode = "fm"
+                # Create marker
+                rl = MarkerLocation({
+                    "type"    : "feature",
+                    "mode"    : "Repeaters",
+                    "id"      : entry["Callsign"],
+                    "lat"     : lat,
+                    "lon"     : lon,
+                    "freq"    : int(float(entry["Frequency"]) * 1000000),
+                    "mmode"   : mmode,
+                    "status"  : entry["Operational Status"],
+                    "updated" : entry["Last Update"],
+                    "comment" : entry["Notes"]
+                })
+                result[rl.getId()] = rl
+
+        except Exception as e:
+            logger.debug("scrapeRepeaterBook() exception: {0}".format(e))
 
         # Done
         return result
