@@ -1,5 +1,45 @@
 [
     {
+        "name" : "ARINC - USA",
+        "frequency" : 136650000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "ARINC - USA",
+        "frequency" : 136700000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "SITA - USA",
+        "frequency" : 136800000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "ARINC - Europe",
+        "frequency" : 136725000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "SITA - Europe",
+        "frequency" : 136775000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "ARINC - Europe",
+        "frequency" : 136825000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "SITA - Europe",
+        "frequency" : 136875000,
+        "modulation" : "vdl2"
+    },
+    {
+        "name" : "SITA & ARINC - Worldwide",
+        "frequency" : 136975000,
+        "modulation" : "vdl2"
+    },
+    {
         "name" : "GS-1 - San Francisco",
         "frequency" : 5508000,
         "modulation" : "hfdl"
