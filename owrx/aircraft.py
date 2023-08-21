@@ -177,6 +177,7 @@ class Vdl2Parser(AircraftParser):
         # Collect data
         out["type"] = "XID " + data["type_descr"]
         if "vdl_params" in data:
+            # Parse VDL parameters array
             for p in data["vdl_params"]:
                 if p["name"] == "ac_location":
                     # Parse location
@@ -184,14 +185,14 @@ class Vdl2Parser(AircraftParser):
                     out["lon"] = p["value"]["loc"]["lon"]
                     # Convert altitude from feet into meters
                     out["altitude"] = round(p["value"]["alt"] / 3.28084)
-                    # Report location on the map
-                    self.updateMap(out)
                 elif p["name"] == "dst_airport":
                     # Parse destination airport
                     out["airport"] = p["value"]
                 elif p["name"] == "modulation_support":
                     # Parse supported modulations
                     out["modes"] = p["value"]
+            # Report location on the map
+            self.updateMap(out)
         # Done
         return out
 

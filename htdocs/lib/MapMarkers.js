@@ -368,6 +368,7 @@ AprsMarker.prototype.update = function(update) {
     this.gain     = update.location.gain;
     this.device   = update.location.device;
     this.aircraft = update.location.aircraft;
+    this.airport  = update.location.airport;
     this.directivity = update.location.directivity;
 
     // Implementation-dependent function call
@@ -523,6 +524,10 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     if (this.aircraft) {
         detailsString += Marker.makeListItem('Aircraft', this.aircraft);
+    }
+
+    if (this.airport) {
+        detailsString += Marker.makeListItem('Destination', this.airport);
     }
 
     // Combine course and speed if both present

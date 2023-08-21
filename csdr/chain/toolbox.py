@@ -124,7 +124,7 @@ class HfdlDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
-        self.sampleRate = 525000 #1050000
+        self.sampleRate = 210000 #525000 #1050000
         self.parser = Vdl2Parser(service=service)
         workers = [
             Agc(Format.COMPLEX_FLOAT),
