@@ -170,6 +170,9 @@ class Vdl2Parser(AircraftParser):
         # Parse XID if present
         if "xid" in data:
             self.parseXid(data["xid"], out)
+        # Add color by Mode-S code, if no flight ID so far
+        if "color" not in out:
+            out["color"]  = self.getColor(out["aircraft"])
         # Done
         return out
 
