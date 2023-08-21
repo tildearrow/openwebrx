@@ -76,7 +76,7 @@ class DumpVdl2Module(PopenModule):
         ]
 
     def getInputFormat(self) -> Format:
-        return Format.COMPLEX_FLOAT
+        return Format.COMPLEX_SHORT
 
     def getOutputFormat(self) -> Format:
         return Format.CHAR
