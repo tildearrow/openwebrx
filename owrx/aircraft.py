@@ -31,11 +31,15 @@ class AircraftParser(TextParser):
     def __init__(self, filePrefix: str, service: bool = False):
         super().__init__(filePrefix=filePrefix, service=service)
 
+    def getAircraftId(self, data):
+        # Use flight ID or aircraft ID as unique identifier
+        return data["flight"] if "flight" in data else data["aircraft"]
+
     def updateMap(self, data):
         if "lat" in data and "lon" in data:
             if "flight" in data or "aircraft" in data:
                 loc = AircraftLocation(data)
-                name = data["flight"] if "flight" in data else data["aircraft"]
+                name = self.getAircraftId(data)
                 Map.getSharedInstance().updateLocation(name, loc, data["mode"])
 
     def parseAcars(self, data, out):
@@ -43,11 +47,10 @@ class AircraftParser(TextParser):
         out["type"]     = "ACARS frame"
         out["aircraft"] = data["reg"].strip()
         out["message"]  = data["msg_text"].strip()
-        # Use flight ID as unique identifier
+        # Get flight ID, if present
         flight = data["flight"].strip() if "flight" in data else ""
         if len(flight)>0:
             out["flight"] = flight
-            out["color"]  = self.getColor(flight)
         # Done
         return out
 
@@ -77,6 +80,9 @@ class HfdlParser(AircraftParser):
         # Parse MPDU if present
         if "mpdu" in data["hfdl"]:
             self.parseMpdu(data["hfdl"]["mpdu"], out)
+        # Assign color based on the flight or aircraft ID
+        if "flight" in out or "aircraft" in out:
+            out["color"] = self.getColor(self.getAircraftId(out))
         # Done
         return out
 
@@ -93,12 +99,12 @@ class HfdlParser(AircraftParser):
     def parseLpdu(self, data, out):
         # Collect data
         out["type"] = data["type"]["name"]
-        # Add aircraft info, if present
+        # Add aircraft info, if present, assign color right away
         if "ac_info" in data and "icao" in data["ac_info"]:
             out["aircraft"] = data["ac_info"]["icao"].strip()
         # Source might be a ground station
-        if data["src"]["type"] == "Ground station":
-            out["flight"] = "GS-%d" % data["src"]["id"]
+        #if data["src"]["type"] == "Ground station":
+        #    out["flight"] = "GS-%d" % data["src"]["id"]
         # Parse HFNPDU is present
         if "hfnpdu" in data:
             self.parseHfnpdu(data["hfnpdu"], out)
@@ -106,14 +112,13 @@ class HfdlParser(AircraftParser):
         return out
 
     def parseHfnpdu(self, data, out):
-        # If we see ACARS message, parse it and drop out
-        if "acars" in data:
-            return self.parseAcars(data["acars"], out)
         # Use flight ID as unique identifier
         flight = data["flight_id"].strip() if "flight_id" in data else ""
         if len(flight)>0:
             out["flight"] = flight
-            out["color"]  = self.getColor(flight)
+        # If we see ACARS message, parse it and drop out
+        if "acars" in data:
+            return self.parseAcars(data["acars"], out)
         # If message carries time, parse it
         if "utc_time" in data:
             msgtime = data["utc_time"]
@@ -157,22 +162,30 @@ class Vdl2Parser(AircraftParser):
         return out
 
     def parseAvlc(self, data, out):
-        out["aircraft"]  = "%s" % data["src"]["addr"]
-        if "cmd" in data:
-            out["type"] = data["cmd"]
-        elif data["src"]["type"] == "Aircraft":
-            out["type"] = data["src"]["status"]
+        # Find if aircraft is message's source or destination
+        if data["src"]["type"] == "Aircraft":
+            p = data["src"]
+        elif data["dst"]["type"] == "Aircraft":
+            p = data["dst"]
         else:
-            out["type"] = data["src"]["type"]
+            return out
+        # Always add color by Mode-S code, since it is always present
+        out["aircraft"] = p["addr"]
+        out["color"]    = self.getColor(p["addr"])
+        # Clarify message type as much as possible
+        if "status" in p:
+            out["type"] = p["status"]
+        if "cmd" in data:
+            if "type" in out:
+                out["type"] += ", " + data["cmd"]
+            else:
+                out["type"] = data["cmd"]
         # Parse ACARS if present
         if "acars" in data:
             self.parseAcars(data["acars"], out)
         # Parse XID if present
         if "xid" in data:
             self.parseXid(data["xid"], out)
-        # Add color by Mode-S code, if no flight ID so far
-        if "color" not in out:
-            out["color"]  = self.getColor(out["aircraft"])
         # Done
         return out
 
