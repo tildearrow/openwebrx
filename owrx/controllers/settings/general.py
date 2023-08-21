@@ -249,7 +249,7 @@ class GeneralSettingsController(SettingsFormController):
                     "callsign_url",
                     "Callsign database URL",
                     infotext="Specifies callsign lookup URL, such as QRZ.COM "
-                    + "or QRZCQ.COM. Place curly brackers ({}) where callsign "
+                    + "or QRZCQ.COM. Place curly brackets ({}) where callsign "
                     + "is supposed to be.",
                 ),
                 TextInput(
@@ -257,14 +257,21 @@ class GeneralSettingsController(SettingsFormController):
                     "Vessel database URL",
                     infotext="Specifies vessel lookup URL, such as VESSELFINDER.COM, "
                     + "allowing to look up vessel information by its AIS MMSI number. "
-                    + "Place curly brackers ({}) where MMSI is supposed to be.",
+                    + "Place curly brackets ({}) where MMSI is supposed to be.",
                 ),
                 TextInput(
                     "flight_url",
                     "Flight database URL",
                     infotext="Specifies flight lookup URL, such as FLIGHTAWARE.COM, "
-                    + "allowing to look up flights and aircraft. Place curly brackers ({}) "
-                    + "where flight or aircraft identifier is supposed to be.",
+                    + "allowing to look up flights and aircraft. Place curly brackets "
+                    + "({}) where flight or aircraft identifier is supposed to be.",
+                ),
+                TextInput(
+                    "modes_url",
+                    "Aircraft database URL",
+                    infotext="Specifies aircraft lookup URL, such as PLANESPOTTERS.NET, "
+                    + "allowing to look up aircraft by their Mode-S codes. Place curly "
+                    + "brackets ({}) where aircraft Mode-S code is supposed to be.",
                 ),
             ),
         ]

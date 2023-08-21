@@ -145,6 +145,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "allow_audio_recording",
         "magic_key",
         "flight_url",
+        "modes_url",
     ]
 
     def __init__(self, conn):
@@ -505,6 +506,7 @@ class MapConnection(OpenWebRxClient):
             "callsign_url",
             "vessel_url",
             "flight_url",
+            "modes_url",
             "receiver_name",
         )
         filtered_config.wire(self.write_config)

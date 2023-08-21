@@ -216,7 +216,7 @@ class Modes(object):
             "vdl2",
             "VDL2",
             underlying=["nfm"],
-            bandpass=Bandpass(-105000, 105000),
+            bandpass=Bandpass(-12500, 12500),
             requirements=["vdl2"],
             service=True,
             squelch=False

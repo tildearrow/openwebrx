@@ -1111,6 +1111,11 @@ function on_ws_recv(evt) {
                             panel.setFlightUrl(config['flight_url']);
                         }
 
+                        if ('modes_url' in config) {
+                            var panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
+                            panel.setModeSUrl(config['modes_url']);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];

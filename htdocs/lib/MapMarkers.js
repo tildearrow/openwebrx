@@ -13,7 +13,9 @@ function MarkerManager() {
     this.colors = {
         'KiwiSDR'   : '#800000',
         'WebSDR'    : '#000080',
-        'OpenWebRX' : '#004000'
+        'OpenWebRX' : '#004000',
+        'HFDL'      : '#800000',
+        'VDL2'      : '#000080'
     };
 
     // Symbols used for marker types
@@ -24,7 +26,8 @@ function MarkerManager() {
         'Stations'  : '&#9041;', //'&#9678;',
         'APRS'      : '&#9872;',
         'AIS'       : '&apacir;',
-        'HFDL'      : '&#9992;'
+        'HFDL'      : '&#9992;',
+        'VDL2'      : '&#9992;'
     };
 
     // Marker type shown/hidden status
@@ -133,6 +136,9 @@ Marker.linkify = function(callsign, url = null) {
         url = flight_url;
     // 2 characters and a long number may be a flight number
     else if (callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
+        url = flight_url;
+    // Things starting with a dot are aircraft IDs
+    else if (callsign.match(new RegExp('^\..*$')))
         url = flight_url;
     // Everything else is a HAM callsign
     else
@@ -551,7 +557,16 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
     }
 
-    return '<h3>' + Marker.linkify(name) + distance + '</h3>'
+    // Linkify name based on whate it is (flight, mode-S code, or else)
+    if ((this.mode !== 'HFDL') && (this.mode !== 'VDL2')) {
+        name = Marker.linkify(name);
+    } else if (this.aircraft && (name === this.aircraft) && (name[0] != '.')) {
+        name = Marker.linkify(name, modes_url);
+    } else {
+        name = Marker.linkify(name, flight_url);
+    }
+
+    return '<h3>' + name + distance + '</h3>'
         + '<div align="center">' + timeString + ' using ' + this.mode
         + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString + hopsString;

@@ -2,6 +2,7 @@
 var callsign_url = null;
 var vessel_url   = null;
 var flight_url   = null;
+var modes_url    = null;
 
 // reasonable default; will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;

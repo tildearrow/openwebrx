@@ -102,6 +102,9 @@ MapManager.prototype.process = function(e) {
                 if ('flight_url' in this.config) {
                     flight_url = this.config.flight_url;
                 }
+                if ('modes_url' in this.config) {
+                    modes_url = this.config.modes_url;
+                }
                 break;
 
             default:

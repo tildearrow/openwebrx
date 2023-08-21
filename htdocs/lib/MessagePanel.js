@@ -336,29 +336,33 @@ HfdlMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
     this.flight_url = null;
+    this.modes_url = null;
 }
 
 HfdlMessagePanel.prototype = new MessagePanel();
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
-    return message['mode'] === 'HFDL';
+    return (message['mode'] === 'HFDL') || (message['mode'] === 'VDL2');
 };
 
 HfdlMessagePanel.prototype.setFlightUrl = function(url) {
     this.flight_url = url;
 };
 
-HfdlMessagePanel.prototype.linkify = function(id) {
-    var url = null;
+HfdlMessagePanel.prototype.setModeSUrl = function(url) {
+    this.modes_url = url;
+};
 
+HfdlMessagePanel.prototype.linkify = function(id, url = null) {
     // Do not linkify empty strings
     if (id.len<=0) return id;
 
     // 6 hexadecimal digits are an ICAO aircraft ID, not linkifying
-    if (id.match(new RegExp('^[0-9A-F]{6}$'))) return id;
+    // @@@ THIS BREAKS: AAxxxx, ACxxxx, AFxxxx, BAxxxx, BDxxxx, etc.
+    //if (id.match(new RegExp('^[0-9A-F]{6}$'))) return id;
 
     // Everything else is a flight ID
-    url = this.flight_url;
+    url = url? url : this.flight_url;
 
     // Must have valid lookup URL
     if ((url == null) || (url == ''))
@@ -396,16 +400,27 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     var data =
         msg.hasOwnProperty('lat') && msg.hasOwnProperty('lon')?
             '@ ' + msg.lat + ', ' + msg.lon :
+        msg.hasOwnProperty('airport')?
+            'Heading to ' + msg.airport :
         msg.hasOwnProperty('type')?
             msg.type : '';
+
+    // Add altitude, if present
+    if (msg.hasOwnProperty('altitude')) {
+        data += " at " + msg.altitude + "m";
+    }
+
+    // Aircraft names start with ".", Mode-S codes are hexadecimal
+    aircraft = this.linkify(aircraft, aircraft && aircraft[0]=='.'? this.flight_url : this.modes_url)
+    flight   = this.linkify(flight, this.flight_url);
 
     // Append report
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
             '<td class="timestamp">' + tstamp + '</td>' +
-            '<td class="flight">' + this.linkify(flight) + '</td>' +
-            '<td class="aircraft">' + this.linkify(aircraft) + '</td>' +
+            '<td class="flight">' + flight + '</td>' +
+            '<td class="aircraft">' + aircraft + '</td>' +
             '<td class="data" style="text-align:left;">' + data + '</td>' +
         '</tr>'
     ).css('background-color', color).css('color', '#000'));

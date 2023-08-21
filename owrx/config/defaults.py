@@ -172,6 +172,7 @@ defaultConfig = PropertyLayer(
     callsign_url="https://www.qrzcq.com/call/{}",
     vessel_url="https://www.vesselfinder.com/vessels/details/{}",
     flight_url="https://flightaware.com/live/flight/{}",
+    modes_url="https://www.planespotters.net/hex/{}",
     usage_policy_url="policy",
     session_timeout=0,
     keep_files=20,

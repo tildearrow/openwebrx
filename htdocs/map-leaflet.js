@@ -2,6 +2,7 @@
 var callsign_url = null;
 var vessel_url   = null;
 var flight_url   = null;
+var modes_url    = null;
 
 var mapSources = [
     {
