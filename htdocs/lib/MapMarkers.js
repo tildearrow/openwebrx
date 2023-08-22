@@ -127,27 +127,11 @@ function Marker() {}
 // Wrap given callsign or other ID into a clickable link.
 // When URL not supplied, guess the correct URL by ID type.
 Marker.linkify = function(callsign, url = null) {
-    // Leave passed URLs as they are
-    if (url && (url != ''))
-    { /* leave as is */ }
-    // 9-character strings may be AIS MMSI numbers
-    else if (callsign.match(new RegExp('^[0-9]{9}$')))
-        url = vessel_url;
-    // 3 characters and a number may be a flight number
-    else if (callsign.match(new RegExp('^[A-Z]{3,4}[0-9]{1,4}[A-Z]{0,2}$')))
-        url = flight_url;
-    // 2 characters and a long number may be a flight number
-    else if (callsign.match(new RegExp('^[A-Z]{2}[0-9]{2,4}[A-Z]{0,2}$')))
-        url = flight_url;
-    // Things starting with a dot are aircraft IDs
-    else if (callsign.match(new RegExp('^\..*$')))
-        url = flight_url;
-    // Everything else is a HAM callsign
-    else
-        url = callsign_url;
+    // If no URL given, assume we have an actual HAM callsign
+    if (!url || (url == '')) url = callsign_url;
 
-    // Must have valid lookup URL
-    if ((url == null) || (url == ''))
+    // Must have valid callsign and lookup URL
+    if ((callsign == '') || (url == null) || (url == ''))
         return callsign;
     else
         return '<a target="callsign_info" href="' +
@@ -301,9 +285,9 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var scheduleString = '';
     var distance = '';
 
+    // If it is a repeater, its name is a callsign
     if(!this.url && this.freq) {
-        nameString = '<a target="openwebrx-rx" href="/#freq=' + this.freq
-        + ',mod=' + (this.mmode? this.mmode:'fm') + '">' + name + '</a>';
+        nameString = Marker.linkify(name);
     }
 
     if (this.altitude) {
@@ -321,7 +305,11 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (this.freq) {
-        detailsString += Marker.makeListItem('Frequency', "" + (this.freq / 1000000.0) + "MHz");
+        var freq;
+        freq = "" + (this.freq / 1000000.0) + "MHz";
+        freq = '<a target="openwebrx-rx" href="/#freq=' + this.freq
+        + ',mod=' + (this.mmode? this.mmode:'fm') + '">' + freq + '</a>';
+        detailsString += Marker.makeListItem('Frequency', freq);
     }
 
     if (this.mmode) {
@@ -592,8 +580,10 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
     }
 
-    // Linkify name based on whate it is (flight, mode-S code, or else)
-    if ((this.mode !== 'HFDL') && (this.mode !== 'VDL2')) {
+    // Linkify name based on what it is (vessel, flight, mode-S code, or else)
+    if (this.mode === 'AIS') {
+        name = Marker.linkify(name, vessel_url);
+    } else if ((this.mode !== 'HFDL') && (this.mode !== 'VDL2')) {
         name = Marker.linkify(name);
     } else if (this.aircraft && (name === this.aircraft) && (name[0] != '.')) {
         name = Marker.linkify(name, modes_url);
