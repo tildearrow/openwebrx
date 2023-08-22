@@ -1,4 +1,5 @@
 from owrx.config.core import CoreConfig
+from owrx.config import Config
 from owrx.version import openwebrx_version
 from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
@@ -431,10 +432,14 @@ class Markers(object):
         # Done
         return result
 
-    def scrapeRepeaterBook(self, url: str = "https://www.repeaterbook.com/api/"):
+    def scrapeRepeaterBook(self, url: str = "https://www.repeaterbook.com/api/export.php?qtype=prox&dunit=km&lat={lat}&lng={lon}&dist={range}"):
         result = {}
         try:
-            url += "export.php?country=United%20States"
+            pm   = Config.get()
+            lat  = pm["receiver_gps"]["lat"]
+            lon  = pm["receiver_gps"]["lon"]
+            dist = pm["repeater_range"]
+            url  = url.format(lat = lat, lon = lon, range = dist)
             hdrs = { "User-Agent": "OpenWebRX+/" + openwebrx_version }
             req  = urllib.request.Request(url, headers = hdrs)
             data = urllib.request.urlopen(req).read().decode("utf-8")
