@@ -125,10 +125,9 @@ MarkerManager.prototype.clear = function() {
 function Marker() {}
 
 // Wrap given callsign or other ID into a clickable link.
-// When URL not supplied, guess the correct URL by ID type.
 Marker.linkify = function(callsign, url = null) {
-    // If no URL given, assume we have an actual HAM callsign
-    if (!url || (url == '')) url = callsign_url;
+    // If no URL given, assume HAM callsign
+    if ((url == null) || (url == '')) url = callsign_url;
 
     // Must have valid callsign and lookup URL
     if ((callsign == '') || (url == null) || (url == ''))
@@ -137,6 +136,21 @@ Marker.linkify = function(callsign, url = null) {
         return '<a target="callsign_info" href="' +
             url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
             '">' + callsign + '</a>';
+};
+
+// Create link to tune OWRX to the given frequency and modulation.
+Marker.linkifyFreq = function(freq, mod) {
+    var text;
+    if (freq >= 30000000) {
+        text = "" + (freq / 1000000.0) + "MHz";
+    } else if (freq >= 10000) {
+        text = "" + (freq / 1000.0) + "kHz";
+    } else {
+        text = "" + freq + "Hz";
+    }
+
+    return '<a target="openwebrx-rx" href="/#freq=' + freq +
+        ',mod=' + mod + '">' + text + '</a>';
 };
 
 // Compute distance, in kilometers, between two latlons.
@@ -305,11 +319,9 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (this.freq) {
-        var freq;
-        freq = "" + (this.freq / 1000000.0) + "MHz";
-        freq = '<a target="openwebrx-rx" href="/#freq=' + this.freq
-        + ',mod=' + (this.mmode? this.mmode:'fm') + '">' + freq + '</a>';
-        detailsString += Marker.makeListItem('Frequency', freq);
+        detailsString += Marker.makeListItem('Frequency', Marker.linkifyFreq(
+            this.freq, this.mmode? this.mmode:'fm'
+        ));
     }
 
     if (this.mmode) {
@@ -337,11 +349,9 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
                 + '&#8209;' + ('0000' + this.schedule[j].time2).slice(-4)
                 + '&nbsp;&nbsp;' + this.schedule[j].name;
 
-            freq = '<a target="openwebrx-rx" href="/#freq=' + tune
-                + ',mod=' + (mode? mode : 'am') + '">'
-                + Math.round(this.schedule[j].freq/1000) + 'kHz</a>';
-
-            scheduleString += Marker.makeListItem(name, freq);
+            scheduleString += Marker.makeListItem(name, Marker.linkifyFreq(
+                this.schedule[j].freq, mode? mode : 'am'
+            ));
         }
     }
 
@@ -580,18 +590,23 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
     }
 
-    // Linkify name based on what it is (vessel, flight, mode-S code, or else)
-    if (this.mode === 'AIS') {
-        name = Marker.linkify(name, vessel_url);
-    } else if ((this.mode !== 'HFDL') && (this.mode !== 'VDL2')) {
-        name = Marker.linkify(name);
-    } else if (this.aircraft && (name === this.aircraft) && (name[0] != '.')) {
-        name = Marker.linkify(name, modes_url);
-    } else {
-        name = Marker.linkify(name, flight_url);
+    // Linkify title based on what it is (vessel, flight, mode-S code, or else)
+    var url = null;
+    switch (this.mode) {
+        case 'HFDL':
+        case 'VDL2':
+            if (this.aircraft && (name === this.aircraft) && (name[0] != '.')) {
+                url = modes_url;
+            } else {
+                url = flight_url;
+            }
+            break;
+        case 'AIS':
+            url = vessel_url;
+            break;
     }
 
-    return '<h3>' + name + distance + '</h3>'
+    return '<h3>' + Marker.linkify(name, url) + distance + '</h3>'
         + '<div align="center">' + timeString + ' using ' + this.mode
         + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString + hopsString;
