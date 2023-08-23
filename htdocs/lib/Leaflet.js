@@ -6,6 +6,18 @@ function LMarker () {
     this._marker = L.marker();
 };
 
+LMarker.prototype.onAdd = function() {
+    this.div = this.create();
+
+    var offset = this.getAnchorOffset();
+
+    this.setIcon(L.divIcon({
+        html       : this.div,
+        iconAnchor : [-offset[1], -offset[0]],
+        className  : 'dummy'
+    }));
+};
+
 LMarker.prototype.setMarkerOptions = function(options) {
     $.extend(this, options);
     if (typeof this.draw !== 'undefined') {

@@ -40,7 +40,10 @@ GMarker.prototype.setMarkerPosition = function(title, lat, lon) {
     });
 };
 
+//
 // GoogleMaps-Specific FeatureMarker
+//
+
 function GFeatureMarker() { $.extend(this, new FeatureMarker()); }
 GFeatureMarker.prototype = new GMarker();
 
@@ -56,7 +59,10 @@ GFeatureMarker.prototype.place = function() {
     }
 };
 
+//
 // GoogleMaps-Specific AprsMarker
+//
+
 function GAprsMarker() { $.extend(this, new AprsMarker()); }
 GAprsMarker.prototype = new GMarker();
 
@@ -70,6 +76,29 @@ GAprsMarker.prototype.place = function() {
             div.style.top = point.y - 12 + 'px';
         }
     }
+};
+
+//
+// GoogleMaps-Specific SimpleMarker
+//
+
+function GSimpleMarker() { $.extend(this, new AprsMarker()); }
+GSimpleMarker.prototype = new google.maps.Marker();
+
+GSimpleMarker.prototype.setMarkerOpacity = function(opacity) {
+    this.setOptions({ opacity: opacity });
+};
+
+GSimpleMarker.prototype.setMarkerPosition = function(title, lat, lon) {
+    this.setOptions({
+        title    : title,
+        position : new google.maps.LatLng(lat, lon)
+    });
+};
+
+GSimpleMarker.prototype.setMarkerOptions = function(options) {
+    this.setOptions(options);
+    this.draw();
 };
 
 //

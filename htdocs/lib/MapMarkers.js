@@ -427,7 +427,7 @@ AprsMarker.prototype.draw = function() {
         div.style.transform = 'rotate(' + (this.course - 90) + 'deg)';
     }
 
-    if (this.symbol.table !== '/' && this.symbol.table !== '\\') {
+    if (this.symbol && this.symbol.table !== '/' && this.symbol.table !== '\\') {
         overlay.style.display = 'block';
         overlay.style['background-position-x'] = -(this.symbol.tableindex % 16) * 24 + 'px';
         overlay.style['background-position-y'] = -Math.floor(this.symbol.tableindex / 16) * 24 + 'px';

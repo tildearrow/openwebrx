@@ -159,7 +159,7 @@ MapManager.prototype.processUpdates = function(updates) {
         switch (update.location.type) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);
-                var markerClass = google.maps.Marker;
+                var markerClass = GSimpleMarker;
                 var aprsOptions = {}
 
                 if (update.location.symbol) {
