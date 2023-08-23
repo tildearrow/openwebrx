@@ -44,7 +44,7 @@ class AircraftParser(TextParser):
 
     def parseAcars(self, data, out):
         # Collect data
-        subnote = " ({0})".format(out["aircraft"]) if "aircraft" in out else ""
+        subnote = " for {0}".format(out["aircraft"]) if "aircraft" in out else ""
         out["type"]     = "ACARS frame" + subnote
         out["aircraft"] = data["reg"].strip()
         out["message"]  = data["msg_text"].strip()
