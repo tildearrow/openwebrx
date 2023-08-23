@@ -4,6 +4,7 @@ from owrx.version import openwebrx_version
 from owrx.map import Map, Location
 from owrx.aprs import getSymbolData
 from owrx.eibi import EIBI
+from owrx.repeaters import Repeaters
 from json import JSONEncoder
 from datetime import datetime
 
@@ -107,6 +108,7 @@ class Markers(object):
         self.markers   = {}
         self.rxmarkers = {}
         self.txmarkers = {}
+        self.remarkers = {}
 
         # Load miscellaneous markers from local files
         for file in self.fileList:
@@ -129,11 +131,15 @@ class Markers(object):
         # Load current schedule from the EIBI database
         self.txmarkers = self.loadCurrentTransmitters()
 
+        # Load repeaters from the Repeaters database
+        self.remarkers = self.loadRepeaters()
+
         # Update map with markers
         logger.debug("Updating map...")
         self.updateMap(self.markers)
         self.updateMap(self.rxmarkers)
         self.updateMap(self.txmarkers)
+        self.updateMap(self.remarkers)
 
         #
         # Main Loop
@@ -246,8 +252,6 @@ class Markers(object):
         cache.update(self.scrapeWebSDR())
         logger.debug("Scraping OpenWebRX website...")
         cache.update(self.scrapeOWRX())
-        logger.debug("Scraping RepeaterBook website...")
-        cache.update(self.scrapeRepeaterBook())
 
         # Save parsed data into a file, if there is anything to save
         if cache:
@@ -259,6 +263,29 @@ class Markers(object):
     #
     # Following functions scrape data from websites and internal databases
     #
+
+    def loadRepeaters(self, rangeKm: int = 100):
+        # No result yet
+        result = {}
+        # Refresh / load repeaters database, as needed
+        Repeaters.getSharedInstance().refresh()
+        # Load repeater sites from repeaters database
+        for entry in Repeaters.getSharedInstance().getAllInRange(rangeKm):
+            rl = MarkerLocation({
+                "type"    : "feature",
+                "mode"    : "Repeaters",
+                "id"      : entry["name"],
+                "lat"     : entry["lat"],
+                "lon"     : entry["lon"],
+                "freq"    : entry["freq"],
+                "mmode"   : entry["mode"],
+                "status"  : entry["status"],
+                "updated" : entry["updated"],
+                "comment" : entry["comment"]
+            })
+            result[rl.getId()] = rl
+        # Done
+        return result
 
     def loadCurrentTransmitters(self):
         #url = "https://www.short-wave.info/index.php?txsite="
@@ -432,58 +459,3 @@ class Markers(object):
         # Done
         return result
 
-    def scrapeRepeaterBook(self, url: str = "https://www.repeaterbook.com/api/export.php?qtype=prox&dunit=km&lat={lat}&lng={lon}&dist={range}"):
-        result = {}
-        try:
-            pm   = Config.get()
-            lat  = pm["receiver_gps"]["lat"]
-            lon  = pm["receiver_gps"]["lon"]
-            dist = pm["repeater_range"]
-            url  = url.format(lat = lat, lon = lon, range = dist)
-            hdrs = { "User-Agent": "OpenWebRX+/" + openwebrx_version }
-            req  = urllib.request.Request(url, headers = hdrs)
-            data = urllib.request.urlopen(req).read().decode("utf-8")
-            data = json.loads(data)
-            # Ignore empty or invalid responses
-            if "results" not in data:
-                return result
-            # For every entry in the response...
-            for entry in data["results"]:
-                # Get location
-                lat  = float(entry["Lat"])
-                lon  = float(entry["Long"])
-                # Guess main operating mode, prefer free modes
-                if "FM Analog" in entry and entry["FM Analog"]=="Yes":
-                    mmode = "fm"
-                elif "M17" in entry and entry["M17"]=="Yes":
-                    mmode = "m17"
-                elif "DMR" in entry and entry["DMR"]=="Yes":
-                    mmode = "dmr"
-                elif "D-Star" in entry and entry["D-Star"]=="Yes":
-                    mmode = "dstar"
-                elif "System Fusion" in entry and entry["System Fusion"]=="Yes":
-                    mmode = "ysf"
-                elif "NXDN" in entry and entry["NXDN"]=="Yes":
-                    mmode = "nxdn"
-                else:
-                    mmode = "fm"
-                # Create marker
-                rl = MarkerLocation({
-                    "type"    : "feature",
-                    "mode"    : "Repeaters",
-                    "id"      : entry["Callsign"],
-                    "lat"     : lat,
-                    "lon"     : lon,
-                    "freq"    : int(float(entry["Frequency"]) * 1000000),
-                    "mmode"   : mmode,
-                    "status"  : entry["Operational Status"],
-                    "updated" : entry["Last Update"],
-                    "comment" : entry["Notes"]
-                })
-                result[rl.getId()] = rl
-
-        except Exception as e:
-            logger.debug("scrapeRepeaterBook() exception: {0}".format(e))
-
-        # Done
-        return result

@@ -225,9 +225,9 @@ class EIBI(object):
         # Make sure freq2>freq1
         (f1, f2) = frequencyRange
         if f1>f2:
-          f = f1
-          f1 = f2
-          f2 = f
+            f = f1
+            f1 = f2
+            f2 = f
 
         # Get entries active at the current time + 1 hour
         now  = datetime.utcnow()
@@ -235,11 +235,13 @@ class EIBI(object):
         date = now.year * 10000 + now.month * 100 + now.day
         t1   = now.hour * 100 + now.minute
         t2   = t1 + hours * 100
-        result = {}
 
         # Get receiver location for computing distance
         pm = Config.get()
         rxPos = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
+
+        # No result yet
+        result = {}
 
         logger.debug("Creating bookmarks for {0}-{1}kHz within {2}km...".format(f1//1000, f2//1000, rangeKm))
 
@@ -253,7 +255,7 @@ class EIBI(object):
                     # Check if entry active and within frequency range
                     f = entry["freq"]
                     entryActive = (
-                        f >= f1 and f <= f2 and entry["days"][day] != "."
+                        f1 <= f <= f2 and entry["days"][day] != "."
                     and (entry["date1"] == 0 or entry["date1"] <= date)
                     and (entry["date2"] == 0 or entry["date2"] >= date)
                     )

@@ -215,11 +215,11 @@ class GeneralSettingsController(SettingsFormController):
                 ),
                 NumberInput(
                     "repeater_range",
-                    "Repeater search range",
+                    "Repeater bookmarks range",
                     infotext="Specifies the distance from the receiver location to "
-                    + "search RepeaterBook.com for repeaters. Set to 0 to disable "
-                    + "repeater search.",
-                    validator=RangeValidator(0, 300),
+                    + "search RepeaterBook.com for repeaters when creating automatic "
+                    + "bookmarks. Set to 0 to disable automatic repeater bookmarks.",
+                    validator=RangeValidator(0, 100),
                     append="km",
                 ),
             ),

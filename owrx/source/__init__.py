@@ -646,11 +646,20 @@ class SdrDeviceDescription(object):
             NumberInput("initial_squelch_level", "Initial squelch level", append="dBFS"),
             NumberInput(
                 "eibi_bookmarks_range",
-                "Automatic bookmarks range",
+                "Shortwave bookmarks range",
                 infotext="Specifies the distance from the receiver location to "
                 + "search EIBI schedules for stations when creating automatic "
-                + "bookmarks. Set to 0 to disable automatic bookmarks.",
+                + "bookmarks. Set to 0 to disable automatic EIBI bookmarks.",
                 validator=RangeValidator(0, 25000),
+                append="km",
+            ),
+            NumberInput(
+                "repeater_range",
+                "Repeater bookmarks range",
+                infotext="Specifies the distance from the receiver location to "
+                + "search RepeaterBook.com for repeaters when creating automatic "
+                + "bookmarks. Set to 0 to disable automatic repeater bookmarks.",
+                validator=RangeValidator(0, 100),
                 append="km",
             ),
         ]
@@ -680,7 +689,7 @@ class SdrDeviceDescription(object):
         return ["name", "center_freq", "samp_rate", "start_freq", "start_mod", "tuning_step"]
 
     def getProfileOptionalKeys(self):
-        return ["initial_squelch_level", "rf_gain", "lfo_offset", "waterfall_levels", "eibi_bookmarks_range"]
+        return ["initial_squelch_level", "rf_gain", "lfo_offset", "waterfall_levels", "eibi_bookmarks_range", "repeater_range"]
 
     def getDeviceSection(self):
         return OptionalSection(

@@ -204,5 +204,5 @@ defaultConfig = PropertyLayer(
     wsprnet_callsign="N0CALL",
     paging_filter=True,
     eibi_bookmarks_range=0,
-    repeater_range=100,
+    repeater_range=0,
 ).readonly()
