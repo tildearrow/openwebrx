@@ -91,10 +91,12 @@ class EIBI(object):
         with self.lock:
             # If cached schedule is stale...
             if time.time() - ts >= self.refreshPeriod:
-                # Load updated schedule from the web
-                schedule = self.updateSchedule()
-                # Only update current schedule if updated from the web
+                # Load EIBI database file from the web
+                schedule = self.loadFromWeb()
                 if schedule:
+                    # Save parsed data into a file
+                    self.saveSchedule(file, schedule)
+                    # Update current schedule
                     self.schedule = schedule
 
             # If no current schedule, load it from cached file
@@ -124,17 +126,6 @@ class EIBI(object):
         # Done
         logger.debug("Loaded {0} entries from '{1}'...".format(len(result), file))
         return result
-
-    # Update schedule
-    def updateSchedule(self):
-        # Load EIBI database file from the web
-        file     = self._getCachedScheduleFile()
-        schedule = self.loadFromWeb()
-        # Save parsed data into a file
-        if schedule:
-            self.saveSchedule(file, schedule)
-        # Done
-        return schedule
 
     # Find all current broadcasts for a given source
     def findBySource(self, src: str):

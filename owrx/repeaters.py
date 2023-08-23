@@ -81,7 +81,7 @@ class Repeaters(object):
     def __init__(self):
         self.refreshPeriod = 60*60*24
         self.lock = threading.Lock()
-        self.repeaters = {}
+        self.repeaters = []
 
     #
     # Load cached database or refresh it from the web.
@@ -123,13 +123,16 @@ class Repeaters(object):
     #
     def loadRepeaters(self, file: str):
         logger.debug("Loading repeaters from '{0}'...".format(file))
-        try:
-            with open(file, "r") as f:
-                result = json.load(f)
-                f.close()
-        except Exception as e:
-            logger.debug("loadRepeaters() exception: {0}".format(e))
+        if not os.path.isfile(file):
             result = []
+        else:
+            try:
+                with open(file, "r") as f:
+                    result = json.load(f)
+                    f.close()
+            except Exception as e:
+                logger.debug("loadRepeaters() exception: {0}".format(e))
+                result = []
         # Done
         logger.debug("Loaded {0} repeaters from '{1}'...".format(len(result), file))
         return result
@@ -137,18 +140,29 @@ class Repeaters(object):
     #
     # Load repeater database from the RepeaterBook.com website.
     #
-    def loadFromWeb(self, url: str = "https://www.repeaterbook.com/api/export.php?qtype=prox&dunit=km&lat={lat}&lng={lon}&dist={range}", rangeKm: int = MAX_DISTANCE):
+    def loadFromWeb(self, url: str = "https://www.repeaterbook.com/api/{script}?qtype=prox&dunit=km&lat={lat}&lng={lon}&dist={range}", rangeKm: int = MAX_DISTANCE):
         result = []
         try:
             pm   = Config.get()
             lat  = pm["receiver_gps"]["lat"]
             lon  = pm["receiver_gps"]["lon"]
-            url  = url.format(lat = lat, lon = lon, range = rangeKm)
             hdrs = { "User-Agent": "OpenWebRX+/" + openwebrx_version }
-            req  = urllib.request.Request(url, headers = hdrs)
-            data = urllib.request.urlopen(req).read().decode("utf-8")
-            data = json.loads(data)
-            # Only return result if it is present
+            # Start with US/Canada database for north-wester quartersphere
+            if lat > 0 and lon < 0:
+                scps = ["export.php", "exportROW.php"]
+            else:
+                scps = ["exportROW.php", "export.php"]
+            # Try scripts in order...
+            for s in scps:
+                url1 = url.format(script = s, lat = lat, lon = lon, range = rangeKm)
+                req  = urllib.request.Request(url1, headers = hdrs)
+                data = urllib.request.urlopen(req).read().decode("utf-8")
+                logger.debug("Trying {0} ... got {1} bytes".format(url1, len(data)))
+                data = json.loads(data)
+                # ...until we get the result
+                if "results" in data:
+                    break
+            # If no results, do not continue
             if "results" not in data:
                 return []
             # For every entry in the response...
@@ -197,7 +211,7 @@ class Repeaters(object):
                     f = entry["freq"]
                     if f1 <= f <= f2:
                         d = self.distKm(rxPos, (entry["lat"], entry["lon"]))
-                        if d <= rangeKm and (f not in result or result[f][d] < d):
+                        if d <= rangeKm and (f not in result or d < result[f][1]):
                             result[f] = (entry, d)
 
                 except Exception as e:
