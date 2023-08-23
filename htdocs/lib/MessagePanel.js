@@ -400,7 +400,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
 
     // Add altitude, if present
     if (msg.hasOwnProperty('altitude')) {
-        data += " at " + msg.altitude + "m";
+        data += " alt " + msg.altitude + "m";
     }
 
     // Aircraft names start with ".", Mode-S codes are hexadecimal
