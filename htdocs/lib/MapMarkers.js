@@ -328,12 +328,16 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Marker.makeListItem('Modulation', this.mmode.toUpperCase());
     }
 
-    if (this.status) {
-        detailsString += Marker.makeListItem('Status', this.status);
-    }
-
-    if (this.updated) {
-        detailsString += Marker.makeListItem('Updated', this.updated);
+    if (!this.comment && this.status && this.updated) {
+        commentString = '<div align="center">' + this.status
+            + ', last updated on ' + this.updated + '</div>';
+    } else {
+        if (this.status) {
+            detailsString += Marker.makeListItem('Status', this.status);
+        }
+        if (this.updated) {
+            detailsString += Marker.makeListItem('Updated', this.updated);
+        }
     }
 
     if (this.schedule) {

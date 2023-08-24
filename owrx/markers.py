@@ -306,16 +306,16 @@ class Markers(object):
             for row in schedule:
                 lang   = row["lang"]
                 target = row["tgt"]
-                if target not in targets:
+                if target and target not in targets:
                     targets[target] = True
                     comment += (", " if comment else " to ") + target
-                if lang not in langs:
+                if lang and lang not in langs:
                     langs[lang] = True
                     langstr += (", " if langstr else "") + re.sub(r"(:|\s*\().*$", "", lang)
 
             # Compose comment
-            comment = "Transmitting" + comment if comment else "Transmitter"
-            comment = comment + " (" + langstr + ")" if langstr else comment
+            comment = ("Transmitting" + comment) if comment else "Transmitter"
+            comment = (comment + " (" + langstr + ")") if langstr else comment
 
             rl = MarkerLocation({
                 "type"    : "feature",

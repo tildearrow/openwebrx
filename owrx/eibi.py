@@ -395,6 +395,8 @@ class EIBI(object):
                     # Convert target country code to target country
                     if trgt in EIBI_Countries:
                         trgt = EIBI_Countries[trgt]
+                    elif len(trgt)==3 and trgt[0] in EIBI_Dirs and trgt[1:] in EIBI_Countries:
+                        trgt = EIBI_Dirs[trgt[0]] + " " + EIBI_Countries[trgt[1:]]
 
                     # Append a new entry to the result
                     result.append({
@@ -451,72 +453,49 @@ EIBI_SpecialDays = {
 }
 
 #
-# Country Codes
+# Region and Country Codes
 #
+EIBI_Dirs = {
+  "C" : "Central",
+  "W" : "Western",
+  "E" : "Eastern",
+  "S" : "South",
+  "N" : "North",
+}
+
 EIBI_Countries = {
   # Regions
   "Af" : "Africa",
   "Am" : "Americas",
+  "AO" : "Atlantic Ocean",
   "As" : "Asia",
   "C..": "Central ..",
-  "CAf": "Central Africa",
-  "CAm": "Central America",
-  "CAs": "Central Asia",
-  "CEu": "Central Europe",
   "Car": "Caribbean, Gulf of Mexico, Florida Waters",
   "Cau": "Caucasus",
   "CIS": "Commonwealth of Independent States (former Soviet Union)",
-  "CNA": "Central North America",
   "E..": "East ..",
-  "EAf": "Eastern Africa",
-  "EAs": "Eastern Asia",
-  "EEu": "Eastern Europe",
-  "ENA": "Eastern North America",
-  "ENE": "East-Northeast",
-  "EOc": "Eastern Oceania",
-  "ESE": "East-Southeast",
+  "EA" : "East Asia",
+  "EE" : "East Europe",
   "Eu" : "Europe, incl. North Africa / Middle East",
   "FE" : "Far East",
   "Glo": "World",
   "In" : "Indian Subcontinent",
+  "IO" : "Indian Ocean",
   "LAm": "Latin America",
   "ME" : "Middle East",
   "N..": "North ..",
-  "NAf": "North Africa",
-  "NAm": "North America",
-  "NAs": "North Asia",
-  "NEu": "North Europe",
-  "NAO": "North Atlantic Ocean",
+  "NA" : "North America",
   "NE" : "Northeast",
-  "NNE": "North-Northeast",
-  "NNW": "North-Northwest",
-  "NOc": "North Oceania",
   "NW" : "Northwest",
   "Oc" : "Oceania (Australia, New Zealand, Pacific Ocean)",
   "S..": "South ..",
-  "SAf": "South Africa",
-  "SAm": "South America",
-  "SAs": "South Asia",
-  "SEu": "South Europe",
-  "SAO": "South Atlantic Ocean",
+  "SA" : "South America",
   "SE" : "Southeast",
-  "SEA": "South East Asia",
-  "SEE": "South East Europe",
   "Sib": "Siberia",
-  "SOc": "South Oceania",
-  "SSE": "South-Southeast",
-  "SSW": "South-Southwest",
   "SW" : "Southwest",
   "Tib": "Tibet",
   "W..": "West ..",
-  "WAf": "Western Africa",
-  "WAs": "Western Asia",
-  "WEu": "Western Europe",
-  "WIO": "Western Indian Ocean",
-  "WNA": "Western North America",
-  "WNW": "West-Northwest",
-  "WOc": "Western Oceania",
-  "WSW": "West-Southwest",
+  "WE" : "West Europe",
   # ITU codes start here
   "ABW": "Aruba",
   "AFG": "Afghanistan",
@@ -1375,52 +1354,9 @@ EIBI_Languages = {
 }
 
 #
-# Target Regions
+# Transmitter Location Names
 #
-EIBI_Targets = {
-  "Af":  "Africa",
-  "Am":  "America(s)",
-  "As":  "Asia",
-  "C..": "Central ..",
-  "Car": "Caribbean, Gulf of Mexico, Florida Waters",
-  "Cau": "Caucasus",
-  "CIS": "Commonwealth of Independent States (Former Soviet Union)",
-  "CNA": "Central North America",
-  "E..": "East ..",
-  "ENA": "Eastern North America",
-  "ENE": "East-northeast",
-  "ESE": "East-southeast",
-  "Eu":  "Europe (often including North Africa/Middle East)",
-  "FE":  "Far East",
-  "Glo": "Global",
-  "In":  "Indian subcontinent",
-  "LAm": "Latin America (=Central and South America)",
-  "ME":  "Middle East",
-  "N..": "North ..",
-  "NAO": "North Atlantic Ocean",
-  "NE":  "Northeast",
-  "NNE": "North-northeast",
-  "NNW": "North-northwest",
-  "NW":  "Northwest",
-  "Oc":  "Oceania (Australia, New Zealand, Pacific Ocean)",
-  "S..": "South ..",
-  "SAO": "South Atlantic Ocean",
-  "SE":  "Southeast",
-  "SEA": "South East Asia",
-  "SEE": "South East Europe",
-  "Sib": "Siberia",
-  "SSE": "South-southeast",
-  "SSW": "South-southwest",
-  "SW":  "Southwest",
-  "Tib": "Tibet",
-  "W..": "West ..",
-  "WIO": "Western Indian Ocean",
-  "WNA": "Western North America",
-  "WNW": "West-northwest",
-  "WSW": "West-southwest"
-}
-
-EIBI_Targets = {
+EIBI_LocNames = {
   "AFGk":  "Kabul / Pol-e-Charkhi",
   "AFGx":  "Khost",
   "AFGy":  "Kabul-Yakatut",
@@ -2993,6 +2929,9 @@ EIBI_Targets = {
   "ZWE":   "Gweru/Guinea Fowl",
 }
 
+#
+# Transmitter Locations
+#
 EIBI_Locations = [
   {"name": "Kabul / Pol-e-Charkhi", "code": "AFGk", "lat": 34.53333, "lon": 69.33333 },
   {"name": "Khost", "code": "AFGx", "lat": 33.23333, "lon": 69.81667 },

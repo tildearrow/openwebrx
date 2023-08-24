@@ -296,11 +296,9 @@ MapManager.prototype.processUpdates = function(updates) {
         switch (update.location.type) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);
-                var markerClass = LMarker;
                 var aprsOptions = {}
 
                 if (update.location.symbol) {
-                    markerClass = LAprsMarker;
                     aprsOptions.symbol = update.location.symbol;
                     aprsOptions.course = update.location.course;
                     aprsOptions.speed = update.location.speed;
@@ -308,23 +306,20 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 // If new item, create a new marker for it
                 if (!marker) {
-                    marker = new markerClass();
+                    marker = new LAprsMarker();
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
                         showMarkerInfoWindow(update.callsign, marker.getPos());
                     });
-                    marker.div = marker.create();
-                    var offset = marker.getAnchorOffset();
-                    marker.setIcon(L.divIcon({
-                        html: marker.div,
-                        iconAnchor: [-offset[1], -offset[0]],
-                        className: 'dummy'
-                    }));
+
+                    // If displaying a symbol, create it
+                    if (update.location.symbol) marker.onAdd();
                 }
 
                 // Update marker attributes and age
                 marker.update(update);
+
                 // Assign marker to map
                 marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
 
