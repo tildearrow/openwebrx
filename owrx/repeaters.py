@@ -160,7 +160,7 @@ class Repeaters(object):
                 logger.debug("Trying {0} ... got {1} bytes".format(url1, len(data)))
                 data = json.loads(data)
                 # ...until we get the result
-                if "results" in data:
+                if "results" in data and len(data["results"]) > 0:
                     break
             # If no results, do not continue
             if "results" not in data:
