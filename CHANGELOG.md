@@ -6,6 +6,7 @@
 - Added range setting (km) for showing repeaters in.
 - Repeaters are shown both on the map and as bookmarks.
 - Fixed non-APRS (YSF, etc) markers not showing up.
+- Further improved parsing EIBI schedules.
 - Simplified a lot of JavaScript code.
 
 **1.2.26**

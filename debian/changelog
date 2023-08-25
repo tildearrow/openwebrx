@@ -7,6 +7,7 @@ openwebrx (1.2.27) bullseye jammy; urgency=low
   * Added range setting (km) for showing repeaters in.
   * Repeaters are shown both on the map and as bookmarks.
   * Fixed non-APRS (YSF, etc) markers not showing up.
+  * Further improved parsing EIBI schedules.
   * Simplified a lot of JavaScript code.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 26 Aug 2023 16:12:00 +0000
