@@ -600,16 +600,16 @@ class FeatureDetector(object):
 
     def has_dumphfdl(self):
         """
-        OpenWebRX uses the [dumphfdl](https://github.com/szpajder/dumphfdl) tool to decode HFDL
-        aircraft communications. Dumphfdl is not yet available as a package and thus you will have
+        OpenWebRX uses the [DumpHFDL](https://github.com/szpajder/dumphfdl) tool to decode HFDL
+        aircraft communications. DumpHFDL is not yet available as a package and thus you will have
         to compile it from source.
         """
         return self.command_is_runnable("dumphfdl --help")
 
     def has_dumpvdl2(self):
         """
-        OpenWebRX uses the [dumphfdl](https://github.com/szpajder/dumpvdl2) tool to decode VDL2
-        aircraft communications. Dumpvdl2 is not yet available as a package and thus you will have
+        OpenWebRX uses the [DumpVDL2](https://github.com/szpajder/dumpvdl2) tool to decode VDL2
+        aircraft communications. DumpVDL2 is not yet available as a package and thus you will have
         to compile it from source.
         """
         return self.command_is_runnable("dumpvdl2 --help")
