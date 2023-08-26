@@ -17,7 +17,7 @@ logger.setLevel(logging.DEBUG)
 #
 # Maximal distance a repeater can reach (kilometers)
 #
-MAX_DISTANCE = 100
+MAX_DISTANCE = 200
 
 class Repeaters(object):
     sharedInstance = None

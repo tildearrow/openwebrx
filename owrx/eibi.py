@@ -202,8 +202,8 @@ class EIBI(object):
                                 # Add schedule entry to the location
                                 result[name]["schedule"].append(entry)
                         # Warn if location not found
-                        if not name:
-                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+#                        if not name:
+#                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
 
                 except Exception as e:
                     logger.debug("currentTransmitters() exception: {0}".format(e))

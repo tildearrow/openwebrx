@@ -392,15 +392,16 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
 
     var data =
         msg.hasOwnProperty('lat') && msg.hasOwnProperty('lon')?
-            '@ ' + msg.lat + ', ' + msg.lon :
-        msg.hasOwnProperty('airport')?
-            'Heading to ' + msg.airport :
+            '@' + msg.lat.toFixed(4) + ',' + msg.lon.toFixed(4) :
         msg.hasOwnProperty('type')?
             msg.type : '';
 
-    // Add altitude, if present
+    // Add altitude and direction, if present
     if (msg.hasOwnProperty('altitude')) {
-        data += " alt " + msg.altitude + "m";
+        data += ' &#129105;' + msg.altitude + 'm';
+    }
+    if(msg.hasOwnProperty('airport')) {
+        data += ' &hookrightarrow;' + msg.airport;
     }
 
     // Aircraft names start with ".", Mode-S codes are hexadecimal
