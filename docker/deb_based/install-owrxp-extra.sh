@@ -110,6 +110,9 @@ cmakebuild libacars v2.1.4
 git clone https://github.com/szpajder/dumphfdl.git
 cmakebuild dumphfdl v1.4.1
 
+git clone https://github.com/szpajder/dumpvdl2.git
+cmakebuild dumpvdl2
+
 echo "+ Install Dream (DRM)..."
 wget https://downloads.sourceforge.net/project/drm/dream/2.1.1/dream-2.1.1-svn808.tar.gz
 tar xvfz dream-2.1.1-svn808.tar.gz
