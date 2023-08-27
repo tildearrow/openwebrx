@@ -116,6 +116,9 @@ cmakebuild libacars v2.1.4
 git clone https://github.com/szpajder/dumphfdl.git
 cmakebuild dumphfdl v1.4.1
 
+git clone https://github.com/szpajder/dumpvdl2.git
+cmakebuild dumpvdl2
+
 git clone https://github.com/EliasOenal/multimon-ng.git
 cmakebuild multimon-ng 1.2.0
 
