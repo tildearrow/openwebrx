@@ -252,12 +252,7 @@ FeatureMarker.prototype.update = function(update) {
     this.status   = update.location.status;
     this.updated  = update.location.updated;
     this.mmode    = update.location.mmode;
-    var detailsObj = {};
-    var detailsKeys = Object.keys(update.location).filter(function (k) {return k.startsWith('details_')});
-    detailsKeys.forEach(function (d) {
-        detailsObj[d.substring(8)] = update.location[d];
-    });
-    this.detailsData = detailsObj;
+    this.detailsData = update.location.details;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -346,10 +341,12 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         }
     }
 
-    var markerExtra = this.detailsData;
-    Object.keys(this.detailsData).sort().forEach(function (k, i) {
-        detailsString += Marker.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), markerExtra[k]);
-    });
+    var markerExtraDetails = this.detailsData;
+    if (typeof markerExtraDetails === 'object') {
+        Object.keys(markerExtraDetails).sort().forEach(function (k, i) {
+            detailsString += Marker.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), markerExtraDetails[k]);
+        });
+    }
 
     if (this.schedule) {
         for (var j=0 ; j<this.schedule.length ; ++j) {
