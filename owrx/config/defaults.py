@@ -101,7 +101,6 @@ defaultConfig = PropertyLayer(
             type="sdrplay",
             antenna="Antenna A",
             rf_gain="auto",
-            rfgain_sel=0,
             profiles=PropertyLayer(
                 **{
                     "20m": PropertyLayer(
