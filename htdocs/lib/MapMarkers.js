@@ -396,6 +396,9 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
 function AprsMarker() {}
 
+// These symbols are all facing east (mostly vehicles)!
+AprsMarker.FACING_EAST = "(*<=>CFPUXYabefghjkpsuv[";
+
 AprsMarker.prototype = new Marker();
 
 AprsMarker.prototype.update = function(update) {
@@ -439,12 +442,14 @@ AprsMarker.prototype.draw = function() {
 
     if (!this.course) {
         div.style.transform = null;
-    } else if (this.symbol && this.symbol.symbol === '^') {
-        // Airplanes point up (to the north)
+    } else if (this.symbol && !AprsMarker.FACING_EAST.includes(this.symbol.symbol)) {
+        // Airplanes and other symbols point up (to the north)
         div.style.transform = 'rotate(' + this.course + 'deg)';
     } else if (this.course > 180) {
+        // Vehicles and vessels point right (to the east)
         div.style.transform = 'scalex(-1) rotate(' + (270 - this.course) + 'deg)'
     } else {
+        // Vehicles and vessels point right (to the east)
         div.style.transform = 'rotate(' + (this.course - 90) + 'deg)';
     }
 
