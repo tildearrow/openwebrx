@@ -13,14 +13,40 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class TextParser(ThreadModule):
-    def __init__(self, filePrefix: str = "LOG", service: bool = False):
-        # Use these colors to label messages by address
+class ColorCache:
+    def __init__(self):
+        # Use these colors for labels
         self.colors = [
             "#FFFFFF", "#999999", "#FF9999", "#FFCC99", "#FFFF99", "#CCFF99",
             "#99FF99", "#99FFCC", "#99FFFF", "#99CCFF", "#9999FF", "#CC99FF",
             "#FF99FF", "#FF99CC",
         ]
+        # Labels are cached here
+        self.colorBuf = {}
+
+    # Get a unique color for a given ID, reusing colors as we go
+    def getColor(self, id: str) -> str:
+        if id in self.colorBuf:
+            # Sort entries in order of freshness
+            color = self.colorBuf.pop(id)
+        elif len(self.colorBuf) < len(self.colors):
+            # Assign each initial entry color based on its order
+            color = self.colors[len(self.colorBuf)]
+        else:
+            # If we run out of colors, reuse the oldest entry
+            color = self.colorBuf.pop(next(iter(self.colorBuf)))
+        # Done
+        self.colorBuf[id] = color
+        return color
+
+    def rename(self, old_id: str, new_id: str):
+        if old_id in self.colorBuf and new_id != old_id:
+            self.colorBuf[new_id] = self.colorBuf[old_id]
+            del self.colorBuf[old_id]
+
+
+class TextParser(ThreadModule):
+    def __init__(self, filePrefix: str = "LOG", service: bool = False):
         self.service   = service
         self.frequency = 0
         self.data      = bytearray(b'')
@@ -28,7 +54,6 @@ class TextParser(ThreadModule):
         self.file      = None
         self.maxLines  = 10000
         self.cntLines  = 0
-        self.colorBuf  = {}
         super().__init__()
 
     def __del__(self):
@@ -96,21 +121,6 @@ class TextParser(ThreadModule):
     # Get current UTC time in a standardized format
     def getUtcTime(self) -> str:
         return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
-
-    # Get a unique color for a given ID, reusing colors as we go
-    def getColor(self, id: str) -> str:
-        if id in self.colorBuf:
-            # Sort entries in order of freshness
-            color = self.colorBuf.pop(id)
-        elif len(self.colorBuf) < len(self.colors):
-            # Assign each initial entry color based on its order
-            color = self.colors[len(self.colorBuf)]
-        else:
-            # If we run out of colors, reuse the oldest entry
-            color = self.colorBuf.pop(next(iter(self.colorBuf)))
-        # Done
-        self.colorBuf[id] = color
-        return color
 
     # DERIVED CLASSES SHOULD IMPLEMENT THIS FUNCTION!
     def parse(self, msg: str):
@@ -214,6 +224,8 @@ class PageParser(TextParser):
         self.reSpaces = re.compile(r"[\000-\037\s]+")
         # Fragmented messages will be assembled here
         self.flexBuf = {}
+        # Colors will be assigned via this cache
+        self.colors = ColorCache()
         # Construct parent object
         super().__init__(filePrefix="PAGE", service=service)
 
@@ -263,7 +275,7 @@ class PageParser(TextParser):
                     "address":   capcode,
                     "function":  function,
                     "certainty": certainty,
-                    "color":     self.getColor(capcode),
+                    "color":     self.colors.getColor(capcode),
                     "type":      msgtype,
                     "message":   msg
                 }
@@ -322,7 +334,7 @@ class PageParser(TextParser):
                         "state":     state,
                         "frame":     frame,
                         "address":   capcode,
-                        "color":     self.getColor(capcode),
+                        "color":     self.colors.getColor(capcode),
                         "type":      msgtype
                     }
                     # Output message

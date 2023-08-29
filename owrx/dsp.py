@@ -666,6 +666,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "vdl2":
             from csdr.chain.toolbox import Vdl2Demodulator
             return Vdl2Demodulator()
+        elif mod == "adsb":
+            from csdr.chain.toolbox import AdsbDemodulator
+            return AdsbDemodulator()
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)

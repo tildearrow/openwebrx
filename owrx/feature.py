@@ -88,6 +88,7 @@ class FeatureDetector(object):
         "ism": ["rtl433"],
         "hfdl": ["dumphfdl"],
         "vdl2": ["dumpvdl2"],
+        "adsb": ["dump1090"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
@@ -613,4 +614,11 @@ class FeatureDetector(object):
         to compile it from source.
         """
         return self.command_is_runnable("dumpvdl2 --help")
+
+    def has_dump1090(self):
+        """
+        OpenWebRX uses the [dump1090](https://github.com/antirez/dump1090) to decode ADSB traffic.
+        Dump1090 is from the package manager on many distributions, or you can compile it from source.
+        """
+        return self.command_is_runnable("dump1090-mutability --help")
 

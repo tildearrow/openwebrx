@@ -15,7 +15,8 @@ function MarkerManager() {
         'WebSDR'    : '#000080',
         'OpenWebRX' : '#004000',
         'HFDL'      : '#800000',
-        'VDL2'      : '#000080'
+        'VDL2'      : '#000080',
+        'ADSB'      : '#004000'
     };
 
     // Symbols used for marker types
@@ -28,7 +29,8 @@ function MarkerManager() {
         'APRS'      : '&#9872;',
         'AIS'       : '&apacir;',
         'HFDL'      : '&#9992;',
-        'VDL2'      : '&#9992;'
+        'VDL2'      : '&#9992;',
+        'ADSB'      : '&#9992;'
     };
 
     // Marker type shown/hidden status
@@ -408,9 +410,12 @@ AprsMarker.prototype.update = function(update) {
     this.power    = update.location.power;
     this.gain     = update.location.gain;
     this.device   = update.location.device;
+    this.directivity = update.location.directivity;
     this.aircraft = update.location.aircraft;
     this.airport  = update.location.airport;
-    this.directivity = update.location.directivity;
+    this.flight   = update.location.flight;
+    this.icao     = update.location.icao;
+    this.vspeed   = update.location.vspeed;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -434,6 +439,9 @@ AprsMarker.prototype.draw = function() {
 
     if (!this.course) {
         div.style.transform = null;
+    } else if (this.symbol && this.symbol.symbol === '^') {
+        // Airplanes point up (to the north)
+        div.style.transform = 'rotate(' + this.course + 'deg)';
     } else if (this.course > 180) {
         div.style.transform = 'scalex(-1) rotate(' + (270 - this.course) + 'deg)'
     } else {
@@ -537,10 +545,6 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         weatherString += '</p>';
     }
 
-    if (this.altitude) {
-        detailsString += Marker.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
-    }
-
     if (this.device) {
         detailsString += Marker.makeListItem('Device', this.device.manufacturer?
           this.device.device + ' by ' + this.device.manufacturer : this.device
@@ -563,8 +567,12 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Marker.makeListItem('Direction', this.directivity);
     }
 
+    if (this.icao) {
+        detailsString += Marker.makeListItem('ICAO', Marker.linkify(this.icao, modes_url));
+    }
+
     if (this.aircraft) {
-        detailsString += Marker.makeListItem('Aircraft', this.aircraft);
+        detailsString += Marker.makeListItem('Aircraft', Marker.linkify(this.aircraft, flight_url));
     }
 
     if (this.airport) {
@@ -584,6 +592,14 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         if (this.speed) {
             detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' km/h');
         }
+    }
+
+    // Combine altitude and vertical speed
+    if (this.altitude) {
+        var alt = this.altitude.toFixed(0) + ' m';
+        if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' m/m';
+        else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' m/m';
+        detailsString += Marker.makeListItem('Altitude', alt);
     }
 
     if (detailsString.length > 0) {
@@ -608,14 +624,22 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     switch (this.mode) {
         case 'HFDL':
         case 'VDL2':
-            if (this.aircraft && (name === this.aircraft) && (name[0] != '.')) {
-                url = modes_url;
+        case 'ADSB':
+            if (this.flight) {
+                name = this.flight;
+                url  = flight_url;
+            } else if (this.aircraft) {
+                name = this.aircraft;
+                url  = flight_url;
             } else {
-                url = flight_url;
+                url = modes_url;
             }
             break;
         case 'AIS':
             url = vessel_url;
+            break;
+        default:
+            url = callsign_url;
             break;
     }
 

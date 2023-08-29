@@ -221,6 +221,15 @@ class Modes(object):
             service=True,
             squelch=False
         ),
+        DigitalMode(
+            "adsb",
+            "ADSB",
+            underlying=["nfm"],
+            bandpass=Bandpass(-1200000, 1200000),
+            requirements=["adsb"],
+            service=True,
+            squelch=False
+        ),
     ]
 
     @staticmethod

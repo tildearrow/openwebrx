@@ -342,7 +342,7 @@ HfdlMessagePanel = function(el) {
 HfdlMessagePanel.prototype = new MessagePanel();
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
-    return (message['mode'] === 'HFDL') || (message['mode'] === 'VDL2');
+    return (message['mode'] === 'HFDL') || (message['mode'] === 'VDL2') || (message['mode'] === 'ADSB');
 };
 
 HfdlMessagePanel.prototype.setFlightUrl = function(url) {
@@ -380,33 +380,33 @@ HfdlMessagePanel.prototype.render = function() {
 };
 
 HfdlMessagePanel.prototype.pushMessage = function(msg) {
-    var color    = msg.hasOwnProperty('color')?    msg.color : '#00000000';
-    var aircraft = msg.hasOwnProperty('aircraft')? msg.aircraft : '';
-    var flight   = msg.hasOwnProperty('flight')?   msg.flight : '';
+    var color  = msg.color?  msg.color : '#00000000';
+    var flight = msg.flight? this.linkify(msg.flight, this.flight_url) : '';
+    var data   = msg.type?   msg.type : '';
+
+    var aircraft =
+      msg.aircraft? this.linkify(msg.aircraft, this.flight_url)
+    : msg.icao?     this.linkify(msg.icao, this.modes_url)
+    : '';
 
     var tstamp =
-        msg.hasOwnProperty('msgtime')?
-            '<b>' + msg.time + '</b>' :
-        msg.hasOwnProperty('time')?
-            msg.time : '';
+      msg.msgtime? '<b>' + msg.msgtime + '</b>'
+    : msg.time?    msg.time
+    : '';
 
-    var data =
-        msg.hasOwnProperty('lat') && msg.hasOwnProperty('lon')?
-            '@' + msg.lat.toFixed(4) + ',' + msg.lon.toFixed(4) :
-        msg.hasOwnProperty('type')?
-            msg.type : '';
-
-    // Add altitude and direction, if present
-    if (msg.hasOwnProperty('altitude')) {
-        data += ' &#129105;' + msg.altitude + 'm';
+    // Add location, altitude, speed, etc
+    var data = '';
+    if (msg.lat && msg.lon) {
+        data += '@' + msg.lat.toFixed(4) + ',' + msg.lon.toFixed(4);
     }
-    if(msg.hasOwnProperty('airport')) {
-        data += ' &hookrightarrow;' + msg.airport;
-    }
+    if (msg.altitude) data += ' &UpArrowBar;' + msg.altitude + 'm';
+    if (msg.vspeed>0) data += ' &UpperRightArrow;' + msg.vspeed + 'm/m';
+    if (msg.vspeed<0) data += ' &LowerRightArrow;' + (-msg.vspeed) + 'm/m';
+    if (msg.speed)    data += ' &rightarrow;' + msg.speed + 'km/h';
+    if (msg.airport)  data += ' &rdsh;' + msg.airport;
 
-    // Aircraft names start with ".", Mode-S codes are hexadecimal
-    aircraft = this.linkify(aircraft, aircraft && aircraft[0]=='.'? this.flight_url : this.modes_url)
-    flight   = this.linkify(flight, this.flight_url);
+    // If no data so far, use message type as data
+    if (msg.type && !data.length) data = msg.type;
 
     // Append report
     var $b = $(this.el).find('tbody');
@@ -420,7 +420,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     ).css('background-color', color).css('color', '#000'));
 
     // Append messsage if present
-    if (msg.hasOwnProperty('message') && (msg.message.length>0)) {
+    if (msg.message) {
         $b.append($(
             '<tr><td class="message" colspan="4">' + msg.message + '</td></tr>'
         ))

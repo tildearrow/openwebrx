@@ -1,5 +1,7 @@
+from pycsdr.modules import ExecModule
 from pycsdr.types import Format
 from csdr.module import PopenModule
+from owrx.config import Config
 
 
 class Rtl433Module(PopenModule):
@@ -51,7 +53,7 @@ class DumpHfdlModule(PopenModule):
             "dumphfdl", "--iq-file", "-", "--sample-format", "CF32",
             "--sample-rate", str(self.sampleRate), "--output",
             "decoded:%s:file:path=-" % ("json" if self.jsonOutput else "text"),
-            "--centerfreq", "0", "0"
+            "--utc", "--centerfreq", "0", "0"
         ]
 
     def getInputFormat(self) -> Format:
@@ -81,3 +83,17 @@ class DumpVdl2Module(PopenModule):
     def getOutputFormat(self) -> Format:
         return Format.CHAR
 
+
+class Dump1090Module(ExecModule):
+    def __init__(self, rawOutput: bool = False):
+        pm  = Config.get()
+        lat = pm["receiver_gps"]["lat"]
+        lon = pm["receiver_gps"]["lon"]
+        cmd = [
+            "dump1090-mutability", "--ifile", "-", "--iformat", "SC16",
+            "--lat", str(lat), "--lon", str(lon),
+            "--metric"
+        ]
+        if rawOutput:
+            cmd += [ "--raw" ]
+        super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
