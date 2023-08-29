@@ -219,7 +219,7 @@ class GeneralSettingsController(SettingsFormController):
                     infotext="Specifies the distance from the receiver location to "
                     + "search RepeaterBook.com for repeaters when creating automatic "
                     + "bookmarks. Set to 0 to disable automatic repeater bookmarks.",
-                    validator=RangeValidator(0, 100),
+                    validator=RangeValidator(0, 200),
                     append="km",
                 ),
             ),

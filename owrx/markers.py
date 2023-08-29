@@ -264,7 +264,7 @@ class Markers(object):
     # Following functions scrape data from websites and internal databases
     #
 
-    def loadRepeaters(self, rangeKm: int = 100):
+    def loadRepeaters(self, rangeKm: int = 200):
         # No result yet
         result = {}
         # Refresh / load repeaters database, as needed
