@@ -189,7 +189,7 @@ Marker.makeListTitle = function(name) {
 
 // Convert given name/value to an information section item.
 Marker.makeListItem = function(name, value) {
-    return '<div style="display:flex;justify-content: space-between;border-bottom:1px dotted;white-space:nowrap;">'
+    return '<div style="display:flex;justify-content:space-between;border-bottom:1px dotted;white-space:nowrap;">'
         + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
         + '<span>' + value + '</span>'
         + '</div>';
@@ -252,7 +252,8 @@ FeatureMarker.prototype.update = function(update) {
     this.status   = update.location.status;
     this.updated  = update.location.updated;
     this.mmode    = update.location.mmode;
-    this.detailsData = update.location.details;
+    // Generic vendor-specific details
+    this.details  = update.location.details;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -341,10 +342,10 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         }
     }
 
-    var markerExtraDetails = this.detailsData;
-    if (typeof markerExtraDetails === 'object') {
-        Object.keys(markerExtraDetails).sort().forEach(function (k, i) {
-            detailsString += Marker.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), markerExtraDetails[k]);
+    var moreDetails = this.detailsData;
+    if (typeof moreDetails === 'object') {
+        Object.keys(moreDetails).sort().forEach(function (k, i) {
+            detailsString += Marker.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), moreDetails[k]);
         });
     }
 
