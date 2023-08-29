@@ -132,7 +132,7 @@ class AircraftManager(object):
             # If still no ID in the database...
             if id not in self.aircraft:
                 # Create a new record
-                self.aircraft[id] = data
+                self.aircraft[id] = data.copy()
                 item = self.aircraft[id]
             else:
                 # Previous data and position
