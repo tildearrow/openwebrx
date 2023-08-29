@@ -90,7 +90,7 @@ class Dump1090Module(ExecModule):
         lat = pm["receiver_gps"]["lat"]
         lon = pm["receiver_gps"]["lon"]
         cmd = [
-            "dump1090-mutability", "--ifile", "-", "--iformat", "SC16",
+            "dump1090", "--ifile", "-", "--iformat", "SC16",
             "--lat", str(lat), "--lon", str(lon),
             "--metric"
         ]

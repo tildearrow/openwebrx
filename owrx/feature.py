@@ -602,23 +602,24 @@ class FeatureDetector(object):
     def has_dumphfdl(self):
         """
         OpenWebRX uses the [DumpHFDL](https://github.com/szpajder/dumphfdl) tool to decode HFDL
-        aircraft communications. DumpHFDL is not yet available as a package and thus you will have
-        to compile it from source.
+        aircraft communications. The latest DumpHFDL package is available from the OpenWebRX
+        repository as "dumphfdl", or you can compile it from source.
         """
         return self.command_is_runnable("dumphfdl --help")
 
     def has_dumpvdl2(self):
         """
         OpenWebRX uses the [DumpVDL2](https://github.com/szpajder/dumpvdl2) tool to decode VDL2
-        aircraft communications. DumpVDL2 is not yet available as a package and thus you will have
-        to compile it from source.
+        aircraft communications. The latest DumpVDL2 package is available from the OpenWebRX
+        repository as "dumpvdl2", or you can compile it from source.
         """
         return self.command_is_runnable("dumpvdl2 --help")
 
     def has_dump1090(self):
         """
-        OpenWebRX uses the [dump1090](https://github.com/antirez/dump1090) to decode ADSB traffic.
-        Dump1090 is from the package manager on many distributions, or you can compile it from source.
+        OpenWebRX uses the [dump1090](https://github.com/antirez/dump1090) tool to decode ADSB
+        traffic. The latest Dump1090 package is available from the OpenWebRX repository as
+        "dump1090-fa-minimal", or you can compile it from source.
         """
-        return self.command_is_runnable("dump1090-mutability --help")
+        return self.command_is_runnable("dump1090 --help")
 
