@@ -189,9 +189,9 @@ Marker.makeListTitle = function(name) {
 
 // Convert given name/value to an information section item.
 Marker.makeListItem = function(name, value) {
-    return '<div style="border-bottom:1px dotted;white-space:nowrap;">'
+    return '<div style="display:flex;justify-content: space-between;border-bottom:1px dotted;white-space:nowrap;">'
         + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
-        + '<span style="float:right;">' + value + '</span>'
+        + '<span>' + value + '</span>'
         + '</div>';
 };
 
@@ -252,6 +252,7 @@ FeatureMarker.prototype.update = function(update) {
     this.status   = update.location.status;
     this.updated  = update.location.updated;
     this.mmode    = update.location.mmode;
+    this.detailsData = update.location.details;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -338,6 +339,13 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         if (this.updated) {
             detailsString += Marker.makeListItem('Updated', this.updated);
         }
+    }
+
+    var markerExtraDetails = this.detailsData;
+    if (typeof markerExtraDetails === 'object') {
+        Object.keys(markerExtraDetails).sort().forEach(function (k, i) {
+            detailsString += Marker.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), markerExtraDetails[k]);
+        });
     }
 
     if (this.schedule) {
