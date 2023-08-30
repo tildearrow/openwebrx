@@ -427,6 +427,11 @@ AprsMarker.prototype.update = function(update) {
     this.age(new Date().getTime() - update.lastseen);
 };
 
+AprsMarker.prototype.isFacingEast = function(symbol) {
+    var eastward = symbol.table === '/' ? '(*<=>CFPUXYabefghjkpsuv[' : 'hkluv';
+    return eastward.includes(symbol.symbol);
+};
+
 AprsMarker.prototype.draw = function() {
     var div = this.div;
     var overlay = this.overlay;
@@ -454,7 +459,7 @@ AprsMarker.prototype.draw = function() {
 
     if (!this.course) {
         div.style.transform = null;
-    } else if (this.symbol && !AprsMarker.FACING_EAST.includes(this.symbol.symbol)) {
+    } else if (this.symbol && !this.isFacingEast(this.symbol)) {
         // Airplanes and other symbols point up (to the north)
         div.style.transform = 'rotate(' + this.course + 'deg)';
     } else if (this.course > 180) {
