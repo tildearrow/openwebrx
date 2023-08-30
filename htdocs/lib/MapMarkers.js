@@ -440,6 +440,18 @@ AprsMarker.prototype.draw = function() {
         div.style['background-position-y'] = -Math.floor(this.symbol.index / 16) * 24 + 'px';
     }
 
+    // If entity is flying at a significant altitude...
+    if (this.altitude >= 500) {
+        // r = elevation, a = rotation, <x,y> = shadow offset
+        var r = Math.round(this.altitude / 1000);
+        var a = - Math.PI * (this.course? this.course : 0) / 180;
+        var x = r * Math.cos(a);
+        var y = r * Math.sin(a);
+        div.style.filter = 'drop-shadow(' + x + 'px ' + y + 'px 0px black)';
+    } else {
+        div.style.filter = 'none';
+    }
+
     if (!this.course) {
         div.style.transform = null;
     } else if (this.symbol && !AprsMarker.FACING_EAST.includes(this.symbol.symbol)) {
