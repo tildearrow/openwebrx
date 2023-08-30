@@ -444,7 +444,7 @@ AprsMarker.prototype.draw = function() {
     if (this.altitude >= 500) {
         // r = elevation, a = rotation, <x,y> = shadow offset
         var r = Math.round(this.altitude / 1000);
-        var a = - Math.PI * (this.course? this.course : 0) / 180;
+        var a = - Math.PI * (this.course? this.course - 45 : -45) / 180;
         var x = r * Math.cos(a);
         var y = r * Math.sin(a);
         div.style.filter = 'drop-shadow(' + x + 'px ' + y + 'px 0px black)';
