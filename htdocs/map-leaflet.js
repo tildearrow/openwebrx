@@ -110,6 +110,16 @@ var mapSources = [
     },
 ];
 
+var mapExtraLayers = [
+    {
+        name: 'OpenSeaMap',
+        url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+        options: {
+            attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+        },
+    },
+];
+
 // reasonable default; will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;
 
@@ -275,6 +285,19 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
                     });
                     map.addLayer(m.layer)
                 });
+                $.each(mapExtraLayers, function (idx, mel) {
+                    mel.layer = L.tileLayer(mel.url, mel.options);
+                    $('#openwebrx-map-extralayers').append(
+                        $('<label><input type="checkbox" id="openwebrx-map-layer-' + mel.name + '">' + mel.name + '</label>').on('change', function (e) {
+                            if (e.target.checked) {
+                                map.addLayer(mel.layer);
+                            } else {
+                                if (map.hasLayer(mel.layer))
+                                    map.removeLayer(mel.layer);
+                            }
+                        })
+                    );
+               });
 
                 // Create map legend selectors
                 self.setupLegendFilters(layerControl.legend);
