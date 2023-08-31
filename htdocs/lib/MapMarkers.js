@@ -452,7 +452,7 @@ AprsMarker.prototype.draw = function() {
         var a = - Math.PI * (this.course? this.course - 45 : -45) / 180;
         var x = r * Math.cos(a);
         var y = r * Math.sin(a);
-        div.style.filter = 'drop-shadow(' + x + 'px ' + y + 'px 0.5px black)';
+        div.style.filter = 'drop-shadow(' + x + 'px ' + y + 'px 0.5px rgba(0,0,0,0.5))';
     } else {
         div.style.filter = 'none';
     }
