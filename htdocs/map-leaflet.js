@@ -110,6 +110,16 @@ var mapSources = [
     },
 ];
 
+var mapExtraLayers = [
+    {
+        name: 'OpenSeaMap',
+        url: 'https://tiles.openseamap.org/seamark/{z}/{x}/{y}.png',
+        options: {
+            attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
+        },
+    },
+];
+
 // reasonable default; will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;
 
@@ -273,8 +283,28 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
                         if (map.hasLayer(ms.layer))
                             map.removeLayer(ms.layer);
                     });
-                    map.addLayer(m.layer)
+                    map.addLayer(m.layer);
+                    $('#openwebrx-map-extralayers').find('input').each(function (idx, inp) {
+                        if ($(inp).is(':checked')) {
+                            var mel = mapExtraLayers[$(inp).attr('idx')];
+                            map.removeLayer(mel.layer);
+                            map.addLayer(mel.layer);
+                        }
+                    });
                 });
+                $.each(mapExtraLayers, function (idx, mel) {
+                    mel.layer = L.tileLayer(mel.url, mel.options);
+                    $('#openwebrx-map-extralayers').append(
+                        $('<label><input type="checkbox" idx="'+idx+'" id="openwebrx-map-layer-' + mel.name + '">' + mel.name + '</label>').on('change', function (e) {
+                            if (e.target.checked) {
+                                map.addLayer(mel.layer);
+                            } else {
+                                if (map.hasLayer(mel.layer))
+                                    map.removeLayer(mel.layer);
+                            }
+                        })
+                    );
+               });
 
                 // Create map legend selectors
                 self.setupLegendFilters(layerControl.legend);
