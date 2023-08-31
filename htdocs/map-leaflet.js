@@ -283,12 +283,19 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
                         if (map.hasLayer(ms.layer))
                             map.removeLayer(ms.layer);
                     });
-                    map.addLayer(m.layer)
+                    map.addLayer(m.layer);
+                    $('#openwebrx-map-extralayers').find('input').each(function (idx, inp) {
+                        if ($(inp).is(':checked')) {
+                            var mel = mapExtraLayers[$(inp).attr('idx')];
+                            map.removeLayer(mel.layer);
+                            map.addLayer(mel.layer);
+                        }
+                    });
                 });
                 $.each(mapExtraLayers, function (idx, mel) {
                     mel.layer = L.tileLayer(mel.url, mel.options);
                     $('#openwebrx-map-extralayers').append(
-                        $('<label><input type="checkbox" id="openwebrx-map-layer-' + mel.name + '">' + mel.name + '</label>').on('change', function (e) {
+                        $('<label><input type="checkbox" idx="'+idx+'" id="openwebrx-map-layer-' + mel.name + '">' + mel.name + '</label>').on('change', function (e) {
                             if (e.target.checked) {
                                 map.addLayer(mel.layer);
                             } else {
