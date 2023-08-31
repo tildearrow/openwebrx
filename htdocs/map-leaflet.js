@@ -118,6 +118,13 @@ var mapExtraLayers = [
             attribution: 'Map data: &copy; <a href="http://www.openseamap.org">OpenSeaMap</a> contributors'
         },
     },
+    {
+        name: 'WeatherRadar-USA',
+        url: 'http://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png',
+        options: {
+            attribution: 'Map data: &copy; Iowa State University'
+        },
+    },
 ];
 
 // reasonable default; will be overriden by server
