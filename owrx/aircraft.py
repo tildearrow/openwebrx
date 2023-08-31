@@ -371,7 +371,7 @@ class AdsbParser(AircraftParser):
         if msg.startswith("*") and msg.endswith(";") and len(msg) in [16, 30]:
             # Parse Mode-S message
             out = self.smode_parser.process(bytes.fromhex(msg[1:-1]))
-            #logger.debug("@@@ PARSE OUT: {0}".format(out))
+            logger.debug("@@@ PARSE OUT: {0}".format(out))
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
                 # Add fields for compatibility with other aircraft parsers
@@ -392,15 +392,15 @@ class AdsbParser(AircraftParser):
                 # Speed, if present
                 if "groundspeed" in out:
                     out["speed"] = round(out["groundspeed"] * KMH_PER_KNOT)
-                elif "TAS" in out:
-                    out["speed"] = round(out["TAS"] * KMH_PER_KNOT)
-                elif "IAS" in out:
-                    out["speed"] = round(out["IAS"] * KMH_PER_KNOT)
-                # Course, if present
-                if "groundtrack" in out:
-                    out["course"] = round(out["groundtrack"])
-                elif "heading" in out:
+                #elif "TAS" in out:
+                #    out["speed"] = round(out["TAS"] * KMH_PER_KNOT)
+                #elif "IAS" in out:
+                #    out["speed"] = round(out["IAS"] * KMH_PER_KNOT)
+                # Course, if present (prefer actual aircraft orientation)
+                if "heading" in out:
                     out["course"] = round(out["heading"])
+                elif "groundtrack" in out:
+                    out["course"] = round(out["groundtrack"])
                 # Update aircraft database with the new data
                 AircraftManager.getSharedInstance().update(out)
                 return out
