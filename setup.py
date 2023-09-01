@@ -27,6 +27,7 @@ setup(
             "owrx.audio",
             "owrx.admin",
             "owrx.aprs",
+            "owrx.adsb",
             "csdr",
             "csdr.chain",
             "csdr.module",
