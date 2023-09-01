@@ -12,6 +12,7 @@ openwebrx (1.2.28) bullseye jammy; urgency=low
   * Fixed OpenWebRX service hanging up when stopped.
   * Fixed orientation of north-facing APRS symbols.
   * Fixed VDL2 logs not showing up in file browser.
+  * Changed rf_gain in the default SDRPlay profile to "auto". 
   * RepeaterBook now queried for up to 200km.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 2 Sep 2023 16:12:00 +0000

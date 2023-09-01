@@ -11,6 +11,7 @@
 - Fixed OpenWebRX service hanging up when stopped.
 - Fixed orientation of north-facing APRS symbols.
 - Fixed VDL2 logs not showing up in file browser.
+- Changed rf_gain in the default SDRPlay profile to "auto".
 - RepeaterBook now queried for up to 200km.
 
 **1.2.27**
