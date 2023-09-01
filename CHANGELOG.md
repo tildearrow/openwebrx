@@ -1,3 +1,18 @@
+**1.2.28**
+- Updated CSDR and PyCSDR with latest changes from Jakob's develop branch.
+- DumpHFDL, DumpVDL2, and Dump1090 now available from Jakob's repository.
+- Added ADSB aircraft protocol decoder, using Dump1090 and ExecModule.
+- Added AircraftManager storing data from all aircraft decoders.
+- Added DumpHFDL, DumpVDL2, Dump1090 to recommended packages.
+- Added Mode-S (ADSB) message parser by Jakob Ketterl.
+- Added OpenSeaMap and WeatherRadar Leaflet layers by Stanislav Lechev.
+- Added shadows to aircraft on the map, based on altitudes.
+- Improved aircraft message display, common for all three decoders.
+- Fixed OpenWebRX service hanging up when stopped.
+- Fixed orientation of north-facing APRS symbols.
+- Fixed VDL2 logs not showing up in file browser.
+- RepeaterBook now queried for up to 200km.
+
 **1.2.27**
 - Added VDL2 aircraft protocol decoder, using DumpVDL2.
 - Added standard VDL2 frequencies to the default bookmarks.
