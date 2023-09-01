@@ -136,9 +136,12 @@ class AircraftManager(object):
                     self._removeFromMap(old_id)
                     del self.aircraft[old_id]
                 # Replace aircraft ID with better ID
-                elif "aircraft" in data and data["aircraft"] in self.aircraft:
+                if "aircraft" in data and data["aircraft"] in self.aircraft:
                     old_id = data["aircraft"]
-                    self.aircraft[id] = self.aircraft[old_id]
+                    if id in self.aircraft:
+                        self.aircraft[id].update(self.aircraft[old_id])
+                    else:
+                        self.aircraft[id] = self.aircraft[old_id]
                     self.colors.rename(old_id, id)
                     self._removeFromMap(old_id)
                     del self.aircraft[old_id]
