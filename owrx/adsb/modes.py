@@ -1,27 +1,17 @@
-from abc import ABC
-
 from csdr.module import PickleModule
 from math import sqrt, atan2, pi, floor, acos, cos
-#from owrx.map import LatLngLocation, IncrementalUpdate, Location, Map
+#from owrx.map import LatLngLocation, IncrementalUpdate, TTLUpdate, Location, Map
 from owrx.map import LatLngLocation, Location, Map
+from owrx.metrics import Metrics, CounterMetric
+from datetime import timedelta
+from enum import Enum
 import time
-
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 FEET_PER_METER = 3.28084
 
-nz = 15
-d_lat_even = 360 / (4 * nz)
-d_lat_odd = 360 / (4 * nz - 1)
 
-
-#class AirplaneLocation(LatLngLocation, IncrementalUpdate, ABC):
-class AirplaneLocation(LatLngLocation, ABC):
+class AirplaneLocation(LatLngLocation):
     mapKeys = [
-        "icao",
         "lat",
         "lon",
         "altitude",
@@ -30,13 +20,17 @@ class AirplaneLocation(LatLngLocation, ABC):
         "groundspeed",
         "verticalspeed",
         "identification",
+        "TAS",
+        "IAS",
+        "heading",
     ]
     ttl = 30
 
-    def __init__(self, message):
+    def __init__(self, icao, message):
         self.history = []
         self.timestamp = time.time()
         self.props = message
+        self.icao = icao
         if "lat" in message and "lon" in message:
             super().__init__(message["lat"], message["lon"])
         else:
@@ -45,13 +39,13 @@ class AirplaneLocation(LatLngLocation, ABC):
 
     def update(self, previousLocation: Location):
         history = previousLocation.history
+        now = time.time()
+        history = [p for p in history if now - p["timestamp"] < self.ttl]
         history += [{
             "timestamp": self.timestamp,
             "props": self.props,
         }]
-        now = time.time()
-        history = [p for p in history if now - p["timestamp"] < self.ttl]
-        self.history = sorted(history, key=lambda p: p["timestamp"])
+        self.history = history
 
         merged = {}
         for p in self.history:
@@ -66,31 +60,61 @@ class AirplaneLocation(LatLngLocation, ABC):
     def __dict__(self):
         dict = super().__dict__()
         dict.update(self.props)
+        dict["icao"] = self.icao
         return dict
+
+    def getTTL(self) -> timedelta:
+        return timedelta(seconds=self.ttl)
+
+
+class CprRecordType(Enum):
+    AIR = ("air", 360)
+    GROUND = ("ground", 90)
+
+    def __new__(cls, *args, **kwargs):
+        name, baseAngle = args
+        obj = object.__new__(cls)
+        obj._value_ = name
+        obj.baseAngle = baseAngle
+        return obj
 
 
 class CprCache:
     def __init__(self):
-        self.aircraft = {}
+        self.airRecords = {}
+        self.groundRecords = {}
 
-    def getRecentData(self, icao: str):
-        if icao not in self.aircraft:
+    def __getRecords(self, cprType: CprRecordType):
+        if cprType is CprRecordType.AIR:
+            return self.airRecords
+        elif cprType is CprRecordType.GROUND:
+            return self.groundRecords
+
+    def getRecentData(self, icao: str, cprType: CprRecordType):
+        records = self.__getRecords(cprType)
+        if icao not in records:
             return []
         now = time.time()
-        filtered = [r for r in self.aircraft[icao] if now - r["timestamp"] < 10]
-        records = sorted(filtered, key=lambda r: r["timestamp"])
-        self.aircraft[icao] = records
-        return [r["data"] for r in records]
+        filtered = [r for r in records[icao] if now - r["timestamp"] < 10]
+        records_sorted = sorted(filtered, key=lambda r: r["timestamp"])
+        records[icao] = records_sorted
+        return [r["data"] for r in records_sorted]
 
-    def addRecord(self, icao: str, data: any):
-        if icao not in self.aircraft:
-            self.aircraft[icao] = []
-        self.aircraft[icao].append({"timestamp": time.time(), "data": data})
+    def addRecord(self, icao: str, data: any, cprType: CprRecordType):
+        records = self.__getRecords(cprType)
+        if icao not in records:
+            records[icao] = []
+        records[icao].append({"timestamp": time.time(), "data": data})
 
 
 class ModeSParser(PickleModule):
     def __init__(self):
         self.cprCache = CprCache()
+        name = "dump1090.decodes.adsb"
+        self.metrics = Metrics.getSharedInstance().getMetric(name)
+        if self.metrics is None:
+            self.metrics = CounterMetric()
+            Metrics.getSharedInstance().addMetric(name, self.metrics)
         super().__init__()
 
     def process(self, input):
@@ -118,16 +142,43 @@ class ModeSParser(PickleModule):
                     input[10] & 0b00111111
                 ]
 
-                message["identification"] = bytes(b + (0x40 if b < 27 else 0) for b in id).decode("ascii")
+                message["identification"] = bytes(b + (0x40 if b < 27 else 0) for b in id).decode("ascii").strip()
 
             elif type in [5, 6, 7, 8]:
                 # surface position
-                pass
+                # there's no altitude data in this message type, but the type implies the aircraft is on ground
+                message["altitude"] = "ground"
+
+                movement = ((input[4] & 0b00000111) << 4) | ((input[5] & 0b11110000) >> 4)
+                if movement == 1:
+                    message["groundspeed"] = 0
+                elif 2 <= movement < 9:
+                    message["groundspeed"] = (movement - 1) * .0125
+                elif 9 <= movement < 13:
+                    message["groundspeed"] = 1 + (movement - 8) * .25
+                elif 13 <= movement < 39:
+                    message["groundspeed"] = 2 + (movement - 12) * .5
+                elif 39 <= movement < 94:
+                    message["groundspeed"] = 15 + (movement - 38)  # * 1
+                elif 94 <= movement < 109:
+                    message["groundspeed"] = 70 + (movement - 108) * 2
+                elif 109 <= movement < 124:
+                    message["groundspeeed"] = 100 + (movement - 123) * 5
+
+                if (input[5] & 0b00001000) >> 3:
+                    track = ((input[5] & 0b00000111) << 3) | ((input[6] & 0b11110000) >> 4)
+                    message["groundtrack"] = (360 * track) / 128
+
+                cpr = self.__getCprData(icao, input, CprRecordType.GROUND)
+                if cpr is not None:
+                    lat, lon = cpr
+                    message["lat"] = lat
+                    message["lon"] = lon
 
             elif type in [9, 10, 11, 12, 13, 14, 15, 16, 17, 18]:
                 # airborne position (w/ baro  altitude)
 
-                cpr = self.__getCprData(icao, input)
+                cpr = self.__getCprData(icao, input, CprRecordType.AIR)
                 if cpr is not None:
                     lat, lon = cpr
                     message["lat"] = lat
@@ -137,9 +188,10 @@ class ModeSParser(PickleModule):
                 altitude = ((input[5] & 0b11111110) << 3) | ((input[6] & 0b11110000) >> 4)
                 if q:
                     message["altitude"] = altitude * 25 - 1000
-                else:
-                    # TODO: it's gray encoded
-                    message["altitude"] = altitude * 100
+                elif altitude > 0:
+                    altitude = self._gillhamDecode(altitude)
+                    if altitude is not None:
+                        message["altitude"] = altitude
 
             elif type == 19:
                 # airborne velocity
@@ -187,7 +239,6 @@ class ModeSParser(PickleModule):
                     if sh:
                         hdg = ((input[5] & 0b00000011) << 8) | input[6]
                         message["heading"] = hdg * 360 / 1024
-                        logger.debug("decoded from subtype 3: heading = %i", message["heading"])
                     airspeed = ((input[7] & 0b01111111) << 3) | ((input[8] & 0b11100000) >> 5)
                     if airspeed != 0:
                         airspeed -= 1
@@ -197,15 +248,13 @@ class ModeSParser(PickleModule):
                         airspeed_type = (input[7] & 0b10000000) >> 7
                         if airspeed_type:
                             message["TAS"] = airspeed
-                            logger.debug("decoded from subtype 3: TAS = %i", message["TAS"])
                         else:
                             message["IAS"] = airspeed
-                            logger.debug("decoded from subtype 3: IAS = %i", message["IAS"])
 
             elif type in [20, 21, 22]:
                 # airborne position (w/GNSS height)
 
-                cpr = self.__getCprData(icao, input)
+                cpr = self.__getCprData(icao, input, CprRecordType.AIR)
                 if cpr is not None:
                     lat, lon = cpr
                     message["lat"] = lat
@@ -230,21 +279,23 @@ class ModeSParser(PickleModule):
             # Mode-S All-call reply
             message["icao"] = input[1:4].hex()
 
-        #if "icao" in message and AirplaneLocation.mapKeys & message.keys():
-        #    data = {k: message[k] for k in AirplaneLocation.mapKeys if k in message}
-        #    loc = AirplaneLocation(data)
-        #    Map.getSharedInstance().updateLocation({"icao": message['icao']}, loc, "ADS-B", None)
+        self.metrics.inc()
+
+#        if "icao" in message and AirplaneLocation.mapKeys & message.keys():
+#            data = {k: message[k] for k in AirplaneLocation.mapKeys if k in message}
+#            loc = AirplaneLocation(message["icao"], data)
+#            Map.getSharedInstance().updateLocation({"icao": message['icao']}, loc, "ADS-B", None)
 
         return message
 
-    def __getCprData(self, icao: str, input):
+    def __getCprData(self, icao: str, input, cprType: CprRecordType):
         self.cprCache.addRecord(icao, {
             "cpr_format": (input[6] & 0b00000100) >> 2,
             "lat_cpr": ((input[6] & 0b00000011) << 15) | (input[7] << 7) | ((input[8] & 0b11111110) >> 1),
             "lon_cpr": ((input[8] & 0b00000001) << 16) | (input[9] << 8) | (input[10]),
-        })
+        }, cprType)
 
-        records = self.cprCache.getRecentData(icao)
+        records = self.cprCache.getRecentData(icao, cprType)
 
         try:
             # records are sorted by timestamp, last should be newest
@@ -257,6 +308,10 @@ class ModeSParser(PickleModule):
 
             # latitude zone index
             j = floor(59 * lat_cpr_even - 60 * lat_cpr_odd + .5)
+
+            nz = 15
+            d_lat_even = cprType.baseAngle / (4 * nz)
+            d_lat_odd = cprType.baseAngle / (4 * nz - 1)
 
             lat_even = d_lat_even * ((j % 60) + lat_cpr_even)
             lat_odd = d_lat_odd * ((j % 59) + lat_cpr_odd)
@@ -296,8 +351,8 @@ class ModeSParser(PickleModule):
             n_even = max(nl_lat, 1)
             n_odd = max(nl_lat - 1, 1)
 
-            d_lon_even = 360 / n_even
-            d_lon_odd = 360 / n_odd
+            d_lon_even = cprType.baseAngle / n_even
+            d_lon_odd = cprType.baseAngle / n_odd
 
             lon_even = d_lon_even * (m % n_even + lon_cpr_even)
             lon_odd = d_lon_odd * (m % n_odd + lon_cpr_odd)
@@ -311,3 +366,36 @@ class ModeSParser(PickleModule):
         except StopIteration:
             # we don't have both CPR records. better luck next time.
             pass
+
+    def _grayDecode(self, input: int):
+        l = input.bit_length()
+        previous_bit = 0
+        output = 0
+        for i in reversed(range(0, l)):
+            bit = (previous_bit ^ ((input >> i) & 1))
+            output |= bit << i
+            previous_bit = bit
+        return output
+
+    gianniTable = [None, -200, 0, -100, 200, None, 100, None]
+
+    def _gillhamDecode(self, input: int):
+        c = ((input & 0b10000000000) >> 8) | ((input & 0b00100000000) >> 7) | ((input & 0b00001000000) >> 6)
+        b = ((input & 0b00000010000) >> 2) | ((input & 0b00000001000) >> 2) | ((input & 0b00000000010) >> 1)
+        a = ((input & 0b01000000000) >> 7) | ((input & 0b00010000000) >> 6) | ((input & 0b00000100000) >> 5)
+        d = ((input & 0b00000000100) >> 1) |  (input & 0b00000000001)
+
+        dab = (d << 6) | (a << 3) | b
+        parity = dab.bit_count() % 2
+
+        offset = self.gianniTable[c]
+
+        if offset is None:
+            # invalid decode...
+            return None
+
+        if parity:
+            offset *= -1
+
+        altitude = self._grayDecode(dab) * 500 + offset - 1000
+        return altitude

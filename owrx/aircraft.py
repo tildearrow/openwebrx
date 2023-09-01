@@ -15,8 +15,21 @@ logger = logging.getLogger(__name__)
 #
 # Feet per meter
 #
-FEET_PER_METER = 3.28084
+METERS_PER_FOOT = 0.3048
 KMH_PER_KNOT   = 1.852
+
+#
+# Mode-S message formats
+#
+MODE_S_FORMATS = [
+    "Short ACAS", None, None, None,
+    "Altitude", "IDENT Reply", None, None,
+    None, None, None, "ADSB",
+    None, None, None, None,
+    "Long ACAS", "Extended ADSB", "Supplementary ADSB", "Exetended Military",
+    "Comm-B Altitude", "Comm-B IDENT Reply", "Military", None,
+    "Comm-D Message"
+]
 
 #
 # This class represents current aircraft location compatible with
@@ -347,7 +360,7 @@ class Vdl2Parser(AircraftParser):
                     out["lat"] = p["value"]["loc"]["lat"]
                     out["lon"] = p["value"]["loc"]["lon"]
                     # Convert altitude from feet into meters
-                    out["altitude"] = round(p["value"]["alt"] / FEET_PER_METER)
+                    out["altitude"] = round(p["value"]["alt"] * METERS_PER_FOOT)
                 elif p["name"] == "dst_airport":
                     # Parse destination airport
                     out["airport"] = p["value"]
@@ -379,16 +392,23 @@ class AdsbParser(AircraftParser):
                 out["ts"]   = now.timestamp()
                 out["time"] = now.strftime("%H:%M:%S")
                 out["icao"] = out["icao"].upper()
-                out["type"] = "ADSB Format {0} frame".format(out["format"])
+                # Determine message format and type
+                format = out["format"]
+                if format >= len(MODE_S_FORMATS) or not MODE_S_FORMATS[format]:
+                    out["type"] = "Mode-S Format {0} frame".format(format)
+                elif format == 17:
+                    out["type"] = "ADSB Type {0} frame".format(out["adsb_type"])
+                else:
+                    out["type"] = "Mode-S {0} frame".format(MODE_S_FORMATS[format])
                 # Flight ID, if present
                 if "identification" in out:
                     out["flight"] = out["identification"].strip()
                 # Altitude, if present
                 if "altitude" in out:
-                   out["altitude"] = round(out["altitude"] / FEET_PER_METER)
+                   out["altitude"] = round(out["altitude"] * METERS_PER_FOOT)
                 # Vertical speed, if present
                 if "verticalspeed" in out:
-                    out["vspeed"] = round(out["verticalspeed"] / FEET_PER_METER)
+                    out["vspeed"] = round(out["verticalspeed"] * METERS_PER_FOOT)
                 # Speed, if present
                 if "groundspeed" in out:
                     out["speed"] = round(out["groundspeed"] * KMH_PER_KNOT)
