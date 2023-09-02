@@ -122,6 +122,9 @@ cmakebuild dumpvdl2
 git clone https://github.com/EliasOenal/multimon-ng.git
 cmakebuild multimon-ng 1.2.0
 
+git clone https://github.com/flightaware/dump1090.git
+cmakebuild dump1090
+
 git clone https://github.com/hessu/aprs-symbols /usr/share/aprs-symbols
 pushd /usr/share/aprs-symbols
 git checkout 5c2abe2658ee4d2563f3c73b90c6f59124839802
