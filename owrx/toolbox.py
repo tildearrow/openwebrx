@@ -194,6 +194,9 @@ class TextParser(ThreadModule):
 
 class IsmParser(TextParser):
     def __init__(self, service: bool = False):
+        # Colors will be assigned via this cache
+        self.colors = ColorCache()
+        # Construct parent object
         super().__init__(filePrefix="ISM", service=service)
 
     def parse(self, msg: str):
@@ -201,7 +204,7 @@ class IsmParser(TextParser):
         out = json.loads(msg)
         # Add mode name and a color to identify the sender
         out["mode"]  = "ISM"
-        out["color"] = self.getColor(out["id"])
+        out["color"] = self.colors.getColor(out["id"])
         return out
 
 
