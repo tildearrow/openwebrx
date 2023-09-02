@@ -137,7 +137,7 @@ class AircraftManager(object):
                     self._merge(data["icao"], data["flight"])
                 if "aircraft" in data:
                     self._merge(data["icao"], data["aircraft"])
-            elif "aircraft" and "flight" in data:
+            elif "aircraft" in data and "flight" in data:
                 self._merge(data["aircraft"], data["flight"])
             # Previous data and position
             item = self.aircraft[id]
