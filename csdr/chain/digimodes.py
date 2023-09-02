@@ -3,7 +3,7 @@ from csdr.module.msk144 import Msk144Module, ParserAdapter
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, SstvDecoder, FaxDecoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, CwDecoder, RttyDecoder, SstvDecoder, FaxDecoder, Shift, RealPart
 from pycsdr.types import Format
 from owrx.aprs.module import DirewolfModule
 from owrx.sstv import SstvParser
@@ -142,6 +142,7 @@ class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.dbgTime = 300000
         workers = [
             Agc(Format.COMPLEX_FLOAT),
+            RealPart(),
             SstvDecoder(self.sampleRate, self.dbgTime),
             self.parser
         ]
