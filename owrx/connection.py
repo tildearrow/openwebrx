@@ -503,6 +503,7 @@ class MapConnection(OpenWebRxClient):
         pm = Config.get()
         filtered_config = pm.filter(
             "google_maps_api_key",
+            "openweather_map_api_key",
             "receiver_gps",
             "map_type",
             "map_position_retention_time",

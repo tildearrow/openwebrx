@@ -2,6 +2,7 @@ from owrx.toolbox import TextParser, ColorCache
 from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
 from owrx.adsb.modes import ModeSParser
+from owrx.config import Config
 from datetime import datetime, timedelta
 import threading
 import json
@@ -79,7 +80,7 @@ class AircraftManager(object):
                 AircraftManager.sharedInstance = AircraftManager()
         return AircraftManager.sharedInstance
 
-    # Get unique aircraft ID, using ICAO (ModeS), tail, or flight number.
+    # Get unique aircraft ID, in flight -> tail -> ICAO ID order.
     @staticmethod
     def getAircraftId(data):
         if "icao" in data:
@@ -103,7 +104,6 @@ class AircraftManager(object):
 
     def __init__(self):
         self.lock = threading.Lock()
-        self.retainTime = 60*60
         self.checkTime = 60
         self.colors = ColorCache()
         self.aircraft = {}
@@ -111,7 +111,7 @@ class AircraftManager(object):
 
     # Perform periodic cleanup
     def periodicCleanup(self):
-        self.cleanup(datetime.utcnow() - timedelta(seconds=self.retainTime))
+        self.cleanup()
         threading.Timer(self.checkTime, self._periodicCleanup, [self]).start()
 
     # Get aircraft data by ID.
@@ -126,63 +126,75 @@ class AircraftManager(object):
             return
         # Now operating on the database...
         with self.lock:
-            # If no such ID yet, see if we know this aircraft by other IDs
-            if id not in self.aircraft:
-                # Replace flight ID with better ID
-                if "flight" in data and data["flight"] in self.aircraft:
-                    old_id = data["flight"]
-                    self.aircraft[id] = self.aircraft[old_id]
-                    self.colors.rename(old_id, id)
-                    self._removeFromMap(old_id)
-                    del self.aircraft[old_id]
-                # Replace aircraft ID with better ID
-                if "aircraft" in data and data["aircraft"] in self.aircraft:
-                    old_id = data["aircraft"]
-                    if id in self.aircraft:
-                        self.aircraft[id].update(self.aircraft[old_id])
-                    else:
-                        self.aircraft[id] = self.aircraft[old_id]
-                    self.colors.rename(old_id, id)
-                    self._removeFromMap(old_id)
-                    del self.aircraft[old_id]
-            # If still no ID in the database...
+            # If no such ID yet, create a new database entry
             if id not in self.aircraft:
                 # Create a new record
+                logger.debug("Adding %s" % id)
                 self.aircraft[id] = data.copy()
-                item = self.aircraft[id]
-            else:
-                # Previous data and position
-                item = self.aircraft[id]
-                pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
-                # Current data and position
-                item.update(data)
-                pos1 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
-                # If both positions exist, compute course
-                if "course" not in data and pos0 and pos1 and pos1 != pos0:
-                    item["course"] = round(self.bearing(pos0, pos1))
-            # Update timestamp, if missing
-            if "ts" not in data:
-                item["ts"] = datetime.utcnow().timestamp()
+            # Merge database entries in flight -> tail -> ICAO ID order
+            if "icao" in data:
+                if "flight" in data:
+                    self._merge(data["icao"], data["flight"])
+                if "aircraft" in data:
+                    self._merge(data["icao"], data["aircraft"])
+            elif "aircraft" and "flight" in data:
+                self._merge(data["aircraft"], data["flight"])
+            # Previous data and position
+            item = self.aircraft[id]
+            pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
+            # Current data and position
+            item.update(data)
+            pos1 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
+            # If both positions exist, compute course
+            if "course" not in data and pos0 and pos1 and pos1 != pos0:
+                item["course"] = round(self.bearing(pos0, pos1))
+                logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
+            # Update timme-to-live, if missing, assume HFDL longevity
+            if "ttl" not in data:
+                pm = Config.get()
+                item["ttl"] = datetime.now().timestamp() + pm["hfdl_ttl"]
             # Update aircraft on the map
             if "lat" in item and "lon" in item and "mode" in item:
                 loc = AircraftLocation(item)
                 Map.getSharedInstance().updateLocation(id, loc, item["mode"])
             # Update input data with computed data
-            for key in ["icao", "aircraft", "flight", "course", "ts"]:
+            for key in ["icao", "aircraft", "flight", "course"]:
                 if key in item:
                     data[key] = item[key]
             # Assign a color by ID
             data["color"] = self.colors.getColor(id)
 
     # Remove all database entries older than given time.
-    def cleanup(self, horizon):
-        horizon = horizon.timestamp()
+    def cleanup(self):
+        now = datetime.now().timestamp()
         # Now operating on the database...
         with self.lock:
-            too_old = [x for x in self.aircraft.keys() if self.aircraft[x]["ts"] <= horizon]
-            for id in too_old:
-                self._removeFromMap(id)
-                del self.aircraft[id]
+            too_old = [x for x in self.aircraft.keys() if self.aircraft[x]["ttl"] < now]
+            if too_old:
+                logger.debug("Following aircraft have become stale: {0}".format(too_old))
+                for id in too_old:
+                    self._removeFromMap(id)
+                    del self.aircraft[id]
+
+    # Internal function to merge aircraft data
+    def _merge(self, id1, id2):
+        if id1 not in self.aircraft:
+            if id2 in self.aircraft:
+                logger.debug("Linking %s to %s" % (id1, id2))
+                self.aircraft[id1] = self.aircraft[id2]
+        elif id2 not in self.aircraft:
+            logger.debug("Linking %s to %s" % (id2, id1))
+            self.aircraft[id2] = self.aircraft[id1]
+        elif self.aircraft[id1] is not self.aircraft[id2]:
+            logger.debug("Merging %s into %s" % (id2, id1))
+            # Update secondary data (ID2) with primary (ID1)
+            self.aircraft[id2].update(self.aircraft[id1])
+            # Make both ID1 and ID2 point to the same data
+            self.aircraft[id1] = self.aircraft[id2]
+            # Associate ID2 color with the ID1
+            self.colors.rename(id2, id1)
+            # Remove ID2 airplane from the map
+            self._removeFromMap(id2)
 
     # Internal function to remove aircraft from the map
     def _removeFromMap(self, id):
@@ -225,6 +237,7 @@ class HfdlParser(AircraftParser):
     def parse(self, msg: str):
         # Expect JSON data in text form
         data = json.loads(msg)
+        pm   = Config.get()
         ts   = data["hfdl"]["t"]["sec"] + data["hfdl"]["t"]["usec"] / 1000000
         # @@@ Only parse messages that have LDPU frames for now !!!
         if "lpdu" not in data["hfdl"]:
@@ -233,7 +246,7 @@ class HfdlParser(AircraftParser):
         out = {
             "mode" : "HFDL",
             "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
-            "ts"   : ts
+            "ttl"  : ts + pm["hfdl_ttl"]
         }
         # Parse LPDU if present
         if "lpdu" in data["hfdl"]:
@@ -311,12 +324,13 @@ class Vdl2Parser(AircraftParser):
     def parse(self, msg: str):
         # Expect JSON data in text form
         data = json.loads(msg)
+        pm   = Config.get()
         ts   = data["vdl2"]["t"]["sec"] + data["vdl2"]["t"]["usec"] / 1000000
         # Collect basic data first
         out = {
             "mode" : "VDL2",
             "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
-            "ts"   : ts
+            "ttl"  : ts + pm["vdl2_ttl"]
         }
         # Parse AVLC if present
         if "avlc" in data["vdl2"]:
@@ -391,9 +405,9 @@ class AdsbParser(AircraftParser):
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
                 # Add fields for compatibility with other aircraft parsers
-                now = datetime.utcnow()
-                out["ts"]   = now.timestamp()
-                out["time"] = now.strftime("%H:%M:%S")
+                pm  = Config.get()
+                out["ttl"]  = datetime.now().timestamp() + pm["adsb_ttl"]
+                out["time"] = datetime.utcnow().strftime("%H:%M:%S")
                 out["icao"] = out["icao"].upper()
                 # Determine message format and type
                 format = out["format"]

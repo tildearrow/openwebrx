@@ -84,7 +84,8 @@ MapManager.prototype.process = function(e) {
                     // engine does not need it (Google Maps do)
                     this.initializeMap(
                         this.config.receiver_gps,
-                        this.config.google_maps_api_key
+                        this.config.google_maps_api_key,
+                        this.config.openweather_map_api_key
                     );
                 }
                 if ('receiver_name' in this.config) {

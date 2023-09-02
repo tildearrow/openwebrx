@@ -4,6 +4,7 @@ from owrx.form.input import CheckboxInput, NumberInput, DropdownInput, Js8Profil
 from owrx.form.input.wfm import WfmTauValues
 from owrx.form.input.wsjt import Q65ModeMatrix, WsjtDecodingDepthsInput
 from owrx.form.input.converter import OptionalConverter
+from owrx.form.input.validator import RangeValidator
 from owrx.wsjt import Fst4Profile, Fst4wProfile
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem
 
@@ -62,6 +63,27 @@ class DecodingSettingsController(SettingsFormController):
                 CheckboxInput(
                     "paging_filter",
                     "Filter out empty, numeric, or unreadable pager messages",
+                ),
+            ),
+            Section(
+                "Aircraft traffic",
+                NumberInput(
+                    "adsb_ttl",
+                    "ADSB reports expiration time, in seconds",
+                    validator=RangeValidator(30, 3600),
+                    append="s",
+                ),
+                NumberInput(
+                    "vdl2_ttl",
+                    "VDL2 reports expiration time, in seconds",
+                    validator=RangeValidator(30, 3600),
+                    append="s",
+                ),
+                NumberInput(
+                    "hfdl_ttl",
+                    "HFDL reports expiration time, in seconds",
+                    validator=RangeValidator(30, 3600),
+                    append="s",
                 ),
             ),
             Section(

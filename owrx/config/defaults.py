@@ -161,6 +161,7 @@ defaultConfig = PropertyLayer(
     tuning_precision=2,
     squelch_auto_margin=10,
     google_maps_api_key="",
+    openweather_map_api_key="",
     map_type="google",
     map_position_retention_time=2 * 60 * 60,
     map_prefer_recent_reports=True,
@@ -201,4 +202,7 @@ defaultConfig = PropertyLayer(
     paging_filter=True,
     eibi_bookmarks_range=0,
     repeater_range=0,
+    adsb_ttl=900,
+    vdl2_ttl=3600,
+    hfdl_ttl=3600,
 ).readonly()

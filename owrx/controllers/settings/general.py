@@ -83,7 +83,7 @@ class GeneralSettingsController(SettingsFormController):
                     "session_timeout",
                     "Session timeout",
                     infotext="Client session timeout in seconds (0 to disable timeout).",
-                    append="secs",
+                    append="s",
                 ),
                 TextInput(
                     "usage_policy_url",
@@ -240,10 +240,17 @@ class GeneralSettingsController(SettingsFormController):
                     + '<a href="https://developers.google.com/maps/documentation/embed/get-api-key" target="_blank">'
                     + "their documentation</a> on how to obtain one.",
                 ),
+                TextInput(
+                    "openweather_map_api_key",
+                    "OpenWeather Map API key",
+                    infotext="OpenWeather Map requires an API key, check out "
+                    + '<a href="https://openweathermap.org/appid" target="_blank">'
+                    + "their documentation</a> on how to obtain one.",
+                ),
                 NumberInput(
                     "map_position_retention_time",
                     "Map retention time",
-                    infotext="Specifies how log markers / grids will remain visible on the map",
+                    infotext="Specifies how long markers / grids will remain visible on the map",
                     append="s",
                 ),
                 CheckboxInput(

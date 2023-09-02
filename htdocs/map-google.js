@@ -90,7 +90,7 @@ MapManager.prototype.removeReceiver = function() {
     if (receiverMarker) receiverMarker.setMap();
 }
 
-MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
+MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key) {
     var receiverPos = { lat: receiver_gps.lat, lng: receiver_gps.lon };
 
     if (map) {

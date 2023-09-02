@@ -201,7 +201,7 @@ MapManager.prototype.removeReceiver = function() {
     if (receiverMarker) receiverMarker.setMap();
 }
 
-MapManager.prototype.initializeMap = function(receiver_gps, api_key) {
+MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key) {
     if (map) {
         receiverMarker.setLatLng(receiver_gps.lat, receiver_gps.lon);
         receiverMarker.setMarkerOptions(this.config);
