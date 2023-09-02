@@ -112,11 +112,30 @@ var mapSources = [
 
 var mapExtraLayers = [
     {
+        name: 'OpenWeatherMap',
+        url: 'https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={apikey}',
+        options: {
+            layer: 'clouds_new',
+            attribution: 'Map data: &copy; OpenWeatherMap'
+        },
+        depends: "weather_key"
+    },
+    {
+        name: 'OpenWeatherMap',
+        url: 'https://tile.openweathermap.org/map/{layer}/{z}/{x}/{y}.png?appid={apikey}',
+        options: {
+            layer: 'precipitation_new',
+            attribution: 'Map data: &copy; OpenWeatherMap'
+        },
+        depends: "weather_key"
+    },
+    {
         name: 'WeatherRadar-USA',
         url: 'http://mesonet.agron.iastate.edu/cache/tile.py/1.0.0/nexrad-n0q-900913/{z}/{x}/{y}.png',
         options: {
             attribution: 'Map data: &copy; Iowa State University'
         },
+        depends: "!weather_key"
     },
     {
         name: 'OpenSeaMap',
@@ -283,6 +302,49 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                     ms.layer = L.tileLayer(ms.url, ms.options);
                     if (idx == 0) ms.layer.addTo(map);
                 });
+
+                var apiKeys = {};
+                if (weather_key.length) {
+                    apiKeys['weather_key'] = weather_key;
+                }
+
+                function isMapEligible (m) {
+                    if (!m) return false;
+                    if (!m.depends || !m.depends.length) return true; // if no depends -> true
+                    var looking = m.depends;
+                    var invert = false;
+                    if (looking.charAt(0) === '!') {
+                        invert = true;
+                        looking = looking.slice(1);
+                    }
+                    var eligible = false; // we have deps, so default is false until we find the dep keys
+                    Object.keys(apiKeys).forEach(function (k) {
+                        if (looking === k) eligible = true; // if we have the key and depend on it -> true
+                    });
+                    return invert ? !eligible : eligible;
+                }
+
+                function addMapOverlay (name) {
+                    $.each(mapExtraLayers, function (idx, mel) {
+                        if (mel.name === name) {
+                            if (!mel.layer) {
+                                mel.options.apikey = apiKeys[mel.depends];
+                                mel.layer = L.tileLayer(mel.url, mel.options);
+                            }
+                            if (map.hasLayer(mel.layer))
+                                map.removeLayer(mel.layer);
+                            map.addLayer(mel.layer);
+                        }
+                    });
+                }
+                function removeMapOverlay (name) {
+                    $.each(mapExtraLayers, function (idx, mel) {
+                        if (mel.name === name) {
+                            if (map.hasLayer(mel.layer))
+                                map.removeLayer(mel.layer);
+                        }
+                    });
+                }
                 $('#openwebrx-map-source').on('change', function (e) {
                     var id = this.value;
                     var m = mapSources[id];
@@ -293,21 +355,26 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                     map.addLayer(m.layer);
                     $('#openwebrx-map-extralayers').find('input').each(function (idx, inp) {
                         if ($(inp).is(':checked')) {
-                            var mel = mapExtraLayers[$(inp).attr('idx')];
-                            map.removeLayer(mel.layer);
-                            map.addLayer(mel.layer);
+                            addMapOverlay($(inp).attr('name'));
                         }
                     });
                 });
                 $.each(mapExtraLayers, function (idx, mel) {
-                    mel.layer = L.tileLayer(mel.url, mel.options);
+                    if (!isMapEligible(mel)) return;
+                    if ($('#openwebrx-map-layer-' + mel.name).length)
+                        return; // checkbox with that name exists already
                     $('#openwebrx-map-extralayers').append(
-                        $('<label><input type="checkbox" idx="'+idx+'" id="openwebrx-map-layer-' + mel.name + '">' + mel.name + '</label>').on('change', function (e) {
+                        $('<label>' +
+                            '<input type="checkbox" ' +
+                            'name="' + mel.name + '" ' +
+                            'idx="' + idx + '" ' +
+                            'id="openwebrx-map-layer-' + mel.name + '"' +
+                            '>' + mel.name + '</label>'
+                        ).on('change', function (e) {
                             if (e.target.checked) {
-                                map.addLayer(mel.layer);
+                                addMapOverlay(mel.name);
                             } else {
-                                if (map.hasLayer(mel.layer))
-                                    map.removeLayer(mel.layer);
+                                removeMapOverlay(mel.name);
                             }
                         })
                     );
