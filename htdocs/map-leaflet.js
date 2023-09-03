@@ -304,7 +304,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                 });
 
                 var apiKeys = {};
-                if (weather_key.length) {
+                if (weather_key) {
                     apiKeys['weather_key'] = weather_key;
                 }
 
