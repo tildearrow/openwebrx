@@ -141,8 +141,6 @@ class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.sampleRate = 24000
         self.dbgTime = 300000
         workers = [
-            Agc(Format.COMPLEX_FLOAT),
-            RealPart(),
             SstvDecoder(self.sampleRate, self.dbgTime),
             self.parser
         ]
