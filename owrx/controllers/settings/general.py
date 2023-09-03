@@ -241,9 +241,9 @@ class GeneralSettingsController(SettingsFormController):
                     + "their documentation</a> on how to obtain one.",
                 ),
                 TextInput(
-                    "openweather_map_api_key",
-                    "OpenWeather Map API key",
-                    infotext="OpenWeather Map requires an API key, check out "
+                    "openweathermap_api_key",
+                    "OpenWeatherMap API key",
+                    infotext="OpenWeatherMap requires an API key, check out "
                     + '<a href="https://openweathermap.org/appid" target="_blank">'
                     + "their documentation</a> on how to obtain one.",
                 ),
