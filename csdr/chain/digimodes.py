@@ -160,7 +160,6 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.lpm = 120
         self.dbgTime = 300000
         workers = [
-            Agc(Format.COMPLEX_FLOAT),
             FaxDecoder(self.sampleRate, self.lpm, self.dbgTime),
             self.parser
         ]
