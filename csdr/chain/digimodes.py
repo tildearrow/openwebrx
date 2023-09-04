@@ -156,7 +156,7 @@ class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
         self.parser = FaxParser(service=service)
-        self.sampleRate = 24000
+        self.sampleRate = 12000
         self.lpm = 120
         self.dbgTime = 300000
         workers = [

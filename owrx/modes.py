@@ -169,7 +169,7 @@ class Modes(object):
         DigitalMode(
             "sstv",
             "SSTV",
-            underlying=["usb", "lsb"],
+            underlying=["usb", "lsb", "nfm"],
             service=True,
             squelch=True,
         ),
