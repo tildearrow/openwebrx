@@ -46,7 +46,7 @@ class AircraftLocation(LatLngLocation):
     def __dict__(self):
         res = super(AircraftLocation, self).__dict__()
         # Add APRS-like aircraft symbol (red or blue, depending on mode)
-        mod = '/' if self.data["mode"]=="HFDL" else '\\'
+        mod = '/' if self.data["mode"]=="ADSB" else '\\'
         res["symbol"] = getSymbolData('^', mod)
         # Convert aircraft-specific data into APRS-like data
         for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "airport", "vspeed"]:

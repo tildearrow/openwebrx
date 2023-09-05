@@ -14,9 +14,9 @@ function MarkerManager() {
         'KiwiSDR'   : '#800000',
         'WebSDR'    : '#000080',
         'OpenWebRX' : '#004000',
-        'HFDL'      : '#800000',
+        'HFDL'      : '#004000',
         'VDL2'      : '#000080',
-        'ADSB'      : '#004000'
+        'ADSB'      : '#800000'
     };
 
     // Symbols used for marker types
