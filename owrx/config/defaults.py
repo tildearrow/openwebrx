@@ -203,6 +203,6 @@ defaultConfig = PropertyLayer(
     eibi_bookmarks_range=0,
     repeater_range=0,
     adsb_ttl=900,
-    vdl2_ttl=3600,
-    hfdl_ttl=3600,
+    vdl2_ttl=1800,
+    hfdl_ttl=1800,
 ).readonly()
