@@ -212,7 +212,7 @@ class EIBI(object):
         return result
 
     # Create list of current bookmarks for a frequency range
-    def currentBookmarks(self, frequencyRange, hours: int = 1, rangeKm: int = MAX_DISTANCE):
+    def currentBookmarks(self, frequencyRange, hours: int = 0, rangeKm: int = MAX_DISTANCE):
         # Make sure freq2>freq1
         (f1, f2) = frequencyRange
         if f1>f2:
@@ -240,8 +240,9 @@ class EIBI(object):
         with self.lock:
             for entry in self.schedule:
                 try:
-                    # No distance yet
+                    # No distance or duration yet
                     dist = MAX_DISTANCE
+                    duration = 10000
 
                     # Check if entry active and within frequency range
                     f = entry["freq"]
@@ -257,6 +258,7 @@ class EIBI(object):
                         e2 = entry["time2"]
                         e2 = e2 if e2 > e1 else e2 + 2400
                         entryActive = e1 < t2 and e2 > t1
+                        duration = e2 - e1
 
                     # Find closest transmitter for this entry
                     if entryActive:
@@ -266,10 +268,11 @@ class EIBI(object):
                                 txPos = (loc["lat"], loc["lon"])
                                 dist  = min(dist, EIBI.distKm(rxPos, txPos))
                         # Prefer closer transmitters, apply range
-                        entryActive = (
-                            (dist <= rangeKm) and
-                            (f not in result or dist < result[f][1])
-                        )
+                        entryActive = ((dist <= rangeKm) and (
+                            (f not in result) or
+                            (duration < result[f][2]) or
+                            (dist < result[f][1])
+                        ))
                         # Warn if location not found
 #                        if dist == MAX_DISTANCE:
 #                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
@@ -280,7 +283,7 @@ class EIBI(object):
                         #    logger.debug("Replacing '{0}' ({1}km) with '{2}' ({3}km)".format(
                         #        result[f][0]["name"], result[f][1], entry["name"], dist
                         #    ))
-                        result[f] = ( entry, dist )
+                        result[f] = ( entry, dist, duration )
 
                 except Exception as e:
                     logger.debug("currentBookmarks() exception: {0}".format(e))
