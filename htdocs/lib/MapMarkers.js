@@ -356,7 +356,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             var freq = this.schedule[j].freq;
             var mode = this.schedule[j].mode;
             var tune = mode === 'cw'?      freq - 800
-                     : mode === 'fax'?     freq - 1500
+                     : mode === 'fax'?     freq - 1900
                      : mode === 'rtty450'? freq - 1000
                      : freq;
 

@@ -52,7 +52,7 @@ class EIBI(object):
         if mode == "cw":
             return freq - 800
         elif mode == "fax":
-            return freq - 1500
+            return freq - 1900
         elif mode == "rtty450":
             return freq - 1000
         else:

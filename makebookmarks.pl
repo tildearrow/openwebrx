@@ -31,8 +31,8 @@ while(<STDIN>)
 
       if($First) { $First=0; } else { printf(",\n"); }
 
-      # Set FAX frequencies 1.5kHz lower than the carrier
-      if(lc($Mod) eq "fax") { $Freq -= 1.5; }
+      # Set FAX frequencies 1.9kHz lower than the carrier
+      if(lc($Mod) eq "fax") { $Freq -= 1.9; }
 
       printf("    {\n");
       printf("        \"name\" : \"%s\",\n", $Name);
