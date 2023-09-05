@@ -271,8 +271,8 @@ class EIBI(object):
                             (f not in result or dist < result[f][1])
                         )
                         # Warn if location not found
-                        if dist == MAX_DISTANCE:
-                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+#                        if dist == MAX_DISTANCE:
+#                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
 
                     # Add entry to the result
                     if entryActive:
