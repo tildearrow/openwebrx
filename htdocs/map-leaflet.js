@@ -411,7 +411,6 @@ MapManager.prototype.processUpdates = function(updates) {
                 // If new item, create a new marker for it
                 if (!marker) {
                     marker = new LAprsMarker();
-                    self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
                         showMarkerInfoWindow(update.callsign, marker.getPos());
@@ -420,6 +419,9 @@ MapManager.prototype.processUpdates = function(updates) {
                     // If displaying a symbol, create it
                     if (update.location.symbol) marker.onAdd();
                 }
+
+                // Keep track of new marker types as they may change
+                self.mman.addType(update.mode);
 
                 // Update marker attributes and age
                 marker.update(update);

@@ -150,9 +150,11 @@ class AircraftManager(object):
                 item["course"] = round(self.bearing(pos0, pos1))
                 logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
             # Update timme-to-live, if missing, assume HFDL longevity
-            if "ttl" not in data:
+            if "ts" not in data:
                 pm = Config.get()
-                item["ttl"] = datetime.now().timestamp() + pm["hfdl_ttl"]
+                ts = datetime.now().timestamp()
+                item["ts"]  = ts
+                item["ttl"] = ts + pm["hfdl_ttl"]
             # Update aircraft on the map
             if "lat" in item and "lon" in item and "mode" in item:
                 loc = AircraftLocation(item)
@@ -185,16 +187,22 @@ class AircraftManager(object):
         elif id2 not in self.aircraft:
             logger.debug("Linking %s to %s" % (id2, id1))
             self.aircraft[id2] = self.aircraft[id1]
-        elif self.aircraft[id1] is not self.aircraft[id2]:
-            logger.debug("Merging %s into %s" % (id2, id1))
-            # Update secondary data (ID2) with primary (ID1)
-            self.aircraft[id2].update(self.aircraft[id1])
-            # Make both ID1 and ID2 point to the same data
-            self.aircraft[id1] = self.aircraft[id2]
-            # Associate ID2 color with the ID1
-            self.colors.rename(id2, id1)
-            # Remove ID2 airplane from the map
-            self._removeFromMap(id2)
+        else:
+            item1 = self.aircraft[id1]
+            item2 = self.aircraft[id2]
+            if item1 is not item2:
+                # Make sure ID1 is always newer than ID2
+                if item1["ts"] < item2["ts"]:
+                    item1, item2 = item2, item1
+                    id1,   id2   = id2,   id1
+                # Update older data with newer data
+                logger.debug("Merging %s into %s" % (id2, id1))
+                item2.update(item1)
+                self.aircraft[id1] = item2
+                # Change ID2 color to ID1
+                self.colors.rename(id2, id1)
+                # Remove ID2 airplane from the map
+                self._removeFromMap(id2)
 
     # Internal function to remove aircraft from the map
     def _removeFromMap(self, id):
@@ -246,6 +254,7 @@ class HfdlParser(AircraftParser):
         out = {
             "mode" : "HFDL",
             "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
+            "ts"   : ts,
             "ttl"  : ts + pm["hfdl_ttl"]
         }
         # Parse LPDU if present
@@ -330,6 +339,7 @@ class Vdl2Parser(AircraftParser):
         out = {
             "mode" : "VDL2",
             "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
+            "ts"   : ts,
             "ttl"  : ts + pm["vdl2_ttl"]
         }
         # Parse AVLC if present
@@ -405,8 +415,10 @@ class AdsbParser(AircraftParser):
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
                 # Add fields for compatibility with other aircraft parsers
-                pm  = Config.get()
-                out["ttl"]  = datetime.now().timestamp() + pm["adsb_ttl"]
+                pm = Config.get()
+                ts = datetime.now().timestamp()
+                out["ts"]   = ts
+                out["ttl"]  = ts + pm["adsb_ttl"]
                 out["time"] = datetime.utcnow().strftime("%H:%M:%S")
                 out["icao"] = out["icao"].upper()
                 # Determine message format and type
