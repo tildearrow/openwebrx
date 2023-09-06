@@ -1,3 +1,16 @@
+**1.2.29**
+- Added worldwide OpenWeatherMap support (needs key).
+- Added NFM to SSTV underlying modes (needs testing).
+- Added configurable aircraft data expiration times.
+- Improved aircraft data maintenance and merging.
+- Improved SWL bookmarks generation (via EIBI).
+- Improved FAX decoding, can receive photos now.
+- Changed FAX bookmarks to be 1.9kHz below carrier.
+- Dropped FAX input frequency to 12kHz.
+- Optimized SSTV, FAX, RTTY, and CW decoders.
+- Fixed ISM parser with correct ColorCache object.
+- ADSB airplanes are red now, VDL2/HFDL are blue.
+
 **1.2.28**
 - Updated CSDR and PyCSDR with latest changes from Jakob's develop branch.
 - DumpHFDL, DumpVDL2, and Dump1090 now available from Jakob's repository.
