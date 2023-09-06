@@ -8,6 +8,7 @@ from pycsdr.types import Format
 from owrx.aprs.module import DirewolfModule
 from owrx.sstv import SstvParser
 from owrx.fax import FaxParser
+from owrx.config import Config
 
 class AudioChopperDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, mode: str, parser: AudioChopperParser):
@@ -155,12 +156,23 @@ class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
-        self.parser = FaxParser(service=service)
-        self.sampleRate = 12000
-        self.lpm = 120
-        self.dbgTime = 300000
+        pm = Config.get()
+        self.parser      = FaxParser(service=service)
+        self.sampleRate  = 12000
+        self.lpm         = 120
+        self.dbgTime     = 300000
+        self.postProcess = pm["fax_postprocess"]
+        self.color       = pm["fax_color"]
+        self.am          = pm["fax_am"]
         workers = [
-            FaxDecoder(self.sampleRate, self.lpm, self.dbgTime),
+            FaxDecoder(
+                self.sampleRate,
+                self.lpm,
+                self.dbgTime,
+                postProcess = self.postProcess,
+                color = self.color,
+                am = self.am
+            ),
             self.parser
         ]
         super().__init__(workers)

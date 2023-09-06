@@ -1,6 +1,7 @@
 **1.2.29**
 - Added worldwide OpenWeatherMap support (needs key).
 - Added NFM to SSTV underlying modes (needs testing).
+* Added configurable FAX options (post-processing, etc).
 - Added configurable aircraft data expiration times.
 - Improved aircraft data maintenance and merging.
 - Improved SWL bookmarks generation (via EIBI).

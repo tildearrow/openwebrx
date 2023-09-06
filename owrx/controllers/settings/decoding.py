@@ -59,32 +59,38 @@ class DecodingSettingsController(SettingsFormController):
                 NumberInput("digimodes_fft_size", "Digimodes FFT size", append="bins"),
             ),
             Section(
-                "Pager traffic",
+                "Pager messages",
                 CheckboxInput(
                     "paging_filter",
                     "Filter out empty, numeric, or unreadable pager messages",
                 ),
             ),
             Section(
-                "Aircraft traffic",
+                "Aircraft messages",
                 NumberInput(
                     "adsb_ttl",
-                    "ADSB reports expiration time, in seconds",
+                    "ADSB reports expiration time",
                     validator=RangeValidator(30, 3600),
                     append="s",
                 ),
                 NumberInput(
                     "vdl2_ttl",
-                    "VDL2 reports expiration time, in seconds",
+                    "VDL2 reports expiration time",
                     validator=RangeValidator(30, 3600),
                     append="s",
                 ),
                 NumberInput(
                     "hfdl_ttl",
-                    "HFDL reports expiration time, in seconds",
+                    "HFDL reports expiration time",
                     validator=RangeValidator(30, 3600),
                     append="s",
                 ),
+            ),
+            Section(
+                "Fax transmissions",
+                CheckboxInput("fax_postprocess", "Post-process received images to reduce noise"),
+                CheckboxInput("fax_color", "Receive color images"),
+                CheckboxInput("fax_am", "Use amplitude modulation"),
             ),
             Section(
                 "Decoding settings",
