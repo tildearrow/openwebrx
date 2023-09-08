@@ -400,12 +400,12 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.lat && msg.lon) {
         data += '@' + msg.lat.toFixed(4) + ',' + msg.lon.toFixed(4);
     }
-    if (msg.altitude) data += ' &UpArrowBar;' + msg.altitude + 'm';
-    if (msg.vspeed>0) data += ' &UpperRightArrow;' + msg.vspeed + 'm/m';
-    if (msg.vspeed<0) data += ' &LowerRightArrow;' + (-msg.vspeed) + 'm/m';
-    if (msg.speed)    data += ' &rightarrow;' + msg.speed + 'km/h';
-    if (msg.origin)   data += ' &lsh;' + msg.origin;
-    if (msg.airport)  data += ' &rdsh;' + msg.airport;
+    if (msg.altitude)    data += ' &UpArrowBar;' + msg.altitude + 'm';
+    if (msg.vspeed>0)    data += ' &UpperRightArrow;' + msg.vspeed + 'm/m';
+    if (msg.vspeed<0)    data += ' &LowerRightArrow;' + (-msg.vspeed) + 'm/m';
+    if (msg.speed)       data += ' &rightarrow;' + msg.speed + 'km/h';
+    if (msg.origin)      data += ' &lsh;' + msg.origin;
+    if (msg.destination) data += ' &rdsh;' + msg.destination;
 
     // If no data so far, use message type as data
     if (msg.type && !data.length) data = msg.type;

@@ -49,7 +49,7 @@ class AircraftLocation(LatLngLocation):
         mod = '/' if self.data["mode"]=="ADSB" else '\\'
         res["symbol"] = getSymbolData('^', mod)
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "airport", "origin", "vspeed"]:
+        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Treat last message as comment
@@ -390,7 +390,7 @@ class Vdl2Parser(AircraftParser):
                     out["altitude"] = round(p["value"]["alt"] * METERS_PER_FOOT)
                 elif p["name"] == "dst_airport":
                     # Parse destination airport
-                    out["airport"] = p["value"]
+                    out["destination"] = p["value"]
                 elif p["name"] == "modulation_support":
                     # Parse supported modulations
                     out["modes"] = p["value"]
@@ -468,7 +468,7 @@ class AcarsParser(AircraftParser):
             "tail"   : "aircraft",
             "flight" : "flight",
             "text"   : "message",
-            "dsta"   : "airport",
+            "dsta"   : "destination",
             "depa"   : "origin",
             "eta"    : "eta",
         }

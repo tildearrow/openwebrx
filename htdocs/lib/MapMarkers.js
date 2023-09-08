@@ -417,7 +417,7 @@ AprsMarker.prototype.update = function(update) {
     this.device   = update.location.device;
     this.directivity = update.location.directivity;
     this.aircraft = update.location.aircraft;
-    this.airport  = update.location.airport;
+    this.destination = update.location.destination;
     this.origin   = update.location.origin;
     this.flight   = update.location.flight;
     this.icao     = update.location.icao;
@@ -604,8 +604,8 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Marker.makeListItem('Origin', this.origin);
     }
 
-    if (this.airport) {
-        detailsString += Marker.makeListItem('Destination', this.airport);
+    if (this.destination) {
+        detailsString += Marker.makeListItem('Destination', this.destination);
     }
 
     // Combine course and speed if both present
