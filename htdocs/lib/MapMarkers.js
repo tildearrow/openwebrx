@@ -418,6 +418,7 @@ AprsMarker.prototype.update = function(update) {
     this.directivity = update.location.directivity;
     this.aircraft = update.location.aircraft;
     this.airport  = update.location.airport;
+    this.origin   = update.location.origin;
     this.flight   = update.location.flight;
     this.icao     = update.location.icao;
     this.vspeed   = update.location.vspeed;
@@ -597,6 +598,10 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     if (this.aircraft) {
         detailsString += Marker.makeListItem('Aircraft', Marker.linkify(this.aircraft, flight_url));
+    }
+
+    if (this.origin) {
+        detailsString += Marker.makeListItem('Origin', this.origin);
     }
 
     if (this.airport) {

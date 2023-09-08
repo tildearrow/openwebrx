@@ -49,7 +49,7 @@ class AircraftLocation(LatLngLocation):
         mod = '/' if self.data["mode"]=="ADSB" else '\\'
         res["symbol"] = getSymbolData('^', mod)
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "airport", "vspeed"]:
+        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "airport", "origin", "vspeed"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Treat last message as comment
@@ -464,6 +464,14 @@ class AdsbParser(AircraftParser):
 class AcarsParser(AircraftParser):
     def __init__(self, service: bool = False):
         super().__init__(filePrefix="ACARS", service=service)
+        self.attrMap = {
+            "tail"   : "aircraft",
+            "flight" : "flight",
+            "text"   : "message",
+            "dsta"   : "airport",
+            "depa"   : "origin",
+            "eta"    : "eta",
+        }
 
     def parse(self, msg: str):
         # Expect JSON data in text form
@@ -474,17 +482,15 @@ class AcarsParser(AircraftParser):
         # Collect basic data first
         out = {
             "mode" : "ACARS",
+            "type" : "ACARS frame",
             "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
             "ts"   : ts,
             "ttl"  : ts + pm["acars_ttl"]
         }
         # Fetch other data
-        if "tail" in data:
-            out["aircraft"] = data["tail"]
-        if "flight" in data:
-            out["flight"] = data["flight"]
-        if "text" in data:
-            out["message"] = data["text"]
+        for key in self.attrMap:
+            if key in data:
+                out[self.attrMap[key]] = data[key]
         # Update aircraft database with the new data
         AircraftManager.getSharedInstance().update(out)
         return out

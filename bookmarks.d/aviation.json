@@ -1,5 +1,90 @@
 [
     {
+        "name" : "ACARS - USA & Canada Additional",
+        "frequency" : 129125000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA & Canada Secondary",
+        "frequency" : 130025000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA Additional",
+        "frequency" : 130425000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA & Canada Additional",
+        "frequency" : 130450000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA Additional",
+        "frequency" : 131125000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - Japan Primary",
+        "frequency" : 131450000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - Air Canada Company Channel",
+        "frequency" : 131475000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - European Secondary",
+        "frequency" : 131525000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - World Primary",
+        "frequency" : 131550000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - Europe Primary",
+        "frequency" : 131725000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - New European Channel",
+        "frequency" : 131850,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA Additional",
+        "frequency" : 136700000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA Additional",
+        "frequency" : 136750000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - USA Additional",
+        "frequency" : 136800000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "SITA - North America",
+        "frequency" : 136850000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "SITA - Australia & NZ",
+        "frequency" : 131550000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ARINC - Australia & NZ",
+        "frequency" : 131450000,
+        "modulation" : "acars"
+    },
+    {
         "name" : "ARINC - USA",
         "frequency" : 136650000,
         "modulation" : "vdl2"

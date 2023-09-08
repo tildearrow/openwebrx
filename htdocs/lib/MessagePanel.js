@@ -404,6 +404,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.vspeed>0) data += ' &UpperRightArrow;' + msg.vspeed + 'm/m';
     if (msg.vspeed<0) data += ' &LowerRightArrow;' + (-msg.vspeed) + 'm/m';
     if (msg.speed)    data += ' &rightarrow;' + msg.speed + 'km/h';
+    if (msg.origin)   data += ' &lsh;' + msg.origin;
     if (msg.airport)  data += ' &rdsh;' + msg.airport;
 
     // If no data so far, use message type as data
