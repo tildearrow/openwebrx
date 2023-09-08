@@ -222,6 +222,15 @@ class Modes(object):
             squelch=False
         ),
         DigitalMode(
+            "acars",
+            "ACARS",
+            underlying=["am"],
+            bandpass=Bandpass(-6250, 6250),
+            requirements=["acars"],
+            service=True,
+            squelch=False
+        ),
+        DigitalMode(
             "adsb",
             "ADSB",
             underlying=["nfm"],

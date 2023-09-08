@@ -85,6 +85,12 @@ class DecodingSettingsController(SettingsFormController):
                     validator=RangeValidator(30, 3600),
                     append="s",
                 ),
+                NumberInput(
+                    "acars_ttl",
+                    "ACARS reports expiration time",
+                    validator=RangeValidator(30, 3600),
+                    append="s",
+                ),
             ),
             Section(
                 "Fax transmissions",

@@ -330,6 +330,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "vdl2":
             from csdr.chain.toolbox import Vdl2Demodulator
             return Vdl2Demodulator(service=True)
+        elif mod == "acars":
+            from csdr.chain.toolbox import AcarsDemodulator
+            return AcarsDemodulator(service=True)
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator(service=True)

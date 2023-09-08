@@ -169,7 +169,7 @@ class TextParser(ThreadModule):
         if eol>=0:
             try:
                 msg = self.data[0:eol].decode(encoding="utf-8", errors="replace")
-                logger.debug("%s: %s" % (self.myName(), msg))
+                #logger.debug("%s: %s" % (self.myName(), msg))
                 # If running as a service...
                 if self.service:
                     # Write message into open log file, including end-of-line

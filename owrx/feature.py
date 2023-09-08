@@ -89,6 +89,7 @@ class FeatureDetector(object):
         "hfdl": ["dumphfdl"],
         "vdl2": ["dumpvdl2"],
         "adsb": ["dump1090"],
+        "acars": ["acarsdec"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
         "png": ["imagemagick"],
@@ -622,4 +623,11 @@ class FeatureDetector(object):
         "dump1090-fa-minimal", or you can compile it from source.
         """
         return self.command_is_runnable("dump1090 --help")
+
+    def has_acarsdec(self):
+        """
+        OpenWebRX uses the [acarsdec](https://github.com/TLeconte/acarsdec) tool to decode ACARS
+        traffic. You will have to compile it from source.
+        """
+        return self.command_is_runnable("acarsdec --help")
 

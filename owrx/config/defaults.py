@@ -205,6 +205,7 @@ defaultConfig = PropertyLayer(
     adsb_ttl=900,
     vdl2_ttl=1800,
     hfdl_ttl=1800,
+    acars_ttl=1800,
     fax_postprocess=True,
     fax_color=False,
     fax_am=False

@@ -148,7 +148,7 @@ class AircraftManager(object):
             # If both positions exist, compute course
             if "course" not in data and pos0 and pos1 and pos1 != pos0:
                 item["course"] = round(self.bearing(pos0, pos1))
-                logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
+                #logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
             # Update timme-to-live, if missing, assume HFDL longevity
             if "ts" not in data:
                 pm = Config.get()
@@ -411,7 +411,7 @@ class AdsbParser(AircraftParser):
         if msg.startswith("*") and msg.endswith(";") and len(msg) in [16, 30]:
             # Parse Mode-S message
             out = self.smode_parser.process(bytes.fromhex(msg[1:-1]))
-            logger.debug("@@@ PARSE OUT: {0}".format(out))
+            #logger.debug("@@@ PARSE OUT: {0}".format(out))
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
                 # Add fields for compatibility with other aircraft parsers
@@ -456,3 +456,35 @@ class AdsbParser(AircraftParser):
 
         # No data parsed
         return {}
+
+
+#
+# Parser for ACARS messages coming from AcarsDec in JSON format.
+#
+class AcarsParser(AircraftParser):
+    def __init__(self, service: bool = False):
+        super().__init__(filePrefix="ACARS", service=service)
+
+    def parse(self, msg: str):
+        # Expect JSON data in text form
+        data = json.loads(msg)
+        pm   = Config.get()
+        ts   = data["timestamp"]
+        logger.debug("@@@ ACARS: {0}".format(data))
+        # Collect basic data first
+        out = {
+            "mode" : "ACARS",
+            "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
+            "ts"   : ts,
+            "ttl"  : ts + pm["acars_ttl"]
+        }
+        # Fetch other data
+        if "tail" in data:
+            out["aircraft"] = data["tail"]
+        if "flight" in data:
+            out["flight"] = data["flight"]
+        if "text" in data:
+            out["message"] = data["text"]
+        # Update aircraft database with the new data
+        AircraftManager.getSharedInstance().update(out)
+        return out

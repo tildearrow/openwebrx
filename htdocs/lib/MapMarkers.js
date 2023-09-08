@@ -16,7 +16,8 @@ function MarkerManager() {
         'OpenWebRX' : '#004000',
         'HFDL'      : '#004000',
         'VDL2'      : '#000080',
-        'ADSB'      : '#800000'
+        'ADSB'      : '#800000',
+        'ACARS'     : '#000000'
     };
 
     // Symbols used for marker types
@@ -30,7 +31,8 @@ function MarkerManager() {
         'AIS'       : '&apacir;',
         'HFDL'      : '&#9992;',
         'VDL2'      : '&#9992;',
-        'ADSB'      : '&#9992;'
+        'ADSB'      : '&#9992;',
+        'ACARS'     : '&#9992;'
     };
 
     // Marker type shown/hidden status
@@ -647,6 +649,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         case 'HFDL':
         case 'VDL2':
         case 'ADSB':
+        case 'ACARS':
             if (this.flight) {
                 name = this.flight;
                 url  = flight_url;

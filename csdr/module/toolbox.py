@@ -97,3 +97,50 @@ class Dump1090Module(ExecModule):
         if rawOutput:
             cmd += [ "--raw" ]
         super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
+
+
+class AcarsDecModule(PopenModule):
+    def __init__(self, sampleRate: int = 12500, jsonOutput: bool = False):
+        self.sampleRate = sampleRate
+        self.jsonOutput = jsonOutput
+        super().__init__()
+
+    def getCommand(self):
+        return [
+            "acarsdec", "-f", "/dev/stdin",
+            "-o", str(4 if self.jsonOutput else 1)
+        ]
+
+    def getInputFormat(self) -> Format:
+        return Format.SHORT
+
+    def getOutputFormat(self) -> Format:
+        return Format.CHAR
+
+    def start(self):
+        # Create process and pumps
+        super().start()
+        # Created simulated .WAV file header
+        byteRate = (self.sampleRate * 16 * 1) >> 3
+        header = bytearray(44)
+        header[0:3]   = b"RIFF"
+        header[4:7]   = bytes([36, 0xFF, 0xFF, 0xFF])
+        header[8:11]  = b"WAVE"
+        header[12:15] = b"fmt "
+        header[16]    = 16       # Chunk size
+        header[20]    = 1        # Format (PCM)
+        header[22]    = 1        # Number of channels (1)
+        header[24]    = self.sampleRate & 0xFF
+        header[25]    = (self.sampleRate >> 8) & 0xFF
+        header[26]    = (self.sampleRate >> 16) & 0xFF
+        header[27]    = (self.sampleRate >> 24) & 0xFF
+        header[28]    = byteRate & 0xFF
+        header[29]    = (byteRate >> 8) & 0xFF
+        header[30]    = (byteRate >> 16) & 0xFF
+        header[31]    = (byteRate >> 24) & 0xFF
+        header[32]    = 2       # Block alignment (2 bytes)
+        header[34]    = 16      # Bits per sample (16)
+        header[36:39] = b"data"
+        header[40:43] = bytes([0, 0xFF, 0xFF, 0xFF])
+        # Send .WAV file header to the process
+        self.process.stdin.write(header)

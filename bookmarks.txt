@@ -58,6 +58,27 @@ NOAA-6|||162525|NFM
 NOAA-7|||162550|NFM
 
 #
+# ACARS frequencies
+#
+USA and Canada Additional|||129125|ACARS
+USA and Canada Secondary|||130025|ACARS
+USA Additional|||130425|ACARS
+USA and Canada Additional|||130450|ACARS
+USA Additional|||131125|ACARS
+Japan Primary|||131450|ACARS
+Air Canada Company Channel|||131475|ACARS
+European Secondary|||131525|ACARS
+World Primary|||131550|ACARS
+Europe Primary|||131725|ACARS
+New European Channel|||131.850|ACARS
+USA Additional|||136700|ACARS
+USA Additional|||136750|ACARS
+USA Additional|||136800|ACARS
+SITA|North America||136850|ACARS
+SITA|Australia & NZ||131550|ACARS
+ARINC|Australia & NZ||131450|ACARS
+
+#
 # VDL2 frequencies
 #
 ARINC|USA||136650|VDL2

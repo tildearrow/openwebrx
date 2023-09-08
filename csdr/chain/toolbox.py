@@ -1,9 +1,9 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver, FixedIfSampleRateChain
-from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module
+from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser
-from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser
+from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
 
 
 class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
@@ -143,7 +143,6 @@ class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
-        pass
 
 
 class AdsbDemodulator(ServiceDemodulator, DialFrequencyReceiver):
@@ -153,6 +152,28 @@ class AdsbDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         workers = [
             Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
             Dump1090Module(rawOutput = not service),
+            self.parser,
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
+
+    def supportsSquelch(self) -> bool:
+        return False
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)
+
+
+class AcarsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, service: bool = False):
+        self.sampleRate = 12500
+        self.parser = AcarsParser(service=service)
+        workers = [
+            Convert(Format.FLOAT, Format.SHORT),
+            AcarsDecModule(self.sampleRate, jsonOutput = not service),
             self.parser,
         ]
         # Connect all the workers

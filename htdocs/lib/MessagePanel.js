@@ -335,6 +335,7 @@ $.fn.pageMessagePanel = function() {
 HfdlMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
+    this.modes = ['HFDL', 'VDL2', 'ADSB', 'ACARS'];
     this.flight_url = null;
     this.modes_url = null;
 }
@@ -342,7 +343,7 @@ HfdlMessagePanel = function(el) {
 HfdlMessagePanel.prototype = new MessagePanel();
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
-    return (message['mode'] === 'HFDL') || (message['mode'] === 'VDL2') || (message['mode'] === 'ADSB');
+    return this.modes.indexOf(message['mode']) >= 0;
 };
 
 HfdlMessagePanel.prototype.setFlightUrl = function(url) {
