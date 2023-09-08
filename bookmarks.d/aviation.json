@@ -1,71 +1,71 @@
 [
     {
-        "name" : "ACARS - USA & Canada Additional",
+        "name" : "ACARS - USA & Canada 3",
         "frequency" : 129125000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA & Canada Secondary",
+        "name" : "ACARS - USA & Canada 2",
         "frequency" : 130025000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA Additional",
+        "name" : "ACARS - USA 3",
         "frequency" : 130425000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA & Canada Additional",
+        "name" : "ACARS - USA & Canada 4",
         "frequency" : 130450000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA Additional",
+        "name" : "ACARS - USA 4",
         "frequency" : 131125000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - Japan Primary",
+        "name" : "ACARS - Japan",
         "frequency" : 131450000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - Air Canada Company Channel",
+        "name" : "ACARS - AirCanada",
         "frequency" : 131475000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - European Secondary",
+        "name" : "ACARS - Europe 2",
         "frequency" : 131525000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - World Primary",
+        "name" : "ACARS - Worldwide",
         "frequency" : 131550000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - Europe Primary",
+        "name" : "ACARS - Europe",
         "frequency" : 131725000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - New European Channel",
+        "name" : "ACARS - Europe New",
         "frequency" : 131850,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA Additional",
+        "name" : "ACARS - USA 5",
         "frequency" : 136700000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA Additional",
+        "name" : "ACARS - USA 6",
         "frequency" : 136750000,
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - USA Additional",
+        "name" : "ACARS - USA 7",
         "frequency" : 136800000,
         "modulation" : "acars"
     },
