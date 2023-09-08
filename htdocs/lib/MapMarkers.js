@@ -399,7 +399,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 function AprsMarker() {}
 
 // These symbols are all facing east (mostly vehicles)!
-AprsMarker.FACING_EAST = "(*<=>CFPUXYabefghjkpsuv[";
+AprsMarker.FACING_EAST = "(*<=>CFPTUXYabefghjkpsuv[";
 
 AprsMarker.prototype = new Marker();
 
