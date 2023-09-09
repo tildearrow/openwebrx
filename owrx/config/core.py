@@ -12,6 +12,7 @@ class CoreConfig(object):
             "data_directory": "/var/lib/openwebrx",
             "temporary_directory": "/tmp",
             "log_level": "INFO",
+            "temperature_sensor": "/sys/class/thermal/thermal_zone0/temp",
         },
         "web": {
             "port": 8073,
