@@ -24,9 +24,9 @@ from owrx.markers import Markers
 from pathlib import Path
 import signal
 import argparse
+import socket
 import ssl
 import os.path
-import socket
 
 class ThreadedHttpServer(ThreadingMixIn, HTTPServer):
     def __init__(self, web_port, RequestHandlerClass, use_ipv6):
