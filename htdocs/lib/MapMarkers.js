@@ -129,17 +129,20 @@ MarkerManager.prototype.clear = function() {
 function Marker() {}
 
 // Wrap given callsign or other ID into a clickable link.
-Marker.linkify = function(callsign, url = null) {
+Marker.linkify = function(name, url = null, linkEntity = null) {
+    // If no specific link entity, use the ID itself
+    if (linkEntity == null) linkEntity = name;
+
     // If no URL given, assume HAM callsign
     if ((url == null) || (url == '')) url = callsign_url;
 
-    // Must have valid callsign and lookup URL
-    if ((callsign == '') || (url == null) || (url == ''))
-        return callsign;
-    else
+    // Must have valid ID and lookup URL
+    if ((name == '') || (url == null) || (url == '')) {
+        return name;
+    } else {
         return '<a target="callsign_info" href="' +
-            url.replaceAll('{}', callsign.replace(new RegExp('-.*$'), '')) +
-            '">' + callsign + '</a>';
+            url.replaceAll('{}', linkEntity) + '">' + name + '</a>';
+    }
 };
 
 // Create link to tune OWRX to the given frequency and modulation.
@@ -649,6 +652,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     // Linkify title based on what it is (vessel, flight, mode-S code, or else)
+    var linkEntity = null;
     var url = null;
     switch (this.mode) {
         case 'HFDL':
@@ -669,11 +673,12 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             url = vessel_url;
             break;
         default:
+            linkEntity = name.replace(new RegExp('-.*$'), '');
             url = callsign_url;
             break;
     }
 
-    return '<h3>' + Marker.linkify(name, url) + distance + '</h3>'
+    return '<h3>' + Marker.linkify(name, url, linkEntity) + distance + '</h3>'
         + '<div align="center">' + timeString + ' using ' + this.mode
         + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString + hopsString;
