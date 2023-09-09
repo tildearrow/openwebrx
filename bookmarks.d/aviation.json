@@ -50,8 +50,13 @@
         "modulation" : "acars"
     },
     {
-        "name" : "ACARS - Europe New",
-        "frequency" : 131850,
+        "name" : "ACARS - Europe 4",
+        "frequency" : 131850000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - Delta & JetBlue",
+        "frequency" : 136675000,
         "modulation" : "acars"
     },
     {
@@ -60,8 +65,18 @@
         "modulation" : "acars"
     },
     {
+        "name" : "ACARS - Delta",
+        "frequency" : 136725000,
+        "modulation" : "acars"
+    },
+    {
         "name" : "ACARS - USA 6",
         "frequency" : 136750000,
+        "modulation" : "acars"
+    },
+    {
+        "name" : "ACARS - Airlines",
+        "frequency" : 136775000,
         "modulation" : "acars"
     },
     {
@@ -75,13 +90,8 @@
         "modulation" : "acars"
     },
     {
-        "name" : "SITA - Australia & NZ",
-        "frequency" : 131550000,
-        "modulation" : "acars"
-    },
-    {
-        "name" : "ARINC - Australia & NZ",
-        "frequency" : 131450000,
+        "name" : "ACARS - Europe 3",
+        "frequency" : 136900000,
         "modulation" : "acars"
     },
     {
