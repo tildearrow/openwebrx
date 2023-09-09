@@ -32,7 +32,7 @@ class WebpageController(TemplateController):
 
     def template_variables(self):
         header = self.render_template("include/header.include.html", **self.header_variables())
-        return { "header": header, "document_root": self.get_document_root() }
+        return {"header": header, "document_root": self.get_document_root()}
 
 
 class IndexController(WebpageController):

@@ -118,6 +118,7 @@ class OpenWebRxClient(Client, metaclass=ABCMeta):
 class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
     sdr_config_keys = [
         "waterfall_levels",
+        "waterfall_auto_level_default_mode",
         "samp_rate",
         "start_mod",
         "start_freq",
@@ -491,6 +492,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 res["bandpass"] = {"low_cut": m.bandpass.low_cut, "high_cut": m.bandpass.high_cut}
             if isinstance(m, DigitalMode):
                 res["underlying"] = m.underlying
+                res["secondaryFft"] = m.secondaryFft
             return res
 
         self.send({"type": "modes", "value": [to_json(m) for m in modes]})
@@ -515,7 +517,7 @@ class MapConnection(OpenWebRxClient):
             "modes_url",
             "receiver_name",
         )
-        filtered_config.wire(self.write_config)
+        self.configSub = filtered_config.wire(self.write_config)
 
         self.write_config(filtered_config.__dict__())
 
@@ -526,6 +528,7 @@ class MapConnection(OpenWebRxClient):
 
     def close(self, error: bool = False):
         Map.getSharedInstance().removeClient(self)
+        self.configSub.cancel()
         super().close(error)
 
     def write_config(self, cfg):

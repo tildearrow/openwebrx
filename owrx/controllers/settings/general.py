@@ -2,17 +2,17 @@ from owrx.controllers.settings import SettingsFormController
 from owrx.form.section import Section
 from owrx.config.core import CoreConfig
 from owrx.form.input import (
+    CheckboxInput,
     TextInput,
     NumberInput,
     FloatInput,
     TextAreaInput,
     DropdownInput,
-    CheckboxInput,
     Option,
 )
 from owrx.form.input.validator import RangeValidator
 from owrx.form.input.converter import WaterfallColorsConverter, IntConverter
-from owrx.form.input.receiverid import ReceiverKeysConverter
+from owrx.form.input.receiverid import ReceiverKeysInput
 from owrx.form.input.gfx import AvatarInput, TopPhotoInput
 from owrx.form.input.device import WaterfallLevelsInput, WaterfallAutoLevelsInput
 from owrx.form.input.location import LocationInput
@@ -110,12 +110,9 @@ class GeneralSettingsController(SettingsFormController):
             ),
             Section(
                 "Receiver listings",
-                TextAreaInput(
+                ReceiverKeysInput(
                     "receiver_keys",
                     "Receiver keys",
-                    converter=ReceiverKeysConverter(),
-                    infotext="Put the keys you receive on listing sites (e.g. "
-                    + '<a href="https://www.receiverbook.de" target="_blank">Receiverbook</a>) here, one per line',
                 ),
             ),
             Section(
@@ -152,6 +149,11 @@ class GeneralSettingsController(SettingsFormController):
                     "Automatic adjustment margins",
                     infotext="Specifies the upper and lower dynamic headroom that should be added when automatically "
                     + "adjusting waterfall colors",
+                ),
+                CheckboxInput(
+                    "waterfall_auto_level_default_mode",
+                    "Automatically adjust waterfall level by default",
+                    infotext="Enable this to automatically enable auto adjusting waterfall levels on page load.",
                 ),
                 NumberInput(
                     "waterfall_auto_min_range",

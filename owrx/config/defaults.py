@@ -2,7 +2,7 @@ from owrx.property import PropertyLayer
 
 
 defaultConfig = PropertyLayer(
-    version=7,
+    version=8,
     max_clients=20,
     receiver_name="[Callsign]",
     receiver_location="Budapest, Hungary",
@@ -97,7 +97,7 @@ defaultConfig = PropertyLayer(
             ),
         ),
         sdrplay=PropertyLayer(
-            name="SDRPlay RSP2",
+            name="SDRPlay device",
             type="sdrplay",
             antenna="Antenna A",
             rf_gain="auto",
@@ -150,6 +150,7 @@ defaultConfig = PropertyLayer(
     waterfall_scheme="GoogleTurboWaterfall",
     waterfall_levels=PropertyLayer(min=-88, max=-20),
     waterfall_auto_levels=PropertyLayer(min=3, max=10),
+    waterfall_auto_level_default_mode=False,
     waterfall_auto_min_range=50,
     key_locked=False,
     ui_opacity=100,
