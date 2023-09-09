@@ -347,6 +347,13 @@ Demodulator.prototype.setBandpass = function(bandpass) {
     this.set();
 };
 
+Demodulator.prototype.disableBandpass = function() {
+    delete this.bandpass;
+    this.low_cut = null;
+    this.high_cut = null;
+    this.set()
+}
+
 Demodulator.prototype.setLowCut = function(low_cut) {
     this.low_cut = low_cut;
     this.set();

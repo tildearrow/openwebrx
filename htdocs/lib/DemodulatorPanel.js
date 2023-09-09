@@ -91,7 +91,7 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
         return;
     }
 
-    if (this.mode === mode && (!underlyingModulation || this.underlyingModulation === underlyingModulation)) {
+    if (this.mode === mode && this.underlyingModulation === underlyingModulation) {
         return;
     }
     if (!mode.isAvailable()) {
@@ -101,12 +101,9 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
 
     var modulation;
     if (mode.type === 'digimode') {
-        if (underlyingModulation) {
-            modulation = underlyingModulation
-        } else {
-            modulation = mode.underlying[0];
-        }
+        modulation = underlyingModulation = underlyingModulation || mode.underlying[0];
     } else {
+        underlyingModulation = undefined;
         modulation = mode.modulation;
     }
 
@@ -138,8 +135,12 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
 
     if (mode.type === 'digimode') {
         this.demodulator.set_secondary_demod(mode.modulation);
-        if (mode.bandpass) {
-            this.demodulator.setBandpass(mode.bandpass);
+        var uMode = Modes.findByModulation(underlyingModulation);
+        var bandpass = mode.bandpass || (uMode && uMode.bandpass);
+        if (bandpass) {
+            this.demodulator.setBandpass(bandpass);
+        } else {
+            this.demodulator.disableBandpass();
         }
     } else {
         this.demodulator.set_secondary_demod(false);
@@ -147,7 +148,7 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
 
     this.demodulator.start();
     this.mode = mode;
-    this.underlyingModulation = modulation;
+    this.underlyingModulation = underlyingModulation;
 
     this.updateButtons();
     this.updatePanels();
@@ -161,7 +162,8 @@ DemodulatorPanel.prototype.disableDigiMode = function() {
 DemodulatorPanel.prototype.updatePanels = function() {
     var modulation = this.getDemodulator().get_secondary_demod();
     $('#openwebrx-panel-digimodes').attr('data-mode', modulation);
-    toggle_panel("openwebrx-panel-digimodes", !!modulation);
+    var mode = Modes.findByModulation(modulation);
+    toggle_panel("openwebrx-panel-digimodes", modulation && (!mode || mode.secondaryFft));
     toggle_panel("openwebrx-panel-wsjt-message", ["ft8", "wspr", "jt65", "jt9", "ft4", "fst4", "fst4w", "q65", "msk144"].indexOf(modulation) >= 0);
     toggle_panel("openwebrx-panel-js8-message", modulation == "js8");
     toggle_panel("openwebrx-panel-packet-message", ["packet", "ais"].indexOf(modulation) >= 0);
@@ -393,6 +395,6 @@ DemodulatorPanel.prototype.setTuningPrecision = function(precision) {
 $.fn.demodulatorPanel = function(){
     if (!this.data('panel')) {
         this.data('panel', new DemodulatorPanel(this));
-    };
+    }
     return this.data('panel');
 };
