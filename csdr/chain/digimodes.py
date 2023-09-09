@@ -3,7 +3,7 @@ from csdr.module.msk144 import Msk144Module, ParserAdapter
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, Rtty1Decoder, BaudotDecoder, Lowpass, CwDecoder, SstvDecoder, FaxDecoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, JKRttyDecoder, BaudotDecoder, Lowpass, RttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.module import DirewolfModule
 from owrx.sstv import SstvParser
@@ -103,7 +103,7 @@ class JKRttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             FmDemod(),
             Lowpass(Format.FLOAT, cutoff),
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
-            RttyDecoder(invert),
+            JKRttyDecoder(invert),
             BaudotDecoder(),
         ]
         super().__init__(workers)
