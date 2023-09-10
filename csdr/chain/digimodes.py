@@ -5,7 +5,7 @@ from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
 from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, JKRttyDecoder, BaudotDecoder, Lowpass, RttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, Shift
 from pycsdr.types import Format
-from owrx.aprs.module import DirewolfModule
+from owrx.aprs.direwolf import DirewolfModule
 from owrx.sstv import SstvParser
 from owrx.fax import FaxParser
 from owrx.config import Config

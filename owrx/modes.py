@@ -134,7 +134,7 @@ class Modes(object):
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
-# Using current RTTY decoder for now
+# Testing jketterl's RTTY decoder
         DigitalMode("jkrtty170", "RTTY 45/170", underlying=["usb", "lsb"]),
         DigitalMode("jkrtty450", "RTTY 50N/450", underlying=["lsb", "usb"]),
         DigitalMode("jkrtty85", "RTTY 50N/85", underlying=["lsb", "usb"]),
