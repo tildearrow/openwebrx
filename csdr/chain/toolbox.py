@@ -31,12 +31,11 @@ class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, decoders: list[str], parser, withSquelch: bool = False):
-        self.sampleRate = 24000
+        self.sampleRate = 22050
         self.squelch = None
         self.parser = parser
         workers = [
             FmDemod(),
-            AudioResampler(self.sampleRate, 22050),
             Convert(Format.FLOAT, Format.SHORT),
             MultimonModule(decoders),
             self.parser,
