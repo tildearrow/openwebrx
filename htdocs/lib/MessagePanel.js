@@ -52,7 +52,7 @@ MessagePanel.prototype.htmlEscape = function(input) {
 };
 
 MessagePanel.prototype.scrollToBottom = function() {
-    var $t = $(this.el).find('table');
+    var $t = $(this.el).find('tbody');
     $t.scrollTop($t[0].scrollHeight);
 };
 
