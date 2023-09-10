@@ -47,6 +47,15 @@ MessagePanel.prototype.initClearButton = function() {
     $(me.el).append(me.clearButton);
 };
 
+MessagePanel.prototype.htmlEscape = function(input) {
+    return $('<div/>').text(input).html()
+};
+
+MessagePanel.prototype.scrollToBottom = function() {
+    var $t = $(this.el).find('table');
+    $t.scrollTop($t[0].scrollHeight);
+};
+
 function WsjtMessagePanel(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
@@ -55,7 +64,7 @@ function WsjtMessagePanel(el) {
     this.modes = [].concat(this.qsoModes, this.beaconModes);
 }
 
-WsjtMessagePanel.prototype = new MessagePanel();
+WsjtMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 WsjtMessagePanel.prototype.supportsMessage = function(message) {
     return this.modes.indexOf(message['mode']) >= 0;
@@ -85,23 +94,19 @@ WsjtMessagePanel.prototype.pushMessage = function(msg) {
     var linkedmsg = msg['msg'];
     var matches;
 
-    var html_escape = function(input) {
-        return $('<div/>').text(input).html()
-    };
-
     if (this.qsoModes.indexOf(msg['mode']) >= 0) {
         matches = linkedmsg.match(/(.*\s[A-Z0-9]+\s)([A-R]{2}[0-9]{2})$/);
         if (matches && matches[2] !== 'RR73') {
-            linkedmsg = html_escape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>';
+            linkedmsg = this.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>';
         } else {
-            linkedmsg = html_escape(linkedmsg);
+            linkedmsg = this.htmlEscape(linkedmsg);
         }
     } else if (this.beaconModes.indexOf(msg['mode']) >= 0) {
         matches = linkedmsg.match(/([A-Z0-9]*\s)([A-R]{2}[0-9]{2})(\s[0-9]+)/);
         if (matches) {
-            linkedmsg = html_escape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>' + html_escape(matches[3]);
+            linkedmsg = this.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>' + this.htmlEscape(matches[3]);
         } else {
-            linkedmsg = html_escape(linkedmsg);
+            linkedmsg = this.htmlEscape(linkedmsg);
         }
     }
     $b.append($(
@@ -113,7 +118,7 @@ WsjtMessagePanel.prototype.pushMessage = function(msg) {
         '<td class="message">' + linkedmsg + '</td>' +
         '</tr>'
     ));
-    $b.scrollTop($b[0].scrollHeight);
+    this.scrollToBottom();
 }
 
 $.fn.wsjtMessagePanel = function(){
@@ -128,7 +133,7 @@ function PacketMessagePanel(el) {
     this.initClearTimer();
 }
 
-PacketMessagePanel.prototype = new MessagePanel();
+PacketMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 PacketMessagePanel.prototype.supportsMessage = function(message) {
     return (message['mode'] === 'APRS') || (message['mode'] === 'AIS');
@@ -157,6 +162,7 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.type && msg.type === 'thirdparty' && msg.data) {
         msg = msg.data;
     }
+
     var source = msg.source;
     if (msg.type) {
         if (msg.type === 'nmea') {
@@ -216,10 +222,10 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         '<td>' + timestamp + '</td>' +
         '<td class="callsign">' + source + '</td>' +
         '<td class="coord">' + link + '</td>' +
-        '<td class="message">' + (msg.comment || msg.message || '') + '</td>' +
+        '<td class="message">' + this.htmlEscape(msg.comment || msg.message || '') + '</td>' +
         '</tr>'
     ));
-    $b.scrollTop($b[0].scrollHeight);
+    this.scrollToBottom();
 };
 
 $.fn.packetMessagePanel = function() {
@@ -234,7 +240,7 @@ PocsagMessagePanel = function(el) {
     this.initClearTimer();
 }
 
-PocsagMessagePanel.prototype = new MessagePanel();
+PocsagMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 PocsagMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'Pocsag';
@@ -257,10 +263,10 @@ PocsagMessagePanel.prototype.pushMessage = function(msg) {
     $b.append($(
         '<tr>' +
             '<td class="address">' + msg.address + '</td>' +
-            '<td class="message">' + msg.message + '</td>' +
+            '<td class="message">' + this.htmlEscape(msg.message) + '</td>' +
         '</tr>'
     ));
-    $b.scrollTop($b[0].scrollHeight);
+    this.scrollToBottom();
 };
 
 $.fn.pocsagMessagePanel = function() {
@@ -275,7 +281,7 @@ PageMessagePanel = function(el) {
     this.initClearTimer();
 }
 
-PageMessagePanel.prototype = new MessagePanel();
+PageMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 PageMessagePanel.prototype.supportsMessage = function(message) {
     return (message['mode'] === 'FLEX') || (message['mode'] === 'POCSAG');
@@ -295,10 +301,6 @@ PageMessagePanel.prototype.render = function() {
 };
 
 PageMessagePanel.prototype.pushMessage = function(msg) {
-    var html_escape = function(input) {
-        return $('<div/>').text(input).html()
-    };
-
     // Get color from the message, default to white
     var color = msg.hasOwnProperty('color')? msg.color : "#FFF";
 
@@ -316,13 +318,13 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.hasOwnProperty('message')) {
         $b.append($(
             '<tr><td class="message" colspan="3">' +
-            html_escape(msg.message) +
+            this.htmlEscape(msg.message) +
             '</td></tr>'
         ));
     }
 
     // Jump list to the last received message
-    $b.scrollTop($b[0].scrollHeight);
+    this.scrollToBottom();
 };
 
 $.fn.pageMessagePanel = function() {
@@ -340,7 +342,7 @@ HfdlMessagePanel = function(el) {
     this.modes_url = null;
 }
 
-HfdlMessagePanel.prototype = new MessagePanel();
+HfdlMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
     return this.modes.indexOf(message['mode']) >= 0;
@@ -429,7 +431,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     }
 
     // Jump list to the last received message
-    $b.scrollTop($b[0].scrollHeight);
+    this.scrollToBottom();
 };
 
 $.fn.hfdlMessagePanel = function() {
@@ -447,7 +449,7 @@ IsmMessagePanel = function(el) {
     this.basicInfo = ['mode', 'id', 'model', 'time', 'color'];
 }
 
-IsmMessagePanel.prototype = new MessagePanel();
+IsmMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 IsmMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'ISM';
@@ -510,7 +512,7 @@ IsmMessagePanel.prototype.pushMessage = function(msg) {
     if (last) $b.append($('<tr>' + last + '<td class="attr"/></tr>'));
 
     // Jump list to the last received message
-    $b.scrollTop($b[0].scrollHeight);
+    this.scrollToBottom();
 };
 
 $.fn.ismMessagePanel = function() {
@@ -525,7 +527,7 @@ SstvMessagePanel = function(el) {
     this.initClearTimer();
 }
 
-SstvMessagePanel.prototype = new MessagePanel();
+SstvMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 SstvMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'SSTV';
@@ -548,7 +550,7 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
         // Append a new debug message text
 // See service log for debug output instead
 //        $b.append($('<tr><td class="message">' + msg.message + '</td></tr>'));
-//        $b.scrollTop($b[0].scrollHeight);
+//        this.scrollToBottom();
     }
     else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
         var f = msg.frequency>0? ' at ' + Math.floor(msg.frequency/1000) + 'kHz' : '';
@@ -594,7 +596,7 @@ FaxMessagePanel = function(el) {
     this.initClearTimer();
 }
 
-FaxMessagePanel.prototype = new MessagePanel();
+FaxMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 FaxMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'Fax';
@@ -617,7 +619,7 @@ FaxMessagePanel.prototype.pushMessage = function(msg) {
         // Append a new debug message text
 // See service log for debug output instead
 //        $b.append($('<tr><td class="message">' + msg.message + '</td></tr>'));
-//        $b.scrollTop($b[0].scrollHeight);
+//        this.scrollToBottom();
     }
     else if(msg.width>0 && msg.height>0 && !msg.hasOwnProperty('line')) {
         var f = msg.frequency>0? ' at ' + Math.floor(msg.frequency/1000) + 'kHz' : '';
@@ -629,7 +631,7 @@ FaxMessagePanel.prototype.pushMessage = function(msg) {
             '"></canvas></div>';
         // Append a new canvas
         $b.append($('<tr><td class="message">' + h + c + '</td></tr>'));
-        $b.scrollTop($b[0].scrollHeight);
+        this.scrollToBottom();
         // Save canvas context and dimensions for future use
         this.ctx    = $(this.el).find('canvas').get(-1).getContext("2d");
         this.width  = msg.width;
