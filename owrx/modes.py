@@ -179,7 +179,7 @@ class Modes(object):
         DigitalMode(
             "page",
             "Page",
-            underlying=["nfm"],
+            underlying=["empty"],
             bandpass=Bandpass(-6000, 6000),
             requirements=["page"],
             service=True,
@@ -205,21 +205,21 @@ class Modes(object):
         DigitalMode(
             "selcall",
             "SelCall",
-            underlying=["nfm"],
+            underlying=["empty"],
             requirements=["selcall"],
             squelch=True
         ),
         DigitalMode(
             "zvei",
             "Zvei",
-            underlying=["nfm"],
+            underlying=["empty"],
             requirements=["selcall"],
             squelch=True
         ),
         DigitalMode(
             "ism",
             "ISM",
-            underlying=["nfm"],
+            underlying=["empty"],
             bandpass=Bandpass(-125000, 125000),
             requirements=["ism"],
             service=True,
@@ -228,7 +228,7 @@ class Modes(object):
         DigitalMode(
             "hfdl",
             "HFDL",
-            underlying=["usb"],
+            underlying=["empty"],
             bandpass=Bandpass(0, 3000),
             requirements=["hfdl"],
             service=True,
@@ -237,7 +237,7 @@ class Modes(object):
         DigitalMode(
             "vdl2",
             "VDL2",
-            underlying=["nfm"],
+            underlying=["empty"],
             bandpass=Bandpass(-12500, 12500),
             requirements=["vdl2"],
             service=True,
@@ -255,11 +255,12 @@ class Modes(object):
         DigitalMode(
             "adsb",
             "ADSB",
-            underlying=["nfm"],
+            underlying=["empty"],
             bandpass=Bandpass(-1200000, 1200000),
             requirements=["adsb"],
             service=True,
-            squelch=False
+            squelch=False,
+            secondaryFft=False
         ),
     ]
 
