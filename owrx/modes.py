@@ -135,9 +135,9 @@ class Modes(object):
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
 # Using current RTTY decoder for now
-#        DigitalMode("jk-rtty170", "RTTY 45/170", underlying=["usb", "lsb"]),
-#        DigitalMode("jk-rtty450", "RTTY 50N/450", underlying=["lsb", "usb"]),
-#        DigitalMode("jk-rtty85", "RTTY 50N/85", underlying=["lsb", "usb"]),
+        DigitalMode("jkrtty170", "RTTY 45/170", underlying=["usb", "lsb"]),
+        DigitalMode("jkrtty450", "RTTY 50N/450", underlying=["lsb", "usb"]),
+        DigitalMode("jkrtty85", "RTTY 50N/85", underlying=["lsb", "usb"]),
         WsjtMode("ft8", "FT8"),
         WsjtMode("ft4", "FT4"),
         WsjtMode("jt65", "JT65"),
