@@ -85,9 +85,13 @@ Envelope.prototype.draw = function(visible_range){
         scale_ctx.font = "bold 11px sans-serif";
         scale_ctx.textBaseline = "top";
         scale_ctx.textAlign = "left";
-        scale_ctx.fillText(this.demodulator.high_cut.toString(), to_px + env_att_w, env_h2);
+        if (typeof(this.demodulator.high_cut) === 'number') {
+            scale_ctx.fillText(this.demodulator.high_cut.toString(), to_px + env_att_w, env_h2);
+        }
         scale_ctx.textAlign = "right";
-        scale_ctx.fillText(this.demodulator.low_cut.toString(), from_px - env_att_w, env_h2);
+        if (typeof(this.demodulator.low_cut) === 'number') {
+            scale_ctx.fillText(this.demodulator.low_cut.toString(), from_px - env_att_w, env_h2);
+        }
     }
     if (typeof line !== "undefined") // out of screen?
     {
