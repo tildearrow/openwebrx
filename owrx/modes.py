@@ -151,7 +151,7 @@ class Modes(object):
         DigitalMode(
             "packet",
             "Packet",
-            underlying=["nfm", "usb", "lsb"], #["empty"],
+            underlying=["empty"], #["nfm", "usb", "lsb"],
             bandpass=Bandpass(-6250, 6250),
             requirements=["packet"],
             service=True,
@@ -160,7 +160,7 @@ class Modes(object):
         DigitalMode(
             "ais",
             "AIS",
-            underlying=["nfm"], #["empty"],
+            underlying=["empty"], #["nfm"],
             bandpass=Bandpass(-6250, 6250),
             requirements=["packet"],
             service=True,
