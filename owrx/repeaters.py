@@ -64,7 +64,7 @@ class Repeaters(object):
     @staticmethod
     def getModulation(entry):
         if "FM Analog" in entry and entry["FM Analog"]=="Yes":
-            return "fm"
+            return "nfm"
         elif "M17" in entry and entry["M17"]=="Yes":
             return "m17"
         elif "DMR" in entry and entry["DMR"]=="Yes":
@@ -76,7 +76,7 @@ class Repeaters(object):
         elif "NXDN" in entry and entry["NXDN"]=="Yes":
             return "nxdn"
         else:
-            return "fm"
+            return "nfm"
 
     def __init__(self):
         self.refreshPeriod = 60*60*24
