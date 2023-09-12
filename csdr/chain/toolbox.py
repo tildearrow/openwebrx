@@ -150,7 +150,7 @@ class AdsbDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.parser = AdsbParser(service=service)
         workers = [
             Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
-            Dump1090Module(rawOutput = not service),
+            Dump1090Module(rawOutput = True),
             self.parser,
         ]
         # Connect all the workers

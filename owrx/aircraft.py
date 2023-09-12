@@ -1,3 +1,4 @@
+from csdr.module import LineBasedModule
 from owrx.toolbox import TextParser, ColorCache
 from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
@@ -219,7 +220,7 @@ class AircraftManager(object):
 # Base class for aircraft message parsers.
 #
 class AircraftParser(TextParser):
-    def __init__(self, filePrefix: str, service: bool = False):
+    def __init__(self, filePrefix: str = None, service: bool = False):
         super().__init__(filePrefix=filePrefix, service=service)
 
     def parseAcars(self, data, out):
@@ -403,14 +404,14 @@ class Vdl2Parser(AircraftParser):
 #
 class AdsbParser(AircraftParser):
     def __init__(self, service: bool = False):
-        super().__init__(filePrefix="ADSB", service=service)
+        super().__init__(filePrefix=None, service=service)
         self.smode_parser = ModeSParser()
 
-    def parse(self, msg: str):
+    def process(self, line: bytes) -> any:
         # If it is a valid Mode-S message...
-        if msg.startswith("*") and msg.endswith(";") and len(msg) in [16, 30]:
+        if line.startswith(b"*") and line.endswith(b";") and len(line) in [16, 30]:
             # Parse Mode-S message
-            out = self.smode_parser.process(bytes.fromhex(msg[1:-1]))
+            out = self.smode_parser.process(bytes.fromhex(line[1:-1].decode("utf-8")))
             #logger.debug("@@@ PARSE OUT: {0}".format(out))
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
@@ -478,7 +479,7 @@ class AcarsParser(AircraftParser):
         data = json.loads(msg)
         pm   = Config.get()
         ts   = data["timestamp"]
-        logger.debug("@@@ ACARS: {0}".format(data))
+        #logger.debug("@@@ ACARS: {0}".format(data))
         # Collect basic data first
         out = {
             "mode" : "ACARS",

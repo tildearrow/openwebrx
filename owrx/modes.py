@@ -135,9 +135,9 @@ class Modes(object):
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
 # Testing jketterl's RTTY decoder
-        DigitalMode("jkrtty170", "RTTY 45/170", underlying=["usb", "lsb"]),
-        DigitalMode("jkrtty450", "RTTY 50N/450", underlying=["lsb", "usb"]),
-        DigitalMode("jkrtty85", "RTTY 50N/85", underlying=["lsb", "usb"]),
+        DigitalMode("jkrtty170", "RTTY-170 / 45", underlying=["usb", "lsb"]),
+        DigitalMode("jkrtty450", "RTTY-450 / 50N", underlying=["usb", "lsb"]),
+        DigitalMode("jkrtty85", "RTTY-85 / 50N", underlying=["usb", "lsb"]),
         WsjtMode("ft8", "FT8"),
         WsjtMode("ft4", "FT4"),
         WsjtMode("jt65", "JT65"),
@@ -205,14 +205,14 @@ class Modes(object):
         DigitalMode(
             "selcall",
             "SelCall",
-            underlying=["empty"],
+            underlying=["nfm"],
             requirements=["selcall"],
             squelch=True
         ),
         DigitalMode(
             "zvei",
             "Zvei",
-            underlying=["empty"],
+            underlying=["nfm"],
             requirements=["selcall"],
             squelch=True
         ),
