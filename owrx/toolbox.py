@@ -1,6 +1,6 @@
 from owrx.storage import Storage
 from owrx.config import Config
-from csdr.module import ThreadModule
+from csdr.module import LineBasedModule
 from pycsdr.types import Format
 from datetime import datetime
 import pickle
@@ -45,8 +45,8 @@ class ColorCache:
             del self.colorBuf[old_id]
 
 
-class TextParser(ThreadModule):
-    def __init__(self, filePrefix: str = "LOG", service: bool = False):
+class TextParser(LineBasedModule):
+    def __init__(self, filePrefix: str = None, service: bool = False):
         self.service   = service
         self.frequency = 0
         self.data      = bytearray(b'')
@@ -88,7 +88,7 @@ class TextParser(ThreadModule):
 
     def writeFile(self, data):
         # If no file open, create and open a new file
-        if self.file is None:
+        if self.file is None and self.filePfx is not None:
             self.newFile(Storage().makeFileName(self.filePfx+"-{0}", self.frequency))
         # If file open now...
         if self.file is not None:
@@ -122,74 +122,34 @@ class TextParser(ThreadModule):
     def getUtcTime(self) -> str:
         return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
-    # DERIVED CLASSES SHOULD IMPLEMENT THIS FUNCTION!
-    def parse(self, msg: str):
-        # By default, do not parse, just return the string
-        return msg
-
-    # ONLY IMPLEMENT THIS FUNCTION WHEN REPORTING LOCATION FROM SERVICE!
-    def updateLocation(self, msg: str):
-        # By default, do nothing
-        pass
+    # By default, do not parse
+    def parse(self, msg: bytes):
+        return None
 
     def run(self):
         logger.debug("%s starting..." % self.myName())
-        # Run while there is input data
-        while self.doRun:
-            # Read input data
-            inp = self.reader.read()
-            # Terminate if no input data
-            if inp is None:
-                logger.debug("%s exiting..." % self.myName())
-                self.doRun = False
-                break
-            # Add read data to the buffer
-            self.data = self.data + inp.tobytes()
-            # Process buffer contents
-            out = self.process()
-            # Keep processing while there is input to parse
-            while out is not None:
-                if len(out)>0:
-                    if isinstance(out, bytes):
-                        self.writer.write(out)
-                    elif isinstance(out, str):
-                        self.writer.write(bytes(out, 'utf-8'))
-                    else:
-                        self.writer.write(pickle.dumps(out))
-                out = self.process()
+        super().run()
+        logger.debug("%s exiting..." % self.myName())
 
-    def process(self):
+    def process(self, line: bytes) -> any:
         # No result yet
         out = None
 
-        # Search for end-of-line
-        eol = self.data.find(b'\n')
+        try:
+            #logger.debug("%s: %s" % (self.myName(), str(line)))
+            # If running as a service with a log file...
+            if self.service and self.filePfx is not None:
+                # Write message into open log file, including end-of-line
+                self.writeFile(line)
+                self.writeFile(b"\n")
+            # Let parse() function do its thing
+            out = self.parse(line)
 
-        # If found end-of-line...
-        if eol>=0:
-            try:
-                msg = self.data[0:eol].decode(encoding="utf-8", errors="replace")
-                #logger.debug("%s: %s" % (self.myName(), msg))
-                # If running as a service...
-                if self.service:
-                    # Write message into open log file, including end-of-line
-                    self.writeFile(self.data[0:eol+1])
-                    # Optionally, parse and report location
-                    self.updateLocation(msg)
-                    # Empty result
-                    out = {}
-                else:
-                    # Let parse() function do its thing
-                    out = self.parse(msg)
+        except Exception as exptn:
+            logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
 
-            except Exception as exptn:
-                logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
-
-            # Remove parsed message from input, including end-of-line
-            del self.data[0:eol+1]
-
-        # Return parsed result or None if no result yet
-        return out
+        # Return parsed result, ignore result in service mode
+        return out if not self.service else None
 
 
 class IsmParser(TextParser):
@@ -199,7 +159,10 @@ class IsmParser(TextParser):
         # Construct parent object
         super().__init__(filePrefix="ISM", service=service)
 
-    def parse(self, msg: str):
+    def parse(self, msg: bytes):
+        # Do not parse in service mode
+        if self.service:
+            return None
         # Expect JSON data in text form
         out = json.loads(msg)
         # Add mode name and a color to identify the sender
@@ -232,14 +195,16 @@ class PageParser(TextParser):
         # Construct parent object
         super().__init__(filePrefix="PAGE", service=service)
 
-    def parse(self, msg: str):
-        # Steer message to POCSAG or FLEX parser
-        if msg.startswith("POCSAG"):
-            return self.parsePocsag(msg)
-        elif msg.startswith("FLEX"):
-            return self.parseFlex(msg)
+    def parse(self, msg: bytes):
+        # Steer message to POCSAG or FLEX parser, do not parse if service
+        if self.service:
+            return None
+        elif msg.startswith(b"POCSAG"):
+            return self.parsePocsag(msg.decode('utf-8', 'replace'))
+        elif msg.startswith(b"FLEX"):
+            return self.parseFlex(msg.decode('utf-8', 'replace'))
         else:
-            return {}
+            return None
 
     def collapseSpaces(self, msg: str) -> str:
         # Collapse white space
@@ -254,7 +219,7 @@ class PageParser(TextParser):
 
     def parsePocsag(self, msg: str):
         # No result yet
-        out = {}
+        out = None
 
         # Parse POCSAG messages
         r = self.rePocsag.match(msg)
@@ -293,7 +258,7 @@ class PageParser(TextParser):
 
     def parseFlex(self, msg: str):
         # No result yet
-        out = {}
+        out = None
 
         # Parse FLEX messages
         r = self.reFlex1.match(msg)
@@ -356,8 +321,12 @@ class SelCallParser(TextParser):
         # Construct parent object
         super().__init__(filePrefix="SELCALL", service=service)
 
-    def parse(self, msg: str):
+    def parse(self, msg: bytes):
+        # Do not parse in service mode
+        if self.service:
+            return None
         # Parse SELCALL messages
+        msg = msg.decode('utf-8', 'replace')
         dec = None
         out = ""
         r = self.reSplit.split(msg)

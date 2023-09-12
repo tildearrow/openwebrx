@@ -170,6 +170,8 @@ var waterfall_max_level_default;
 var waterfall_colors = buildWaterfallColors(['#000', '#FFF']);
 var waterfall_auto_levels;
 var waterfall_auto_min_range;
+var waterfall_measure_minmax_now = false;
+var waterfall_measure_minmax_continuous = false;
 
 function buildWaterfallColors(input) {
     return chroma.scale(input).colors(256, 'rgb')
@@ -1021,12 +1023,19 @@ function on_ws_recv(evt) {
                         if ('waterfall_levels' in config) {
                             waterfall_min_level_default = config['waterfall_levels']['min'];
                             waterfall_max_level_default = config['waterfall_levels']['max'];
-                            waterfallColorsDefault();
                         }
                         if ('waterfall_auto_levels' in config)
                             waterfall_auto_levels = config['waterfall_auto_levels'];
                         if ('waterfall_auto_min_range' in config)
                             waterfall_auto_min_range = config['waterfall_auto_min_range'];
+                        if ('waterfall_auto_level_default_mode' in config)
+                            waterfall_measure_minmax_continuous = config['waterfall_auto_level_default_mode'];
+
+                        var waterfallAutoButton = $('#openwebrx-waterfall-colors-auto');
+                        waterfallAutoButton[waterfall_measure_minmax_continuous ? 'addClass' : 'removeClass']('highlighted');
+                        $('#openwebrx-waterfall-color-min, #openwebrx-waterfall-color-max').prop('disabled', waterfall_measure_minmax_continuous);
+
+                        waterfallColorsDefault();
 
                         var initial_demodulator_params = {};
                         if ('start_mod' in config)
@@ -1071,7 +1080,6 @@ function on_ws_recv(evt) {
                             $('#openwebrx-sdr-profiles-listbox').val(currentprofile.toString());
 
                             stopScanner();
-                            waterfallColorsDefault();
                             tuning_step_reset();
                             waterfall_clear();
                             zoom_set(0);
@@ -1187,17 +1195,10 @@ function on_ws_recv(evt) {
                         break;
                     case 'secondary_demod':
                         var value = json['value'];
-                        var panels = [
-                            $("#openwebrx-panel-wsjt-message").wsjtMessagePanel(),
-                            $('#openwebrx-panel-packet-message').packetMessagePanel(),
-                            $('#openwebrx-panel-pocsag-message').pocsagMessagePanel(),
-                            $('#openwebrx-panel-page-message').pageMessagePanel(),
-                            $('#openwebrx-panel-hfdl-message').hfdlMessagePanel(),
-                            $('#openwebrx-panel-sstv-message').sstvMessagePanel(),
-                            $('#openwebrx-panel-fax-message').faxMessagePanel(),
-                            $('#openwebrx-panel-ism-message').ismMessagePanel(),
-                            $("#openwebrx-panel-js8-message").js8()
-                        ];
+                        var panels = ['wsjt', 'packet', 'pocsag', 'page', 'sstv', 'fax', 'ism', 'hfdl'].map(function(id) {
+                            return $('#openwebrx-panel-' + id + '-message')[id + 'MessagePanel']();
+                        });
+                        panels.push($('#openwebrx-panel-js8-message').js8());
                         if (!panels.some(function(panel) {
                             if (!panel.supportsMessage(value)) return false;
                             panel.pushMessage(value);
@@ -1284,9 +1285,6 @@ function on_ws_recv(evt) {
         }
     }
 }
-
-var waterfall_measure_minmax_now = false;
-var waterfall_measure_minmax_continuous = false;
 
 function waterfall_measure_minmax_do(what) {
     // Get visible range
@@ -1871,14 +1869,9 @@ function secondary_demod_init() {
         .mousedown(secondary_demod_canvas_container_mousedown)
         .mouseenter(secondary_demod_canvas_container_mousein)
         .mouseleave(secondary_demod_canvas_container_mouseleave);
-    $('#openwebrx-panel-wsjt-message').wsjtMessagePanel();
-    $('#openwebrx-panel-packet-message').packetMessagePanel();
-    $('#openwebrx-panel-pocsag-message').pocsagMessagePanel();
-    $('#openwebrx-panel-page-message').pageMessagePanel();
-    $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
-    $('#openwebrx-panel-sstv-message').sstvMessagePanel();
-    $('#openwebrx-panel-fax-message').faxMessagePanel();
-    $('#openwebrx-panel-ism-message').ismMessagePanel();
+    ['wsjt', 'packet', 'pocsag', 'page', 'sstv', 'fax', 'ism', 'hfdl'].forEach(function(id){
+        $('#openwebrx-panel-' + id + '-message')[id + 'MessagePanel']();
+    })
     $('#openwebrx-panel-js8-message').js8();
 }
 

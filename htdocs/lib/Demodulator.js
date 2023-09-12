@@ -85,9 +85,13 @@ Envelope.prototype.draw = function(visible_range){
         scale_ctx.font = "bold 11px sans-serif";
         scale_ctx.textBaseline = "top";
         scale_ctx.textAlign = "left";
-        scale_ctx.fillText(this.demodulator.high_cut.toString(), to_px + env_att_w, env_h2);
+        if (typeof(this.demodulator.high_cut) === 'number') {
+            scale_ctx.fillText(this.demodulator.high_cut.toString(), to_px + env_att_w, env_h2);
+        }
         scale_ctx.textAlign = "right";
-        scale_ctx.fillText(this.demodulator.low_cut.toString(), from_px - env_att_w, env_h2);
+        if (typeof(this.demodulator.low_cut) === 'number') {
+            scale_ctx.fillText(this.demodulator.low_cut.toString(), from_px - env_att_w, env_h2);
+        }
     }
     if (typeof line !== "undefined") // out of screen?
     {
@@ -346,6 +350,13 @@ Demodulator.prototype.setBandpass = function(bandpass) {
     this.high_cut = bandpass.high_cut;
     this.set();
 };
+
+Demodulator.prototype.disableBandpass = function() {
+    delete this.bandpass;
+    this.low_cut = null;
+    this.high_cut = null;
+    this.set()
+}
 
 Demodulator.prototype.setLowCut = function(low_cut) {
     this.low_cut = low_cut;

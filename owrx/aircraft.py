@@ -1,3 +1,4 @@
+from csdr.module import LineBasedModule
 from owrx.toolbox import TextParser, ColorCache
 from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
@@ -219,9 +220,23 @@ class AircraftManager(object):
 # Base class for aircraft message parsers.
 #
 class AircraftParser(TextParser):
-    def __init__(self, filePrefix: str, service: bool = False):
+    def __init__(self, filePrefix: str = None, service: bool = False):
         super().__init__(filePrefix=filePrefix, service=service)
 
+    def parse(self, msg: bytes):
+        # Parse incoming message via mode-specific function
+        out = self.parseAircraft(msg)
+        # Update aircraft database with the new data
+        if out is not None:
+            AircraftManager.getSharedInstance().update(out)
+        # Done
+        return out
+
+    # Mode-specific parse function
+    def parseAircraft(self, msg: bytes):
+        return None
+
+    # Common function to parse ACARS subframes in HFDL/VDL2/etc
     def parseAcars(self, data, out):
         # Collect data
         out["type"]     = "ACARS frame"
@@ -242,7 +257,7 @@ class HfdlParser(AircraftParser):
     def __init__(self, service: bool = False):
         super().__init__(filePrefix="HFDL", service=service)
 
-    def parse(self, msg: str):
+    def parseAircraft(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
         pm   = Config.get()
@@ -266,8 +281,7 @@ class HfdlParser(AircraftParser):
         # Parse MPDU if present
         if "mpdu" in data["hfdl"]:
             self.parseMpdu(data["hfdl"]["mpdu"], out)
-        # Update aircraft database with the new data
-        AircraftManager.getSharedInstance().update(out)
+        # Done
         return out
 
     def parseSpdu(self, data, out):
@@ -330,7 +344,7 @@ class Vdl2Parser(AircraftParser):
     def __init__(self, service: bool = False):
         super().__init__(filePrefix="VDL2", service=service)
 
-    def parse(self, msg: str):
+    def parseAircraft(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
         pm   = Config.get()
@@ -345,8 +359,7 @@ class Vdl2Parser(AircraftParser):
         # Parse AVLC if present
         if "avlc" in data["vdl2"]:
             self.parseAvlc(data["vdl2"]["avlc"], out)
-        # Update aircraft database with the new data
-        AircraftManager.getSharedInstance().update(out)
+        # Done
         return out
 
     def parseAvlc(self, data, out):
@@ -403,14 +416,15 @@ class Vdl2Parser(AircraftParser):
 #
 class AdsbParser(AircraftParser):
     def __init__(self, service: bool = False):
-        super().__init__(filePrefix="ADSB", service=service)
+        super().__init__(filePrefix=None, service=service)
         self.smode_parser = ModeSParser()
 
-    def parse(self, msg: str):
+    def parseAircraft(self, msg: bytes):
         # If it is a valid Mode-S message...
-        if msg.startswith("*") and msg.endswith(";") and len(msg) in [16, 30]:
+        if msg.startswith(b"*") and msg.endswith(b";") and len(msg) in [16, 30]:
             # Parse Mode-S message
-            out = self.smode_parser.process(bytes.fromhex(msg[1:-1]))
+            msg = msg[1:-1].decode('utf-8', 'replace')
+            out = self.smode_parser.process(bytes.fromhex(msg))
             #logger.debug("@@@ PARSE OUT: {0}".format(out))
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
@@ -450,12 +464,11 @@ class AdsbParser(AircraftParser):
                     out["course"] = round(out["heading"])
                 elif "groundtrack" in out:
                     out["course"] = round(out["groundtrack"])
-                # Update aircraft database with the new data
-                AircraftManager.getSharedInstance().update(out)
+                # Done
                 return out
 
         # No data parsed
-        return {}
+        return None
 
 
 #
@@ -473,12 +486,12 @@ class AcarsParser(AircraftParser):
             "eta"    : "eta",
         }
 
-    def parse(self, msg: str):
+    def parseAircraft(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
         pm   = Config.get()
         ts   = data["timestamp"]
-        logger.debug("@@@ ACARS: {0}".format(data))
+        #logger.debug("@@@ ACARS: {0}".format(data))
         # Collect basic data first
         out = {
             "mode" : "ACARS",
@@ -491,6 +504,5 @@ class AcarsParser(AircraftParser):
         for key in self.attrMap:
             if key in data:
                 out[self.attrMap[key]] = data[key]
-        # Update aircraft database with the new data
-        AircraftManager.getSharedInstance().update(out)
+        # Done
         return out
