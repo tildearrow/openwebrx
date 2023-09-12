@@ -144,9 +144,8 @@ class TextParser(LineBasedModule):
                 # Write message into open log file, including end-of-line
                 self.writeFile(line)
                 self.writeFile(b"\n")
-            else:
-                # Let parse() function do its thing
-                out = self.parse(msg)
+            # Let parse() function do its thing
+            out = self.parse(msg)
 
         except Exception as exptn:
             logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
@@ -163,6 +162,9 @@ class IsmParser(TextParser):
         super().__init__(filePrefix="ISM", service=service)
 
     def parse(self, msg: str):
+        # Do not parse in service mode
+        if self.service:
+            return None
         # Expect JSON data in text form
         out = json.loads(msg)
         # Add mode name and a color to identify the sender
@@ -196,13 +198,15 @@ class PageParser(TextParser):
         super().__init__(filePrefix="PAGE", service=service)
 
     def parse(self, msg: str):
-        # Steer message to POCSAG or FLEX parser
-        if msg.startswith("POCSAG"):
+        # Steer message to POCSAG or FLEX parser, do not parse if service
+        if self.service:
+            return None
+        elif msg.startswith("POCSAG"):
             return self.parsePocsag(msg)
         elif msg.startswith("FLEX"):
             return self.parseFlex(msg)
         else:
-            return {}
+            return None
 
     def collapseSpaces(self, msg: str) -> str:
         # Collapse white space
@@ -217,7 +221,7 @@ class PageParser(TextParser):
 
     def parsePocsag(self, msg: str):
         # No result yet
-        out = {}
+        out = None
 
         # Parse POCSAG messages
         r = self.rePocsag.match(msg)
@@ -256,7 +260,7 @@ class PageParser(TextParser):
 
     def parseFlex(self, msg: str):
         # No result yet
-        out = {}
+        out = None
 
         # Parse FLEX messages
         r = self.reFlex1.match(msg)
@@ -320,6 +324,9 @@ class SelCallParser(TextParser):
         super().__init__(filePrefix="SELCALL", service=service)
 
     def parse(self, msg: str):
+        # Do not parse in service mode
+        if self.service:
+            return None
         # Parse SELCALL messages
         dec = None
         out = ""

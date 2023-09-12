@@ -105,7 +105,7 @@ class HfdlDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.parser = HfdlParser(service=service)
         workers = [
             Agc(Format.COMPLEX_FLOAT),
-            DumpHfdlModule(self.sampleRate, jsonOutput = not service),
+            DumpHfdlModule(self.sampleRate, jsonOutput = True),
             self.parser,
         ]
         # Connect all the workers
@@ -128,7 +128,7 @@ class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
         workers = [
             Agc(Format.COMPLEX_FLOAT),
             Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
-            DumpVdl2Module(self.sampleRate, jsonOutput = not service),
+            DumpVdl2Module(self.sampleRate, jsonOutput = True),
             self.parser,
         ]
         # Connect all the workers
@@ -172,7 +172,7 @@ class AcarsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.parser = AcarsParser(service=service)
         workers = [
             Convert(Format.FLOAT, Format.SHORT),
-            AcarsDecModule(self.sampleRate, jsonOutput = not service),
+            AcarsDecModule(self.sampleRate, jsonOutput = True),
             self.parser,
         ]
         # Connect all the workers
