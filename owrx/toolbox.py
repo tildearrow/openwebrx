@@ -122,10 +122,9 @@ class TextParser(LineBasedModule):
     def getUtcTime(self) -> str:
         return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
-    # DERIVED CLASSES SHOULD IMPLEMENT THIS FUNCTION!
-    def parse(self, msg: str):
-        # By default, do not parse, just return the string
-        return msg
+    # By default, do not parse
+    def parse(self, msg: bytes):
+        return None
 
     def run(self):
         logger.debug("%s starting..." % self.myName())
@@ -137,21 +136,20 @@ class TextParser(LineBasedModule):
         out = None
 
         try:
-            msg = line.decode(encoding="utf-8", errors="replace")
-            #logger.debug("%s: %s" % (self.myName(), msg))
+            #logger.debug("%s: %s" % (self.myName(), str(line)))
             # If running as a service with a log file...
             if self.service and self.filePfx is not None:
                 # Write message into open log file, including end-of-line
                 self.writeFile(line)
                 self.writeFile(b"\n")
             # Let parse() function do its thing
-            out = self.parse(msg)
+            out = self.parse(line)
 
         except Exception as exptn:
             logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
 
-        # Return parsed result if any
-        return out
+        # Return parsed result, ignore result in service mode
+        return out if not self.service else None
 
 
 class IsmParser(TextParser):
@@ -161,7 +159,7 @@ class IsmParser(TextParser):
         # Construct parent object
         super().__init__(filePrefix="ISM", service=service)
 
-    def parse(self, msg: str):
+    def parse(self, msg: bytes):
         # Do not parse in service mode
         if self.service:
             return None
@@ -197,14 +195,14 @@ class PageParser(TextParser):
         # Construct parent object
         super().__init__(filePrefix="PAGE", service=service)
 
-    def parse(self, msg: str):
+    def parse(self, msg: bytes):
         # Steer message to POCSAG or FLEX parser, do not parse if service
         if self.service:
             return None
-        elif msg.startswith("POCSAG"):
-            return self.parsePocsag(msg)
-        elif msg.startswith("FLEX"):
-            return self.parseFlex(msg)
+        elif msg.startswith(b"POCSAG"):
+            return self.parsePocsag(msg.decode('utf-8', 'replace'))
+        elif msg.startswith(b"FLEX"):
+            return self.parseFlex(msg.decode('utf-8', 'replace'))
         else:
             return None
 
@@ -323,11 +321,12 @@ class SelCallParser(TextParser):
         # Construct parent object
         super().__init__(filePrefix="SELCALL", service=service)
 
-    def parse(self, msg: str):
+    def parse(self, msg: bytes):
         # Do not parse in service mode
         if self.service:
             return None
         # Parse SELCALL messages
+        msg = msg.decode('utf-8', 'replace')
         dec = None
         out = ""
         r = self.reSplit.split(msg)
