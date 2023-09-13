@@ -3,12 +3,18 @@ from pycsdr.modules import Shift, FirDecimate, Bandpass, Squelch, FractionalDeci
 from pycsdr.types import Format
 from typing import Union
 import math
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Decimator(Chain):
     def __init__(self, inputRate: int, outputRate: int):
         if outputRate > inputRate:
-            raise ValueError("impossible decimation: cannot upsample {} to {}".format(inputRate, outputRate))
+            logger.error("impossible decimation: cannot upsample {} to {}".format(inputRate, outputRate))
+            outputRate = inputRate
+# @@@ Avoid exceptions, since later GC may crash Python!
+#            raise ValueError("impossible decimation: cannot upsample {} to {}".format(inputRate, outputRate))
         self.inputRate = inputRate
         self.outputRate = outputRate
 
@@ -30,12 +36,15 @@ class Decimator(Chain):
 
     def _getDecimation(self, outputRate: int) -> (int, float):
         if outputRate > self.inputRate:
-            raise SelectorError(
-                "cannot provide selected output rate {} since it is bigger than input rate {}".format(
-                    outputRate,
-                    self.inputRate
-                )
-            )
+            logger.error("cannot provide selected output rate {} since it is bigger than input rate {}".format(outputRate, self.inputRate))
+            outputRate = self.inputRate
+# @@@ Avoid exceptions, since later GC may crash Python!
+#            raise SelectorError(
+#                "cannot provide selected output rate {} since it is bigger than input rate {}".format(
+#                    outputRate,
+#                    self.inputRate
+#                )
+#            )
         d = self.inputRate / outputRate
         dInt = int(d)
         dFloat = float(self.inputRate / dInt) / outputRate
