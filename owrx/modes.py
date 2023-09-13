@@ -134,10 +134,9 @@ class Modes(object):
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
-# Testing jketterl's RTTY decoder
-        DigitalMode("jkrtty170", "RTTY-170 / 45", underlying=["usb", "lsb"]),
-        DigitalMode("jkrtty450", "RTTY-450 / 50N", underlying=["usb", "lsb"]),
-        DigitalMode("jkrtty85", "RTTY-85 / 50N", underlying=["usb", "lsb"]),
+        DigitalMode("rtty170", "RTTY-170 (45)", underlying=["usb", "lsb"]),
+        DigitalMode("rtty450", "RTTY-450 (50N)", underlying=["usb", "lsb"]),
+        DigitalMode("rtty85", "RTTY-85 (50N)", underlying=["usb", "lsb"]),
         WsjtMode("ft8", "FT8"),
         WsjtMode("ft4", "FT4"),
         WsjtMode("jt65", "JT65"),
@@ -185,9 +184,10 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
-        DigitalMode("cwdecoder", "CWDecoder", underlying=["usb"]),
-        DigitalMode("rtty170", "RTTY-170", underlying=["usb"]),
-        DigitalMode("rtty450", "RTTY-450", underlying=["usb"]),
+        DigitalMode("cwdecoder", "CW Decoder", underlying=["usb"]),
+# Replaced by Jakob's RTTY decoder
+        DigitalMode("mfrtty170", "RTTY-170", underlying=["usb"]),
+        DigitalMode("mfrtty450", "RTTY-450", underlying=["usb"]),
         DigitalMode(
             "sstv",
             "SSTV",

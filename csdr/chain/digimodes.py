@@ -3,7 +3,7 @@ from csdr.module.msk144 import Msk144Module, ParserAdapter
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, JKRttyDecoder, BaudotDecoder, Lowpass, RttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.direwolf import DirewolfModule
 from owrx.sstv import SstvParser
@@ -88,7 +88,7 @@ class PskDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(1, TimingRecovery(Format.COMPLEX_FLOAT, secondary_samples_per_bits, 0.5, 2))
 
 
-class JKRttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate, bandWidth, invert=False):
         self.baudRate = baudRate
         self.bandWidth = bandWidth
@@ -103,7 +103,7 @@ class JKRttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             FmDemod(),
             Lowpass(Format.FLOAT, cutoff),
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
-            JKRttyDecoder(invert),
+            RttyDecoder(invert),
             BaudotDecoder(),
         ]
         super().__init__(workers)
@@ -145,7 +145,7 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(2, CwDecoder(sampleRate, self.offset, int(self.baudRate)))
 
 
-class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+class MFRttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, targetWidth: float, baudRate: float, reverse: bool):
         self.sampleRate = 12000
         self.offset = 550
@@ -155,7 +155,7 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         workers = [
             Shift((self.targetWidth/2 + self.offset) / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
-            RttyDecoder(self.sampleRate, self.offset, int(self.targetWidth), self.baudRate, self.reverse),
+            MFRttyDecoder(self.sampleRate, self.offset, int(self.targetWidth), self.baudRate, self.reverse),
         ]
         super().__init__(workers)
 
@@ -167,7 +167,7 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             return
         self.sampleRate = sampleRate
         self.replace(0, Shift((self.targetWidth/2 + self.offset) / sampleRate))
-        self.replace(2, RttyDecoder(sampleRate, self.offset, int(self.targetWidth), self.baudRate, self.reverse))
+        self.replace(2, MFRttyDecoder(sampleRate, self.offset, int(self.targetWidth), self.baudRate, self.reverse))
 
 
 class SstvDemodulator(ServiceDemodulator, DialFrequencyReceiver):

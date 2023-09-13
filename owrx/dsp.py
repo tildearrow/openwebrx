@@ -651,24 +651,24 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "bpsk63":
             from csdr.chain.digimodes import PskDemodulator
             return PskDemodulator(62.5)
-        elif mod == "jkrtty170":
-            from csdr.chain.digimodes import JKRttyDemodulator
-            return JKRttyDemodulator(45.45, 170)
-        elif mod == "jkrtty450":
-            from csdr.chain.digimodes import JKRttyDemodulator
-            return JKRttyDemodulator(50, 450, invert=True)
-        elif mod == "jkrtty85":
-            from csdr.chain.digimodes import JKRttyDemodulator
-            return JKRttyDemodulator(50, 85, invert=True)
+        elif mod == "rtty170":
+            from csdr.chain.digimodes import RttyDemodulator
+            return RttyDemodulator(45.45, 170)
+        elif mod == "rtty450":
+            from csdr.chain.digimodes import RttyDemodulator
+            return RttyDemodulator(50, 450, invert=True)
+        elif mod == "rtty85":
+            from csdr.chain.digimodes import RttyDemodulator
+            return RttyDemodulator(50, 85, invert=True)
         elif mod == "cwdecoder":
             from csdr.chain.digimodes import CwDemodulator
             return CwDemodulator(75.0)
-        elif mod == "rtty170":
-            from csdr.chain.digimodes import RttyDemodulator
-            return RttyDemodulator(170.0, 45.45, reverse = False)
-        elif mod == "rtty450":
-            from csdr.chain.digimodes import RttyDemodulator
-            return RttyDemodulator(450.0, 50.0, reverse = True)
+        elif mod == "mfrtty170":
+            from csdr.chain.digimodes import MFRttyDemodulator
+            return MFRttyDemodulator(170.0, 45.45, reverse = False)
+        elif mod == "mfrtty450":
+            from csdr.chain.digimodes import MFRttyDemodulator
+            return MFRttyDemodulator(450.0, 50.0, reverse = True)
         elif mod == "sstv":
             from csdr.chain.digimodes import SstvDemodulator
             return SstvDemodulator()
