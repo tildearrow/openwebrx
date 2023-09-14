@@ -230,6 +230,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         def updateBookmarkSubscription(*args):
             if self.bookmarkSub is not None:
                 self.bookmarkSub.cancel()
+                self.bookmarkSub = None
             if "center_freq" in configProps and "samp_rate" in configProps:
                 cf = configProps["center_freq"]
                 srh = configProps["samp_rate"] / 2

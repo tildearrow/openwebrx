@@ -9,6 +9,7 @@ import threading
 import json
 import math
 import time
+import re
 
 import logging
 
@@ -221,13 +222,21 @@ class AircraftManager(object):
 #
 class AircraftParser(TextParser):
     def __init__(self, filePrefix: str = None, service: bool = False):
+        self.reFlight   = re.compile("^([0-9A-Z]{2}|[A-Z]{3})0*([0-9]+)[A-Z]*$")
+        self.reAircraft = re.compile("^\.*([^\.].*)$")
         super().__init__(filePrefix=filePrefix, service=service)
 
     def parse(self, msg: bytes):
         # Parse incoming message via mode-specific function
         out = self.parseAircraft(msg)
-        # Update aircraft database with the new data
         if out is not None:
+            # Remove extra zeros from the flight ID
+            if "flight" in out:
+                out["flight"] = self.reFlight.sub("\\1\\2", out["flight"])
+            # Remove leading dots from the aircraft ID
+            if "aircraft" in out:
+                out["aircraft"] = self.reAircraft.sub("\\1", out["aircraft"])
+            # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
         # Done
         return out
