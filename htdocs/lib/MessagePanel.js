@@ -19,7 +19,7 @@ MessagePanel.prototype.initClearTimer = function() {
     var me = this;
     if (me.removalInterval) clearInterval(me.removalInterval);
     me.removalInterval = setInterval(function () {
-        me.clearMessages(1000);
+        me.clearMessages(250);
     }, 15000);
 };
 
