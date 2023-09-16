@@ -161,6 +161,8 @@ class AircraftManager(object):
             if "lat" in item and "lon" in item and "mode" in item:
                 loc = AircraftLocation(item)
                 Map.getSharedInstance().updateLocation(id, loc, item["mode"])
+                # Can later use this for linking to the map
+                data["mapid"] = id
             # Update input data with computed data
             for key in ["icao", "aircraft", "flight", "course"]:
                 if key in item:

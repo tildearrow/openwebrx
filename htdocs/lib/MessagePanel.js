@@ -57,9 +57,15 @@ MessagePanel.prototype.scrollToBottom = function() {
 };
 
 MessagePanel.prototype.linkToMap = function(id, contents = null, attrs = "") {
-    return '<a ' + attrs + ' href="map?callsign='
-        + encodeURIComponent(id) + '" target="openwebrx-map">'
-        + (contents!=null? contents : id) + '</a>';
+    if (id) {
+        return '<a ' + attrs + ' href="map?callsign='
+            + encodeURIComponent(id) + '" target="openwebrx-map">'
+            + (contents!=null? contents : id) + '</a>';
+    } else if (contents != null) {
+        return '<div ' + attrs + '>' + contents + '</div>';
+    } else {
+        return '';
+    }
 };
 
 function WsjtMessagePanel(el) {
@@ -415,8 +421,11 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.origin)      data += ' &lsh;' + msg.origin;
     if (msg.destination) data += ' &rdsh;' + msg.destination;
 
-    // If no data so far, use message type as data
-    if (msg.type && !data.length) data = msg.type;
+    // If no location data in the message, use message type as data
+    if (!data.length && msg.type) data = msg.type;
+
+    // Make data point to the map
+    if (data.length && msg.mapid) data = this.linkToMap(msg.mapid, data);
 
     // Append report
     var $b = $(this.el).find('tbody');
