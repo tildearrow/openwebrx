@@ -401,9 +401,6 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
 function AprsMarker() {}
 
-// These symbols are all facing east (mostly vehicles)!
-AprsMarker.FACING_EAST = "(*<=>CFPTUXYabefghjkpsuv[";
-
 AprsMarker.prototype = new Marker();
 
 AprsMarker.prototype.update = function(update) {
@@ -434,7 +431,8 @@ AprsMarker.prototype.update = function(update) {
 };
 
 AprsMarker.prototype.isFacingEast = function(symbol) {
-    var eastward = symbol.table === '/' ? '(*<=>CFPUXYabefghjkpsuv[' : 'hkluv';
+    var eastward = symbol.table === '/' ?
+        '(*<=>CFPUXYZabefgjkpsuv[' : '(T`efhjktuvw';
     return eastward.includes(symbol.symbol);
 };
 
