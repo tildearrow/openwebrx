@@ -56,6 +56,12 @@ MessagePanel.prototype.scrollToBottom = function() {
     $t.scrollTop($t[0].scrollHeight);
 };
 
+MessagePanel.prototype.linkToMap = function(id, contents = null, attrs = "") {
+    return '<a ' + attrs + ' href="map?callsign='
+        + encodeURIComponent(id) + '" target="openwebrx-map">'
+        + (contents!=null? contents : id) + '</a>';
+};
+
 function WsjtMessagePanel(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
@@ -212,7 +218,7 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         'style="' + stylesToString(styles) + '"'
     ].join(' ');
     if (msg.lat && msg.lon) {
-        link = '<a ' + attrs + ' href="map?callsign=' + encodeURIComponent(source) + '" target="openwebrx-map">' + overlay + '</a>';
+        link = this.linkToMap(source, overlay, attrs);
     } else {
         link = '<div ' + attrs + '>' + overlay + '</div>'
     }
@@ -358,14 +364,14 @@ HfdlMessagePanel.prototype.setModeSUrl = function(url) {
 
 HfdlMessagePanel.prototype.linkify = function(id, url) {
     // Do not linkify empty strings
-    if (id.len<=0) return id;
+    if (id.len <= 0) return id;
 
     // Must have valid lookup URL
     if ((url == null) || (url == ''))
         return id;
     else
-        return '<a target="callsign_info" href="' +
-            url.replaceAll('{}', id) + '">' + id + '</a>';
+        return '<a target="callsign_info" href="'
+            + url.replaceAll('{}', id) + '">' + id + '</a>';
 };
 
 HfdlMessagePanel.prototype.render = function() {
