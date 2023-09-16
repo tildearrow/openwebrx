@@ -4,24 +4,16 @@ from csdr.module import PopenModule
 from owrx.config import Config
 
 
-class Rtl433Module(PopenModule):
+class Rtl433Module(ExecModule):
     def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
         self.sampleRate = sampleRate
         self.jsonOutput = jsonOutput
-        super().__init__()
-
-    def getCommand(self):
-        return [
+        cmd = [
             "rtl_433", "-r", "cs16:-", "-s", str(self.sampleRate),
             "-M", "time:utc", "-F", "json" if self.jsonOutput else "kv",
             "-A",
         ]
-
-    def getInputFormat(self) -> Format:
-        return Format.COMPLEX_SHORT
-
-    def getOutputFormat(self) -> Format:
-        return Format.CHAR
+        super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
 
 
 class MultimonModule(PopenModule):
