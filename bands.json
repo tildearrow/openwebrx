@@ -417,8 +417,9 @@
     "upper_bound": 137000000,
     "tags": ["service"],
     "frequencies": {
+      "acars": 131550000,
       "vdl2": 136975000
-    },
+    }
   },
   {
     "name": "VHF Marine",
