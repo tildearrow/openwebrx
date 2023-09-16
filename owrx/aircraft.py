@@ -4,6 +4,7 @@ from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
 from owrx.adsb.modes import ModeSParser
 from owrx.config import Config
+from owrx.airlines import AIRLINES
 from datetime import datetime, timedelta
 import threading
 import json
@@ -226,17 +227,23 @@ class AircraftParser(TextParser):
     def __init__(self, filePrefix: str = None, service: bool = False):
         self.reFlight   = re.compile("^([0-9A-Z]{2}|[A-Z]{3})0*([0-9]+)[A-Z]*$")
         self.reAircraft = re.compile("^\.*([^\.].*)$")
+        self.reIATA     = re.compile("^..[0-9]+$")
         super().__init__(filePrefix=filePrefix, service=service)
 
     def parse(self, msg: bytes):
         # Parse incoming message via mode-specific function
         out = self.parseAircraft(msg)
         if out is not None:
-            # Remove extra zeros from the flight ID
             if "flight" in out:
-                out["flight"] = self.reFlight.sub("\\1\\2", out["flight"])
-            # Remove leading dots from the aircraft ID
+                # Remove extra zeros from the flight ID
+                flight = self.reFlight.sub("\\1\\2", out["flight"])
+                # Replace two-letter IATA codes with three-letter ICAO codes
+                if self.reIATA.match(flight) and flight[0:2] in AIRLINES:
+                    out["flight"] = AIRLINES[flight[0:2]]["icao"] + flight[2:]
+                else:
+                    out["flight"] = flight
             if "aircraft" in out:
+                # Remove leading dots from the aircraft ID
                 out["aircraft"] = self.reAircraft.sub("\\1", out["aircraft"])
             # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
