@@ -3697,7 +3697,6 @@ AIRLINES = {
   "MIS": { "icao": "MIS", "name": "Midstate Airlines", "call": "MIDSTATE", "country": "United States" },
   "FLA": { "icao": "FLA", "name": "Midway Express", "call": "PALM", "country": "United States" },
   "FAX": { "icao": "FAX", "name": "Midwest Air Freighters", "call": "FAIRFAX", "country": "United States" },
-  "MEP": { "icao": "MEP", "iata": "YX", "name": "Midwest Airlines", "call": "MIDEX", "country": "United States" },
   "MWA": { "icao": "MWA", "iata": "MY", "name": "Midwest Airlines (Egypt)", "country": "Egypt" },
   "NIT": { "icao": "NIT", "name": "Midwest Aviation", "call": "NIGHTTRAIN", "country": "United States" },
   "MWT": { "icao": "MWT", "name": "Midwest Aviation Division", "call": "MIDWEST", "country": "United States" },
