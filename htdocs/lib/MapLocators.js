@@ -159,7 +159,8 @@ LocatorManager.prototype.getInfoHTML = function(locator, pos, receiverMarker = n
 
     var list = inLocator.map(function(x) {
         var timestring = moment(x.lastseen).fromNow();
-        var message = Marker.linkify(x.callsign) + ' (' + timestring + ' using ' + x.mode;
+        var message = Marker.linkify(x.callsign, callsign_url)
+            + ' (' + timestring + ' using ' + x.mode;
         if (x.band) message += ' on ' + x.band;
         return '<li>' + message + ')</li>';
     }).join("");

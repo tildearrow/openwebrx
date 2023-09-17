@@ -4,7 +4,6 @@ from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
 from owrx.adsb.modes import ModeSParser
 from owrx.config import Config
-from owrx.airlines import AIRLINES
 from datetime import datetime, timedelta
 import threading
 import json
@@ -55,7 +54,7 @@ class AircraftLocation(LatLngLocation):
         for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed"]:
             if x in self.data:
                 res[x] = self.data[x]
-        # Treat last message as comment
+        # Treat messages as comments
         if "message" in self.data:
             res["comment"] = self.data["message"]
         # Return APRS-like dictionary object
@@ -129,11 +128,6 @@ class AircraftManager(object):
             return
         # Now operating on the database...
         with self.lock:
-            # If no such ID yet, create a new database entry
-            if id not in self.aircraft:
-                # Create a new record
-                logger.debug("Adding %s" % id)
-                self.aircraft[id] = data.copy()
             # Merge database entries in flight -> tail -> ICAO ID order
             if "icao" in data:
                 if "flight" in data:
@@ -142,17 +136,27 @@ class AircraftManager(object):
                     self._merge(data["icao"], data["aircraft"])
             elif "aircraft" in data and "flight" in data:
                 self._merge(data["aircraft"], data["flight"])
-            # Previous data and position
-            item = self.aircraft[id]
-            pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
-            # Current data and position
-            item.update(data)
-            pos1 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
+            # If no such ID yet...
+            if id not in self.aircraft:
+                logger.debug("Adding %s" % id)
+                # Create a new record
+                item = self.aircraft[id] = data.copy()
+                # No previous position
+                pos0 = None
+            else:
+                # Use existing record
+                item = self.aircraft[id]
+                # Previous position
+                pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
+                # Update existing record
+                item.update(data)
+            # Current position
+            pos1 = (data["lat"], data["lon"]) if "lat" in data and "lon" in data else None
             # If both positions exist, compute course
             if "course" not in data and pos0 and pos1 and pos1 != pos0:
                 item["course"] = round(self.bearing(pos0, pos1))
                 #logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
-            # Update timme-to-live, if missing, assume HFDL longevity
+            # Update time-to-live, if missing, assume HFDL longevity
             if "ts" not in data:
                 pm = Config.get()
                 ts = datetime.now().timestamp()
@@ -225,26 +229,22 @@ class AircraftManager(object):
 #
 class AircraftParser(TextParser):
     def __init__(self, filePrefix: str = None, service: bool = False):
-        self.reFlight   = re.compile("^([0-9A-Z]{2}|[A-Z]{3})0*([0-9]+)[A-Z]*$")
-        self.reAircraft = re.compile("^\.*([^\.].*)$")
-        self.reIATA     = re.compile("^..[0-9]+$")
+        self.reFlight = re.compile("^([0-9A-Z]{2}|[A-Z]{3})0*([0-9]+[A-Z]*)$")
+        self.reDots   = re.compile("^\.*([^\.].*?)\.*$")
+        self.reIATA   = re.compile("^..[0-9]+$")
         super().__init__(filePrefix=filePrefix, service=service)
 
     def parse(self, msg: bytes):
         # Parse incoming message via mode-specific function
         out = self.parseAircraft(msg)
         if out is not None:
+            # Remove extra zeros from the flight ID
             if "flight" in out:
-                # Remove extra zeros from the flight ID
-                flight = self.reFlight.sub("\\1\\2", out["flight"])
-                # Replace two-letter IATA codes with three-letter ICAO codes
-                if self.reIATA.match(flight) and flight[0:2] in AIRLINES:
-                    out["flight"] = AIRLINES[flight[0:2]]["icao"] + flight[2:]
-                else:
-                    out["flight"] = flight
-            if "aircraft" in out:
-                # Remove leading dots from the aircraft ID
-                out["aircraft"] = self.reAircraft.sub("\\1", out["aircraft"])
+                out["flight"] = self.reFlight.sub("\\1\\2", out["flight"])
+            # Remove leading and trailing dots from ACARS data
+            for key in ["aircraft", "origin", "destination"]:
+                if key in out:
+                    out[key] = self.reDots.sub("\\1", out[key])
             # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
         # Done

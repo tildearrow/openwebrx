@@ -395,9 +395,14 @@ HfdlMessagePanel.prototype.render = function() {
 };
 
 HfdlMessagePanel.prototype.pushMessage = function(msg) {
-    var color  = msg.color?  msg.color : '#00000000';
-    var flight = msg.flight? this.linkify(msg.flight, this.flight_url) : '';
-    var data   = msg.type?   msg.type : '';
+    var color = msg.color?  msg.color : '#00000000';
+    var data  = msg.type?   msg.type : '';
+
+    // Only linkify ICAO-compliant flight IDs
+    var flight =
+      !msg.flight? ''
+    : !msg.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? msg.flight
+    : this.linkify(msg.flight, this.flight_url);
 
     var aircraft =
       msg.aircraft? this.linkify(msg.aircraft, this.flight_url)

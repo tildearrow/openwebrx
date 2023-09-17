@@ -133,9 +133,6 @@ Marker.linkify = function(name, url = null, linkEntity = null) {
     // If no specific link entity, use the ID itself
     if (linkEntity == null) linkEntity = name;
 
-    // If no URL given, assume HAM callsign
-    if ((url == null) || (url == '')) url = callsign_url;
-
     // Must have valid ID and lookup URL
     if ((name == '') || (url == null) || (url == '')) {
         return name;
@@ -310,7 +307,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     // If it is a repeater, its name is a callsign
     if(!this.url && this.freq) {
-        nameString = Marker.linkify(name);
+        nameString = Marker.linkify(name, callsign_url);
     }
 
     if (this.altitude) {
@@ -643,7 +640,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     if (this.hops && this.hops.length > 0) {
         var hops = this.hops.toString().split(',');
         hops.forEach(function(part, index, hops) {
-            hops[index] = Marker.linkify(part);
+            hops[index] = Marker.linkify(part, callsign_url);
         });
 
         hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
@@ -659,7 +656,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         case 'ACARS':
             if (this.flight) {
                 name = this.flight;
-                url  = flight_url;
+                url  = this.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? flight_url : null;
             } else if (this.aircraft) {
                 name = this.aircraft;
                 url  = flight_url;

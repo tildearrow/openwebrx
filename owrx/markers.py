@@ -97,6 +97,7 @@ class Markers(object):
     # Stop the main thread
     def stopThread(self):
         if self.thread is not None:
+            logger.debug("Stopping marker database thread.")
             self.event.set()
             self.thread.join()
 
