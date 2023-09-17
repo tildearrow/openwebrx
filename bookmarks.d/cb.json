@@ -177,26 +177,26 @@
     {
         "name" : "CB36",
         "frequency" : 27365000,
-        "modulation" : "ssb"
+        "modulation" : "lsb"
     },
     {
         "name" : "CB37",
         "frequency" : 27375000,
-        "modulation" : "ssb"
+        "modulation" : "lsb"
     },
     {
         "name" : "CB38",
         "frequency" : 27385000,
-        "modulation" : "ssb"
+        "modulation" : "lsb"
     },
     {
         "name" : "CB39",
         "frequency" : 27395000,
-        "modulation" : "ssb"
+        "modulation" : "lsb"
     },
     {
         "name" : "CB40",
         "frequency" : 27405000,
-        "modulation" : "ssb"
+        "modulation" : "lsb"
     }
 ]
