@@ -6,19 +6,22 @@
 - Added background mode for HFDL, VDL2, ADSB, ACARS decoders.
 - Added background aircraft map position updates.
 - Added origin and destionation airport display (ACARS).
+- Added links from aircraft messages to the map.
 - Added default bookmarks for ACARS frequencies.
 - Added SDRPlay High Dynamic Resolution (HDR) option.
 - Device log now shown at the device settings page.
 - Fixed a crash after switching from ADSB to other profiles.
 - Fixed linkify() failing on aircraft IDs containing dash.
 - Fixed repeater bookmarks to report NFM modulation.
-- Fixed APRS stormcloud symbol to face east.
+- Fixed some APRS symbols to face east.
+- Converting flight IDs from IATA (AAnnnn) to ICAO (AAAnnnn).
 - Switched many digital IQ decoders to use EMPTY modulation.
 - Switched TextParser to LineBasedModule base.
+- Switched ISM decoder to use ExecModule.
 - Optimized MultiMon-based digital decoders.
 - Removed secondary ADSB waterfall to improve performance.
 - Painted YES/NO feature indicators red and green.
-- Changed ICAO ID lookup URL to FlightAware.
+- Changed MODE-S ID lookup URL to FlightAware.
 
 **1.2.29**
 - Added worldwide OpenWeatherMap support (needs key).
