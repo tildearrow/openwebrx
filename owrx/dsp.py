@@ -760,7 +760,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             # If we know it's not pickled, let us not unpickle
             if len(b) < 2 or b[0] != 0x80 or not 3 <= b[1] <= pickle.HIGHEST_PROTOCOL:
                 try:
-                    callback(b.decode("ascii"))
+                    callback(b.decode("ascii", errors="replace"))
                 except Exception as e:
                     logger.debug("Unpickler: %s" % e)
                 return
@@ -772,9 +772,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             except EOFError:
                 pass
             except pickle.UnpicklingError:
-                callback(b.decode("ascii"))
-            except ValueError:
-                pass
+                callback(b.decode("ascii", errors="replace"))
 
         return unpickler
 
