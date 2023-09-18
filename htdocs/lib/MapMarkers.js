@@ -300,7 +300,7 @@ FeatureMarker.prototype.getAnchorOffset = function() {
 
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var nameString    = this.url? Marker.linkify(name, this.url) : name;
-    var commentString = this.comment? '<div align="center">' + this.comment + '</div>' : '';
+    var commentString = this.comment? '<p align="center">' + this.comment + '</p>' : '';
     var detailsString = '';
     var scheduleString = '';
     var distance = '';
@@ -335,8 +335,8 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (!this.comment && this.status && this.updated) {
-        commentString = '<div align="center">' + this.status
-            + ', last updated on ' + this.updated + '</div>';
+        commentString = '<p align="center">' + this.status
+            + ', last updated on ' + this.updated + '</p>';
     } else {
         if (this.status) {
             detailsString += Marker.makeListItem('Status', this.status);
@@ -373,11 +373,11 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (detailsString.length > 0) {
-        detailsString = '<p>' + Marker.makeListTitle('Details') + detailsString + '</p>';
+        detailsString = '<div>' + Marker.makeListTitle('Details') + detailsString + '</div>';
     }
 
     if (scheduleString.length > 0) {
-        scheduleString = '<p>' + Marker.makeListTitle('Schedule') + scheduleString + '</p>';
+        scheduleString = '<div>' + Marker.makeListTitle('Schedule') + scheduleString + '</div>';
     }
 
     if (receiverMarker) {
@@ -406,6 +406,7 @@ AprsMarker.prototype.update = function(update) {
     this.hops     = update.hops;
     this.band     = update.band;
     this.comment  = update.location.comment;
+    // APRS, AIS
     this.weather  = update.location.weather;
     this.altitude = update.location.altitude;
     this.height   = update.location.height;
@@ -413,6 +414,7 @@ AprsMarker.prototype.update = function(update) {
     this.gain     = update.location.gain;
     this.device   = update.location.device;
     this.directivity = update.location.directivity;
+    // HFDL, ACARS, VDL2, ADSB
     this.aircraft = update.location.aircraft;
     this.destination = update.location.destination;
     this.origin   = update.location.origin;
@@ -521,12 +523,12 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var distance = '';
 
     if (this.comment) {
-        commentString += '<p>' + Marker.makeListTitle('Comment') + '<div>' +
-            this.comment + '</div></p>';
+        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>' +
+            this.comment + '</div></div>';
     }
 
     if (this.weather) {
-        weatherString += '<p>' + Marker.makeListTitle('Weather');
+        weatherString += '<div>' + Marker.makeListTitle('Weather');
 
         if (this.weather.temperature) {
             weatherString += Marker.makeListItem('Temperature', this.weather.temperature.toFixed(1) + ' oC');
@@ -565,7 +567,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             weatherString += Marker.makeListItem('Snow', this.weather.snowfall.toFixed(1) + ' cm');
         }
 
-        weatherString += '</p>';
+        weatherString += '</div>';
     }
 
     if (this.device) {
@@ -630,7 +632,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (detailsString.length > 0) {
-        detailsString = '<p>' + Marker.makeListTitle('Details') + detailsString + '</p>';
+        detailsString = '<div>' + Marker.makeListTitle('Details') + detailsString + '</div>';
     }
 
     if (receiverMarker) {
@@ -674,7 +676,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     return '<h3>' + Marker.linkify(name, url, linkEntity) + distance + '</h3>'
-        + '<div align="center">' + timeString + ' using ' + this.mode
-        + ( this.band ? ' on ' + this.band : '' ) + '</div>'
+        + '<p align="center">' + timeString + ' using ' + this.mode
+        + ( this.band ? ' on ' + this.band : '' ) + '</p>'
         + commentString + weatherString + detailsString + hopsString;
 };
