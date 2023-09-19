@@ -188,7 +188,7 @@ Marker.degToCompass = function(deg) {
 
 // Convert given name to an information section title.
 Marker.makeListTitle = function(name) {
-    return '<div style="border-bottom:2px solid;"><b>' + name + '</b></div>';
+    return '<div style="border-bottom:2px solid;padding-top:1em;"><b>' + name + '</b></div>';
 };
 
 // Convert given name/value to an information section item.
@@ -645,7 +645,8 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             hops[index] = Marker.linkify(part, callsign_url);
         });
 
-        hopsString = '<p align="right"><i>via ' + hops.join(', ') + '&nbsp;</i></p>';
+        hopsString = '<div style="text-align:right;padding-top:1em;"><i>via '
+            + hops.join(', ') + '&nbsp;</i></div>';
     }
 
     // Linkify title based on what it is (vessel, flight, mode-S code, or else)
