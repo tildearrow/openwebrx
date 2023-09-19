@@ -300,7 +300,7 @@ FeatureMarker.prototype.getAnchorOffset = function() {
 
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var nameString    = this.url? Marker.linkify(name, this.url) : name;
-    var commentString = this.comment? '<p align="center">' + this.comment + '</p>' : '';
+    var commentString = this.comment? '<div align="center">' + this.comment + '</div>' : '';
     var detailsString = '';
     var scheduleString = '';
     var distance = '';
@@ -335,8 +335,8 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (!this.comment && this.status && this.updated) {
-        commentString = '<p align="center">' + this.status
-            + ', last updated on ' + this.updated + '</p>';
+        commentString = '<div align="center">' + this.status
+            + ', last updated on ' + this.updated + '</div>';
     } else {
         if (this.status) {
             detailsString += Marker.makeListItem('Status', this.status);
@@ -677,7 +677,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     return '<h3>' + Marker.linkify(name, url, linkEntity) + distance + '</h3>'
-        + '<p align="center">' + timeString + ' using ' + this.mode
-        + ( this.band ? ' on ' + this.band : '' ) + '</p>'
+        + '<div align="center">' + timeString + ' using ' + this.mode
+        + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString + hopsString;
 };
