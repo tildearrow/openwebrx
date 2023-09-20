@@ -290,6 +290,9 @@ class ServiceHandler(SdrSourceEventClient):
         if demod == "nfm":
             from csdr.chain.analog import NFm
             return NFm(48000)
+        elif demod == "am":
+            from csdr.chain.analog import Am
+            return Am()
         elif demod in ["usb", "lsb", "cw"]:
             from csdr.chain.analog import Ssb
             return Ssb()
