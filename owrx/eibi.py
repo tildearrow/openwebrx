@@ -88,20 +88,22 @@ class EIBI(object):
         file = self._getCachedScheduleFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
-        with self.lock:
-            # If cached schedule is stale...
-            if time.time() - ts >= self.refreshPeriod:
-                # Load EIBI database file from the web
-                schedule = self.loadFromWeb()
-                if schedule:
-                    # Save parsed data into a file
-                    self.saveSchedule(file, schedule)
-                    # Update current schedule
+        # If cached schedule is stale...
+        if time.time() - ts >= self.refreshPeriod:
+            # Load EIBI database file from the web
+            schedule = self.loadFromWeb()
+            if schedule:
+                # Save parsed data into a file
+                self.saveSchedule(file, schedule)
+                # Update current schedule
+                with self.lock:
                     self.schedule = schedule
 
             # If no current schedule, load it from cached file
             if not self.schedule:
-                self.schedule = self.loadSchedule(file)
+                schedule = self.loadSchedule(file)
+                with self.lock:
+                    self.schedule = schedule
 
     # Save schedule to a given JSON file
     def saveSchedule(self, file: str, schedule):
