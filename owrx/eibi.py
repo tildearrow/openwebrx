@@ -78,7 +78,7 @@ class EIBI(object):
     def __init__(self):
         self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
         self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
-        self.refreshPeriod = 60*60*24*7
+        self.refreshPeriod = 60*60*24
         self.lock = threading.Lock()
         self.schedule = []
 
