@@ -99,11 +99,11 @@ class EIBI(object):
                 with self.lock:
                     self.schedule = schedule
 
-            # If no current schedule, load it from cached file
-            if not self.schedule:
-                schedule = self.loadSchedule(file)
-                with self.lock:
-                    self.schedule = schedule
+        # If no current schedule, load it from cached file
+        if not self.schedule:
+            schedule = self.loadSchedule(file)
+            with self.lock:
+                self.schedule = schedule
 
     # Save schedule to a given JSON file
     def saveSchedule(self, file: str, schedule):
