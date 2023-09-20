@@ -51,12 +51,9 @@ class AircraftLocation(LatLngLocation):
         mod = '/' if self.data["mode"]=="ADSB" else '\\'
         res["symbol"] = getSymbolData('^', mod)
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed"]:
+        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "msglog"]:
             if x in self.data:
                 res[x] = self.data[x]
-        # Treat messages as comments
-        if "message" in self.data:
-            res["comment"] = self.data["message"]
         # Return APRS-like dictionary object
         return res
 
@@ -107,6 +104,7 @@ class AircraftManager(object):
     def __init__(self):
         self.lock = threading.Lock()
         self.checkTime = 60
+        self.maxMsgLog = 20
         self.colors = ColorCache()
         self.aircraft = {}
         self.periodicCleanup()
@@ -126,6 +124,7 @@ class AircraftManager(object):
         id = self.getAircraftId(data)
         if not id:
             return
+
         # Now operating on the database...
         with self.lock:
             # Merge database entries in flight -> tail -> ICAO ID order
@@ -136,6 +135,7 @@ class AircraftManager(object):
                     self._merge(data["icao"], data["aircraft"])
             elif "aircraft" in data and "flight" in data:
                 self._merge(data["aircraft"], data["flight"])
+
             # If no such ID yet...
             if id not in self.aircraft:
                 logger.debug("Adding %s" % id)
@@ -150,29 +150,43 @@ class AircraftManager(object):
                 pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
                 # Update existing record
                 item.update(data)
-            # Current position
+
+            # If both current and previous positions exist, compute course
             pos1 = (data["lat"], data["lon"]) if "lat" in data and "lon" in data else None
-            # If both positions exist, compute course
             if "course" not in data and pos0 and pos1 and pos1 != pos0:
                 item["course"] = round(self.bearing(pos0, pos1))
                 #logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
+
             # Update time-to-live, if missing, assume HFDL longevity
             if "ts" not in data:
                 pm = Config.get()
                 ts = datetime.now().timestamp()
                 item["ts"]  = ts
                 item["ttl"] = ts + pm["hfdl_ttl"]
+
+            # Add incoming messages to the log
+            if "message" in data:
+                if "msglog" not in item:
+                    item["msglog"] = [ data["message"] ]
+                else:
+                    msglog = item["msglog"]
+                    msglog.append(data["message"])
+                    if len(msglog) > self.maxMsgLog:
+                        item["msglog"] = item["msglog"][-self.maxMsgLog:]
+
             # Update aircraft on the map
             if "lat" in item and "lon" in item and "mode" in item:
                 loc = AircraftLocation(item)
                 Map.getSharedInstance().updateLocation(id, loc, item["mode"])
                 # Can later use this for linking to the map
                 data["mapid"] = id
+
             # Update input data with computed data
             for key in ["icao", "aircraft", "flight", "course"]:
                 if key in item:
                     data[key] = item[key]
-            # Assign a color by ID
+
+            # Assign input data a color by its aircraft ID
             data["color"] = self.colors.getColor(id)
 
     # Remove all database entries older than given time.
@@ -257,11 +271,14 @@ class AircraftParser(TextParser):
     # Common function to parse ACARS subframes in HFDL/VDL2/etc
     def parseAcars(self, data, out):
         # Collect data
-        out["type"]     = "ACARS frame"
-        out["aircraft"] = data["reg"].strip()
-        out["message"]  = data["msg_text"].strip()
-        # Get flight ID, if present
-        flight = data["flight"].strip() if "flight" in data else ""
+        out["type"] = "ACARS frame"
+        aircraft = data["reg"].strip()
+        message  = data["msg_text"].strip()
+        flight   = data["flight"].strip() if "flight" in data else ""
+        if len(aircraft)>0:
+            out["aircraft"] = aircraft
+        if len(message)>0:
+            out["message"] = [ message ]
         if len(flight)>0:
             out["flight"] = flight
         # Done
@@ -491,6 +508,69 @@ class AdsbParser(AircraftParser):
         # No data parsed
         return None
 
+    def parseDump1090Json(self, file: str, updateDatabase: bool = False):
+        # Load JSON from supplied file
+        try:
+            with open(file, "r") as f:
+                data = json.load(f)
+        except:
+            return None
+
+        # Make sure we have the aircraft data
+        if "aircraft" not in data or "now" not in data:
+            return None
+        elif not updateDatabase:
+          # Return original JSON "aircraft" contents
+          return data["aircraft"]
+
+        # Going to add timestamps and TTLs
+        pm   = Config.get()
+        ts   = data["now"]
+        ttl  = ts + pm["adsb_ttl"]
+        data = data["aircraft"]
+
+        # Iterate over aircraft
+        for entry in data:
+            out = {
+                "mode" : "ADSB",
+                "icao" : entry["hex"].upper(),
+                "ts"   : ts,
+                "ttl"  : ttl,
+                "msgs" : entry["messages"],
+                "seen" : entry["seen"],
+                "rssi" : entry["rssi"],
+            }
+
+            if "lat" in entry and "lon" in entry:
+                out["lat"] = entry["lat"]
+                out["lon"] = entry["lon"]
+
+            if "flight" in entry:
+                out["flight"] = entry["flight"].strip()
+
+            if "squawk" in entry:
+                out["type"] = "Squawk " + entry["squawk"]
+            elif "category" in entry:
+                out["type"] = "Category " + entry["category"]
+
+            if "alt_geom" in entry:
+                out["altitude"] = round(entry["alt_geom"] * METERS_PER_FOOT)
+            elif "alt_baro" in entry:
+                out["altitude"] = round(entry["alt_baro"] * METERS_PER_FOOT)
+            elif "nav_altitude_mcp" in entry:
+                out["altitude"] = round(entry["nav_altitude_mcp"] * METERS_PER_FOOT)
+
+            if "nav_heading" in entry:
+                out["course"] = round(entry["nav_heading"])
+            elif "track" in entry:
+                out["course"] = round(entry["track"])
+
+            # Update aircraft database with the new data
+            AircraftManager.getSharedInstance().update(out)
+
+        # Return original JSON "aircraft" contents
+        return data
+
 
 #
 # Parser for ACARS messages coming from AcarsDec in JSON format.
@@ -524,6 +604,8 @@ class AcarsParser(AircraftParser):
         # Fetch other data
         for key in self.attrMap:
             if key in data:
-                out[self.attrMap[key]] = data[key]
+                value = data[key].strip()
+                if len(value)>0:
+                    out[self.attrMap[key]] = value
         # Done
         return out

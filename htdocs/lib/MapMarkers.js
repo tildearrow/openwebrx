@@ -421,6 +421,7 @@ AprsMarker.prototype.update = function(update) {
     this.flight   = update.location.flight;
     this.icao     = update.location.icao;
     this.vspeed   = update.location.vspeed;
+    this.msglog   = update.location.msglog;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -519,12 +520,19 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var commentString = '';
     var weatherString = '';
     var detailsString = '';
+    var messageString = '';
     var hopsString = '';
     var distance = '';
 
     if (this.comment) {
         commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>' +
             this.comment + '</div></div>';
+    }
+
+    if (this.msglog) {
+        messageString += '<div>' + Marker.makeListTitle('Messages') +
+            '<pre class="openwebrx-map-console">' +
+            this.msglog.join('\n<hr>') + '</pre></div>';
     }
 
     if (this.weather) {
@@ -677,7 +685,8 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     return '<h3>' + Marker.linkify(name, url, linkEntity) + distance + '</h3>'
-        + '<div align="center">' + timeString + ' using ' + this.mode
-        + ( this.band ? ' on ' + this.band : '' ) + '</div>'
-        + commentString + weatherString + detailsString + hopsString;
+        + '<div align="center">' + timeString + ' using '
+        + this.mode + ( this.band ? ' on ' + this.band : '' ) + '</div>'
+        + commentString + weatherString + detailsString
+        + messageString + hopsString;
 };
