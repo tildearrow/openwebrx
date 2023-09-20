@@ -271,8 +271,7 @@ class EIBI(object):
                                 dist  = min(dist, EIBI.distKm(rxPos, txPos))
                         # Prefer closer transmitters, apply range
                         entryActive = ((dist <= rangeKm) and (
-                            (f not in result) or (duration < result[f][2]) or
-                            ((duration == result[f][2]) and (dist < result[f][1]))
+                            (f not in result) or (dist < result[f][1])
                         ))
                         # Warn if location not found
 #                        if dist == MAX_DISTANCE:
