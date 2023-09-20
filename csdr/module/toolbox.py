@@ -2,7 +2,7 @@ from pycsdr.modules import ExecModule
 from pycsdr.types import Format
 from csdr.module import PopenModule
 from owrx.config import Config
-
+import os
 
 class Rtl433Module(ExecModule):
     def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
@@ -77,15 +77,22 @@ class DumpVdl2Module(PopenModule):
 
 
 class Dump1090Module(ExecModule):
-    def __init__(self, rawOutput: bool = False):
+    def __init__(self, rawOutput: bool = False, jsonOutput: bool = False):
+        self.jsonFolder = "/tmp/dump1090"
         pm  = Config.get()
         lat = pm["receiver_gps"]["lat"]
         lon = pm["receiver_gps"]["lon"]
         cmd = [
             "dump1090", "--ifile", "-", "--iformat", "SC16",
             "--lat", str(lat), "--lon", str(lon),
-            "--modeac", "--metric", "--write-json", "/tmp"
+            "--modeac", "--metric"
         ]
+        if jsonOutput:
+            try:
+                os.makedirs(self.jsonFolder, exist_ok = True)
+                cmd += [ "--write-json", self.jsonFolder ]
+            except:
+                pass
         if rawOutput:
             cmd += [ "--raw" ]
         super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
