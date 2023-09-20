@@ -84,7 +84,7 @@ class Dump1090Module(ExecModule):
         cmd = [
             "dump1090", "--ifile", "-", "--iformat", "SC16",
             "--lat", str(lat), "--lon", str(lon),
-            "--metric"
+            "--modeac", "--metric", "--write-json", "/tmp"
         ]
         if rawOutput:
             cmd += [ "--raw" ]

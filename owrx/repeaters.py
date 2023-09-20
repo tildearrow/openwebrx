@@ -91,20 +91,22 @@ class Repeaters(object):
         file = self._getCachedDatabaseFile()
         ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
 
-        with self.lock:
-            # If cached database is stale...
-            if time.time() - ts >= self.refreshPeriod:
-                # Load EIBI database file from the web
-                repeaters = self.loadFromWeb()
-                if repeaters:
-                    # Save parsed data into a file
-                    self.saveRepeaters(file, repeaters)
-                    # Update current schedule
+        # If cached database is stale...
+        if time.time() - ts >= self.refreshPeriod:
+            # Load EIBI database file from the web
+            repeaters = self.loadFromWeb()
+            if repeaters:
+                # Save parsed data into a file
+                self.saveRepeaters(file, repeaters)
+                # Update current schedule
+                with self.lock:
                     self.repeaters = repeaters
 
-            # If no current databse, load it from cached file
-            if not self.repeaters:
-                self.repeaters = self.loadRepeaters(file)
+        # If no current databse, load it from cached file
+        if not self.repeaters:
+            repeaters = self.loadRepeaters(file)
+            with self.lock:
+                self.repeaters = repeaters
 
     #
     # Save database to a given JSON file.
