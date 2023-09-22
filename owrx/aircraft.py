@@ -10,6 +10,7 @@ import json
 import math
 import time
 import re
+import os
 
 import logging
 
@@ -35,6 +36,37 @@ MODE_S_FORMATS = [
 ]
 
 #
+# Aircraft categories
+#
+ADSB_CATEGORIES = {
+  "A0": ("^", "/"),  # No ADS-B emitter category information
+  "A1": ("'", "/"),  # Light (< 15500 lbs)
+  "A2": ("'", "/"),  # Small (15500 to 75000 lbs)
+  "A3": ("^", "/"),  # Large (75000 to 300000 lbs)
+  "A4": ("^", "/"),  # High vortex large (aircraft such as B-757)
+  "A5": ("^", "/"),  # Heavy (> 300000 lbs)
+  "A6": ("^", "/"),  # High performance (> 5g acceleration and 400 kts)
+  "A7": ("X", "/"),  # Rotorcraft, regardless of weight
+  "B0": ("^", "/"),  # No ADS-B emitter category information
+  "B1": ("g", "/"),  # Glider or sailplane, regardless of weight
+  "B2": ("O", "/"),  # Airship or balloon, regardless of weight
+  "B3": ("g", "/"),  # Parachutist / skydiver
+  "B4": ("g", "/"),  # Ultralight / hang-glider / paraglider
+  "B5": ("^", "/"),  # Reserved
+  "B6": ("S", "\\"), # Unmanned aerial vehicle, regardless of weight
+  "B7": ("S", "/"),  # Space / trans-atmospheric vehicle
+  "C0": ("D", "/"),  # No ADS-B emitter category information
+  "C1": ("f", "/"),  # Surface vehicle – emergency vehicle
+  "C2": ("u", "\\"), # Surface vehicle – service vehicle
+  "C3": ("D", "/"),  # Point obstacle (includes tethered balloons)
+  "C4": ("D", "/"),  # Cluster obstacle
+  "C5": ("D", "/"),  # Line obstacle
+  "C6": ("D", "/"),  # Reserved
+  "C7": ("D", "/"),  # Reserved
+}
+
+
+#
 # This class represents current aircraft location compatible with
 # the APRS markers. It can be used for displaying aircraft on the
 # map.
@@ -47,11 +79,17 @@ class AircraftLocation(LatLngLocation):
 
     def __dict__(self):
         res = super(AircraftLocation, self).__dict__()
-        # Add APRS-like aircraft symbol (red or blue, depending on mode)
-        mod = '/' if self.data["mode"]=="ADSB" else '\\'
-        res["symbol"] = getSymbolData('^', mod)
+        # Add an APRS-like symbol
+        if "category" in self.data and self.data["category"] in ADSB_CATEGORIES:
+            # Add APRS-like symbol by aircraft category
+            cat = ADSB_CATEGORIES[self.data["category"]]
+            res["symbol"] = getSymbolData(cat[0], cat[1])
+        else:
+            # Add APRS-like aircraft symbol (red or blue, depending on mode)
+            mod = '/' if self.data["mode"]=="ADSB" else '\\'
+            res["symbol"] = getSymbolData('^', mod)
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "msglog"]:
+        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Return APRS-like dictionary object
@@ -65,11 +103,6 @@ class AircraftLocation(LatLngLocation):
 class AircraftManager(object):
     sharedInstance = None
     creationLock = threading.Lock()
-
-    # Called on a timer
-    @staticmethod
-    def _periodicCleanup(arg):
-        arg.periodicCleanup()
 
     # Return a global instance of the aircraft manager.
     @staticmethod
@@ -103,16 +136,19 @@ class AircraftManager(object):
 
     def __init__(self):
         self.lock = threading.Lock()
-        self.checkTime = 60
+        self.cleanupPeriod = 60
         self.maxMsgLog = 20
         self.colors = ColorCache()
         self.aircraft = {}
-        self.periodicCleanup()
+        # Start periodic cleanup task
+        self.thread = threading.Thread(target=self._cleanupThread)
+        self.thread.start()
 
     # Perform periodic cleanup
-    def periodicCleanup(self):
-        self.cleanup()
-        threading.Timer(self.checkTime, self._periodicCleanup, [self]).start()
+    def _cleanupThread(self):
+        while self.thread is not None:
+            time.sleep(self.cleanupPeriod)
+            self.cleanup()
 
     # Get aircraft data by ID.
     def getAircraft(self, id):
@@ -453,17 +489,30 @@ class Vdl2Parser(AircraftParser):
 # Parser for ADSB messages coming from Dump1090 in hexadecimal format.
 #
 class AdsbParser(AircraftParser):
-    def __init__(self, service: bool = False):
+    def __init__(self, service: bool = False, jsonFile: str = None):
         super().__init__(filePrefix=None, service=service)
         self.smode_parser = ModeSParser()
+        self.jsonFile = jsonFile
+        self.checkPeriod = 1
+        self.lastParse = 0
+        # Start periodic JSON file check
+        if self.jsonFile is not None:
+            self.thread = threading.Thread(target=self._refreshThread)
+            self.thread.start()
 
+    # Default parsing function called by AircraftParser class
     def parseAircraft(self, msg: bytes):
+        # When using Dump1090 JSON file, do not parse here
+        if self.jsonFile is not None:
+            return None
+
         # If it is a valid Mode-S message...
         if msg.startswith(b"*") and msg.endswith(b";") and len(msg) in [16, 30]:
             # Parse Mode-S message
             msg = msg[1:-1].decode('utf-8', 'replace')
             out = self.smode_parser.process(bytes.fromhex(msg))
             #logger.debug("@@@ PARSE OUT: {0}".format(out))
+
             # Only consider position and identification reports for now
             if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
                 # Add fields for compatibility with other aircraft parsers
@@ -508,7 +557,24 @@ class AdsbParser(AircraftParser):
         # No data parsed
         return None
 
-    def parseDump1090Json(self, file: str, updateDatabase: bool = False):
+    # Periodically check if Dump1090's JSON file has changed
+    # and parse it if it has.
+    def _refreshThread(self):
+        lastUpdate = 0
+        while self.thread is not None:
+            # Wait until the next check
+            time.sleep(self.checkPeriod)
+            try:
+                # If JSON file has updated since the last update, parse it
+                ts = os.path.getmtime(self.jsonFile)
+                if ts > lastUpdate:
+                    self.parseJson(self.jsonFile, updateDatabase=True)
+                    lastUpdate = ts
+            except Exception as exptn:
+                logger.info("Failed to check file '{0}': {1}".format(self.jsonFile, exptn))
+
+    # Parse supplied JSON file in Dump1090 format.
+    def parseJson(self, file: str, updateDatabase: bool = False):
         # Load JSON from supplied file
         try:
             with open(file, "r") as f:
@@ -519,56 +585,92 @@ class AdsbParser(AircraftParser):
         # Make sure we have the aircraft data
         if "aircraft" not in data or "now" not in data:
             return None
-        elif not updateDatabase:
-          # Return original JSON "aircraft" contents
-          return data["aircraft"]
+
+        # The Dump1090 JSON data has a special mode
+        data["mode"] = "ADSB-LIST"
+
+        # If not updating aircraft database, exit here
+        if not updateDatabase:
+          return data
 
         # Going to add timestamps and TTLs
         pm   = Config.get()
-        ts   = data["now"]
-        ttl  = ts + pm["adsb_ttl"]
-        data = data["aircraft"]
+        now  = data["now"]
+        ttl  = now + pm["adsb_ttl"]
 
         # Iterate over aircraft
-        for entry in data:
+        for entry in data["aircraft"]:
+            # Do not update twice
+            ts = now - entry["seen"]
+            if ts <= self.lastParse:
+                continue
+
+            # Always present ADSB data
             out = {
                 "mode" : "ADSB",
                 "icao" : entry["hex"].upper(),
                 "ts"   : ts,
-                "ttl"  : ttl,
+                "ttl"  : ttl - entry["seen"],
                 "msgs" : entry["messages"],
-                "seen" : entry["seen"],
                 "rssi" : entry["rssi"],
             }
 
+            # Position
             if "lat" in entry and "lon" in entry:
                 out["lat"] = entry["lat"]
                 out["lon"] = entry["lon"]
 
+            # Flight identification, aircraft type, squawk code
             if "flight" in entry:
                 out["flight"] = entry["flight"].strip()
-
+            if "category" in entry:
+                out["category"] = entry["category"]
             if "squawk" in entry:
-                out["type"] = "Squawk " + entry["squawk"]
-            elif "category" in entry:
-                out["type"] = "Category " + entry["category"]
+                out["squawk"] = entry["squawk"]
+            if "emergency" in entry and entry["emergency"] != "none":
+                out["emergency"] = entry["emergency"].upper()
 
+            # Altitude
             if "alt_geom" in entry:
                 out["altitude"] = round(entry["alt_geom"] * METERS_PER_FOOT)
             elif "alt_baro" in entry:
                 out["altitude"] = round(entry["alt_baro"] * METERS_PER_FOOT)
-            elif "nav_altitude_mcp" in entry:
-                out["altitude"] = round(entry["nav_altitude_mcp"] * METERS_PER_FOOT)
 
-            if "nav_heading" in entry:
-                out["course"] = round(entry["nav_heading"])
+            # Climb/descent rate
+            if "geom_rate" in entry:
+                out["vspeed"] = round(entry["geom_rate"] * METERS_PER_FOOT)
+            elif "baro_rate" in entry:
+                out["vspeed"] = round(entry["baro_rate"] * METERS_PER_FOOT)
+
+            # Speed
+            if "gs" in entry:
+                out["speed"] = round(entry["gs"] * KMH_PER_KNOT)
+            elif "tas" in entry:
+                out["speed"] = round(entry["tas"] * KMH_PER_KNOT)
+            elif "ias" in entry:
+                out["speed"] = round(entry["ias"] * KMH_PER_KNOT)
+
+            # Heading
+            if "true_heading" in entry:
+                out["course"] = round(entry["true_heading"])
+            elif "mag_heading" in entry:
+                out["course"] = round(entry["mag_heading"])
             elif "track" in entry:
                 out["course"] = round(entry["track"])
+
+            # Outside temperature
+            if "oat" in entry:
+                out["temperature"] = entry["oat"]
+            elif "tat" in entry:
+                out["temperature"] = entry["tat"]
 
             # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
 
-        # Return original JSON "aircraft" contents
+        # Save last parsed time
+        self.lastParse = now
+
+        # Return original JSON contents
         return data
 
 

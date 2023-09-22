@@ -5,6 +5,7 @@ from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser
 from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
 
+import os
 
 class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
@@ -145,12 +146,13 @@ class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class AdsbDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, service: bool = False):
+    def __init__(self, service: bool = False, jsonFile: str = None):
         self.sampleRate = 2400000
-        self.parser = AdsbParser(service=service)
+        self.parser = AdsbParser(service=service, jsonFile=jsonFile)
+        jsonFolder = os.path.dirname(jsonFile) if jsonFile else None
         workers = [
             Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
-            Dump1090Module(rawOutput = True, jsonOutput = True),
+            Dump1090Module(rawOutput = True, jsonFolder = jsonFolder),
             self.parser,
         ]
         # Connect all the workers

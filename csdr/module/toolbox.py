@@ -77,8 +77,8 @@ class DumpVdl2Module(PopenModule):
 
 
 class Dump1090Module(ExecModule):
-    def __init__(self, rawOutput: bool = False, jsonOutput: bool = False):
-        self.jsonFolder = "/tmp/dump1090"
+    def __init__(self, rawOutput: bool = False, jsonFolder: str = None):
+        self.jsonFolder = jsonFolder
         pm  = Config.get()
         lat = pm["receiver_gps"]["lat"]
         lon = pm["receiver_gps"]["lon"]
@@ -87,13 +87,16 @@ class Dump1090Module(ExecModule):
             "--lat", str(lat), "--lon", str(lon),
             "--modeac", "--metric"
         ]
-        if jsonOutput:
+        # If JSON files folder supplied, use that, disable STDOUT output
+        if self.jsonFolder is not None:
             try:
                 os.makedirs(self.jsonFolder, exist_ok = True)
-                cmd += [ "--write-json", self.jsonFolder ]
+                cmd += [ "--quiet", "--write-json", self.jsonFolder ]
             except:
+                self.jsonFolder = None
                 pass
-        if rawOutput:
+        # RAW STDOUT output only makes sense if we are not using JSON
+        if rawOutput and self.jsonFolder is None:
             cmd += [ "--raw" ]
         super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
 

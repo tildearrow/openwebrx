@@ -421,6 +421,8 @@ AprsMarker.prototype.update = function(update) {
     this.flight   = update.location.flight;
     this.icao     = update.location.icao;
     this.vspeed   = update.location.vspeed;
+    this.squawk   = update.location.squawk;
+    this.rssi     = update.location.rssi;
     this.msglog   = update.location.msglog;
 
     // Implementation-dependent function call
@@ -608,6 +610,10 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Marker.makeListItem('Aircraft', Marker.linkify(this.aircraft, flight_url));
     }
 
+    if (this.squawk) {
+        detailsString += Marker.makeListItem('Squawk', this.squawk);
+    }
+
     if (this.origin) {
         detailsString += Marker.makeListItem('Origin', this.origin);
     }
@@ -637,6 +643,10 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' m/m';
         else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' m/m';
         detailsString += Marker.makeListItem('Altitude', alt);
+    }
+
+    if (this.rssi) {
+        detailsString += Marker.makeListItem('RSSI', this.rssi + ' dB');
     }
 
     if (detailsString.length > 0) {
