@@ -160,13 +160,24 @@ MapManager.prototype.processUpdates = function(updates) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);
                 var markerClass = GSimpleMarker;
-                var aprsOptions = {}
+                var options = {}
+
+                switch(update.mode) {
+                    case 'HFDL': case 'VDL2': case 'ADSB': case 'ACARS':
+                        markerClass = GAircraftMarker;
+                        break;
+                    case 'APRS': case 'AIS':
+                        markerClass = GAprsMarker;
+                        break;
+                }
+
+                options.color = update.location.color?
+                    update.location.color : self.mman.getColor(update.mode);
 
                 if (update.location.symbol) {
-                    markerClass = GAprsMarker;
-                    aprsOptions.symbol = update.location.symbol;
-                    aprsOptions.course = update.location.course;
-                    aprsOptions.speed = update.location.speed;
+                    options.symbol = update.location.symbol;
+                    options.course = update.location.course;
+                    options.speed = update.location.speed;
                 }
 
                 // If new item, create a new marker for it
@@ -188,7 +199,7 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
 
                 // Apply marker options
-                marker.setMarkerOptions(aprsOptions);
+                marker.setMarkerOptions(options);
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
                     map.panTo(marker.position);
@@ -206,16 +217,10 @@ MapManager.prototype.processUpdates = function(updates) {
                 var options = {}
 
                 // If no symbol or color supplied, use defaults by type
-                if (update.location.symbol) {
-                    options.symbol = update.location.symbol;
-                } else {
-                    options.symbol = self.mman.getSymbol(update.mode);
-                }
-                if (update.location.color) {
-                    options.color = update.location.color;
-                } else {
-                    options.color = self.mman.getColor(update.mode);
-                }
+                options.symbol = update.location.symbol?
+                    update.location.symbol : self.mman.getSymbol(update.mode);
+                options.color = update.location.color?
+                    update.location.color : self.mman.getColor(update.mode);
 
                 // If new item, create a new marker for it
                 if (!marker) {

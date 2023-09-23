@@ -390,8 +390,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
 //
 // APRS Marker
-//     Represents APRS transmitters, as well as AIS (vessels)
-//     and HFDL (planes).
+//     Represents APRS transmitters, as well as AIS (vessels).
 // Derived classes have to implement:
 //     setMarkerOpacity()
 //
@@ -699,4 +698,199 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         + this.mode + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString
         + messageString + hopsString;
+};
+
+//
+// Aircraft Marker
+//     Represents aircraft reported by various aeronautic services,
+//     such as HFDL, ACARS, VDL2, and ADSB.
+// Derived classes have to implement:
+//     setMarkerOpacity()
+//
+
+function AircraftMarker() {}
+
+AircraftMarker.prototype = new Marker();
+
+AircraftMarker.prototype.update = function(update) {
+    this.lastseen = update.lastseen;
+    this.mode     = update.mode;
+    this.comment  = update.location.comment;
+    // HFDL, ACARS, VDL2, ADSB
+    this.altitude = update.location.altitude;
+    this.aircraft = update.location.aircraft;
+    this.destination = update.location.destination;
+    this.origin   = update.location.origin;
+    this.flight   = update.location.flight;
+    this.icao     = update.location.icao;
+    this.vspeed   = update.location.vspeed;
+    this.squawk   = update.location.squawk;
+    this.rssi     = update.location.rssi;
+    this.msglog   = update.location.msglog;
+
+    // Implementation-dependent function call
+    this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
+
+    // Age locator
+    this.age(new Date().getTime() - update.lastseen);
+};
+
+AircraftMarker.prototype.draw = function() {
+    var div = this.div;
+    var overlay = this.overlay;
+    if (!div || !overlay) return;
+
+    if (this.symbol) {
+        var tableId = this.symbol.table === '/' ? 0 : 1;
+        div.style.background = 'url(static/gfx/adsb-72.png)';
+        div.style['background-size'] = '576px 792px';
+        div.style['background-position-x'] = -this.symbol.x * 72 + 'px';
+        div.style['background-position-y'] = -this.symbol.y * 72 + 'px';
+    }
+
+    // If aircraft is flying at a significant altitude...
+    if (this.altitude >= 500) {
+        // r = elevation, a = rotation, <x,y> = shadow offset
+        var r = Math.round(this.altitude / 1000);
+        var a = - Math.PI * (this.course? this.course - 45 : -45) / 180;
+        var x = r * Math.cos(a);
+        var y = r * Math.sin(a);
+        div.style.filter = 'drop-shadow(' + x + 'px ' + y + 'px 0.5px rgba(0,0,0,0.5))';
+    } else {
+        div.style.filter = 'none';
+    }
+
+    div.style.transform = 'scale(0.5)';
+
+    if (this.course) {
+        div.style.transform += ' rotate(' + this.course + 'deg)';
+    }
+
+    if (this.symbol && this.symbol.table !== '/' && this.symbol.table !== '\\') {
+        overlay.style.display = 'block';
+        overlay.style['background-position-x'] = -this.symbol.x * 72 + 'px';
+        overlay.style['background-position-y'] = -this.symbol.y * 72 + 'px';
+    } else {
+        overlay.style.display = 'none';
+    }
+
+    if (this.opacity) {
+        div.style.opacity = this.opacity;
+    } else {
+        div.style.opacity = null;
+    }
+
+    if (this.place) this.place();
+};
+
+AircraftMarker.prototype.create = function() {
+    var div = this.div = document.createElement('div');
+
+    div.style.position = 'absolute';
+    div.style.cursor = 'pointer';
+    div.style.width = '72px';
+    div.style.height = '72px';
+
+    var overlay = this.overlay = document.createElement('div');
+    overlay.style.width = '72px';
+    overlay.style.height = '72px';
+    overlay.style.background = 'url(static/gfx/adsb-72.png)';
+    overlay.style['background-size'] = '576px 792px';
+    overlay.style.display = 'none';
+
+    div.appendChild(overlay);
+
+    return div;
+};
+
+AircraftMarker.prototype.getAnchorOffset = function() {
+    return [0, -12];
+};
+
+AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
+    var timeString = moment(this.lastseen).fromNow();
+    var commentString = '';
+    var detailsString = '';
+    var messageString = '';
+    var distance = '';
+
+    if (this.comment) {
+        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>' +
+            this.comment + '</div></div>';
+    }
+
+    if (this.msglog) {
+        messageString += '<div>' + Marker.makeListTitle('Messages') +
+            '<pre class="openwebrx-map-console">' +
+            this.msglog.join('\n<hr>') + '</pre></div>';
+    }
+
+    if (this.icao) {
+        detailsString += Marker.makeListItem('ICAO', Marker.linkify(this.icao, modes_url));
+    }
+
+    if (this.aircraft) {
+        detailsString += Marker.makeListItem('Aircraft', Marker.linkify(this.aircraft, flight_url));
+    }
+
+    if (this.squawk) {
+        detailsString += Marker.makeListItem('Squawk', this.squawk);
+    }
+
+    if (this.origin) {
+        detailsString += Marker.makeListItem('Origin', this.origin);
+    }
+
+    if (this.destination) {
+        detailsString += Marker.makeListItem('Destination', this.destination);
+    }
+
+    // Combine course and speed if both present
+    if (this.course && this.speed) {
+        detailsString += Marker.makeListItem('Course',
+            Marker.degToCompass(this.course) + ' ' +
+            this.speed.toFixed(1) + ' km/h'
+        );
+    } else {
+        if (this.course) {
+            detailsString += Marker.makeListItem('Course', Marker.degToCompass(this.course));
+        }
+        if (this.speed) {
+            detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' km/h');
+        }
+    }
+
+    // Combine altitude and vertical speed
+    if (this.altitude) {
+        var alt = this.altitude.toFixed(0) + ' m';
+        if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' m/m';
+        else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' m/m';
+        detailsString += Marker.makeListItem('Altitude', alt);
+    }
+
+    if (this.rssi) {
+        detailsString += Marker.makeListItem('RSSI', this.rssi + ' dB');
+    }
+
+    if (detailsString.length > 0) {
+        detailsString = '<div>' + Marker.makeListTitle('Details') + detailsString + '</div>';
+    }
+
+    if (receiverMarker) {
+        distance = ' at ' + Marker.distanceKm(receiverMarker.position, this.position) + ' km';
+    }
+
+    // Linkify title based on what it is (vessel, flight, mode-S code, or else)
+    var url = modes_url;
+    if (this.flight) {
+        name = this.flight;
+        url  = this.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? flight_url : null;
+    } else if (this.aircraft) {
+        name = this.aircraft;
+        url  = flight_url;
+    }
+
+    return '<h3>' + Marker.linkify(name, url) + distance + '</h3>'
+        + '<div align="center">' + timeString + ' using ' + this.mode + '</div>'
+        + commentString + detailsString + messageString;
 };
