@@ -1,3 +1,13 @@
+**1.2.31**
+- Added display of latest aircraft messages to the map.
+- Adding parsing of the dump1090 JSON output (in progress).
+- No longer preferring shorter EIBI entries to longer ones.
+- Now loading fresh EIBI schedule every 24 hours.
+- Fixed background ACARS service.
+- Fixed missing SAM modulation.
+- Fixed map info bubble formatting.
+- Optimized locking in RepeaterBook and EIBI modules.
+
 **1.2.30**
 - Updated OpenWebRX+ with changes from Jakob's develop branch.
 - Added Jakob's RTTY decoder and made it the default.
