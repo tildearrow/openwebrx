@@ -66,6 +66,9 @@ function LFeatureMarker() { $.extend(this, new LMarker(), new FeatureMarker()); 
 // Leaflet-Specific AprsMarker
 function LAprsMarker () { $.extend(this, new LMarker(), new AprsMarker()); }
 
+// Leaflet-Specific AircraftMarker
+function LAircraftMarker () { $.extend(this, new LMarker(), new AircraftMarker()); }
+
 //
 // Leaflet-Specific Locator
 //

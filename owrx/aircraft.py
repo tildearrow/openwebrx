@@ -39,30 +39,30 @@ MODE_S_FORMATS = [
 # Aircraft categories
 #
 ADSB_CATEGORIES = {
-  "A0": ("^", "/"),  # No ADS-B emitter category information
-  "A1": ("'", "/"),  # Light (< 15500 lbs)
-  "A2": ("'", "/"),  # Small (15500 to 75000 lbs)
-  "A3": ("^", "/"),  # Large (75000 to 300000 lbs)
-  "A4": ("^", "/"),  # High vortex large (aircraft such as B-757)
-  "A5": ("^", "/"),  # Heavy (> 300000 lbs)
-  "A6": ("^", "/"),  # High performance (> 5g acceleration and 400 kts)
-  "A7": ("X", "/"),  # Rotorcraft, regardless of weight
-  "B0": ("^", "/"),  # No ADS-B emitter category information
-  "B1": ("g", "/"),  # Glider or sailplane, regardless of weight
-  "B2": ("O", "/"),  # Airship or balloon, regardless of weight
-  "B3": ("g", "/"),  # Parachutist / skydiver
-  "B4": ("g", "/"),  # Ultralight / hang-glider / paraglider
-  "B5": ("^", "/"),  # Reserved
-  "B6": ("S", "\\"), # Unmanned aerial vehicle, regardless of weight
-  "B7": ("S", "/"),  # Space / trans-atmospheric vehicle
-  "C0": ("D", "/"),  # No ADS-B emitter category information
-  "C1": ("f", "/"),  # Surface vehicle – emergency vehicle
-  "C2": ("u", "\\"), # Surface vehicle – service vehicle
-  "C3": ("D", "/"),  # Point obstacle (includes tethered balloons)
-  "C4": ("D", "/"),  # Cluster obstacle
-  "C5": ("D", "/"),  # Line obstacle
-  "C6": ("D", "/"),  # Reserved
-  "C7": ("D", "/"),  # Reserved
+  "A0": (0, 0),  # No ADS-B emitter category information
+  "A1": (3, 0),  # Light (< 15500 lbs)
+  "A2": (5, 0),  # Small (15500 to 75000 lbs)
+  "A3": (4, 0),  # Large (75000 to 300000 lbs)
+  "A4": (0, 0),  # High vortex large (aircraft such as B-757)
+  "A5": (1, 7),  # Heavy (> 300000 lbs)
+  "A6": (7, 0),  # High performance (> 5g acceleration and 400 kts)
+  "A7": (6, 5),  # Rotorcraft, regardless of weight
+  "B0": (0, 0),  # No ADS-B emitter category information
+  "B1": (1, 6),  # Glider or sailplane, regardless of weight
+  "B2": (2, 0),  # Airship or balloon, regardless of weight
+  "B3": (10, 0), # Parachutist / skydiver
+  "B4": (10, 0), # Ultralight / hang-glider / paraglider
+  "B5": (0, 0),  # Reserved
+  "B6": (4, 3),  # Unmanned aerial vehicle, regardless of weight
+  "B7": (4, 5),  # Space / trans-atmospheric vehicle
+  "C0": (4, 8),  # No ADS-B emitter category information
+  "C1": (2, 8),  # Surface vehicle – emergency vehicle
+  "C2": (3, 8),  # Surface vehicle – service vehicle
+  "C3": (5, 8),  # Point obstacle (includes tethered balloons)
+  "C4": (6, 9),  # Cluster obstacle
+  "C5": (2, 8),  # Line obstacle
+  "C6": (2, 8),  # Reserved
+  "C7": (2, 8),  # Reserved
 }
 
 
@@ -83,11 +83,10 @@ class AircraftLocation(LatLngLocation):
         if "category" in self.data and self.data["category"] in ADSB_CATEGORIES:
             # Add APRS-like symbol by aircraft category
             cat = ADSB_CATEGORIES[self.data["category"]]
-            res["symbol"] = getSymbolData(cat[0], cat[1])
+            res["symbol"] = { "x": cat[0], "y": cat[1] }
         else:
             # Add APRS-like aircraft symbol (red or blue, depending on mode)
-            mod = '/' if self.data["mode"]=="ADSB" else '\\'
-            res["symbol"] = getSymbolData('^', mod)
+            res["symbol"] = { "x": 0, "y": 0 }
         # Convert aircraft-specific data into APRS-like data
         for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
             if x in self.data:

@@ -79,6 +79,25 @@ GAprsMarker.prototype.place = function() {
 };
 
 //
+// GoogleMaps-Specific AircraftMarker
+//
+
+function GAircraftMarker() { $.extend(this, new AircraftMarker()); }
+GAircraftMarker.prototype = new GMarker();
+
+GAircraftMarker.prototype.place = function() {
+    // Project location and place symbol
+    var div = this.div;
+    if (div) {
+        var point = this.getProjection().fromLatLngToDivPixel(this.position);
+        if (point) {
+            div.style.left = point.x - 36 + 'px';
+            div.style.top = point.y - 36 + 'px';
+        }
+    }
+};
+
+//
 // GoogleMaps-Specific SimpleMarker
 //
 
