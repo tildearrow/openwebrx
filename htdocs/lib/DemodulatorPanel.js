@@ -167,7 +167,9 @@ DemodulatorPanel.prototype.updatePanels = function() {
     // WSJT-X modes share the same panel
     toggle_panel("openwebrx-panel-wsjt-message", ['ft8', 'wspr', 'jt65', 'jt9', 'ft4', 'fst4', 'fst4w', "q65", "msk144"].indexOf(modulation) >= 0);
     // Aeronautic modes share the same panel
-    toggle_panel("openwebrx-panel-hfdl-message", ['hfdl', 'vdl2', 'adsb', 'acars'].indexOf(modulation) >= 0);
+    toggle_panel("openwebrx-panel-hfdl-message", ['hfdl', 'vdl2', 'acars'].indexOf(modulation) >= 0);
+    // But ADSB has its own panel
+    toggle_panel("openwebrx-panel-adsb-message", modulation === 'adsb');
     // Packet modes share the same panel
     toggle_panel("openwebrx-panel-packet-message", ['packet', 'ais'].indexOf(modulation) >= 0);
     // these modes come with their own

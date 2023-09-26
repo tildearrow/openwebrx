@@ -1,11 +1,10 @@
-from csdr.module import LineBasedModule
 from owrx.toolbox import TextParser, ColorCache
 from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
-from owrx.adsb.modes import ModeSParser
 from owrx.config import Config
 from datetime import datetime, timedelta
 import threading
+import pickle
 import json
 import math
 import time
@@ -15,12 +14,6 @@ import os
 import logging
 
 logger = logging.getLogger(__name__)
-
-#
-# Feet per meter
-#
-METERS_PER_FOOT = 0.3048
-KMH_PER_KNOT   = 1.852
 
 #
 # Mode-S message formats
@@ -155,10 +148,20 @@ class AircraftManager(object):
 
     # Add a new aircraft to the database, or update existing aircraft data.
     def update(self, data):
+        # Not updated yet
+        updated = False
+
         # Identify aircraft the best we can, it MUST have some ID
         id = self.getAircraftId(data)
         if not id:
-            return
+            return updated
+
+        # Add time-to-live, if missing, assume HFDL longevity
+        if "ts" not in data:
+            pm = Config.get()
+            ts = datetime.now().timestamp()
+            data["ts"]  = ts
+            data["ttl"] = ts + pm["hfdl_ttl"]
 
         # Now operating on the database...
         with self.lock:
@@ -176,53 +179,51 @@ class AircraftManager(object):
                 logger.debug("Adding %s" % id)
                 # Create a new record
                 item = self.aircraft[id] = data.copy()
-                # No previous position
-                pos0 = None
+                updated = True
             else:
                 # Use existing record
                 item = self.aircraft[id]
-                # Previous position
-                pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
-                # Update existing record
-                item.update(data)
+                # If we have got newer data...
+                if data["ts"] > item["ts"]:
+                    # Get previous and current positions
+                    pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
+                    pos1 = (data["lat"], data["lon"]) if "lat" in data and "lon" in data else None
+                    # Update existing record
+                    item.update(data)
+                    updated = True
+                    # If both current and previous positions exist, compute course
+                    if "course" not in data and pos0 and pos1 and pos1 != pos0:
+                        item["course"] = data["course"] = round(self.bearing(pos0, pos1))
+                        #logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
 
-            # If both current and previous positions exist, compute course
-            pos1 = (data["lat"], data["lon"]) if "lat" in data and "lon" in data else None
-            if "course" not in data and pos0 and pos1 and pos1 != pos0:
-                item["course"] = round(self.bearing(pos0, pos1))
-                #logger.debug("Updated %s course to %d degrees" % (id, item["course"]))
-
-            # Update time-to-live, if missing, assume HFDL longevity
-            if "ts" not in data:
-                pm = Config.get()
-                ts = datetime.now().timestamp()
-                item["ts"]  = ts
-                item["ttl"] = ts + pm["hfdl_ttl"]
-
-            # Add incoming messages to the log
-            if "message" in data:
-                if "msglog" not in item:
-                    item["msglog"] = [ data["message"] ]
-                else:
-                    msglog = item["msglog"]
-                    msglog.append(data["message"])
-                    if len(msglog) > self.maxMsgLog:
-                        item["msglog"] = item["msglog"][-self.maxMsgLog:]
-
-            # Update aircraft on the map
-            if "lat" in item and "lon" in item and "mode" in item:
-                loc = AircraftLocation(item)
-                Map.getSharedInstance().updateLocation(id, loc, item["mode"])
-                # Can later use this for linking to the map
-                data["mapid"] = id
+            # Only if we have applied this update...
+            if updated:
+                # Add incoming messages to the log
+                if "message" in data:
+                    if "msglog" not in item:
+                        item["msglog"] = [ data["message"] ]
+                    else:
+                        msglog = item["msglog"]
+                        msglog.append(data["message"])
+                        if len(msglog) > self.maxMsgLog:
+                            item["msglog"] = item["msglog"][-self.maxMsgLog:]
+                # Update aircraft on the map
+                if "lat" in item and "lon" in item and "mode" in item:
+                    loc = AircraftLocation(item)
+                    Map.getSharedInstance().updateLocation(id, loc, item["mode"])
+                    # Can later use this for linking to the map
+                    data["mapid"] = id
 
             # Update input data with computed data
-            for key in ["icao", "aircraft", "flight", "course"]:
+            for key in ["icao", "aircraft", "flight"]:
                 if key in item:
                     data[key] = item[key]
 
-            # Assign input data a color by its aircraft ID
-            data["color"] = self.colors.getColor(id)
+        # Assign input data a color by its updated aircraft ID
+        data["color"] = self.colors.getColor(self.getAircraftId(data))
+
+        # Return TRUE if updated database
+        return updated
 
     # Remove all database entries older than given time.
     def cleanup(self):
@@ -235,6 +236,18 @@ class AircraftManager(object):
                 for id in too_old:
                     self._removeFromMap(id)
                     del self.aircraft[id]
+
+    # Get current aircraft data reported in given mode
+    def getData(self, mode: str = None):
+        result = []
+        with self.lock:
+            for id in self.aircraft.keys():
+                item = self.aircraft[id]
+                # Ignore duplicates and data reported in different modes
+                if id == self.getAircraftId(item):
+                    if not mode or mode == item["mode"]:
+                        result.append(item)
+        return result
 
     # Internal function to merge aircraft data
     def _merge(self, id1, id2):
@@ -473,7 +486,7 @@ class Vdl2Parser(AircraftParser):
                     alt = p["value"]["alt"]
                     if alt < 255000:
                         # Convert altitude from feet into meters
-                        out["altitude"] = round(alt * METERS_PER_FOOT)
+                        out["altitude"] = round(alt)
                 elif p["name"] == "dst_airport":
                     # Parse destination airport
                     out["destination"] = p["value"]
@@ -488,72 +501,17 @@ class Vdl2Parser(AircraftParser):
 # Parser for ADSB messages coming from Dump1090 in hexadecimal format.
 #
 class AdsbParser(AircraftParser):
-    def __init__(self, service: bool = False, jsonFile: str = None):
+    def __init__(self, service: bool = False, jsonFile: str = "/tmp/dump1090/aircraft.json"):
         super().__init__(filePrefix=None, service=service)
-        self.smode_parser = ModeSParser()
         self.jsonFile = jsonFile
         self.checkPeriod = 1
         self.lastParse = 0
         # Start periodic JSON file check
-        if self.jsonFile is not None:
-            self.thread = threading.Thread(target=self._refreshThread)
-            self.thread.start()
+        self.thread = threading.Thread(target=self._refreshThread)
+        self.thread.start()
 
-    # Default parsing function called by AircraftParser class
+    # Not parsing STDOUT
     def parseAircraft(self, msg: bytes):
-        # When using Dump1090 JSON file, do not parse here
-        if self.jsonFile is not None:
-            return None
-
-        # If it is a valid Mode-S message...
-        if msg.startswith(b"*") and msg.endswith(b";") and len(msg) in [16, 30]:
-            # Parse Mode-S message
-            msg = msg[1:-1].decode('utf-8', 'replace')
-            out = self.smode_parser.process(bytes.fromhex(msg))
-            #logger.debug("@@@ PARSE OUT: {0}".format(out))
-
-            # Only consider position and identification reports for now
-            if "identification" in out or "groundspeed" in out or ("lat" in out and "lon" in out):
-                # Add fields for compatibility with other aircraft parsers
-                pm = Config.get()
-                ts = datetime.now().timestamp()
-                out["ts"]   = ts
-                out["ttl"]  = ts + pm["adsb_ttl"]
-                out["time"] = datetime.utcnow().strftime("%H:%M:%S")
-                out["icao"] = out["icao"].upper()
-                # Determine message format and type
-                format = out["format"]
-                if format >= len(MODE_S_FORMATS) or not MODE_S_FORMATS[format]:
-                    out["type"] = "Mode-S Format {0} frame".format(format)
-                elif format == 17:
-                    out["type"] = "ADSB Type {0} frame".format(out["adsb_type"])
-                else:
-                    out["type"] = "Mode-S {0} frame".format(MODE_S_FORMATS[format])
-                # Flight ID, if present
-                if "identification" in out:
-                    out["flight"] = out["identification"].strip()
-                # Altitude, if present
-                if "altitude" in out:
-                   out["altitude"] = round(out["altitude"] * METERS_PER_FOOT)
-                # Vertical speed, if present
-                if "verticalspeed" in out:
-                    out["vspeed"] = round(out["verticalspeed"] * METERS_PER_FOOT)
-                # Speed, if present
-                if "groundspeed" in out:
-                    out["speed"] = round(out["groundspeed"] * KMH_PER_KNOT)
-                #elif "TAS" in out:
-                #    out["speed"] = round(out["TAS"] * KMH_PER_KNOT)
-                #elif "IAS" in out:
-                #    out["speed"] = round(out["IAS"] * KMH_PER_KNOT)
-                # Course, if present (prefer actual aircraft orientation)
-                if "heading" in out:
-                    out["course"] = round(out["heading"])
-                elif "groundtrack" in out:
-                    out["course"] = round(out["groundtrack"])
-                # Done
-                return out
-
-        # No data parsed
         return None
 
     # Periodically check if Dump1090's JSON file has changed
@@ -567,30 +525,31 @@ class AdsbParser(AircraftParser):
                 # If JSON file has updated since the last update, parse it
                 ts = os.path.getmtime(self.jsonFile)
                 if ts > lastUpdate:
-                    self.parseJson(self.jsonFile, updateDatabase=True)
                     lastUpdate = ts
+                    parsed = self.parseJson(self.jsonFile)
+                    if not self.service and parsed > 0:
+                        data = AircraftManager.getSharedInstance().getData("ADSB")
+                        self.writer.write(pickle.dumps({
+                            "mode"     : "ADSB-LIST",
+                            "aircraft" : data
+                        }))
             except Exception as exptn:
                 logger.info("Failed to check file '{0}': {1}".format(self.jsonFile, exptn))
 
     # Parse supplied JSON file in Dump1090 format.
-    def parseJson(self, file: str, updateDatabase: bool = False):
+    def parseJson(self, file: str):
         # Load JSON from supplied file
         try:
             with open(file, "r") as f:
-                data = json.load(f)
+                data = f.read()
+                f.close()
+                data = json.loads(data)
         except:
-            return None
+            return 0
 
         # Make sure we have the aircraft data
         if "aircraft" not in data or "now" not in data:
-            return None
-
-        # The Dump1090 JSON data has a special mode
-        data["mode"] = "ADSB-LIST"
-
-        # If not updating aircraft database, exit here
-        if not updateDatabase:
-          return data
+            return 0
 
         # Going to add timestamps and TTLs
         pm   = Config.get()
@@ -631,23 +590,23 @@ class AdsbParser(AircraftParser):
 
             # Altitude
             if "alt_geom" in entry:
-                out["altitude"] = round(entry["alt_geom"] * METERS_PER_FOOT)
+                out["altitude"] = round(entry["alt_geom"])
             elif "alt_baro" in entry:
-                out["altitude"] = round(entry["alt_baro"] * METERS_PER_FOOT)
+                out["altitude"] = round(entry["alt_baro"])
 
             # Climb/descent rate
             if "geom_rate" in entry:
-                out["vspeed"] = round(entry["geom_rate"] * METERS_PER_FOOT)
+                out["vspeed"] = round(entry["geom_rate"])
             elif "baro_rate" in entry:
-                out["vspeed"] = round(entry["baro_rate"] * METERS_PER_FOOT)
+                out["vspeed"] = round(entry["baro_rate"])
 
             # Speed
             if "gs" in entry:
-                out["speed"] = round(entry["gs"] * KMH_PER_KNOT)
+                out["speed"] = round(entry["gs"])
             elif "tas" in entry:
-                out["speed"] = round(entry["tas"] * KMH_PER_KNOT)
+                out["speed"] = round(entry["tas"])
             elif "ias" in entry:
-                out["speed"] = round(entry["ias"] * KMH_PER_KNOT)
+                out["speed"] = round(entry["ias"])
 
             # Heading
             if "true_heading" in entry:
@@ -669,8 +628,8 @@ class AdsbParser(AircraftParser):
         # Save last parsed time
         self.lastParse = now
 
-        # Return original JSON contents
-        return data
+        # Return the number of parsed records
+        return len(data["aircraft"])
 
 
 #

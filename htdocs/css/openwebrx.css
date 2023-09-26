@@ -1281,6 +1281,55 @@ img.openwebrx-mirror-img
     word-wrap: break-word;
 }
 
+#openwebrx-panel-adsb-message {
+    height: 310px;
+}
+
+#openwebrx-panel-adsb-message a {
+    color: inherit;
+}
+
+#openwebrx-panel-adsb-message tbody {
+    font-family: monospace;
+    color: black;
+    height: 280px;
+}
+
+#openwebrx-panel-adsb-message .flight {
+    width: 80px;
+    text-align: center;
+}
+
+#openwebrx-panel-adsb-message .aircraft {
+    width: 80px;
+    text-align: center;
+}
+
+#openwebrx-panel-adsb-message .squawk {
+    width: 80px;
+    text-align: center;
+}
+
+#openwebrx-panel-adsb-message .distance {
+    width: 80px;
+    text-align: right;
+}
+
+#openwebrx-panel-adsb-message .altitude {
+    width: 80px;
+    text-align: right;
+}
+
+#openwebrx-panel-adsb-message .speed {
+    width: 80px;
+    text-align: right;
+}
+
+#openwebrx-panel-adsb-message .rssi {
+    width: 80px;
+    text-align: right;
+}
+
 #openwebrx-panel-ism-message {
     height: 310px;
 }

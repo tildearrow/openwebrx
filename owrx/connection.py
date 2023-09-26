@@ -148,6 +148,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "magic_key",
         "flight_url",
         "modes_url",
+        "receiver_gps",
     ]
 
     def __init__(self, conn):

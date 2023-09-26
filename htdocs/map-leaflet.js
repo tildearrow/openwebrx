@@ -400,17 +400,27 @@ MapManager.prototype.processUpdates = function(updates) {
         switch (update.location.type) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);
-                var aprsOptions = {}
 
                 if (update.location.symbol) {
-                    aprsOptions.symbol = update.location.symbol;
-                    aprsOptions.course = update.location.course;
-                    aprsOptions.speed = update.location.speed;
+                    options.symbol = update.location.symbol;
+                    options.course = update.location.course;
+                    options.speed = update.location.speed;
                 }
 
                 // If new item, create a new marker for it
                 if (!marker) {
-                    marker = new LAprsMarker();
+                    switch(update.mode) {
+                        case 'HFDL': case 'VDL2': case 'ADSB': case 'ACARS':
+                            marker = new LAircraftMarker();
+                            break;
+                        case 'APRS': case 'AIS':
+                            marker = new LAprsMarker();
+                            break;
+                        default:
+                            marker = new LSimpleMarker();
+                            break;
+                    }
+
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
                         showMarkerInfoWindow(update.callsign, marker.getPos());
@@ -430,7 +440,13 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
 
                 // Apply marker options
-                marker.setMarkerOptions(aprsOptions);
+                if (update.location.symbol) {
+                    marker.setMarkerOptions({
+                        symbol : update.location.symbol,
+                        course : update.location.course,
+                        speed  : update.location.speed
+                    });
+                }
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
                     map.setView(marker.getPos());
@@ -444,16 +460,10 @@ MapManager.prototype.processUpdates = function(updates) {
                 var options = {};
 
                 // If no symbol or color supplied, use defaults by type
-                if (update.location.symbol) {
-                    options.symbol = update.location.symbol;
-                } else {
-                    options.symbol = self.mman.getSymbol(update.mode);
-                }
-                if (update.location.color) {
-                    options.color = update.location.color;
-                } else {
-                    options.color = self.mman.getColor(update.mode);
-                }
+                options.symbol = update.location.symbol?
+                    update.location.symbol : self.mman.getSymbol(update.mode);
+                options.color = update.location.color?
+                    update.location.color : self.mman.getColor(update.mode);
 
                 // If new item, create a new marker for it
                 if (!marker) {

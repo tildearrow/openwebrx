@@ -14,7 +14,8 @@ MessagePanel.prototype.render = function() {
 MessagePanel.prototype.pushMessage = function(message) {
 };
 
-// automatic clearing is not enabled by default. call this method from the constructor to enable
+// Automatic clearing is not enabled by default.
+// Call this method from the constructor to enable.
 MessagePanel.prototype.initClearTimer = function() {
     var me = this;
     if (me.removalInterval) clearInterval(me.removalInterval);
@@ -23,6 +24,7 @@ MessagePanel.prototype.initClearTimer = function() {
     }, 15000);
 };
 
+// Clear all currently shown messages.
 MessagePanel.prototype.clearMessages = function(toRemain) {
     var $elements = $(this.el).find('tbody tr');
     // limit to 1000 entries in the list since browsers get laggy at some point
@@ -31,6 +33,7 @@ MessagePanel.prototype.clearMessages = function(toRemain) {
     $elements.slice(0, toRemove).remove();
 };
 
+// Add CLEAR button to the message list.
 MessagePanel.prototype.initClearButton = function() {
     var me = this;
     me.clearButton = $(
@@ -47,15 +50,30 @@ MessagePanel.prototype.initClearButton = function() {
     $(me.el).append(me.clearButton);
 };
 
+// Escape HTML code.
 MessagePanel.prototype.htmlEscape = function(input) {
     return $('<div/>').text(input).html()
 };
 
+// Scroll to the bottom of the message list.
 MessagePanel.prototype.scrollToBottom = function() {
     var $t = $(this.el).find('tbody');
     $t.scrollTop($t[0].scrollHeight);
 };
 
+// Linkify given contents so that clicking them opens given URL.
+MessagePanel.prototype.linkify = function(id, url, contents = null) {
+    // Use ID if contents not given
+    if (!contents) contents = id;
+    // Do not linkify empty strings, do not allow empty URLs
+    if ((id.len <= 0) || !url) return contents;
+    // Linkify now
+    return '<a target="callsign_info" href="'
+        + url.replaceAll('{}', id) + '">' + contents + '</a>';
+};
+
+// Linkify given contents so that clicking them opens the map with
+// the info bubble.
 MessagePanel.prototype.linkToMap = function(id, contents = null, attrs = "") {
     if (id) {
         return '<a ' + attrs + ' href="map?callsign='
@@ -66,6 +84,12 @@ MessagePanel.prototype.linkToMap = function(id, contents = null, attrs = "") {
     } else {
         return '';
     }
+};
+
+// Convert degrees to compass direction.
+MessagePanel.prototype.degToCompass = function(deg) {
+    const dir = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+    return dir[Math.floor((deg/22.5) + 0.5) % 16];
 };
 
 function WsjtMessagePanel(el) {
@@ -368,18 +392,6 @@ HfdlMessagePanel.prototype.setModeSUrl = function(url) {
     this.modes_url = url;
 };
 
-HfdlMessagePanel.prototype.linkify = function(id, url) {
-    // Do not linkify empty strings
-    if (id.len <= 0) return id;
-
-    // Must have valid lookup URL
-    if ((url == null) || (url == ''))
-        return id;
-    else
-        return '<a target="callsign_info" href="'
-            + url.replaceAll('{}', id) + '">' + id + '</a>';
-};
-
 HfdlMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
@@ -419,10 +431,10 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.lat && msg.lon) {
         data += '@' + msg.lat.toFixed(4) + ',' + msg.lon.toFixed(4);
     }
-    if (msg.altitude)    data += ' &UpArrowBar;' + msg.altitude + 'm';
-    if (msg.vspeed>0)    data += ' &UpperRightArrow;' + msg.vspeed + 'm/m';
-    if (msg.vspeed<0)    data += ' &LowerRightArrow;' + (-msg.vspeed) + 'm/m';
-    if (msg.speed)       data += ' &rightarrow;' + msg.speed + 'km/h';
+    if (msg.altitude)    data += ' &UpArrowBar;' + msg.altitude + 'ft';
+    if (msg.vspeed>0)    data += ' &UpperRightArrow;' + msg.vspeed + 'ft/m';
+    if (msg.vspeed<0)    data += ' &LowerRightArrow;' + (-msg.vspeed) + 'ft/m';
+    if (msg.speed)       data += ' &rightarrow;' + msg.speed + 'kt';
     if (msg.origin)      data += ' &lsh;' + msg.origin;
     if (msg.destination) data += ' &rdsh;' + msg.destination;
 
@@ -461,6 +473,142 @@ $.fn.hfdlMessagePanel = function() {
     return this.data('panel');
 };
 
+AdsbMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.clearButton.css('display', 'none');
+    this.flight_url = null;
+    this.modes_url = null;
+    this.receiver_pos = null;
+}
+
+AdsbMessagePanel.prototype = Object.create(MessagePanel.prototype);
+
+AdsbMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'ADSB-LIST';
+};
+
+AdsbMessagePanel.prototype.setReceiverPos = function(pos) {
+    if (pos.lat && pos.lon) this.receiver_pos = pos;
+};
+
+AdsbMessagePanel.prototype.setFlightUrl = function(url) {
+    this.flight_url = url;
+};
+
+AdsbMessagePanel.prototype.setModeSUrl = function(url) {
+    this.modes_url = url;
+};
+
+AdsbMessagePanel.prototype.distanceKm = function(p1, p2) {
+    // Earth radius in km
+    var R = 6371.0;
+    // Convert degrees to radians
+    var rlat1 = p1.lat * (Math.PI/180);
+    var rlat2 = p2.lat * (Math.PI/180);
+    // Compute difference in radians
+    var difflat = rlat2-rlat1;
+    var difflon = (p2.lon-p1.lon) * (Math.PI/180);
+    // Compute distance
+    d = 2 * R * Math.asin(Math.sqrt(
+        Math.sin(difflat/2) * Math.sin(difflat/2) +
+        Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
+    ));
+    return Math.round(d);
+};
+
+AdsbMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="flight">Flight</th>' +
+                '<th class="aircraft">Aircraft</th>' +
+                '<th class="squawk">Squawk</th>' +
+                '<th class="distance">Dist&nbsp;(km)</th>' +
+                '<th class="altitude">Alt&nbsp;(ft)</th>' +
+                '<th class="speed">Speed&nbsp;(kt)</th>' +
+                '<th class="rssi">Sig&nbsp;(dB)</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+AdsbMessagePanel.prototype.pushMessage = function(msg) {
+    // Must have list of aircraft
+    if (!msg.aircraft) return;
+
+    // Create new table body
+    var body = '';
+    var odd = false;
+    msg.aircraft.forEach(entry => {
+        // Signal strength
+        var rssi = entry.rssi? entry.rssi : '';
+
+        // Flight identificators
+        var flight =
+          entry.flight? this.linkify(entry.flight, this.flight_url)
+        : '';
+        var aircraft =
+          entry.aircraft? this.linkify(entry.aircraft, this.flight_url)
+        : entry.icao?     this.linkify(entry.icao, this.modes_url)
+        : '';
+
+        // Altitude and climb / descent
+        var alt  = entry.altitude? '' + entry.altitude : '';
+        if (entry.vspeed) {
+            var vspeed = entry.vspeed;
+            vspeed = vspeed>0? vspeed + '&uarr;' : (-vspeed) + '&darr;';
+            alt    = vspeed + '&nbsp'.repeat(6 - alt.length) + alt;
+        }
+
+        // Speed and direction
+        var speed = entry.speed? '' + entry.speed : '';
+        if (entry.course) {
+            var dir = this.degToCompass(entry.course);
+            speed = dir + '&nbsp'.repeat(5 - speed.length) + speed;
+        }
+
+        // Replace squawk with emergency status, if present
+        var squawk = entry.squawk? entry.squawk : '';
+        if (entry.emergency && (entry.emergency!=='NONE')) {
+            squawk = '<div style="color:white;background-color:red;"><b>&nbsp;'
+                + entry.emergency + '&nbsp;</b></div>';
+        }
+
+        // Compute distance to the receiver
+        var distance = '';
+        if (this.receiver_pos && entry.lat && entry.lon) {
+            var id = entry.icao?     entry.icao
+                   : entry.aircraft? entry.aircraft
+                   : entry.flight?   entry.flight
+                   : null;
+
+            distance = this.distanceKm(entry, this.receiver_pos);
+            if (id) distance = this.linkToMap(id, distance);
+        }
+
+        body += '<tr style="background-color:' + (odd? '#E0FFE0':'#FFFFFF') + ';">'
+            + '<td class="flight">'   + flight   + '</td>'
+            + '<td class="aircraft">' + aircraft + '</td>'
+            + '<td class="squawk">'   + squawk   + '</td>'
+            + '<td class="distance">' + distance + '</td>'
+            + '<td class="altitude">' + alt      + '</td>'
+            + '<td class="speed">'    + speed    + '</td>'
+            + '<td class="rssi">'     + rssi     + '</td>'
+            + '</tr>\n';
+        odd = !odd;
+    });
+
+    // Assign new table body
+    $(this.el).find('tbody').html(body);
+};
+
+$.fn.adsbMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new AdsbMessagePanel(this));
+    }
+    return this.data('panel');
+};
 
 IsmMessagePanel = function(el) {
     MessagePanel.call(this, el);

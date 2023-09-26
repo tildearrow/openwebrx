@@ -1114,14 +1114,23 @@ function on_ws_recv(evt) {
                             $('.openwebrx-record-button').css('display', x? '':'none');
                         }
 
+                        if ('receiver_gps' in config) {
+                            var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
+                            adsb_panel.setReceiverPos(config['receiver_gps']);
+                        }
+
                         if ('flight_url' in config) {
-                            var panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
-                            panel.setFlightUrl(config['flight_url']);
+                            var hfdl_panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
+                            var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
+                            hfdl_panel.setFlightUrl(config['flight_url']);
+                            adsb_panel.setFlightUrl(config['flight_url']);
                         }
 
                         if ('modes_url' in config) {
-                            var panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
-                            panel.setModeSUrl(config['modes_url']);
+                            var hfdl_panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
+                            var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
+                            hfdl_panel.setModeSUrl(config['modes_url']);
+                            adsb_panel.setModeSUrl(config['modes_url']);
                         }
 
                         break;
@@ -1195,7 +1204,7 @@ function on_ws_recv(evt) {
                         break;
                     case 'secondary_demod':
                         var value = json['value'];
-                        var panels = ['wsjt', 'packet', 'pocsag', 'page', 'sstv', 'fax', 'ism', 'hfdl'].map(function(id) {
+                        var panels = ['wsjt', 'packet', 'pocsag', 'page', 'sstv', 'fax', 'ism', 'hfdl', 'adsb'].map(function(id) {
                             return $('#openwebrx-panel-' + id + '-message')[id + 'MessagePanel']();
                         });
                         panels.push($('#openwebrx-panel-js8-message').js8());
@@ -1869,7 +1878,7 @@ function secondary_demod_init() {
         .mousedown(secondary_demod_canvas_container_mousedown)
         .mouseenter(secondary_demod_canvas_container_mousein)
         .mouseleave(secondary_demod_canvas_container_mouseleave);
-    ['wsjt', 'packet', 'pocsag', 'page', 'sstv', 'fax', 'ism', 'hfdl'].forEach(function(id){
+    ['wsjt', 'packet', 'pocsag', 'page', 'sstv', 'fax', 'ism', 'hfdl', 'adsb'].forEach(function(id){
         $('#openwebrx-panel-' + id + '-message')[id + 'MessagePanel']();
     })
     $('#openwebrx-panel-js8-message').js8();

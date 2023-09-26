@@ -413,16 +413,6 @@ AprsMarker.prototype.update = function(update) {
     this.gain     = update.location.gain;
     this.device   = update.location.device;
     this.directivity = update.location.directivity;
-    // HFDL, ACARS, VDL2, ADSB
-    this.aircraft = update.location.aircraft;
-    this.destination = update.location.destination;
-    this.origin   = update.location.origin;
-    this.flight   = update.location.flight;
-    this.icao     = update.location.icao;
-    this.vspeed   = update.location.vspeed;
-    this.squawk   = update.location.squawk;
-    this.rssi     = update.location.rssi;
-    this.msglog   = update.location.msglog;
 
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
@@ -530,12 +520,6 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             this.comment + '</div></div>';
     }
 
-    if (this.msglog) {
-        messageString += '<div>' + Marker.makeListTitle('Messages') +
-            '<pre class="openwebrx-map-console">' +
-            this.msglog.join('\n<hr>') + '</pre></div>';
-    }
-
     if (this.weather) {
         weatherString += '<div>' + Marker.makeListTitle('Weather');
 
@@ -601,26 +585,6 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Marker.makeListItem('Direction', this.directivity);
     }
 
-    if (this.icao) {
-        detailsString += Marker.makeListItem('ICAO', Marker.linkify(this.icao, modes_url));
-    }
-
-    if (this.aircraft) {
-        detailsString += Marker.makeListItem('Aircraft', Marker.linkify(this.aircraft, flight_url));
-    }
-
-    if (this.squawk) {
-        detailsString += Marker.makeListItem('Squawk', this.squawk);
-    }
-
-    if (this.origin) {
-        detailsString += Marker.makeListItem('Origin', this.origin);
-    }
-
-    if (this.destination) {
-        detailsString += Marker.makeListItem('Destination', this.destination);
-    }
-
     // Combine course and speed if both present
     if (this.course && this.speed) {
         detailsString += Marker.makeListItem('Course',
@@ -636,16 +600,8 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         }
     }
 
-    // Combine altitude and vertical speed
     if (this.altitude) {
-        var alt = this.altitude.toFixed(0) + ' m';
-        if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' m/m';
-        else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' m/m';
-        detailsString += Marker.makeListItem('Altitude', alt);
-    }
-
-    if (this.rssi) {
-        detailsString += Marker.makeListItem('RSSI', this.rssi + ' dB');
+        detailsString += Marker.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
 
     if (detailsString.length > 0) {
@@ -666,34 +622,13 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             + hops.join(', ') + '&nbsp;</i></div>';
     }
 
-    // Linkify title based on what it is (vessel, flight, mode-S code, or else)
-    var linkEntity = null;
-    var url = null;
-    switch (this.mode) {
-        case 'HFDL':
-        case 'VDL2':
-        case 'ADSB':
-        case 'ACARS':
-            if (this.flight) {
-                name = this.flight;
-                url  = this.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? flight_url : null;
-            } else if (this.aircraft) {
-                name = this.aircraft;
-                url  = flight_url;
-            } else {
-                url = modes_url;
-            }
-            break;
-        case 'AIS':
-            url = vessel_url;
-            break;
-        default:
-            linkEntity = name.replace(new RegExp('-.*$'), '');
-            url = callsign_url;
-            break;
-    }
+    // Linkify title based on what it is (vessel or HAM callsign)
+    var title = this.mode === 'AIS'?
+      Marker.linkify(name, vessel_url)
+    : Marker.linkify(name, callsign_url, name.replace(new RegExp('-.*$'), ''));
 
-    return '<h3>' + Marker.linkify(name, url, linkEntity) + distance + '</h3>'
+    // Combine everything into info box contents
+    return '<h3>' + title + distance + '</h3>'
         + '<div align="center">' + timeString + ' using '
         + this.mode + ( this.band ? ' on ' + this.band : '' ) + '</div>'
         + commentString + weatherString + detailsString
@@ -708,7 +643,9 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 //     setMarkerOpacity()
 //
 
-function AircraftMarker() {}
+function AircraftMarker() {
+    this.scale = 0.5;
+}
 
 AircraftMarker.prototype = new Marker();
 
@@ -749,9 +686,9 @@ AircraftMarker.prototype.draw = function() {
     }
 
     // If aircraft is flying at a significant altitude...
-    if (this.altitude >= 500) {
+    if (this.altitude > 1000) {
         // r = elevation, a = rotation, <x,y> = shadow offset
-        var r = Math.round(this.altitude / 1000);
+        var r = Math.round(this.altitude / 2000);
         var a = - Math.PI * (this.course? this.course - 45 : -45) / 180;
         var x = r * Math.cos(a);
         var y = r * Math.sin(a);
@@ -760,7 +697,7 @@ AircraftMarker.prototype.draw = function() {
         div.style.filter = 'none';
     }
 
-    div.style.transform = 'scale(0.5)';
+    div.style.transform = 'scale(' + this.scale + ')';
 
     if (this.course) {
         div.style.transform += ' rotate(' + this.course + 'deg)';
@@ -804,7 +741,7 @@ AircraftMarker.prototype.create = function() {
 };
 
 AircraftMarker.prototype.getAnchorOffset = function() {
-    return [0, -12];
+    return [0, -36 * this.scale];
 };
 
 AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
@@ -849,22 +786,22 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     if (this.course && this.speed) {
         detailsString += Marker.makeListItem('Course',
             Marker.degToCompass(this.course) + ' ' +
-            this.speed.toFixed(1) + ' km/h'
+            this.speed.toFixed(1) + ' kt'
         );
     } else {
         if (this.course) {
             detailsString += Marker.makeListItem('Course', Marker.degToCompass(this.course));
         }
         if (this.speed) {
-            detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' km/h');
+            detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' kt');
         }
     }
 
     // Combine altitude and vertical speed
     if (this.altitude) {
-        var alt = this.altitude.toFixed(0) + ' m';
-        if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' m/m';
-        else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' m/m';
+        var alt = this.altitude.toFixed(0) + ' ft';
+        if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' ft/m';
+        else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' ft/m';
         detailsString += Marker.makeListItem('Altitude', alt);
     }
 

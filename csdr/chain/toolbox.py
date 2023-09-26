@@ -146,7 +146,7 @@ class Vdl2Demodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class AdsbDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, service: bool = False, jsonFile: str = None):
+    def __init__(self, service: bool = False, jsonFile: str = "/tmp/dump1090/aircraft.json"):
         self.sampleRate = 2400000
         self.parser = AdsbParser(service=service, jsonFile=jsonFile)
         jsonFolder = os.path.dirname(jsonFile) if jsonFile else None
