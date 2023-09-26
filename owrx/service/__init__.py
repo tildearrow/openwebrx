@@ -341,8 +341,7 @@ class ServiceHandler(SdrSourceEventClient):
             return AcarsDemodulator(service=True)
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
-#            return AdsbDemodulator(service=True)
-            return AdsbDemodulator(service=True, jsonFile="/tmp/dump1090/aircraft.json")
+            return AdsbDemodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 

@@ -401,12 +401,6 @@ MapManager.prototype.processUpdates = function(updates) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);
 
-                if (update.location.symbol) {
-                    options.symbol = update.location.symbol;
-                    options.course = update.location.course;
-                    options.speed = update.location.speed;
-                }
-
                 // If new item, create a new marker for it
                 if (!marker) {
                     switch(update.mode) {

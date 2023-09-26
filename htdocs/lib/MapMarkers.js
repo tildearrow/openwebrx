@@ -817,17 +817,18 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         distance = ' at ' + Marker.distanceKm(receiverMarker.position, this.position) + ' km';
     }
 
-    // Linkify title based on what it is (vessel, flight, mode-S code, or else)
-    var url = modes_url;
-    if (this.flight) {
+    // Linkify title based on what it is (flight, aircraft, ICAO code)
+    var text = this.flight? this.flight : this.aircraft? this.aircraft : name;
+    var url  = modes_url;
+    if (this.flight && this.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)) {
         name = this.flight;
-        url  = this.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? flight_url : null;
-    } else if (this.aircraft) {
+        url  = flight_url;
+    } else if(this.aircraft) {
         name = this.aircraft;
         url  = flight_url;
     }
 
-    return '<h3>' + Marker.linkify(name, url) + distance + '</h3>'
+    return '<h3>' + Marker.linkify(text, url, name) + distance + '</h3>'
         + '<div align="center">' + timeString + ' using ' + this.mode + '</div>'
         + commentString + detailsString + messageString;
 };
