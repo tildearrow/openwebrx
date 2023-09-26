@@ -678,7 +678,6 @@ AircraftMarker.prototype.draw = function() {
     if (!div || !overlay) return;
 
     if (this.symbol) {
-        var tableId = this.symbol.table === '/' ? 0 : 1;
         div.style.background = 'url(static/gfx/adsb-72.png)';
         div.style['background-size'] = '576px 792px';
         div.style['background-position-x'] = -this.symbol.x * 72 + 'px';

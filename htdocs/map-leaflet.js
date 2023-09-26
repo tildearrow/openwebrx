@@ -251,7 +251,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
 
                 // create layerControl and add more maps
                 if (!layerControl) {
-                    // used to open or collaps the layerControl by default
+                    // used to open or collapse the layerControl by default
                     // function isMobile () {
                     //     try { document.createEvent("TouchEvent"); return true; }
                     //     catch (e) { return false; }
@@ -462,13 +462,7 @@ MapManager.prototype.processUpdates = function(updates) {
                 // If new item, create a new marker for it
                 if (!marker) {
                     marker = new LFeatureMarker();
-                    marker.div = marker.create();
-                    var offset = marker.getAnchorOffset();
-                    marker.setIcon(L.divIcon({
-                        html: marker.div,
-                        iconAnchor: [-offset[1], -offset[0]],
-                        className: 'dummy'
-                    }));
+                    marker.onAdd();
 
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
