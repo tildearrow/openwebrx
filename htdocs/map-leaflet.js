@@ -156,6 +156,9 @@ var layerControl;
 // Receiver location marker
 var receiverMarker = null;
 
+// Information bubble window
+var infoWindow = null;
+
 // Updates are queued here
 var updateQueue = [];
 
@@ -191,21 +194,37 @@ function fetchStyleSheet(url, media = 'screen') {
     return $dfd.promise();
 }
 
-
-
 // Show information bubble for a locator
-function showLocatorInfoWindow(locator, pos) {
-    var p = new posObj(pos);
+function showLocatorInfoWindow(rectangle) {
+    var locator = rectangle.locator;
 
-    L.popup(pos, {
-        content: mapManager.lman.getInfoHTML(locator, p, receiverMarker)
-    }).openOn(map);
+    // If no bubble or different bubble...
+    if (!infoWindow || infoWindow.callsign != locator) {
+        // Create new bubble and bind it to the rectangle
+        infoWindow = L.popup();
+        rectangle._rect.bindPopup(infoWindow).openPopup();
+        infoWindow.callsign = locator;
+    }
+
+    // Update information inside the bubble
+    var p = new posObj(rectangle.center);
+    infoWindow.setContent(
+        mapManager.lman.getInfoHTML(locator, p, receiverMarker)
+    );
 };
 
 // Show information bubble for a marker
-function showMarkerInfoWindow(name, pos) {
-    var marker = mapManager.mman.find(name);
-    L.popup(pos, { content: marker.getInfoHTML(name, receiverMarker) }).openOn(map);
+function showMarkerInfoWindow(name, marker) {
+    // If no bubble or different bubble...
+    if (!infoWindow || infoWindow.callsign != name) {
+        // Create new bubble and bind it to the marker
+        infoWindow = L.popup();
+        marker._marker.bindPopup(infoWindow).openPopup();
+        infoWindow.callsign = name;
+    }
+
+    // Update information inside the bubble
+    infoWindow.setContent(marker.getInfoHTML(name, receiverMarker));
 };
 
 //
@@ -417,7 +436,7 @@ MapManager.prototype.processUpdates = function(updates) {
 
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker.getPos());
+                        showMarkerInfoWindow(update.callsign, marker);
                     });
 
                     // If displaying a symbol, create it
@@ -444,8 +463,12 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
                     map.setView(marker.getPos());
-                    showMarkerInfoWindow(update.callsign, marker.getPos());
+                    showMarkerInfoWindow(update.callsign, marker);
                     expectedCallsign = false;
+                }
+
+                if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
+                    showMarkerInfoWindow(infoWindow.callsign, marker);
                 }
             break;
 
@@ -467,7 +490,7 @@ MapManager.prototype.processUpdates = function(updates) {
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker.getPos());
+                        showMarkerInfoWindow(update.callsign, marker);
                     });
                 }
 
@@ -482,8 +505,12 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
                     map.setView(marker.getPos());
-                    showMarkerInfoWindow(update.callsign, marker.getPos());
+                    showMarkerInfoWindow(update.callsign, marker);
                     expectedCallsign = false;
+                }
+
+                if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
+                    showMarkerInfoWindow(infoWindow.callsign, marker);
                 }
             break;
 
@@ -495,7 +522,7 @@ MapManager.prototype.processUpdates = function(updates) {
                     rectangle = new LLocator();
                     self.lman.add(update.callsign, rectangle);
                     rectangle.addListener('click', function() {
-                        showLocatorInfoWindow(rectangle.locator, rectangle.center);
+                        showLocatorInfoWindow(rectangle);
                     });
                 }
 
@@ -508,8 +535,12 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 if (expectedLocator && expectedLocator == update.location.locator) {
                     map.setView(rectangle.center);
-                    showLocatorInfoWindow(expectedLocator, rectangle.center);
+                    showLocatorInfoWindow(rectangle);
                     expectedLocator = false;
+                }
+
+                if (infoWindow && infoWindow.callsign && infoWindow.callsign == rectangle.locator) {
+                    showMarkerInfoWindow(rectangle);
                 }
             break;
         }
