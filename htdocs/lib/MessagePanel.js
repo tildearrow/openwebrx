@@ -523,10 +523,10 @@ AdsbMessagePanel.prototype.render = function() {
                 '<th class="flight">Flight</th>' +
                 '<th class="aircraft">Aircraft</th>' +
                 '<th class="squawk">Squawk</th>' +
-                '<th class="distance">Dist&nbsp;(km)</th>' +
+                '<th class="distance">Dist</th>' +
                 '<th class="altitude">Alt&nbsp;(ft)</th>' +
                 '<th class="speed">Speed&nbsp;(kt)</th>' +
-                '<th class="rssi">Sig&nbsp;(dB)</th>' +
+                '<th class="rssi">Signal</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -542,7 +542,7 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
     var odd = false;
     msg.aircraft.forEach(entry => {
         // Signal strength
-        var rssi = entry.rssi? entry.rssi : '';
+        var rssi = entry.rssi? entry.rssi + '&nbsp;dB' : '';
 
         // Flight identificators
         var flight =
@@ -583,7 +583,7 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
                    : entry.flight?   entry.flight
                    : null;
 
-            distance = this.distanceKm(entry, this.receiver_pos);
+            distance = this.distanceKm(entry, this.receiver_pos) + '&nbsp;km';
             if (id) distance = this.linkToMap(id, distance);
         }
 

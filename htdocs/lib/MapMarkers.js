@@ -109,7 +109,10 @@ MarkerManager.prototype.ageAll = function() {
     var now = new Date().getTime();
     var data = this.markers;
     $.each(data, function(id, x) {
-        if (!x.age(now - x.lastseen)) delete data[id];
+        if (x.ttl && now >= x.ttl)
+            delete data[id];
+        else if (x.lastseen && !x.age(now - x.lastseen))
+            delete data[id];
     });
 };
 
@@ -651,6 +654,7 @@ AircraftMarker.prototype = new Marker();
 
 AircraftMarker.prototype.update = function(update) {
     this.lastseen = update.lastseen;
+    this.ttl      = update.ttl;
     this.mode     = update.mode;
     this.comment  = update.location.comment;
     // HFDL, ACARS, VDL2, ADSB

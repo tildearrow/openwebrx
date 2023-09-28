@@ -34,9 +34,9 @@ MODE_S_FORMATS = [
 ADSB_CATEGORIES = {
   "A0": (0, 0),  # No ADS-B emitter category information
   "A1": (3, 0),  # Light (< 15500 lbs)
-  "A2": (5, 0),  # Small (15500 to 75000 lbs)
-  "A3": (4, 0),  # Large (75000 to 300000 lbs)
-  "A4": (0, 0),  # High vortex large (aircraft such as B-757)
+  "A2": (4, 1),  # Small (15500 to 75000 lbs)
+  "A3": (5, 0),  # Large (75000 to 300000 lbs)
+  "A4": (4, 0),  # High vortex large (aircraft such as B-757)
   "A5": (1, 7),  # Heavy (> 300000 lbs)
   "A6": (7, 0),  # High performance (> 5g acceleration and 400 kts)
   "A7": (6, 5),  # Rotorcraft, regardless of weight
@@ -81,7 +81,7 @@ class AircraftLocation(LatLngLocation):
             # Add APRS-like aircraft symbol (red or blue, depending on mode)
             res["symbol"] = { "x": 0, "y": 0 }
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
+        for x in ["ttl", "icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Return APRS-like dictionary object
