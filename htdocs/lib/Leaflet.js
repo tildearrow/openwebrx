@@ -12,9 +12,10 @@ LMarker.prototype.onAdd = function() {
     var offset = this.getAnchorOffset();
 
     this.setIcon(L.divIcon({
-        html       : this.div,
-        iconAnchor : [-offset[1], -offset[0]],
-        className  : 'dummy'
+        html        : this.div,
+        iconSize    : [this.div.style.width, this.div.style.height],
+        popupAnchor : [-offset[1], -offset[0]],
+        className   : 'dummy'
     }));
 };
 
