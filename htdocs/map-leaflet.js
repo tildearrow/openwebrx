@@ -194,34 +194,39 @@ function fetchStyleSheet(url, media = 'screen') {
     return $dfd.promise();
 }
 
+// Get information bubble window
+function getInfoWindow(name) {
+    // If no bubble or different bubble...
+    if (!infoWindow || (infoWindow.name != name)) {
+        if (infoWindow) delete infoWindow;
+        infoWindow = L.popup();
+        infoWindow.on('remove', function() { infoWindow.name = null; });
+        infoWindow.name = name;
+    }
+    return infoWindow;
+};
+
 // Show information bubble for a locator
 function showLocatorInfoWindow(rectangle) {
-    var locator = rectangle.locator;
-
-    // If no bubble or different bubble...
-    if (!infoWindow || infoWindow.callsign != locator) {
-        // Create new bubble and bind it to the rectangle
-        infoWindow = L.popup();
-        rectangle._rect.bindPopup(infoWindow).openPopup();
-        infoWindow.callsign = locator;
-    }
+    // Bind information bubble to the rectangle
+    infoWindow = getInfoWindow(rectangle.locator);
+    rectangle._rect.unbindPopup().bindPopup(infoWindow).openPopup();
 
     // Update information inside the bubble
     var p = new posObj(rectangle.center);
     infoWindow.setContent(
-        mapManager.lman.getInfoHTML(locator, p, receiverMarker)
+        mapManager.lman.getInfoHTML(rectangle.locator, p, receiverMarker)
     );
 };
 
 // Show information bubble for a marker
-function showMarkerInfoWindow(name, marker) {
-    // If no bubble or different bubble...
-    if (!infoWindow || infoWindow.callsign != name) {
-        // Create new bubble and bind it to the marker
-        infoWindow = L.popup();
-        marker._marker.bindPopup(infoWindow).openPopup();
-        infoWindow.callsign = name;
-    }
+function showMarkerInfoWindow(name) {
+    var marker = mapManager.mman.find(name);
+    if (!marker) return;
+
+    // Bind information bubble to the marker
+    infoWindow = getInfoWindow(name);
+    marker._marker.unbindPopup().bindPopup(infoWindow).openPopup();
 
     // Update information inside the bubble
     infoWindow.setContent(marker.getInfoHTML(name, receiverMarker));
@@ -436,7 +441,7 @@ MapManager.prototype.processUpdates = function(updates) {
 
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker);
+                        showMarkerInfoWindow(update.callsign);
                     });
 
                     // If displaying a symbol, create it
@@ -463,12 +468,12 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
                     map.setView(marker.getPos());
-                    showMarkerInfoWindow(update.callsign, marker);
+                    showMarkerInfoWindow(update.callsign);
                     expectedCallsign = false;
                 }
 
                 if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
-                    showMarkerInfoWindow(infoWindow.callsign, marker);
+                    showMarkerInfoWindow(update.callsign);
                 }
             break;
 
@@ -490,7 +495,7 @@ MapManager.prototype.processUpdates = function(updates) {
                     self.mman.addType(update.mode);
                     self.mman.add(update.callsign, marker);
                     marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker);
+                        showMarkerInfoWindow(update.callsign);
                     });
                 }
 
@@ -505,12 +510,12 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 if (expectedCallsign && expectedCallsign == update.callsign) {
                     map.setView(marker.getPos());
-                    showMarkerInfoWindow(update.callsign, marker);
+                    showMarkerInfoWindow(update.callsign);
                     expectedCallsign = false;
                 }
 
                 if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
-                    showMarkerInfoWindow(infoWindow.callsign, marker);
+                    showMarkerInfoWindow(update.callsign);
                 }
             break;
 

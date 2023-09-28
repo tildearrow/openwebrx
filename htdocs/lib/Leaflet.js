@@ -7,13 +7,14 @@ function LMarker () {
 };
 
 LMarker.prototype.onAdd = function() {
-    this.div = this.create();
-
+    this.div   = this.create();
     var offset = this.getAnchorOffset();
+    var size   = this.getSize();
 
     this.setIcon(L.divIcon({
         html        : this.div,
-        iconSize    : [this.div.style.width, this.div.style.height],
+        iconSize    : size,
+        iconAnchor  : [size[0]/2, size[1]/2],
         popupAnchor : [-offset[1], -offset[0]],
         className   : 'dummy'
     }));

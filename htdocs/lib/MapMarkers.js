@@ -301,6 +301,10 @@ FeatureMarker.prototype.getAnchorOffset = function() {
     return [0, -this.symHeight/2];
 };
 
+FeatureMarker.prototype.getSize = function() {
+    return [this.symWidth, this.symHeight];
+};
+
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var nameString    = this.url? Marker.linkify(name, this.url) : name;
     var commentString = this.comment? '<div align="center">' + this.comment + '</div>' : '';
@@ -507,6 +511,10 @@ AprsMarker.prototype.create = function() {
 
 AprsMarker.prototype.getAnchorOffset = function() {
     return [0, -12];
+};
+
+AprsMarker.prototype.getSize = function() {
+    return [24, 24];
 };
 
 AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
@@ -745,6 +753,10 @@ AircraftMarker.prototype.create = function() {
 
 AircraftMarker.prototype.getAnchorOffset = function() {
     return [0, -36 * this.scale];
+};
+
+AircraftMarker.prototype.getSize = function() {
+    return [72 * this.scale, 72 * this.scale];
 };
 
 AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
