@@ -14,8 +14,8 @@ LMarker.prototype.onAdd = function() {
     this.setIcon(L.divIcon({
         html        : this.div,
         iconSize    : size,
-        iconAnchor  : [size[0]/2, size[1]/2],
-        popupAnchor : [-offset[1], -offset[0]],
+//        iconAnchor  : [size[0]/2, size[1]/2],
+        popupAnchor : offset,
         className   : 'dummy'
     }));
 };

@@ -195,9 +195,9 @@ function fetchStyleSheet(url, media = 'screen') {
 }
 
 // Get information bubble window
-function getInfoWindow(name) {
-    // If no bubble or different bubble...
-    if (!infoWindow || (infoWindow.name != name)) {
+function getInfoWindow(name = null) {
+    // If no bubble...
+    if (!infoWindow || (infoWindow.name !== name)) {
         if (infoWindow) delete infoWindow;
         infoWindow = L.popup();
         infoWindow.on('remove', function() { infoWindow.name = null; });
@@ -466,13 +466,13 @@ MapManager.prototype.processUpdates = function(updates) {
                     });
                 }
 
-                if (expectedCallsign && expectedCallsign == update.callsign) {
+                if (expectedCallsign && expectedCallsign === update.callsign) {
                     map.setView(marker.getPos());
                     showMarkerInfoWindow(update.callsign);
                     expectedCallsign = false;
                 }
 
-                if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
+                if (infoWindow && infoWindow.name && infoWindow.name === update.callsign) {
                     showMarkerInfoWindow(update.callsign);
                 }
             break;
@@ -508,13 +508,13 @@ MapManager.prototype.processUpdates = function(updates) {
                 // Apply marker options
                 marker.setMarkerOptions(options);
 
-                if (expectedCallsign && expectedCallsign == update.callsign) {
+                if (expectedCallsign && expectedCallsign === update.callsign) {
                     map.setView(marker.getPos());
                     showMarkerInfoWindow(update.callsign);
                     expectedCallsign = false;
                 }
 
-                if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
+                if (infoWindow && infoWindow.name && infoWindow.name === update.callsign) {
                     showMarkerInfoWindow(update.callsign);
                 }
             break;
@@ -538,13 +538,13 @@ MapManager.prototype.processUpdates = function(updates) {
                 rectangle.setMap(self.lman.filter(rectangle)? map : undefined);
                 rectangle.setColor(self.lman.getColor(rectangle));
 
-                if (expectedLocator && expectedLocator == update.location.locator) {
+                if (expectedLocator && expectedLocator === update.location.locator) {
                     map.setView(rectangle.center);
                     showLocatorInfoWindow(rectangle);
                     expectedLocator = false;
                 }
 
-                if (infoWindow && infoWindow.callsign && infoWindow.callsign == rectangle.locator) {
+                if (infoWindow && infoWindow.name && infoWindow.name === rectangle.locator) {
                     showMarkerInfoWindow(rectangle);
                 }
             break;
