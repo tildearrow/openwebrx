@@ -34,7 +34,7 @@ MODE_S_FORMATS = [
 ADSB_CATEGORIES = {
   "A0": (0, 0),  # No ADS-B emitter category information
   "A1": (3, 0),  # Light (< 15500 lbs)
-  "A2": (4, 1),  # Small (15500 to 75000 lbs)
+  "A2": (7, 6),  # Small (15500 to 75000 lbs)
   "A3": (5, 0),  # Large (75000 to 300000 lbs)
   "A4": (4, 0),  # High vortex large (aircraft such as B-757)
   "A5": (1, 7),  # Heavy (> 300000 lbs)
@@ -58,6 +58,12 @@ ADSB_CATEGORIES = {
   "C7": (2, 8),  # Reserved
 }
 
+MODE_CATEGORIES = {
+  "ADSB":  (0, 0),
+  "ACARS": (5, 10),
+  "HFDL":  (6, 10),
+  "VDL2":  (7, 10),
+}
 
 #
 # This class represents current aircraft location compatible with
@@ -70,16 +76,23 @@ class AircraftLocation(LatLngLocation):
         # Complete aircraft data
         self.data = data
 
+    def getSymbol(self):
+        # Add an aircraft symbol
+        if "category" in self.data and self.data["category"] in ADSB_CATEGORIES:
+            # Add symbol by aircraft category
+            cat = ADSB_CATEGORIES[self.data["category"]]
+            return { "x": cat[0], "y": cat[1] }
+        elif "mode" in self.data and self.data["mode"] in MODE_CATEGORIES:
+            # Add symbol by comms moce (red, green, or blue)
+            cat = MODE_CATEGORIES[self.data["mode"]]
+            return { "x": cat[0], "y": cat[1] }
+        else:
+            # Default to white symbols
+            return { "x": 0, "y": 0 }
+
     def __dict__(self):
         res = super(AircraftLocation, self).__dict__()
-        # Add an APRS-like symbol
-        if "category" in self.data and self.data["category"] in ADSB_CATEGORIES:
-            # Add APRS-like symbol by aircraft category
-            cat = ADSB_CATEGORIES[self.data["category"]]
-            res["symbol"] = { "x": cat[0], "y": cat[1] }
-        else:
-            # Add APRS-like aircraft symbol (red or blue, depending on mode)
-            res["symbol"] = { "x": 0, "y": 0 }
+        res["symbol"] = self.getSymbol()
         # Convert aircraft-specific data into APRS-like data
         for x in ["ttl", "icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
             if x in self.data:

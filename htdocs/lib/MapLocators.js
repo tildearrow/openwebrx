@@ -113,7 +113,7 @@ LocatorManager.prototype.getType = function(data) {
 
 LocatorManager.prototype.getColor = function(data) {
     var type = this.getType(data);
-    if (!type) return "#ffffff00";
+    if (!type) return '#ffffff00';
 
     // If adding a new key...
     if (!this.colorKeys[type]) {
