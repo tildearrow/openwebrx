@@ -1,6 +1,7 @@
 **1.2.32**
 - Added separate display for ADSB flight data.
 - Added separate class of aircraft markers.
+- Added aircraft icons, by type and category.
 - Added optional time-to-live to map markers.
 - Added ability to run Tar1090 map together with OWRX+.
 - Now showing aircraft speed in knots, altitude in feet.
