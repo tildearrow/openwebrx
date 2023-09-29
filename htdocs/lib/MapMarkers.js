@@ -756,7 +756,7 @@ AircraftMarker.prototype.getAnchorOffset = function() {
 };
 
 AircraftMarker.prototype.getSize = function() {
-    return [72 * this.scale, 72 * this.scale];
+    return [72, 72];
 };
 
 AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {

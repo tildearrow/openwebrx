@@ -8,14 +8,11 @@ function LMarker () {
 
 LMarker.prototype.onAdd = function() {
     this.div   = this.create();
-    var offset = this.getAnchorOffset();
-    var size   = this.getSize();
 
     this.setIcon(L.divIcon({
         html        : this.div,
-        iconSize    : size,
-//        iconAnchor  : [size[0]/2, size[1]/2],
-        popupAnchor : offset,
+        iconSize    : this.getSize(),
+        popupAnchor : this.getAnchorOffset(),
         className   : 'dummy'
     }));
 };
