@@ -15,7 +15,7 @@ This is the **improved version** of the OpenWebRX online SDR. The pre-built Open
 * Bandpass control with the scroll wheel.
 * Improved tuning in CW mode.
 * More reliable SDRPlay devices operation.
-* Map shows other pulbic web SDRs from all around the world.
+* Map shows other public web SDRs from all around the world.
 * Map shows shortwave broadcasters from all around the world.
 * Map shows nearby HAM repeaters.
 * Better map information, with distances, APRS paths, weather, etc.
