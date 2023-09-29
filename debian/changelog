@@ -1,3 +1,16 @@
+openwebrx (1.2.32) bullseye jammy; urgency=low
+
+  * Added separate display for ADSB flight data.
+  * Added separate class of aircraft markers.
+  * Added optional time-to-live to map markers.
+  * Added ability to run Tar1090 map together with OWRX+.
+  * Now showing aircraft speed in knots, altitude in feet.
+  * Now using Dump1090 JSON data directly (via /tmp/dump1090).
+  * Fixed aircraft title linkify(), VDL2 altitudes, etc.
+  * Fixed Leaflet information bubbles.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 30 Sep 2023 16:12:00 +0000
+
 openwebrx (1.2.31) bullseye jammy; urgency=low
 
   * Added display of latest aircraft messages to the map.
