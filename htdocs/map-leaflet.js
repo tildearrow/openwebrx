@@ -442,7 +442,7 @@ MapManager.prototype.processUpdates = function(updates) {
                             if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
                             break;
                         default:
-                            marker = new LSimpleMarker();
+                            marker = new LMarker();
                             break;
                     }
 
