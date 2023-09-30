@@ -120,6 +120,9 @@ cmakebuild m17-cxx-demod v2.3
 git clone https://github.com/szpajder/libacars.git
 cmakebuild libacars v2.1.4
 
+git clone https://github.com/TLeconte/acarsdec.git
+cmakebuild acarsdec
+
 git clone https://github.com/szpajder/dumphfdl.git
 cmakebuild dumphfdl v1.4.1
 
