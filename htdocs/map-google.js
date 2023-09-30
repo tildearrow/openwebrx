@@ -35,24 +35,21 @@ var expectedCallsign = query.callsign? decodeURIComponent(query.callsign) : null
 var expectedLocator  = query.locator? query.locator : null;
 
 // Get information bubble window
-function getInfoWindow() {
+function getInfoWindow(name = null) {
     if (!infoWindow) {
         infoWindow = new google.maps.InfoWindow();
         google.maps.event.addListener(infoWindow, 'closeclick', function() {
-            delete infoWindow.locator;
-            delete infoWindow.callsign;
+            delete infoWindow.name;
         });
     }
-    delete infoWindow.locator;
-    delete infoWindow.callsign;
+    infoWindow.name = name;
     return infoWindow;
 };
 
 // Show information bubble for a locator
 function showLocatorInfoWindow(locator, pos) {
-    var iw = getInfoWindow();
+    var iw = getInfoWindow(locator);
 
-    iw.locator = locator;
     iw.setContent(mapManager.lman.getInfoHTML(locator, pos, receiverMarker));
     iw.setPosition(pos);
     iw.open(map);
@@ -61,16 +58,15 @@ function showLocatorInfoWindow(locator, pos) {
 // Show information bubble for a marker
 function showMarkerInfoWindow(name, pos) {
     var marker = mapManager.mman.find(name);
-    var iw = getInfoWindow();
+    var iw = getInfoWindow(name);
 
-    iw.callsign = name;
     iw.setContent(marker.getInfoHTML(name, receiverMarker));
     iw.open(map, marker);
 };
 
 // Show information bubble for the receiver location
 function showReceiverInfoWindow(marker) {
-    var iw = getInfoWindow()
+    var iw = getInfoWindow();
     iw.setContent(
         '<h3>' + marker.config['receiver_name'] + '</h3>' +
         '<div>Receiver Location</div>'
@@ -169,6 +165,10 @@ MapManager.prototype.processUpdates = function(updates) {
                         case 'APRS': case 'AIS':
                             marker = new GAprsMarker();
                             break;
+                        case 'KiwiSDR': case 'WebSDR': case 'OpenWebRX':
+                        case 'Stations': case 'Repeaters':
+                            marker = new GFeatureMarker();
+                            break;
                         default:
                             marker = new GSimpleMarker();
                             break;
@@ -190,7 +190,15 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
 
                 // Apply marker options
-                if (update.location.symbol) {
+                if (marker instanceof GFeatureMarker) {
+                    // If no symbol or color supplied, use defaults by type
+                    if (!update.location.symbol) update.location.symbol = self.mman.getSymbol(update.mode);
+                    if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
+                    marker.setMarkerOptions({
+                        symbol : update.location.symbol,
+                        color  : update.location.color
+                    });
+                } else if (update.location.symbol) {
                     marker.setMarkerOptions({
                         symbol : update.location.symbol,
                         course : update.location.course,
@@ -198,54 +206,14 @@ MapManager.prototype.processUpdates = function(updates) {
                     });
                 }
 
-                if (expectedCallsign && expectedCallsign == update.callsign) {
+                if (expectedCallsign && expectedCallsign === update.callsign) {
                     map.panTo(marker.position);
                     showMarkerInfoWindow(update.callsign, marker.position);
                     expectedCallsign = false;
                 }
 
-                if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
-                    showMarkerInfoWindow(infoWindow.callsign, marker.position);
-                }
-            break;
-
-            case 'feature':
-                var marker = self.mman.find(update.callsign);
-                var options = {};
-
-                // If no symbol or color supplied, use defaults by type
-                options.symbol = update.location.symbol?
-                    update.location.symbol : self.mman.getSymbol(update.mode);
-                options.color = update.location.color?
-                    update.location.color : self.mman.getColor(update.mode);
-
-                // If new item, create a new marker for it
-                if (!marker) {
-                    marker = new GFeatureMarker();
-                    self.mman.addType(update.mode);
-                    self.mman.add(update.callsign, marker);
-                    marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign, marker.position);
-                    });
-                }
-
-                // Update marker attributes and age
-                marker.update(update);
-
-                // Assign marker to map
-                marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
-
-                // Apply marker options
-                marker.setMarkerOptions(options);
-
-                if (expectedCallsign && expectedCallsign == update.callsign) {
-                    map.panTo(marker.position);
+                if (infoWindow && infoWindow.callsign && infoWindow.callsign === update.callsign) {
                     showMarkerInfoWindow(update.callsign, marker.position);
-                    expectedCallsign = false;
-                }
-
-                if (infoWindow && infoWindow.callsign && infoWindow.callsign == update.callsign) {
-                    showMarkerInfoWindow(infoWindow.callsign, marker.position);
                 }
             break;
 
@@ -268,14 +236,14 @@ MapManager.prototype.processUpdates = function(updates) {
                 rectangle.setMap(self.lman.filter(rectangle)? map : undefined);
                 rectangle.setColor(self.lman.getColor(rectangle));
 
-                if (expectedLocator && expectedLocator == update.location.locator) {
+                if (expectedLocator && expectedLocator === update.location.locator) {
                     map.panTo(rectangle.center);
-                    showLocatorInfoWindow(expectedLocator, rectangle.center);
+                    showLocatorInfoWindow(update.location.locator, rectangle.center);
                     expectedLocator = false;
                 }
 
-                if (infoWindow && infoWindow.locator && infoWindow.locator == update.location.locator) {
-                    showLocatorInfoWindow(infoWindow.locator, rectangle.center);
+                if (infoWindow && infoWindow.locator && infoWindow.locator === update.location.locator) {
+                    showLocatorInfoWindow(update.location.locator, rectangle.center);
                 }
             break;
         }

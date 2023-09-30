@@ -28,6 +28,8 @@ class MyJSONEncoder(JSONEncoder):
 class MarkerLocation(Location):
     def __init__(self, attrs):
         self.attrs = attrs
+        # Making sure older cached files load
+        self.attrs["type"] = "latlon"
 
     def getId(self):
         return self.attrs["id"]
@@ -273,7 +275,7 @@ class Markers(object):
         # Load repeater sites from repeaters database
         for entry in Repeaters.getSharedInstance().getAllInRange(rangeKm):
             rl = MarkerLocation({
-                "type"    : "feature",
+                "type"    : "latlon",
                 "mode"    : "Repeaters",
                 "id"      : entry["name"],
                 "lat"     : entry["lat"],
@@ -319,7 +321,7 @@ class Markers(object):
             comment = (comment + " (" + langstr + ")") if langstr else comment
 
             rl = MarkerLocation({
-                "type"    : "feature",
+                "type"    : "latlon",
                 "mode"    : "Stations",
                 "comment" : comment,
                 "id"      : entry["name"],
@@ -357,7 +359,7 @@ class Markers(object):
                         else:
                             dev = r["type"]
                         rl = MarkerLocation({
-                            "type"    : "feature",
+                            "type"    : "latlon",
                             "mode"    : r["type"],
                             "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", r["url"]),
                             "lat"     : lat,
@@ -388,7 +390,7 @@ class Markers(object):
                     lat = entry["lat"]
                     lon = entry["lon"]
                     rl  = MarkerLocation({
-                        "type"    : "feature",
+                        "type"    : "latlon",
                         "mode"    : "WebSDR",
                         "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"]),
                         "lat"     : lat,
@@ -430,7 +432,7 @@ class Markers(object):
                             lat = float(m.group(1))
                             lon = float(m.group(2))
                             rl = MarkerLocation({
-                                "type"    : "feature",
+                                "type"    : "latlon",
                                 "mode"    : "KiwiSDR",
                                 "id"      : re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"]),
                                 "lat"     : lat,

@@ -434,6 +434,10 @@ MapManager.prototype.processUpdates = function(updates) {
                         case 'APRS': case 'AIS':
                             marker = new LAprsMarker();
                             break;
+                        case 'KiwiSDR': case 'WebSDR': case 'OpenWebRX':
+                        case 'Stations': case 'Repeaters':
+                            marker = new GFeatureMarker();
+                            break;
                         default:
                             marker = new LSimpleMarker();
                             break;
@@ -458,55 +462,21 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
 
                 // Apply marker options
-                if (update.location.symbol) {
+                if (marker instanceof GFeatureMarker) {
+                    // If no symbol or color supplied, use defaults by type
+                    if (!update.location.symbol) update.location.symbol = self.mman.getSymbol(update.mode);
+                    if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
+                    marker.setMarkerOptions({
+                        symbol : update.location.symbol,
+                        color  : update.location.color
+                    });
+                } else if (update.location.symbol) {
                     marker.setMarkerOptions({
                         symbol : update.location.symbol,
                         course : update.location.course,
                         speed  : update.location.speed
                     });
                 }
-
-                if (expectedCallsign && expectedCallsign === update.callsign) {
-                    map.setView(marker.getPos());
-                    showMarkerInfoWindow(update.callsign);
-                    expectedCallsign = false;
-                }
-
-                if (infoWindow && infoWindow.name && infoWindow.name === update.callsign) {
-                    showMarkerInfoWindow(update.callsign);
-                }
-            break;
-
-            case 'feature':
-                var marker = self.mman.find(update.callsign);
-                var options = {};
-
-                // If no symbol or color supplied, use defaults by type
-                options.symbol = update.location.symbol?
-                    update.location.symbol : self.mman.getSymbol(update.mode);
-                options.color = update.location.color?
-                    update.location.color : self.mman.getColor(update.mode);
-
-                // If new item, create a new marker for it
-                if (!marker) {
-                    marker = new LFeatureMarker();
-                    marker.onAdd();
-
-                    self.mman.addType(update.mode);
-                    self.mman.add(update.callsign, marker);
-                    marker.addListener('click', function() {
-                        showMarkerInfoWindow(update.callsign);
-                    });
-                }
-
-                // Update marker attributes and age
-                marker.update(update);
-
-                // Assign marker to map
-                marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
-
-                // Apply marker options
-                marker.setMarkerOptions(options);
 
                 if (expectedCallsign && expectedCallsign === update.callsign) {
                     map.setView(marker.getPos());
