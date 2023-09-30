@@ -6,6 +6,7 @@
 - Added ability to run Tar1090 map together with OWRX+.
 - Now showing aircraft speed in knots, altitude in feet.
 - Now using Dump1090 JSON data directly (via /tmp/dump1090).
+- Optimized and simplified features display on the map.
 - Fixed aircraft title linkify(), VDL2 altitudes, etc.
 - Fixed Leaflet information bubbles.
 
