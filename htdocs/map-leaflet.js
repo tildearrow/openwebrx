@@ -436,7 +436,10 @@ MapManager.prototype.processUpdates = function(updates) {
                             break;
                         case 'KiwiSDR': case 'WebSDR': case 'OpenWebRX':
                         case 'Stations': case 'Repeaters':
-                            marker = new GFeatureMarker();
+                            marker = new LFeatureMarker();
+                            // If no symbol or color supplied, use defaults by type
+                            if (!update.location.symbol) update.location.symbol = self.mman.getSymbol(update.mode);
+                            if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
                             break;
                         default:
                             marker = new LSimpleMarker();
@@ -462,10 +465,7 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
 
                 // Apply marker options
-                if (marker instanceof GFeatureMarker) {
-                    // If no symbol or color supplied, use defaults by type
-                    if (!update.location.symbol) update.location.symbol = self.mman.getSymbol(update.mode);
-                    if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
+                if (marker instanceof LFeatureMarker) {
                     marker.setMarkerOptions({
                         symbol : update.location.symbol,
                         color  : update.location.color

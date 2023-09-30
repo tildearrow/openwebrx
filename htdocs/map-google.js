@@ -168,6 +168,9 @@ MapManager.prototype.processUpdates = function(updates) {
                         case 'KiwiSDR': case 'WebSDR': case 'OpenWebRX':
                         case 'Stations': case 'Repeaters':
                             marker = new GFeatureMarker();
+                            // If no symbol or color supplied, use defaults by type
+                            if (!update.location.symbol) update.location.symbol = self.mman.getSymbol(update.mode);
+                            if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
                             break;
                         default:
                             marker = new GSimpleMarker();
@@ -191,9 +194,6 @@ MapManager.prototype.processUpdates = function(updates) {
 
                 // Apply marker options
                 if (marker instanceof GFeatureMarker) {
-                    // If no symbol or color supplied, use defaults by type
-                    if (!update.location.symbol) update.location.symbol = self.mman.getSymbol(update.mode);
-                    if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
                     marker.setMarkerOptions({
                         symbol : update.location.symbol,
                         color  : update.location.color
