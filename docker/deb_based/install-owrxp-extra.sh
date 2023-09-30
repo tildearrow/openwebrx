@@ -33,7 +33,7 @@ esac
 
 
 echo "+ Install dev packages..."
-BUILD_PACKAGES="git cmake make patch wget sudo gcc g++ libusb-1.0-0-dev libsoapysdr-dev debhelper cmake libprotobuf-dev protobuf-compiler libcodecserver-dev build-essential xxd qt5-qmake libpulse-dev libfaad-dev libopus-dev libfftw3-dev  pkg-config libglib2.0-dev libconfig++-dev libliquid-dev libairspyhf-dev libpopt-dev libiio-dev libad9361-dev libhidapi-dev libasound2-dev qtmultimedia5-dev  libqt5serialport5-dev qttools5-dev qttools5-dev-tools libboost-all-dev libfftw3-dev libreadline-dev libusb-1.0-0-dev libudev-dev asciidoctor gfortran libhamlib-dev"
+BUILD_PACKAGES="git cmake make patch wget sudo gcc g++ libusb-1.0-0-dev libsoapysdr-dev debhelper cmake libprotobuf-dev protobuf-compiler libcodecserver-dev build-essential xxd qt5-qmake libpulse-dev libfaad-dev libopus-dev libfftw3-dev  pkg-config libglib2.0-dev libconfig++-dev libliquid-dev libairspyhf-dev libpopt-dev libiio-dev libad9361-dev libhidapi-dev libasound2-dev qtmultimedia5-dev  libqt5serialport5-dev qttools5-dev qttools5-dev-tools libboost-all-dev libfftw3-dev libreadline-dev libusb-1.0-0-dev libudev-dev asciidoctor gfortran libhamlib-dev libsndfile1-dev"
 apt-get -y install --no-install-recommends $BUILD_PACKAGES
 
 echo "+ Install SDRPlay..."
@@ -103,10 +103,14 @@ mv /files/wsjtx/wsjtx.patch ${WSJT_DIR}
 cmakebuild ${WSJT_DIR}
 rm ${WSJT_TGZ}
 
-echo "+ Install HFDL..."
+echo "+ Install ACARSDEC..."
 git clone https://github.com/szpajder/libacars.git
 cmakebuild libacars v2.1.4
 
+git clone https://github.com/TLeconte/acarsdec.git
+cmakebuild acarsdec
+
+echo "+ Install HFDL..."
 git clone https://github.com/szpajder/dumphfdl.git
 cmakebuild dumphfdl v1.4.1
 
