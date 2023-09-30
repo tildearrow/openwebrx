@@ -5,6 +5,7 @@ openwebrx (1.2.32) bullseye jammy; urgency=low
   * Added aircraft icons, by type and category.
   * Added optional time-to-live to map markers.
   * Added ability to run Tar1090 map together with OWRX+.
+  * Added squawk and signal strength to ADSB info bubbles.
   * Now showing aircraft speed in knots, altitude in feet.
   * Now using Dump1090 JSON data directly (via /tmp/dump1090).
   * Optimized and simplified features display on the map.
