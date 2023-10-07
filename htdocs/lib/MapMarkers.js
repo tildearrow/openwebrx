@@ -105,14 +105,21 @@ MarkerManager.prototype.add = function(id, marker) {
     this.markers[id] = marker;
 };
 
+MarkerManager.prototype.remove = function(id) {
+    if (id in this.markers) {
+        this.markers[id].setMap();
+        delete this.markers[id];
+    }
+};
+
 MarkerManager.prototype.ageAll = function() {
     var now = new Date().getTime();
     var data = this.markers;
     $.each(data, function(id, x) {
         if (x.ttl && now >= x.ttl)
-            delete data[id];
+            this.remove(id);
         else if (x.lastseen && !x.age(now - x.lastseen))
-            delete data[id];
+            this.remove(id);
     });
 };
 
@@ -248,6 +255,7 @@ FeatureMarker.prototype.update = function(update) {
     this.mode     = update.mode;
     this.url      = update.location.url;
     this.comment  = update.location.comment;
+    this.ttl      = update.location.ttl;
     // Receivers
     this.altitude = update.location.altitude;
     this.device   = update.location.device;
