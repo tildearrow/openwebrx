@@ -404,8 +404,8 @@ class EIBI(object):
                     # Convert ITU/SRC pair to a complete location code
                     itu = m.group(5)
                     src = m.group(9)
-                    if len(src) == 0 or src == "xx":
-                        # Primary or unknown site
+                    if len(src) == 0:
+                        # Primary site
                         src = itu
                     elif src.startswith("/"):
                         # Transmitter located elsewhere

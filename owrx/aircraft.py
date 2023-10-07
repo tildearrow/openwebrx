@@ -92,9 +92,11 @@ class AircraftLocation(LatLngLocation):
 
     def __dict__(self):
         res = super(AircraftLocation, self).__dict__()
+        # JavaScript timestamps are in milliseconds
+        res["ttl"]    = self.data["ttl"] * 1000
         res["symbol"] = self.getSymbol()
         # Convert aircraft-specific data into APRS-like data
-        for x in ["ttl", "icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
+        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Return APRS-like dictionary object
