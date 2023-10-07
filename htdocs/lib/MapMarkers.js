@@ -662,9 +662,9 @@ AircraftMarker.prototype = new Marker();
 
 AircraftMarker.prototype.update = function(update) {
     this.lastseen = update.lastseen;
-    this.ttl      = update.ttl;
     this.mode     = update.mode;
     this.comment  = update.location.comment;
+    this.ttl      = update.location.ttl;
     // HFDL, ACARS, VDL2, ADSB
     this.altitude = update.location.altitude;
     this.aircraft = update.location.aircraft;
