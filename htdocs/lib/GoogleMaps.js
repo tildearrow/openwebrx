@@ -127,7 +127,7 @@ GSimpleMarker.prototype.setMarkerOptions = function(options) {
 function GLocator() {
     this.rect = new google.maps.Rectangle();
     this.rect.setOptions({
-        strokeWeight : 2,
+        strokeWeight : 0,
         strokeColor  : "#FFFFFF",
         fillColor    : "#FFFFFF"
     });
