@@ -19,6 +19,7 @@ function cmakebuild() {
   rm -rf $1
 }
 
+export MARCH=native
 case `uname -m` in
     arm*)
         SDRPLAY_BINARY=SDRplay_RSP_API-ARM32-3.07.2.run
@@ -28,6 +29,7 @@ case `uname -m` in
         ;;
     x86_64*)
         SDRPLAY_BINARY=SDRplay_RSP_API-Linux-3.07.1.run
+        export MARCH=x86-64
         ;;
 esac
 
@@ -52,6 +54,7 @@ git clone https://github.com/Microtelecom/libperseus-sdr.git
 cd libperseus-sdr
 # latest from master as of 2020-09-04
 git checkout c2c95daeaa08bf0daed0e8ada970ab17cc264e1b
+sed -i 's/-march=native/-march='${MARCH}'/g' configure.ac
 ./bootstrap.sh
 ./configure
 make
@@ -108,6 +111,7 @@ git clone https://github.com/szpajder/libacars.git
 cmakebuild libacars v2.1.4
 
 git clone https://github.com/TLeconte/acarsdec.git
+sed -i 's/-march=native/-march='${MARCH}'/g' acarsdec/CMakeLists.txt
 cmakebuild acarsdec
 
 echo "+ Install HFDL..."
