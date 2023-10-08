@@ -26,6 +26,7 @@ apt-get update
 apt-get -y install auto-apt-proxy
 apt-get -y install --no-install-recommends $STATIC_PACKAGES $BUILD_PACKAGES
 
+export MARCH=x86-64
 case `uname -m` in
     arm*)
         PLATFORM=armhf
@@ -35,6 +36,7 @@ case `uname -m` in
         ;;
     x86_64*)
         PLATFORM=amd64
+        export MARCH=x86-64
         ;;
 esac
 
@@ -121,6 +123,7 @@ git clone https://github.com/szpajder/libacars.git
 cmakebuild libacars v2.1.4
 
 git clone https://github.com/TLeconte/acarsdec.git
+sed -i 's/-march=native/-march='${MARCH}'/g' acarsdec/CMakeLists.txt
 cmakebuild acarsdec
 
 git clone https://github.com/szpajder/dumphfdl.git
