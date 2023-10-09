@@ -26,7 +26,7 @@ apt-get update
 apt-get -y install auto-apt-proxy
 apt-get -y install --no-install-recommends $STATIC_PACKAGES $BUILD_PACKAGES
 
-export MARCH=x86-64
+export MARCH=native
 case `uname -m` in
     arm*)
         PLATFORM=armhf
