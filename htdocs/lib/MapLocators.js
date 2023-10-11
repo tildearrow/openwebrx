@@ -227,7 +227,7 @@ Locator.prototype.getColor = function() {
     count = Object.keys(colors).length;
     if (!count) return null;
 
-    return chroma.average(colors, 'lrgb', weight).alpha(0.25 + Math.min(0.6, count / 10));
+    return chroma.average(colors, 'lrgb', weight).alpha(0.25 + Math.min(0.55, count / 15));
 };
 
 Locator.prototype.age = function(now) {
