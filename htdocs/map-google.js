@@ -218,23 +218,19 @@ MapManager.prototype.processUpdates = function(updates) {
             break;
 
             case 'locator':
-                var rectangle = self.lman.find(update.callsign);
+                var rectangle = self.lman.find(update.location.locator);
 
                 // If new item, create a new locator for it
                 if (!rectangle) {
                     rectangle = new GLocator();
-                    self.lman.add(update.callsign, rectangle);
+                    self.lman.add(update.location.locator, rectangle);
                     rectangle.rect.addListener('click', function() {
-                        showLocatorInfoWindow(rectangle.locator, rectangle.center);
+                        showLocatorInfoWindow(update.location.locator, rectangle.center);
                     });
                 }
 
                 // Update locator attributes, center, age
-                rectangle.update(update);
-
-                // Assign locator to map and set its color
-                rectangle.setMap(self.lman.filter(rectangle)? map : undefined);
-                rectangle.setColor(self.lman.getColor(rectangle));
+                self.lman.update(update.location.locator, update, map);
 
                 if (expectedLocator && expectedLocator === update.location.locator) {
                     map.panTo(rectangle.center);

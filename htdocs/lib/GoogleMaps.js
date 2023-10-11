@@ -129,7 +129,8 @@ function GLocator() {
     this.rect.setOptions({
         strokeWeight : 0,
         strokeColor  : "#FFFFFF",
-        fillColor    : "#FFFFFF"
+        fillColor    : "#FFFFFF",
+        fillOpacity  : 1.0
     });
 }
 
