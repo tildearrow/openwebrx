@@ -327,6 +327,7 @@ class Markers(object):
                 "id"      : entry["name"],
                 "lat"     : entry["lat"],
                 "lon"     : entry["lon"],
+                "ttl"     : entry["ttl"] * 1000,
                 "url"     : url + urllib.parse.quote_plus(entry["name"]),
                 "schedule": schedule
             })

@@ -167,6 +167,7 @@ class EIBI(object):
     # Create list of currently broadcasting locations
     def currentTransmitters(self, hours: int = 1):
         # Get entries active at the current time + 1 hour
+        ts   = datetime.now().timestamp()
         now  = datetime.utcnow()
         day  = now.weekday()
         date = now.year * 10000 + now.month * 100 + now.day
@@ -196,15 +197,23 @@ class EIBI(object):
                             # Warn if location not found
                             logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
                         else:
+                            # Compute TTL for the entry
+                            ttl = ts + (
+                                ((e2 // 100) - (t1 // 100)) * 3600 +
+                                ((e2 % 100)  - (t1 % 100)) * 60
+                            )
                             # Find all matching transmitter locations
                             for loc in EIBI_Locations[src]:
-                                # Add location to the result
                                 name = loc["name"]
                                 if name not in result:
+                                    # Add location to the result
                                     result[name] = loc.copy()
-                                    result[name]["schedule"] = []
-                                # Add schedule entry to the location
-                                result[name]["schedule"].append(entry)
+                                    result[name]["schedule"] = [ entry ]
+                                    result[name]["ttl"] = ttl
+                                else:
+                                    # Add schedule entry, update TTL
+                                    result[name]["schedule"].append(entry)
+                                    result[name]["ttl"] = max(ttl, result[name]["ttl"]);
 
                 except Exception as e:
                     logger.debug("currentTransmitters() exception: {0}".format(e))
