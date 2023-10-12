@@ -76,7 +76,7 @@ function LSimpleMarker() { $.extend(this, new LMarker(), new AprsMarker()); }
 //
 
 function LLocator() {
-    this._rect = L.rectangle([[0,0], [1,1]], { color: '#FFFFFF', weight: 0, opacity: 1 });
+    this._rect = L.rectangle([[0,0], [1,1]], { color: '#FFFFFF', weight: 0, fillOpacity: 1 });
 }
 
 LLocator.prototype = new Locator();
@@ -97,8 +97,8 @@ LLocator.prototype.setColor = function(color) {
 
 LLocator.prototype.setOpacity = function(opacity) {
     this._rect.setStyle({
-        opacity : LocatorManager.strokeOpacity * opacity,
-        fillOpacity   : LocatorManager.fillOpacity * opacity
+        opacity     : LocatorManager.strokeOpacity * opacity,
+        fillOpacity : LocatorManager.fillOpacity * opacity
     });
 };
 

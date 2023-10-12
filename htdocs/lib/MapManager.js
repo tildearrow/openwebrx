@@ -25,7 +25,7 @@ function MapManager() {
     setInterval(function() {
         self.lman.ageAll();
         self.mman.ageAll();
-    }, 1000);
+    }, 15000);
 
     // When stuff loads...
     $(function() {
@@ -43,7 +43,7 @@ function MapManager() {
 
         // Toggle color modes on click
         $('#openwebrx-map-colormode').on('change', function() {
-            self.lman.setColorMode(map, $(this).val());
+            self.lman.setColorMode($(this).val());
         });
     });
 
@@ -178,13 +178,13 @@ MapManager.prototype.setupLegendFilters = function($legend) {
         $lis = $content.find('li');
         if ($lis.hasClass('disabled') && !$el.hasClass('disabled')) {
             $lis.removeClass('disabled');
-            self.lman.setFilter(map);
+            self.lman.setFilter();
         } else {
             $el.removeClass('disabled');
             $lis.filter(function() {
                 return this != $el[0]
             }).addClass('disabled');
-            self.lman.setFilter(map, $el.data('selector'));
+            self.lman.setFilter($el.data('selector'));
         }
     });
 

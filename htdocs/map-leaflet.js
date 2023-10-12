@@ -207,15 +207,15 @@ function getInfoWindow(name = null) {
 };
 
 // Show information bubble for a locator
-function showLocatorInfoWindow(rectangle) {
+function showLocatorInfoWindow(locator, rectangle) {
     // Bind information bubble to the rectangle
-    infoWindow = getInfoWindow(rectangle.locator);
+    infoWindow = getInfoWindow(locator);
     rectangle._rect.unbindPopup().bindPopup(infoWindow).openPopup();
 
     // Update information inside the bubble
     var p = new posObj(rectangle.center);
     infoWindow.setContent(
-        mapManager.lman.getInfoHTML(rectangle.locator, p, receiverMarker)
+        mapManager.lman.getInfoHTML(locator, p, receiverMarker)
     );
 };
 
@@ -302,7 +302,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                     updateQueue = [];
 
                     if (!receiverMarker) {
-                        receiverMarker = new LMarker();
+                        receiverMarker = new LSimpleMarker();
                         receiverMarker.setMarkerPosition(self.config['receiver_name'], receiver_gps.lat, receiver_gps.lon);
                         receiverMarker.addListener('click', function () {
                             L.popup(receiverMarker.getPos(), {
@@ -442,7 +442,7 @@ MapManager.prototype.processUpdates = function(updates) {
                             if (!update.location.color)  update.location.color  = self.mman.getColor(update.mode);
                             break;
                         default:
-                            marker = new LSimpleMarker();
+                            marker = new LMarker();
                             break;
                     }
 
@@ -495,27 +495,23 @@ MapManager.prototype.processUpdates = function(updates) {
                 // If new item, create a new locator for it
                 if (!rectangle) {
                     rectangle = new LLocator();
-                    self.lman.add(update.callsign, rectangle);
+                    self.lman.add(update.location.locator, rectangle);
                     rectangle.addListener('click', function() {
-                        showLocatorInfoWindow(rectangle);
+                        showLocatorInfoWindow(update.location.locator, rectangle);
                     });
                 }
 
                 // Update locator attributes, center, age
-                rectangle.update(update);
-
-                // Assign locator to map and set its color
-                rectangle.setMap(self.lman.filter(rectangle)? map : undefined);
-                rectangle.setColor(self.lman.getColor(rectangle));
+                self.lman.update(update.location.locator, update, map);
 
                 if (expectedLocator && expectedLocator === update.location.locator) {
                     map.setView(rectangle.center);
-                    showLocatorInfoWindow(rectangle);
+                    showLocatorInfoWindow(update.location.locator, rectangle);
                     expectedLocator = false;
                 }
 
                 if (infoWindow && infoWindow.name && infoWindow.name === rectangle.locator) {
-                    showMarkerInfoWindow(rectangle);
+                    showMarkerInfoWindow(update.location.locator, rectangle);
                 }
             break;
         }
