@@ -25,7 +25,7 @@ function MapManager() {
     setInterval(function() {
         self.lman.ageAll();
         self.mman.ageAll();
-    }, 1000);
+    }, 15000);
 
     // When stuff loads...
     $(function() {

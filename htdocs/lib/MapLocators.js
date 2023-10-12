@@ -5,14 +5,17 @@
 LocatorManager.strokeOpacity = 0.8;
 LocatorManager.fillOpacity   = 0.35;
 
-function LocatorManager() {
+function LocatorManager(spectral = true) {
+    // Base colors used for the color scale
+    var colors = spectral? ['darkviolet', 'blue', 'green', 'red'] : ['red', 'blue', 'green'];
+
     // Current locators
     this.locators = {};
     this.bands    = {};
     this.modes    = {};
 
     // The color scale used
-    this.colorScale = chroma.scale(['red', 'blue', 'green']).mode('hsl');
+    this.colorScale = chroma.scale(colors).mode('hsl');
 
     // Current coloring mode
     this.colorMode = 'band';
@@ -188,7 +191,7 @@ Locator.prototype.update = function(data, map) {
         lastseen : data.lastseen,
         mode     : data.mode,
         band     : data.band,
-        age      : 0
+        weight   : 1
     };
 
     // Keep track of the total last-seen for this locator
@@ -216,18 +219,21 @@ Locator.prototype.getColor = function() {
 
     if (!this.colorKeys) return null;
 
-    var attr = this.colorMode;
+    var attr   = this.colorMode;
+    var total  = 0.0;
     var weight = [];
     var colors = $.map(this.callsigns, function(x) {
         var y = x[attr] in keys? keys[x[attr]] : null;
-        if (y) weight.push(Marker.getOpacityScale(x.age));
+        if (y) {
+            weight.push(x.weight);
+            total += x.weight;
+        }
         return y;
     });
 
-    count = Object.keys(colors).length;
-    if (!count) return null;
+    if (total == 0.0) return null;
 
-    return chroma.average(colors, 'lrgb', weight).alpha(0.25 + Math.min(0.55, count / 15));
+    return chroma.average(colors, 'hsl', weight).alpha(0.25 + Math.min(0.55, total / 15));
 };
 
 Locator.prototype.age = function(now) {
@@ -244,10 +250,11 @@ Locator.prototype.age = function(now) {
 
     // Scan individual callsigns
     $.each(data, function(id, x) {
-        x.age = now - x.lastseen;
-        if (x.age > retention_time) {
+        var age = now - x.lastseen;
+        if (age > retention_time) {
             delete data[id];
         } else {
+            x.weight = Marker.getOpacityScale(age);
             newest = Math.max(newest, x.lastseen);
         }
     });
