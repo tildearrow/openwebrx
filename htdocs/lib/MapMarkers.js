@@ -138,6 +138,11 @@ MarkerManager.prototype.clear = function() {
 
 function Marker() {}
 
+// Escape HTML code.
+Marker.htmlEscape = function(input) {
+    return $('<div/>').text(input).html()
+};
+
 // Wrap given callsign or other ID into a clickable link.
 Marker.linkify = function(name, url = null, linkEntity = null) {
     // If no specific link entity, use the ID itself
@@ -315,7 +320,7 @@ FeatureMarker.prototype.getSize = function() {
 
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var nameString    = this.url? Marker.linkify(name, this.url) : name;
-    var commentString = this.comment? '<div align="center">' + this.comment + '</div>' : '';
+    var commentString = this.comment? '<div align="center">' + Marker.escapeHtml(this.comment) + '</div>' : '';
     var detailsString = '';
     var scheduleString = '';
     var distance = '';
@@ -535,8 +540,8 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var distance = '';
 
     if (this.comment) {
-        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>' +
-            this.comment + '</div></div>';
+        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>'
+            + Marker.escapeHtml(this.comment) + '</div></div>';
     }
 
     if (this.weather) {
@@ -775,14 +780,17 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var distance = '';
 
     if (this.comment) {
-        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>' +
-            this.comment + '</div></div>';
+        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>'
+            + Marker.escapeHtml(this.comment) + '</div></div>';
     }
 
     if (this.msglog) {
-        messageString += '<div>' + Marker.makeListTitle('Messages') +
-            '<pre class="openwebrx-map-console">' +
-            this.msglog.join('\n<hr>') + '</pre></div>';
+        var msglog = $.map(this.msglog, function(x, _) {
+            return Marker.escapeHtml(x);
+        });
+        messageString += '<div>' + Marker.makeListTitle('Messages')
+            + '<pre class="openwebrx-map-console">' + msglog.join('\n<hr>')
+            + '</pre></div>';
     }
 
     if (this.icao) {
