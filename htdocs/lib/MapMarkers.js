@@ -320,7 +320,7 @@ FeatureMarker.prototype.getSize = function() {
 
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var nameString    = this.url? Marker.linkify(name, this.url) : name;
-    var commentString = this.comment? '<div align="center">' + Marker.escapeHtml(this.comment) + '</div>' : '';
+    var commentString = this.comment? '<div align="center">' + Marker.htmlEscape(this.comment) + '</div>' : '';
     var detailsString = '';
     var scheduleString = '';
     var distance = '';
@@ -541,7 +541,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     if (this.comment) {
         commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>'
-            + Marker.escapeHtml(this.comment) + '</div></div>';
+            + Marker.htmlEscape(this.comment) + '</div></div>';
     }
 
     if (this.weather) {
@@ -781,12 +781,12 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     if (this.comment) {
         commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>'
-            + Marker.escapeHtml(this.comment) + '</div></div>';
+            + Marker.htmlEscape(this.comment) + '</div></div>';
     }
 
     if (this.msglog) {
         var msglog = $.map(this.msglog, function(x, _) {
-            return Marker.escapeHtml(x);
+            return Marker.htmlEscape(x);
         });
         messageString += '<div>' + Marker.makeListTitle('Messages')
             + '<pre class="openwebrx-map-console">' + msglog.join('\n<hr>')
