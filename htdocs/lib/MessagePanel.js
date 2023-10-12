@@ -458,7 +458,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     // Append messsage if present
     if (msg.message) {
         $b.append($(
-            '<tr><td class="message" colspan="4">' + msg.message + '</td></tr>'
+            '<tr><td class="message" colspan="4">' + this.htmlEscape(msg.message) + '</td></tr>'
         ))
     }
 
