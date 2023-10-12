@@ -1,3 +1,15 @@
+**1.2.33**
+- Syncing library versions with original OWRX 1.2.2.
+- Refactored locators map display.
+- Assigned each locator a single rectangle.
+- Rectangle's transparency reflects number and age of reports.
+- Rectangle's hue represents reported bands.
+- Removed overlapping edges from rectangles.
+- Added time-to-live to EIBI markers.
+- Added LSimpleMarker.
+- Fixed, updated, optimized EIBI database algorithms and data.
+- Fixed aircraft time-to-live values.
+
 **1.2.32**
 - Added separate display for ADSB flight data.
 - Added separate class of aircraft markers.
