@@ -88,3 +88,9 @@ ul {
 .openwebrx-map-console hr {
     border: 1px dashed #80FF20;
 }
+
+.openwebrx-map-info td {
+    padding-left: 10px;
+    padding-right: 10px;
+    text-align: center;
+}

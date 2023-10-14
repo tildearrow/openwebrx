@@ -214,26 +214,26 @@ Locator.prototype.reColor = function() {
 
 Locator.prototype.getColor = function() {
     var keys = this.colorKeys;
-    var count;
-    var color;
-
-    if (!this.colorKeys) return null;
+    if (!keys) return null;
 
     var attr   = this.colorMode;
-    var total  = 0.0;
+    var maxw   = 0.0;
     var weight = [];
     var colors = $.map(this.callsigns, function(x) {
         var y = x[attr] in keys? keys[x[attr]] : null;
         if (y) {
-            weight.push(x.weight);
-            total += x.weight;
+            var w = x.weight;
+            maxw = Math.max(maxw, w);
+            weight.push(w);
         }
         return y;
     });
 
-    if (total == 0.0) return null;
+    if (!colors.length) return null;
 
-    return chroma.average(colors, 'hsl', weight).alpha(0.25 + Math.min(0.55, total / 15));
+    return chroma.average(colors, 'hsl', weight).alpha(
+        maxw * (0.4 + Math.min(0.5, colors.length / 15))
+    );
 };
 
 Locator.prototype.age = function(now) {
@@ -284,18 +284,28 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
         return b.lastseen - a.lastseen;
     });
 
+    var odd = false;
+    var list = inLocator.map(function(x) {
+        var row = '<tr style="background-color:' + (odd? '#E0FFE0':'#FFFFFF')
+            + ';"><td>' + Marker.linkify(x.callsign, callsign_url) + '</td>'
+            + '<td>' + moment(x.lastseen).fromNow() + '</td>'
+            + '<td>' + x.mode + '</td>'
+            + '<td>' + x.band + '</td>'
+            + '</tr>';
+
+        odd = !odd;
+        return row;
+    }).join("");
+
     var distance = receiverMarker?
         " at " + Marker.distanceKm(receiverMarker.position, pos) + " km" : "";
 
-    var list = inLocator.map(function(x) {
-        var timestring = moment(x.lastseen).fromNow();
-        var message = Marker.linkify(x.callsign, callsign_url)
-            + ' (' + timestring + ' using ' + x.mode;
+    var latest = inLocator[0];
+    var lastReport = moment(latest.lastseen).fromNow() + ' using '
+        + latest.mode + ( latest.band ? ' on ' + latest.band : '' );
 
-        if (x.band) message += ' on ' + x.band;
-        return '<li>' + message + ')</li>';
-    }).join("");
-
-    return '<h3>Locator: ' + locator + distance +
-        '</h3><div>Active Callsigns:</div><ul>' + list + '</ul>';
+    return '<h3>Locator ' + locator + distance + '</h3>'
+        + '<div align="center">' + lastReport + '</div>'
+        + Marker.makeListTitle('Active Callsigns')
+        + '<table class="openwebrx-map-info">' + list + '</table>';
 };
