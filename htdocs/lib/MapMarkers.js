@@ -138,97 +138,12 @@ MarkerManager.prototype.clear = function() {
 
 function Marker() {}
 
-// Escape HTML code.
-Marker.htmlEscape = function(input) {
-    return $('<div/>').text(input).html()
-};
-
-// Wrap given callsign or other ID into a clickable link.
-Marker.linkify = function(name, url = null, linkEntity = null) {
-    // If no specific link entity, use the ID itself
-    if (linkEntity == null) linkEntity = name;
-
-    // Must have valid ID and lookup URL
-    if ((name == '') || (url == null) || (url == '')) {
-        return name;
-    } else {
-        return '<a target="callsign_info" href="' +
-            url.replaceAll('{}', linkEntity) + '">' + name + '</a>';
-    }
-};
-
-// Create link to tune OWRX to the given frequency and modulation.
-Marker.linkifyFreq = function(freq, mod) {
-    var text;
-    if (freq >= 30000000) {
-        text = "" + (freq / 1000000.0) + "MHz";
-    } else if (freq >= 10000) {
-        text = "" + (freq / 1000.0) + "kHz";
-    } else {
-        text = "" + freq + "Hz";
-    }
-
-    return '<a target="openwebrx-rx" href="/#freq=' + freq +
-        ',mod=' + mod + '">' + text + '</a>';
-};
-
-// Compute distance, in kilometers, between two latlons.
-Marker.distanceKm = function(p1, p2) {
-    // Earth radius in km
-    var R = 6371.0;
-    // Convert degrees to radians
-    var rlat1 = p1.lat() * (Math.PI/180);
-    var rlat2 = p2.lat() * (Math.PI/180);
-    // Compute difference in radians
-    var difflat = rlat2-rlat1;
-    var difflon = (p2.lng()-p1.lng()) * (Math.PI/180);
-    // Compute distance
-    d = 2 * R * Math.asin(Math.sqrt(
-        Math.sin(difflat/2) * Math.sin(difflat/2) +
-        Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
-    ));
-    return Math.round(d);
-};
-
-// Truncate string to a given number of characters, adding "..." to the end.
-Marker.truncate = function(str, count) {
-    return str.length > count? str.slice(0, count) + '&mldr;' : str;
-};
-
-// Convert degrees to compass direction.
-Marker.degToCompass = function(deg) {
-    dir = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-    return dir[Math.floor((deg/22.5) + 0.5) % 16];
-};
-
-// Convert given name to an information section title.
-Marker.makeListTitle = function(name) {
-    return '<div style="border-bottom:2px solid;padding-top:1em;"><b>' + name + '</b></div>';
-};
-
-// Convert given name/value to an information section item.
-Marker.makeListItem = function(name, value) {
-    return '<div style="display:flex;justify-content:space-between;border-bottom:1px dotted;white-space:nowrap;">'
-        + '<span>' + name + '&nbsp;&nbsp;&nbsp;&nbsp;</span>'
-        + '<span>' + value + '</span>'
-        + '</div>';
-};
-
-// Get opacity value in the 0..1 range based on the given age.
-Marker.getOpacityScale = function(age) {
-    var scale = 1;
-    if (age >= retention_time / 2) {
-        scale = (retention_time - age) / (retention_time / 2);
-    }
-    return Math.max(0, Math.min(1, scale));
-};
-
 // Set marker's opacity based on the supplied age. Returns TRUE
 // if the marker should still be visible, FALSE if it has to be
 // removed.
 Marker.prototype.age = function(age) {
     if(age <= retention_time) {
-        this.setMarkerOpacity(Marker.getOpacityScale(age));
+        this.setMarkerOpacity(Utils.getOpacityScale(age));
         return true;
     } else {
         this.setMap();
@@ -319,39 +234,39 @@ FeatureMarker.prototype.getSize = function() {
 };
 
 FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
-    var nameString    = this.url? Marker.linkify(name, this.url) : name;
-    var commentString = this.comment? '<div align="center">' + Marker.htmlEscape(this.comment) + '</div>' : '';
+    var nameString    = this.url? Utils.linkify(name, this.url) : name;
+    var commentString = this.comment? '<div align="center">' + Utils.htmlEscape(this.comment) + '</div>' : '';
     var detailsString = '';
     var scheduleString = '';
     var distance = '';
 
     // If it is a repeater, its name is a callsign
     if(!this.url && this.freq) {
-        nameString = Marker.linkify(name, callsign_url);
+        nameString = Utils.linkifyCallsign(name);
     }
 
     if (this.altitude) {
-        detailsString += Marker.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
+        detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
 
     if (this.device) {
-        detailsString += Marker.makeListItem('Device', this.device.manufacturer?
+        detailsString += Utils.makeListItem('Device', this.device.manufacturer?
             this.device.device + ' by ' + this.device.manufacturer : this.device
         );
     }
 
     if (this.antenna) {
-        detailsString += Marker.makeListItem('Antenna', Marker.truncate(this.antenna, 24));
+        detailsString += Utils.makeListItem('Antenna', Utils.truncate(this.antenna, 24));
     }
 
     if (this.freq) {
-        detailsString += Marker.makeListItem('Frequency', Marker.linkifyFreq(
+        detailsString += Utils.makeListItem('Frequency', Utils.linkifyFreq(
             this.freq, this.mmode? this.mmode:'fm'
         ));
     }
 
     if (this.mmode) {
-        detailsString += Marker.makeListItem('Modulation', this.mmode.toUpperCase());
+        detailsString += Utils.makeListItem('Modulation', this.mmode.toUpperCase());
     }
 
     if (!this.comment && this.status && this.updated) {
@@ -359,17 +274,17 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             + ', last updated on ' + this.updated + '</div>';
     } else {
         if (this.status) {
-            detailsString += Marker.makeListItem('Status', this.status);
+            detailsString += Utils.makeListItem('Status', this.status);
         }
         if (this.updated) {
-            detailsString += Marker.makeListItem('Updated', this.updated);
+            detailsString += Utils.makeListItem('Updated', this.updated);
         }
     }
 
     var moreDetails = this.detailsData;
     if (typeof moreDetails === 'object') {
         Object.keys(moreDetails).sort().forEach(function (k, i) {
-            detailsString += Marker.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), moreDetails[k]);
+            detailsString += Utils.makeListItem(k.charAt(0).toUpperCase() + k.slice(1), moreDetails[k]);
         });
     }
 
@@ -386,22 +301,22 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
                 + '&#8209;' + ('0000' + this.schedule[j].time2).slice(-4)
                 + '&nbsp;&nbsp;' + this.schedule[j].name;
 
-            scheduleString += Marker.makeListItem(name, Marker.linkifyFreq(
+            scheduleString += Utils.makeListItem(name, Utils.linkifyFreq(
                 this.schedule[j].freq, mode? mode : 'am'
             ));
         }
     }
 
     if (detailsString.length > 0) {
-        detailsString = '<div>' + Marker.makeListTitle('Details') + detailsString + '</div>';
+        detailsString = '<div>' + Utils.makeListTitle('Details') + detailsString + '</div>';
     }
 
     if (scheduleString.length > 0) {
-        scheduleString = '<div>' + Marker.makeListTitle('Schedule') + scheduleString + '</div>';
+        scheduleString = '<div>' + Utils.makeListTitle('Schedule') + scheduleString + '</div>';
     }
 
     if (receiverMarker) {
-        distance = ' at ' + Marker.distanceKm(receiverMarker.position, this.position) + ' km';
+        distance = ' at ' + Utils.distanceKm(receiverMarker.position, this.position) + ' km';
     }
 
     return '<h3>' + nameString + distance + '</h3>'
@@ -540,40 +455,40 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var distance = '';
 
     if (this.comment) {
-        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>'
-            + Marker.htmlEscape(this.comment) + '</div></div>';
+        commentString += '<div>' + Utils.makeListTitle('Comment') + '<div>'
+            + Utils.htmlEscape(this.comment) + '</div></div>';
     }
 
     if (this.weather) {
-        weatherString += '<div>' + Marker.makeListTitle('Weather');
+        weatherString += '<div>' + Utils.makeListTitle('Weather');
 
         if (this.weather.temperature) {
-            weatherString += Marker.makeListItem('Temperature', this.weather.temperature.toFixed(1) + ' oC');
+            weatherString += Utils.makeListItem('Temperature', this.weather.temperature.toFixed(1) + ' oC');
         }
 
         if (this.weather.humidity) {
-            weatherString += Marker.makeListItem('Humidity', this.weather.humidity + '%');
+            weatherString += Utils.makeListItem('Humidity', this.weather.humidity + '%');
         }
 
         if (this.weather.barometricpressure) {
-            weatherString += Marker.makeListItem('Pressure', this.weather.barometricpressure.toFixed(1) + ' mbar');
+            weatherString += Utils.makeListItem('Pressure', this.weather.barometricpressure.toFixed(1) + ' mbar');
         }
 
         if (this.weather.wind) {
             if (this.weather.wind.speed && (this.weather.wind.speed>0)) {
-                weatherString += Marker.makeListItem('Wind',
-                    Marker.degToCompass(this.weather.wind.direction) + ' ' +
+                weatherString += Utils.makeListItem('Wind',
+                    Utils.degToCompass(this.weather.wind.direction) + ' ' +
                     this.weather.wind.speed.toFixed(1) + ' km/h '
                 );
             }
 
             if (this.weather.wind.gust && (this.weather.wind.gust>0)) {
-                weatherString += Marker.makeListItem('Gusts', this.weather.wind.gust.toFixed(1) + ' km/h');
+                weatherString += Utils.makeListItem('Gusts', this.weather.wind.gust.toFixed(1) + ' km/h');
             }
         }
 
         if (this.weather.rain && (this.weather.rain.day>0)) {
-            weatherString += Marker.makeListItem('Rain',
+            weatherString += Utils.makeListItem('Rain',
                 this.weather.rain.hour.toFixed(0) + ' mm/h, ' +
                 this.weather.rain.day.toFixed(0) + ' mm/day'
 //                    this.weather.rain.sincemidnight + ' mm since midnight'
@@ -581,65 +496,65 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         }
 
         if (this.weather.snowfall) {
-            weatherString += Marker.makeListItem('Snow', this.weather.snowfall.toFixed(1) + ' cm');
+            weatherString += Utils.makeListItem('Snow', this.weather.snowfall.toFixed(1) + ' cm');
         }
 
         weatherString += '</div>';
     }
 
     if (this.device) {
-        detailsString += Marker.makeListItem('Device', this.device.manufacturer?
+        detailsString += Utils.makeListItem('Device', this.device.manufacturer?
           this.device.device + ' by ' + this.device.manufacturer : this.device
         );
     }
 
     if (this.height) {
-        detailsString += Marker.makeListItem('Height', this.height.toFixed(0) + ' m');
+        detailsString += Utils.makeListItem('Height', this.height.toFixed(0) + ' m');
     }
 
     if (this.power) {
-        detailsString += Marker.makeListItem('Power', this.power + ' W');
+        detailsString += Utils.makeListItem('Power', this.power + ' W');
     }
 
     if (this.gain) {
-        detailsString += Marker.makeListItem('Gain', this.gain + ' dB');
+        detailsString += Utils.makeListItem('Gain', this.gain + ' dB');
     }
 
     if (this.directivity) {
-        detailsString += Marker.makeListItem('Direction', this.directivity);
+        detailsString += Utils.makeListItem('Direction', this.directivity);
     }
 
     // Combine course and speed if both present
     if (this.course && this.speed) {
-        detailsString += Marker.makeListItem('Course',
-            Marker.degToCompass(this.course) + ' ' +
+        detailsString += Utils.makeListItem('Course',
+            Utils.degToCompass(this.course) + ' ' +
             this.speed.toFixed(1) + ' km/h'
         );
     } else {
         if (this.course) {
-            detailsString += Marker.makeListItem('Course', Marker.degToCompass(this.course));
+            detailsString += Utils.makeListItem('Course', Utils.degToCompass(this.course));
         }
         if (this.speed) {
-            detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' km/h');
+            detailsString += Utils.makeListItem('Speed', this.speed.toFixed(1) + ' km/h');
         }
     }
 
     if (this.altitude) {
-        detailsString += Marker.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
+        detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
 
     if (detailsString.length > 0) {
-        detailsString = '<div>' + Marker.makeListTitle('Details') + detailsString + '</div>';
+        detailsString = '<div>' + Utils.makeListTitle('Details') + detailsString + '</div>';
     }
 
     if (receiverMarker) {
-        distance = ' at ' + Marker.distanceKm(receiverMarker.position, this.position) + ' km';
+        distance = ' at ' + Utils.distanceKm(receiverMarker.position, this.position) + ' km';
     }
 
     if (this.hops && this.hops.length > 0) {
         var hops = this.hops.toString().split(',');
         hops.forEach(function(part, index, hops) {
-            hops[index] = Marker.linkify(part, callsign_url);
+            hops[index] = Utils.linkifyCallsign(part);
         });
 
         hopsString = '<div style="text-align:right;padding-top:1em;"><i>via '
@@ -648,8 +563,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     // Linkify title based on what it is (vessel or HAM callsign)
     var title = this.mode === 'AIS'?
-      Marker.linkify(name, vessel_url)
-    : Marker.linkify(name, callsign_url, name.replace(new RegExp('-.*$'), ''));
+      Utils.linkify(name, vessel_url) : Utils.linkifyCallsign(name);
 
     // Combine everything into info box contents
     return '<h3>' + title + distance + '</h3>'
@@ -780,51 +694,51 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var distance = '';
 
     if (this.comment) {
-        commentString += '<div>' + Marker.makeListTitle('Comment') + '<div>'
-            + Marker.htmlEscape(this.comment) + '</div></div>';
+        commentString += '<div>' + Utils.makeListTitle('Comment') + '<div>'
+            + Utils.htmlEscape(this.comment) + '</div></div>';
     }
 
     if (this.msglog) {
         var msglog = $.map(this.msglog, function(x, _) {
-            return Marker.htmlEscape(x);
+            return Utils.htmlEscape(x);
         });
-        messageString += '<div>' + Marker.makeListTitle('Messages')
+        messageString += '<div>' + Utils.makeListTitle('Messages')
             + '<pre class="openwebrx-map-console">' + msglog.join('\n<hr>')
             + '</pre></div>';
     }
 
     if (this.icao) {
-        detailsString += Marker.makeListItem('ICAO', Marker.linkify(this.icao, modes_url));
+        detailsString += Utils.makeListItem('ICAO', Utils.linkify(this.icao, modes_url));
     }
 
     if (this.aircraft) {
-        detailsString += Marker.makeListItem('Aircraft', Marker.linkify(this.aircraft, flight_url));
+        detailsString += Utils.makeListItem('Aircraft', Utils.linkify(this.aircraft, flight_url));
     }
 
     if (this.squawk) {
-        detailsString += Marker.makeListItem('Squawk', this.squawk);
+        detailsString += Utils.makeListItem('Squawk', this.squawk);
     }
 
     if (this.origin) {
-        detailsString += Marker.makeListItem('Origin', this.origin);
+        detailsString += Utils.makeListItem('Origin', this.origin);
     }
 
     if (this.destination) {
-        detailsString += Marker.makeListItem('Destination', this.destination);
+        detailsString += Utils.makeListItem('Destination', this.destination);
     }
 
     // Combine course and speed if both present
     if (this.course && this.speed) {
-        detailsString += Marker.makeListItem('Course',
-            Marker.degToCompass(this.course) + ' ' +
+        detailsString += Utils.makeListItem('Course',
+            Utils.degToCompass(this.course) + ' ' +
             this.speed.toFixed(1) + ' kt'
         );
     } else {
         if (this.course) {
-            detailsString += Marker.makeListItem('Course', Marker.degToCompass(this.course));
+            detailsString += Utils.makeListItem('Course', Utils.degToCompass(this.course));
         }
         if (this.speed) {
-            detailsString += Marker.makeListItem('Speed', this.speed.toFixed(1) + ' kt');
+            detailsString += Utils.makeListItem('Speed', this.speed.toFixed(1) + ' kt');
         }
     }
 
@@ -833,19 +747,19 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         var alt = this.altitude.toFixed(0) + ' ft';
         if (this.vspeed > 0) alt += ' &UpperRightArrow;' + this.vspeed + ' ft/m';
         else if (this.vspeed < 0) alt += ' &LowerRightArrow;' + (-this.vspeed) + ' ft/m';
-        detailsString += Marker.makeListItem('Altitude', alt);
+        detailsString += Utils.makeListItem('Altitude', alt);
     }
 
     if (this.rssi) {
-        detailsString += Marker.makeListItem('RSSI', this.rssi + ' dB');
+        detailsString += Utils.makeListItem('RSSI', this.rssi + ' dB');
     }
 
     if (detailsString.length > 0) {
-        detailsString = '<div>' + Marker.makeListTitle('Details') + detailsString + '</div>';
+        detailsString = '<div>' + Utils.makeListTitle('Details') + detailsString + '</div>';
     }
 
     if (receiverMarker) {
-        distance = ' at ' + Marker.distanceKm(receiverMarker.position, this.position) + ' km';
+        distance = ' at ' + Utils.distanceKm(receiverMarker.position, this.position) + ' km';
     }
 
     // Linkify title based on what it is (flight, aircraft, ICAO code)
@@ -859,7 +773,7 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         url  = flight_url;
     }
 
-    return '<h3>' + Marker.linkify(text, url, name) + distance + '</h3>'
+    return '<h3>' + Utils.linkify(name, url, text) + distance + '</h3>'
         + '<div align="center">' + timeString + ' using ' + this.mode + '</div>'
         + commentString + detailsString + messageString;
 };
