@@ -307,5 +307,5 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
     return '<h3>Locator ' + locator + distance + '</h3>'
         + '<div align="center">' + lastReport + '</div>'
         + Utils.makeListTitle('Active Callsigns')
-        + '<table class="openwebrx-map-info">' + list + '</table>';
+        + '<table align="center" class="openwebrx-map-info">' + list + '</table>';
 };

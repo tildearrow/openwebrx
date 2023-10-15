@@ -95,7 +95,7 @@ MapManager.prototype.process = function(e) {
                     retention_time = this.config.map_position_retention_time * 1000;
                 }
                 if ('callsign_url' in this.config) {
-                    callsign_url = this.config.callsign_url;
+                    Utils.setCallsignUrl(this.config.callsign_url);
                 }
                 if ('vessel_url' in this.config) {
                     vessel_url = this.config.vessel_url;

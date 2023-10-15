@@ -4,6 +4,13 @@
 
 function Utils() {}
 
+Utils.callsign_url = null;
+
+// Set URL for linkifying callsigns
+Utils.setCallsignUrl = function(url) {
+    this.callsign_url = url;
+};
+
 // Escape HTML code.
 Utils.htmlEscape = function(input) {
     return $('<div/>').text(input).html()
@@ -31,7 +38,7 @@ Utils.linkifyCallsign = function(callsign) {
     // Strip callsign of modifiers
     var id = callsign.replace(new RegExp('[-/].*$'), '');
     // Add country name as a tooltip
-    return this.linkify(id, callsign_url, callsign, Utils.call2country(id));
+    return this.linkify(id, this.callsign_url, callsign, this.call2country(id));
 };
 
 // Create link to tune OWRX to the given frequency and modulation.
@@ -121,7 +128,7 @@ Utils.getOpacityScale = function(age) {
 Utils.call2country = function(callsign) {
     for (var j=4 ; j>0 ; j--) {
         var pfx = callsign.substring(0, j)
-        if (pfx in Utils.PFX2COUNTRY) return Utils.PFX2COUNTRY[pfx];
+        if (pfx in this.PFX2COUNTRY) return this.PFX2COUNTRY[pfx];
     }
     return '';
 };

@@ -1133,6 +1133,10 @@ function on_ws_recv(evt) {
                             adsb_panel.setModeSUrl(config['modes_url']);
                         }
 
+                        if ('callsign_url' in config) {
+                            Utils.setCallsignUrl(config['callsign_url']);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];
