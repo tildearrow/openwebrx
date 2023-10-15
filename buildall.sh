@@ -14,13 +14,13 @@ mkdir ${BUILD_DIR} ${OUTPUT_DIR}
 pushd ${BUILD_DIR}
 
 echo "##### Cloning GIT repositories to ${BUILD_DIR} ... #####"
-git clone https://github.com/luarvique/csdr.git
-git clone https://github.com/luarvique/pycsdr.git
-git clone https://github.com/luarvique/owrx_connector.git
-git clone https://github.com/luarvique/openwebrx.git
-git clone https://github.com/luarvique/SoapySDRPlay3.git
-git clone https://github.com/jketterl/codecserver.git
-git clone https://github.com/jketterl/digiham.git
+git clone -b master https://github.com/luarvique/csdr.git
+git clone -b master https://github.com/luarvique/pycsdr.git
+git clone -b master https://github.com/luarvique/owrx_connector.git
+git clone -b master https://github.com/luarvique/openwebrx.git
+git clone -b master https://github.com/luarvique/SoapySDRPlay3.git
+git clone -b master https://github.com/jketterl/codecserver.git
+git clone -b master https://github.com/jketterl/digiham.git
 
 echo "##### Building CSDR... #####"
 pushd csdr
