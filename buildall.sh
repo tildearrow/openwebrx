@@ -19,6 +19,8 @@ git clone https://github.com/luarvique/pycsdr.git
 git clone https://github.com/luarvique/owrx_connector.git
 git clone https://github.com/luarvique/openwebrx.git
 git clone https://github.com/luarvique/SoapySDRPlay3.git
+git clone https://github.com/jketterl/codecserver.git
+git clone https://github.com/jketterl/digiham.git
 
 echo "##### Building CSDR... #####"
 pushd csdr
@@ -38,8 +40,25 @@ echo "##### Building OWRX-Connector... #####"
 pushd owrx_connector
 dpkg-buildpackage -us -uc
 popd
-# OpenWebRX build depends on the latest OWRX-Connector
-sudo dpkg -i *connector*.deb
+# Not installing OWRX-Connectors here since there are no
+# further build steps depending on it
+#sudo dpkg -i *connector*.deb
+
+echo "##### Building DigiHAM... #####"
+pushd digiham
+dpkg-buildpackage -us -uc
+popd
+# Not installing DigiHAM here since there are no further
+# build steps depending on it
+#sudo dpkg -i *digiham*.deb
+
+echo "##### Building CodecServer... #####"
+pushd codecserver
+dpkg-buildpackage -us -uc
+popd
+# Not installing CodecServer here since there are no
+# further build steps depending on it
+#sudo dpkg -i *codecserver*.deb
 
 echo "##### Building OpenWebRX... #####"
 pushd openwebrx
