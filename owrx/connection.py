@@ -147,6 +147,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "allow_audio_recording",
         "magic_key",
         "callsign_url",
+        "vessel_url",
         "flight_url",
         "modes_url",
         "receiver_gps",
