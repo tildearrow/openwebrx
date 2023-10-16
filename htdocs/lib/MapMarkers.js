@@ -543,6 +543,17 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
 
+    if (this.mode === 'AIS') {
+        var country = Utils.mid2country(name);
+        if (country) {
+            detailsString += Utils.makeListItem('Country', Utils.truncate(country, 24));
+        }
+    }
+
+    // Linkify title based on what it is (vessel or HAM callsign)
+    var title = this.mode === 'AIS'?
+      Utils.linkifyVessel(name) : Utils.linkifyCallsign(name);
+
     if (detailsString.length > 0) {
         detailsString = '<div>' + Utils.makeListTitle('Details') + detailsString + '</div>';
     }
@@ -563,7 +574,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     // Linkify title based on what it is (vessel or HAM callsign)
     var title = this.mode === 'AIS'?
-      Utils.linkify(name, vessel_url) : Utils.linkifyCallsign(name);
+      Utils.linkifyVessel(name) : Utils.linkifyCallsign(name);
 
     // Combine everything into info box contents
     return '<h3>' + title + distance + '</h3>'

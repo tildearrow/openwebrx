@@ -1137,6 +1137,10 @@ function on_ws_recv(evt) {
                             Utils.setCallsignUrl(config['callsign_url']);
                         }
 
+                        if ('vessel_url' in config) {
+                            Utils.setVesselUrl(config['vessel_url']);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];

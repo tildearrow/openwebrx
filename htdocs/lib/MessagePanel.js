@@ -217,6 +217,10 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         link = '<div ' + attrs + '>' + overlay + '</div>'
     }
 
+    // Linkify source based on what it is (vessel or HAM callsign)
+    source = msg.mode === 'AIS'?
+        Utils.linkifyVessel(source) : Utils.linkifyCallsign(source);
+
     $b.append($(
         '<tr>' +
         '<td>' + timestamp + '</td>' +

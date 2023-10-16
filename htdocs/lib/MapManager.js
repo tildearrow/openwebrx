@@ -98,7 +98,7 @@ MapManager.prototype.process = function(e) {
                     Utils.setCallsignUrl(this.config.callsign_url);
                 }
                 if ('vessel_url' in this.config) {
-                    vessel_url = this.config.vessel_url;
+                    Utils.setVesselUrl(this.config.vessel_url);
                 }
                 if ('flight_url' in this.config) {
                     flight_url = this.config.flight_url;
