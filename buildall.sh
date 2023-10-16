@@ -21,6 +21,8 @@ git clone -b master https://github.com/luarvique/openwebrx.git
 git clone -b master https://github.com/luarvique/SoapySDRPlay3.git
 git clone -b master https://github.com/jketterl/codecserver.git
 git clone -b master https://github.com/jketterl/digiham.git
+git clone -b master https://github.com/jketterl/pydigiham.git
+git clone -b master https://github.com/jketterl/js8py.git
 
 echo "##### Building CSDR... #####"
 pushd csdr
@@ -44,14 +46,6 @@ popd
 # further build steps depending on it
 #sudo dpkg -i *connector*.deb
 
-echo "##### Building DigiHAM... #####"
-pushd digiham
-dpkg-buildpackage -us -uc
-popd
-# Not installing DigiHAM here since there are no further
-# build steps depending on it
-#sudo dpkg -i *digiham*.deb
-
 echo "##### Building CodecServer... #####"
 pushd codecserver
 dpkg-buildpackage -us -uc
@@ -59,6 +53,29 @@ popd
 # Not installing CodecServer here since there are no
 # further build steps depending on it
 #sudo dpkg -i *codecserver*.deb
+
+echo "##### Building DigiHAM... #####"
+pushd digiham
+dpkg-buildpackage -us -uc
+popd
+# PyDigiHAM build depends on the latest DigiHAM
+sudo dpkg -i *digiham*.deb
+
+echo "##### Building PyDigiHAM... #####"
+pushd pydigiham
+dpkg-buildpackage -us -uc
+popd
+# Not installing PyDigiHAM here since there are no further
+# build steps depending on it
+#sudo dpkg -i python3-digiham*.deb
+
+echo "##### Building JS8Py... #####"
+pushd js8py
+dpkg-buildpackage -us -uc
+popd
+# Not installing JS8Py here since there are no further
+# build steps depending on it
+#sudo dpkg -i *js8py*.deb
 
 echo "##### Building OpenWebRX... #####"
 pushd openwebrx
