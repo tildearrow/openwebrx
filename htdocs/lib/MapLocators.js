@@ -286,11 +286,14 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
 
     var odd = false;
     var list = inLocator.map(function(x) {
+        var mc = self.colorMode === 'mode'? chroma(self.colorKeys[x.mode]).alpha(0.5) : 'inherit';
+        var bc = self.colorMode === 'band'? chroma(self.colorKeys[x.band]).alpha(0.5) : 'inherit';
+
         var row = '<tr style="background-color:' + (odd? '#E0FFE0':'#FFFFFF')
             + ';"><td>' + Utils.linkifyCallsign(x.callsign) + '</td>'
             + '<td>' + moment(x.lastseen).fromNow() + '</td>'
-            + '<td>' + x.mode + '</td>'
-            + '<td>' + x.band + '</td>'
+            + '<td style="background-color:' + mc + ';">' + x.mode + '</td>'
+            + '<td style="background-color:' + bc + ';">' + x.band + '</td>'
             + '</tr>';
 
         odd = !odd;
