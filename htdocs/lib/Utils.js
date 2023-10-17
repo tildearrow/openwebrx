@@ -48,9 +48,9 @@ Utils.linkifyCallsign = function(callsign) {
 };
 
 // Create link to a maritime vessel, with country tooltip, etc.
-Utils.linkifyVessel = function(mid) {
+Utils.linkifyVessel = function(mmsi) {
     // Add country name as a tooltip
-    return this.linkify(mid, this.vessel_url, mid, this.mid2country(mid));
+    return this.linkify(mmsi, this.vessel_url, mmsi, this.mmsi2country(mid));
 };
 
 // Create link to tune OWRX to the given frequency and modulation.
@@ -146,9 +146,9 @@ Utils.call2country = function(callsign) {
 };
 
 // Get country name from an AIS MID.
-Utils.mid2country = function(mid) {
-    var pfx = mid.substring(0, 3);
-    return pfx in this.MID2COUNTRY? this.MID2COUNTRY[pfx] : '';
+Utils.mmsi2country = function(mmsi) {
+    var mid = mmsi.substring(0, 3);
+    return mid in this.MID2COUNTRY? this.MID2COUNTRY[mid] : '';
 };
 
 //
@@ -934,7 +934,7 @@ Utils.MID2COUNTRY = {
   "303" : "Alaska (USA)",
   "201" : "Albania",
   "605" : "Algeria",
-  "559" : "American Samoa",
+  "559" : "Samoa (USA)",
   "202" : "Andorra",
   "603" : "Angola",
   "301" : "Anguilla",
@@ -965,7 +965,7 @@ Utils.MID2COUNTRY = {
   "478" : "Bosnia and Herzegovina",
   "611" : "Botswana",
   "710" : "Brazil",
-  "378" : "British Virgin Islands",
+  "378" : "Virgin Islands (UK)",
   "508" : "Brunei",
   "207" : "Bulgaria",
   "633" : "Burkina Faso",
@@ -1113,7 +1113,7 @@ Utils.MID2COUNTRY = {
   "656" : "Niger",
   "657" : "Nigeria",
   "542" : "Niue",
-  "536" : "Northern Mariana Islands",
+  "536" : "Northern Mariana Islands (USA)",
   "257" : "Norway",
   "258" : "Norway",
   "259" : "Norway",
@@ -1140,7 +1140,7 @@ Utils.MID2COUNTRY = {
   "555" : "Pitcairn Islands",
   "261" : "Poland",
   "263" : "Portugal",
-  "358" : "Puerto Rico",
+  "358" : "Puerto Rico (USA)",
   "466" : "Qatar",
   "660" : "Réunion (France)",
   "264" : "Romania",
@@ -1204,7 +1204,7 @@ Utils.MID2COUNTRY = {
   "233" : "United Kingdom",
   "234" : "United Kingdom",
   "235" : "United Kingdom",
-  "379" : "United States Virgin Islands",
+  "379" : "Virgin Islands (USA)",
   "338" : "United States",
   "366" : "United States",
   "367" : "United States",
