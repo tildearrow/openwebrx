@@ -139,6 +139,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/MetaPanel.js",
             "lib/Spectrum.js",
             "lib/Scanner.js",
+            "lib/Utils.js",
             "lib/Clock.js",
         ],
         "map-google.js": [
@@ -148,6 +149,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/MapLocators.js",
             "lib/MapMarkers.js",
             "lib/MapManager.js",
+            "lib/Utils.js",
             "lib/Clock.js",
             "map-google.js",
         ],
@@ -158,6 +160,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/MapLocators.js",
             "lib/MapMarkers.js",
             "lib/MapManager.js",
+            "lib/Utils.js",
             "lib/Clock.js",
             "map-leaflet.js",
         ],

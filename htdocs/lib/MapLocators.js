@@ -188,6 +188,7 @@ Locator.prototype.create = function(id) {
 Locator.prototype.update = function(data, map) {
     // Update callsign information
     this.callsigns[data.callsign] = {
+        callsign : data.callsign,
         lastseen : data.lastseen,
         mode     : data.mode,
         band     : data.band,
@@ -254,7 +255,7 @@ Locator.prototype.age = function(now) {
         if (age > retention_time) {
             delete data[id];
         } else {
-            x.weight = Marker.getOpacityScale(age);
+            x.weight = Utils.getOpacityScale(age);
             newest = Math.max(newest, x.lastseen);
         }
     });
@@ -278,19 +279,21 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
     // Filter out currently hidden bands/modes, sort by recency
     var self = this;
     var inLocator = $.map(this.callsigns, function(x, id) {
-        return self.colorKeys && self.colorKeys[x[self.colorMode]]?
-            { callsign: id, lastseen: x.lastseen, mode: x.mode, band: x.band } : null;
+        return self.colorKeys && self.colorKeys[x[self.colorMode]]? x : null;
     }).sort(function(a, b){
         return b.lastseen - a.lastseen;
     });
 
     var odd = false;
     var list = inLocator.map(function(x) {
+        var mc = self.colorMode === 'mode'? chroma(self.colorKeys[x.mode]).alpha(0.5) : 'inherit';
+        var bc = self.colorMode === 'band'? chroma(self.colorKeys[x.band]).alpha(0.5) : 'inherit';
+
         var row = '<tr style="background-color:' + (odd? '#E0FFE0':'#FFFFFF')
-            + ';"><td>' + Marker.linkify(x.callsign, callsign_url) + '</td>'
+            + ';"><td>' + Utils.linkifyCallsign(x.callsign) + '</td>'
             + '<td>' + moment(x.lastseen).fromNow() + '</td>'
-            + '<td>' + x.mode + '</td>'
-            + '<td>' + x.band + '</td>'
+            + '<td style="background-color:' + mc + ';">' + x.mode + '</td>'
+            + '<td style="background-color:' + bc + ';">' + x.band + '</td>'
             + '</tr>';
 
         odd = !odd;
@@ -298,7 +301,7 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
     }).join("");
 
     var distance = receiverMarker?
-        " at " + Marker.distanceKm(receiverMarker.position, pos) + " km" : "";
+        " at " + Utils.distanceKm(receiverMarker.position, pos) + " km" : "";
 
     var latest = inLocator[0];
     var lastReport = moment(latest.lastseen).fromNow() + ' using '
@@ -306,6 +309,6 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
 
     return '<h3>Locator ' + locator + distance + '</h3>'
         + '<div align="center">' + lastReport + '</div>'
-        + Marker.makeListTitle('Active Callsigns')
-        + '<table class="openwebrx-map-info">' + list + '</table>';
+        + Utils.makeListTitle('Active Callsigns')
+        + '<table align="center" class="openwebrx-map-info">' + list + '</table>';
 };

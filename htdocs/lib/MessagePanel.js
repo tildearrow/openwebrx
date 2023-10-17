@@ -50,46 +50,10 @@ MessagePanel.prototype.initClearButton = function() {
     $(me.el).append(me.clearButton);
 };
 
-// Escape HTML code.
-MessagePanel.prototype.htmlEscape = function(input) {
-    return $('<div/>').text(input).html()
-};
-
 // Scroll to the bottom of the message list.
 MessagePanel.prototype.scrollToBottom = function() {
     var $t = $(this.el).find('tbody');
     $t.scrollTop($t[0].scrollHeight);
-};
-
-// Linkify given contents so that clicking them opens given URL.
-MessagePanel.prototype.linkify = function(id, url, contents = null) {
-    // Use ID if contents not given
-    if (!contents) contents = id;
-    // Do not linkify empty strings, do not allow empty URLs
-    if ((id.len <= 0) || !url) return contents;
-    // Linkify now
-    return '<a target="callsign_info" href="'
-        + url.replaceAll('{}', id) + '">' + contents + '</a>';
-};
-
-// Linkify given contents so that clicking them opens the map with
-// the info bubble.
-MessagePanel.prototype.linkToMap = function(id, contents = null, attrs = "") {
-    if (id) {
-        return '<a ' + attrs + ' href="map?callsign='
-            + encodeURIComponent(id) + '" target="openwebrx-map">'
-            + (contents!=null? contents : id) + '</a>';
-    } else if (contents != null) {
-        return '<div ' + attrs + '>' + contents + '</div>';
-    } else {
-        return '';
-    }
-};
-
-// Convert degrees to compass direction.
-MessagePanel.prototype.degToCompass = function(deg) {
-    const dir = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
-    return dir[Math.floor((deg/22.5) + 0.5) % 16];
 };
 
 function WsjtMessagePanel(el) {
@@ -133,16 +97,16 @@ WsjtMessagePanel.prototype.pushMessage = function(msg) {
     if (this.qsoModes.indexOf(msg['mode']) >= 0) {
         matches = linkedmsg.match(/(.*\s[A-Z0-9]+\s)([A-R]{2}[0-9]{2})$/);
         if (matches && matches[2] !== 'RR73') {
-            linkedmsg = this.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>';
+            linkedmsg = Utils.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>';
         } else {
-            linkedmsg = this.htmlEscape(linkedmsg);
+            linkedmsg = Utils.htmlEscape(linkedmsg);
         }
     } else if (this.beaconModes.indexOf(msg['mode']) >= 0) {
         matches = linkedmsg.match(/([A-Z0-9]*\s)([A-R]{2}[0-9]{2})(\s[0-9]+)/);
         if (matches) {
-            linkedmsg = this.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>' + this.htmlEscape(matches[3]);
+            linkedmsg = Utils.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>' + Utils.htmlEscape(matches[3]);
         } else {
-            linkedmsg = this.htmlEscape(linkedmsg);
+            linkedmsg = Utils.htmlEscape(linkedmsg);
         }
     }
     $b.append($(
@@ -248,17 +212,21 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         'style="' + stylesToString(styles) + '"'
     ].join(' ');
     if (msg.lat && msg.lon) {
-        link = this.linkToMap(source, overlay, attrs);
+        link = Utils.linkToMap(source, overlay, attrs);
     } else {
         link = '<div ' + attrs + '>' + overlay + '</div>'
     }
+
+    // Linkify source based on what it is (vessel or HAM callsign)
+    source = msg.mode === 'AIS'?
+        Utils.linkifyVessel(source) : Utils.linkifyCallsign(source);
 
     $b.append($(
         '<tr>' +
         '<td>' + timestamp + '</td>' +
         '<td class="callsign">' + source + '</td>' +
         '<td class="coord">' + link + '</td>' +
-        '<td class="message">' + this.htmlEscape(msg.comment || msg.message || '') + '</td>' +
+        '<td class="message">' + Utils.htmlEscape(msg.comment || msg.message || '') + '</td>' +
         '</tr>'
     ));
     this.scrollToBottom();
@@ -299,7 +267,7 @@ PocsagMessagePanel.prototype.pushMessage = function(msg) {
     $b.append($(
         '<tr>' +
             '<td class="address">' + msg.address + '</td>' +
-            '<td class="message">' + this.htmlEscape(msg.message) + '</td>' +
+            '<td class="message">' + Utils.htmlEscape(msg.message) + '</td>' +
         '</tr>'
     ));
     this.scrollToBottom();
@@ -354,7 +322,7 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.hasOwnProperty('message')) {
         $b.append($(
             '<tr><td class="message" colspan="3">' +
-            this.htmlEscape(msg.message) +
+            Utils.htmlEscape(msg.message) +
             '</td></tr>'
         ));
     }
@@ -414,11 +382,11 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     var flight =
       !msg.flight? ''
     : !msg.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? msg.flight
-    : this.linkify(msg.flight, this.flight_url);
+    : Utils.linkify(msg.flight, this.flight_url);
 
     var aircraft =
-      msg.aircraft? this.linkify(msg.aircraft, this.flight_url)
-    : msg.icao?     this.linkify(msg.icao, this.modes_url)
+      msg.aircraft? Utils.linkify(msg.aircraft, this.flight_url)
+    : msg.icao?     Utils.linkify(msg.icao, this.modes_url)
     : '';
 
     var tstamp =
@@ -442,7 +410,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     if (!data.length && msg.type) data = msg.type;
 
     // Make data point to the map
-    if (data.length && msg.mapid) data = this.linkToMap(msg.mapid, data);
+    if (data.length && msg.mapid) data = Utils.linkToMap(msg.mapid, data);
 
     // Append report
     var $b = $(this.el).find('tbody');
@@ -458,7 +426,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     // Append messsage if present
     if (msg.message) {
         $b.append($(
-            '<tr><td class="message" colspan="4">' + this.htmlEscape(msg.message) + '</td></tr>'
+            '<tr><td class="message" colspan="4">' + Utils.htmlEscape(msg.message) + '</td></tr>'
         ))
     }
 
@@ -499,23 +467,6 @@ AdsbMessagePanel.prototype.setModeSUrl = function(url) {
     this.modes_url = url;
 };
 
-AdsbMessagePanel.prototype.distanceKm = function(p1, p2) {
-    // Earth radius in km
-    var R = 6371.0;
-    // Convert degrees to radians
-    var rlat1 = p1.lat * (Math.PI/180);
-    var rlat2 = p2.lat * (Math.PI/180);
-    // Compute difference in radians
-    var difflat = rlat2-rlat1;
-    var difflon = (p2.lon-p1.lon) * (Math.PI/180);
-    // Compute distance
-    d = 2 * R * Math.asin(Math.sqrt(
-        Math.sin(difflat/2) * Math.sin(difflat/2) +
-        Math.cos(rlat1) * Math.cos(rlat2) * Math.sin(difflon/2) * Math.sin(difflon/2)
-    ));
-    return Math.round(d);
-};
-
 AdsbMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
@@ -546,11 +497,11 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
 
         // Flight identificators
         var flight =
-          entry.flight? this.linkify(entry.flight, this.flight_url)
+          entry.flight? Utils.linkify(entry.flight, this.flight_url)
         : '';
         var aircraft =
-          entry.aircraft? this.linkify(entry.aircraft, this.flight_url)
-        : entry.icao?     this.linkify(entry.icao, this.modes_url)
+          entry.aircraft? Utils.linkify(entry.aircraft, this.flight_url)
+        : entry.icao?     Utils.linkify(entry.icao, this.modes_url)
         : '';
 
         // Altitude and climb / descent
@@ -564,7 +515,7 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
         // Speed and direction
         var speed = entry.speed? '' + entry.speed : '';
         if (entry.course) {
-            var dir = this.degToCompass(entry.course);
+            var dir = Utils.degToCompass(entry.course);
             speed = dir + '&nbsp'.repeat(5 - speed.length) + speed;
         }
 
@@ -583,8 +534,8 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
                    : entry.flight?   entry.flight
                    : null;
 
-            distance = this.distanceKm(entry, this.receiver_pos) + '&nbsp;km';
-            if (id) distance = this.linkToMap(id, distance);
+            distance = Utils.distanceKm(entry, this.receiver_pos) + '&nbsp;km';
+            if (id) distance = Utils.linkToMap(id, distance);
         }
 
         body += '<tr style="background-color:' + (odd? '#E0FFE0':'#FFFFFF') + ';">'
