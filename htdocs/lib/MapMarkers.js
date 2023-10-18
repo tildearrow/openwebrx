@@ -775,13 +775,15 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     // Linkify title based on what it is (flight, aircraft, ICAO code)
     var text = this.flight? this.flight : this.aircraft? this.aircraft : name;
-    var url  = modes_url;
+    var url  = null;
     if (this.flight && this.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)) {
         name = this.flight;
         url  = flight_url;
     } else if(this.aircraft) {
         name = this.aircraft;
         url  = flight_url;
+    } else if(name.match(/^[0-9A-F]{6}$/)) {
+        url  = modes_url;
     }
 
     return '<h3>' + Utils.linkify(name, url, text) + distance + '</h3>'
