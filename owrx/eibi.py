@@ -195,7 +195,9 @@ class EIBI(object):
                         src = entry["src"]
                         if src not in EIBI_Locations:
                             # Warn if location not found
-                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+                            # @@@ Too much output here
+                            #logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+                            pass
                         else:
                             # Compute TTL for the entry
                             ttl = ts + (
@@ -275,7 +277,9 @@ class EIBI(object):
                         src = entry["src"]
                         if src not in EIBI_Locations:
                             # Warn if location not found
-                            logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+                            # @@@ Too much output here
+                            #logger.debug("Location '{0}' for '{1}' not found!".format(src, entry["name"]))
+                            pass
                         else:
                             # Find closest source
                             for loc in EIBI_Locations[src]:
@@ -3029,7 +3033,8 @@ for code in EIBI_Locations.keys():
     if x >= 0:
         itu = code[:x]
         if itu not in EIBI_Locations and itu not in MORE_Locations:
-            logger.debug("Assuming '{0}' location stands for '{1}'...".format(code, itu))
+            # @@@ Too much output here
+            #logger.debug("Assuming '{0}' location stands for '{1}'...".format(code, itu))
             MORE_Locations[itu] = EIBI_Locations[code]
 
 EIBI_Locations.update(MORE_Locations)
