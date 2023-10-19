@@ -50,7 +50,7 @@ Utils.linkifyCallsign = function(callsign) {
 // Create link to a maritime vessel, with country tooltip, etc.
 Utils.linkifyVessel = function(mmsi) {
     // Add country name as a tooltip
-    return this.linkify(mmsi, this.vessel_url, mmsi, this.mmsi2country(mid));
+    return this.linkify(mmsi, this.vessel_url, mmsi, this.mmsi2country(mmsi));
 };
 
 // Create link to tune OWRX to the given frequency and modulation.
