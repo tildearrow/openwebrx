@@ -1,3 +1,13 @@
+**1.2.34**
+- Added colored band/mode designators to locator info windows.
+- Improved locator square colors to also reflect reports' age.
+- Linked HAM callsigns and AIS vessel IDs to respective websites.
+- Added country name tooltips to HAM callsigns and AIS vessel IDs.
+- Hopefully fixed FAX decoder randomly restarting a page.
+- Moved common JavaScript functions to Utils.js.
+- Fixed links on HFDL flight reports.
+- Silenced EIBI log warnings.
+
 **1.2.33**
 - Syncing library versions with original OWRX 1.2.2.
 - Refactored locators map display.
