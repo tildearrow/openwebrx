@@ -544,7 +544,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (this.mode === 'AIS') {
-        var country = Utils.mid2country(name);
+        var country = Utils.mmsi2country(name);
         if (country) {
             detailsString += Utils.makeListItem('Country', Utils.truncate(country, 24));
         }
