@@ -3,7 +3,7 @@ from csdr.module.msk144 import Msk144Module, ParserAdapter
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, SitorDecoder, Ccir476Decoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.direwolf import DirewolfModule
 from owrx.sstv import SstvParser
@@ -217,3 +217,36 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
 
+
+class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+    def __init__(self, baudRate, bandWidth, invert=False):
+        self.baudRate = baudRate
+        self.bandWidth = bandWidth
+        self.invert = invert
+        # this is an assumption, we will adjust in setSampleRate
+        self.sampleRate = 12000
+        secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
+        cutoff = self.baudRate / self.sampleRate
+        loop_gain = self.sampleRate / self.getBandwidth() / 5
+        workers = [
+            Agc(Format.COMPLEX_FLOAT),
+            FmDemod(),
+            Lowpass(Format.FLOAT, cutoff),
+            TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
+            SitorDecoder(jitter=1, invert=invert),
+            Ccir476Decoder(fec=True, allowErrors=16),
+        ]
+        super().__init__(workers)
+
+    def getBandwidth(self) -> float:
+        return self.bandWidth
+
+    def setSampleRate(self, sampleRate: int) -> None:
+        if sampleRate == self.sampleRate:
+            return
+        self.sampleRate = sampleRate
+        secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
+        cutoff = self.baudRate / self.sampleRate
+        loop_gain = self.sampleRate / self.getBandwidth() / 5
+        self.replace(2, Lowpass(Format.FLOAT, cutoff))
+        self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
