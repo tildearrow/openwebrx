@@ -138,7 +138,7 @@ class Modes(object):
         DigitalMode("rtty170", "RTTY-170 (45)", underlying=["usb", "lsb"]),
         DigitalMode("rtty450", "RTTY-450 (50N)", underlying=["usb", "lsb"]),
         DigitalMode("rtty85", "RTTY-85 (50N)", underlying=["usb", "lsb"]),
-        DigitalMode("sitorb", "SITOR-B", underlying=["usb", "lsb"]),
+        DigitalMode("sitorb", "SITOR-B", underlying=["usb"]),
         WsjtMode("ft8", "FT8"),
         WsjtMode("ft4", "FT4"),
         WsjtMode("jt65", "JT65"),
