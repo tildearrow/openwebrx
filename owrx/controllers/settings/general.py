@@ -184,6 +184,19 @@ class GeneralSettingsController(SettingsFormController):
             ),
             Section(
                 "Display settings",
+                DropdownInput(
+                    "ui_scheme",
+                    "User interface color scheme",
+                    options=[
+                        Option("default", "Default"),
+                        Option("brown", "Brown"),
+                        Option("red", "Red"),
+                        Option("green", "Green"),
+                        Option("khaki", "Khaki"),
+                        Option("blue", "Blue"),
+                        Option("navy", "Navy"),
+                    ],
+                ),
                 NumberInput(
                     "ui_opacity",
                     "User interface opacity",
