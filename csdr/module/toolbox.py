@@ -146,3 +146,18 @@ class AcarsDecModule(PopenModule):
         header[40:43] = bytes([0, 0xFF, 0xFF, 0xFF])
         # Send .WAV file header to the process
         self.process.stdin.write(header)
+
+
+class NavtexModule(PopenModule):
+    def __init__(self, sampleRate: int = 12000):
+        self.sampleRate = sampleRate
+        super().__init__()
+
+    def getCommand(self):
+        return [ "navtex_rx_from_file", str(self.sampleRate) ]
+
+    def getInputFormat(self) -> Format:
+        return Format.SHORT
+
+    def getOutputFormat(self) -> Format:
+        return Format.CHAR

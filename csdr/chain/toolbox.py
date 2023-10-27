@@ -1,6 +1,6 @@
-from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver, FixedIfSampleRateChain
-from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule
-from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
+from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver, FixedIfSampleRateChain, SecondaryDemodulator, SecondarySelectorChain
+from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, NavtexModule
+from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch, Shift, RealPart
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser
 from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
@@ -188,3 +188,29 @@ class AcarsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+
+
+class NavtexDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+    def __init__(self):
+        self.sampleRate = 12500
+        self.bandWidth = 340
+        self.offset = 1000
+        workers = [
+            Shift(float(self.offset - self.bandWidth/2) / self.sampleRate),
+            RealPart(),
+            Agc(Format.FLOAT),
+            Convert(Format.FLOAT, Format.SHORT),
+            NavtexModule(self.sampleRate),
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getBandwidth(self) -> float:
+        return self.bandWidth
+
+    def setSampleRate(self, sampleRate: int) -> None:
+        if sampleRate == self.sampleRate:
+            return
+        self.sampleRate = sampleRate
+        self.replace(0, Shift(float(self.offset - self.bandWidth/2) / self.sampleRate))
+        self.replace(4, NavtexModule(self.sampleRate))

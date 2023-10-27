@@ -663,6 +663,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "sitorb":
             from csdr.chain.digimodes import SitorBDemodulator
             return SitorBDemodulator(100, 170)
+        elif mod == "navtex":
+            from csdr.chain.toolbox import NavtexDemodulator
+            return NavtexDemodulator()
         elif mod == "cwdecoder":
             from csdr.chain.digimodes import CwDemodulator
             return CwDemodulator(75.0)
