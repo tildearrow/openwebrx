@@ -1,3 +1,10 @@
+openwebrx (1.2.35) bullseye jammy; urgency=low
+
+  * Added SITOR-B / NAVTEX decoder.
+  * Fixed AIS map information bubbles.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 28 Oct 2023 16:12:00 +0000
+
 openwebrx (1.2.34) bullseye jammy; urgency=low
 
   * Reworked locator info, adding colored band/mode designators.
