@@ -1141,6 +1141,10 @@ function on_ws_recv(evt) {
                             Utils.setVesselUrl(config['vessel_url']);
                         }
 
+                        if ('ui_scheme' in config) {
+                            set_ui_scheme(config['ui_scheme']);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];
@@ -2022,4 +2026,20 @@ function nr_changed() {
             "nr_threshold": nr_threshold
         }
     }));
+}
+
+function set_ui_scheme(theme) {
+    const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy'];
+    var $panels = $('.openwebrx-panel');
+    var $buttons = $('.openwebrx-button');
+
+    themes.forEach(function(theme) {
+        $panels.removeClass('openwebrx-panel-' + theme);
+        $buttons.removeClass('openwebrx-button-' + theme);
+    });
+
+    if (theme && (theme != '') && (theme != 'default')) {
+        $panels.addClass('openwebrx-panel-' + theme);
+        $buttons.addClass('openwebrx-button-' + theme);
+    }
 }
