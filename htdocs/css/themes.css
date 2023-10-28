@@ -29,8 +29,7 @@
 .openwebrx-button-brown
 {
     background-color: #270700;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.0, #270700), color-stop(1, #3F1F00) );
-    background: -moz-linear-gradient( center top, #270700 0%, #3F1F00 100% );
+    background: linear-gradient(to bottom, #270700 0%, #3F1F00 100%);
 }
 
 .openwebrx-panel-red
@@ -41,8 +40,7 @@
 .openwebrx-button-red
 {
     background-color: #270000;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.0, #270000), color-stop(1, #3F0000) );
-    background: -moz-linear-gradient( center top, #270000 0%, #3F0000 100% );
+    background: linear-gradient(to bottom, #270000 0%, #3F0000 100%);
 }
 
 .openwebrx-panel-green
@@ -53,8 +51,7 @@
 .openwebrx-button-green
 {
     background-color: #001700;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.0, #001700), color-stop(1, #002F00) );
-    background: -moz-linear-gradient( center top, #001700 0%, #002F00 100% );
+    background: linear-gradient(to bottom, #001700 0%, #002F00 100%);
 }
 
 .openwebrx-panel-khaki
@@ -65,8 +62,7 @@
 .openwebrx-button-khaki
 {
     background-color: #171F07;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.0, #171F07), color-stop(1, #272F17) );
-    background: -moz-linear-gradient( center top, #171F07 0%, #272F17 100% );
+    background: linear-gradient(to bottom, #171F07 0%, #272F17 100%);
 }
 
 .openwebrx-panel-blue
@@ -77,8 +73,7 @@
 .openwebrx-button-blue
 {
     background-color: #000027;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.0, #000027), color-stop(1, #00003F) );
-    background: -moz-linear-gradient( center top, #000027 0%, #00003F 100% );
+    background: linear-gradient(to bottom, #000027 0%, #00003F 100%);
 }
 
 .openwebrx-panel-navy
@@ -89,6 +84,5 @@
 .openwebrx-button-navy
 {
     background-color: #001727;
-    background: -webkit-gradient( linear, left top, left bottom, color-stop(0.0, #001727), color-stop(1, #002F3F) );
-    background: -moz-linear-gradient( center top, #001727 0%, #002F3F 100% );
+    background: linear-gradient(to bottom, #001727 0%, #002F3F 100%);
 }

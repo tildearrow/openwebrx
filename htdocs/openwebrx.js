@@ -37,6 +37,7 @@ var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
 var swap_wheel = false;
+var ui_theme = "default";
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -1142,7 +1143,8 @@ function on_ws_recv(evt) {
                         }
 
                         if ('ui_scheme' in config) {
-                            set_ui_scheme(config['ui_scheme']);
+                            ui_scheme = config['ui_scheme'];
+                            set_ui_scheme(ui_scheme);
                         }
 
                         break;
@@ -1241,6 +1243,7 @@ function on_ws_recv(evt) {
                         break;
                     case 'modes':
                         Modes.setModes(json['value']);
+                        set_ui_scheme(ui_scheme);
                         break;
                     default:
                         console.warn('received message of unknown type: ' + json['type']);
@@ -2032,14 +2035,17 @@ function set_ui_scheme(theme) {
     const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy'];
     var $panels = $('.openwebrx-panel');
     var $buttons = $('.openwebrx-button');
+    var $lists = $('.openwebrx-panel select');
 
     themes.forEach(function(theme) {
         $panels.removeClass('openwebrx-panel-' + theme);
         $buttons.removeClass('openwebrx-button-' + theme);
+        $lists.removeClass('openwebrx-button-' + theme);
     });
 
     if (theme && (theme != '') && (theme != 'default')) {
         $panels.addClass('openwebrx-panel-' + theme);
         $buttons.addClass('openwebrx-button-' + theme);
+        $lists.addClass('openwebrx-button-' + theme);
     }
 }
