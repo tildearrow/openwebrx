@@ -1,6 +1,7 @@
 **1.2.35**
 - Added SITOR-B / NAVTEX decoder.
 - Fixed AIS map information bubbles.
+- Used underscores for unrecognized CW/RTTY characters.
 
 **1.2.34**
 - Reworked locator info, adding colored band/mode designators.

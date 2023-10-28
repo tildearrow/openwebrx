@@ -2,6 +2,7 @@ openwebrx (1.2.35) bullseye jammy; urgency=low
 
   * Added SITOR-B / NAVTEX decoder.
   * Fixed AIS map information bubbles.
+  * Used underscores for unrecognized CW/RTTY characters.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Sat, 28 Oct 2023 16:12:00 +0000
 
