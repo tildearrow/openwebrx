@@ -295,6 +295,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             var tune = mode === 'cw'?      freq - 800
                      : mode === 'fax'?     freq - 1900
                      : mode === 'rtty450'? freq - 1000
+                     : mode === 'sitorb'?  freq - 1000
                      : freq;
 
             var name = ('0000' + this.schedule[j].time1).slice(-4)
