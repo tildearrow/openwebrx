@@ -1,5 +1,55 @@
 [
     {
+        "name" : "NAVTEX",
+        "frequency" : 517000,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 4209000,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 6313000,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 8415500,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 12578000,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 16805500,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 19679500,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 22375000,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "SITOR-B",
+        "frequency" : 26099500,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "NAVTEX",
+        "frequency" : 4208500,
+        "modulation" : "sitorb"
+    },
+    {
         "name" : "DDH47",
         "frequency" : 147300,
         "modulation" : "rtty450"
