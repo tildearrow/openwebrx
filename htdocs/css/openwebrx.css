@@ -817,11 +817,11 @@ img.openwebrx-mirror-img
 
 #openwebrx-digimode-canvas-container
 {
-	/*margin: -10px -10px 10px -10px;*/
+    /*margin: -10px -10px 10px -10px;*/
     margin: -10px -10px 0px -10px;
-	border-radius: 15px;
-	height: 150px;
-	background-color: #333;
+    border-radius: 15px;
+    height: 150px;
+    background-color: #333;
     position: relative;
     overflow: hidden;
 }
@@ -928,13 +928,15 @@ img.openwebrx-mirror-img
     bottom: 0;
     width: 100%;
     font-family: monospace;
+    overflow-y: auto;
+    height: 100%;
 }
 
 #openwebrx-digimode-content-container
 {
     overflow-y: hidden;
     display: block;
-    height: 75px;
+    height: 150px;
     position: relative;
 }
 

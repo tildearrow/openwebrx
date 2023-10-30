@@ -1357,7 +1357,7 @@ function divlog(what, is_error) {
         toggle_panel("openwebrx-panel-log", true); //show panel if any error is present
     }
     $('#openwebrx-debugdiv')[0].innerHTML += what + "<br />";
-    var nano = $('.nano');
+    var nano = $('#openwebrx-log-scroll');
     nano.nanoScroller();
     nano.nanoScroller({scroll: 'bottom'});
 }
@@ -1897,15 +1897,19 @@ function secondary_demod_push_data(x) {
         var c = y.charCodeAt(0);
         return (c === 10 || (c >= 32 && c <= 126));
     }).map(function (y) {
-        if (y === "&")
-            return "&amp;";
+        if (y === "&") return "&amp;";
         if (y === "<") return "&lt;";
         if (y === ">") return "&gt;";
         if (y === " ") return "&nbsp;";
         if (y === "\n") return "<br />";
         return y;
     }).join("");
+
     $("#openwebrx-cursor-blink").before(x);
+
+    var nano = $('#openwebrx-digimode-content');
+    nano.nanoScroller();
+    nano.nanoScroller({scroll: 'bottom'});
 }
 
 function secondary_demod_waterfall_add(data) {
