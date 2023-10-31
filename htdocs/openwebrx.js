@@ -2033,19 +2033,14 @@ function nr_changed() {
 
 function set_ui_scheme(theme) {
     const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy'];
-    var $panels = $('.openwebrx-panel');
-    var $buttons = $('.openwebrx-button');
-    var $lists = $('.openwebrx-panel select');
 
     themes.forEach(function(theme) {
-        $panels.removeClass('openwebrx-panel-' + theme);
-        $buttons.removeClass('openwebrx-button-' + theme);
-        $lists.removeClass('openwebrx-button-' + theme);
+        $('body').removeClass('theme-' + theme);
     });
+    $('body').removeClass('has-theme');
 
     if (theme && (theme != '') && (theme != 'default')) {
-        $panels.addClass('openwebrx-panel-' + theme);
-        $buttons.addClass('openwebrx-button-' + theme);
-        $lists.addClass('openwebrx-button-' + theme);
+        $('body').addClass('theme-' + theme);
+        $('body').addClass('has-theme');
     }
 }
