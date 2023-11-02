@@ -57,6 +57,7 @@ class FeatureDetector(object):
         "rtl_sdr_soapy": ["soapy_connector", "soapy_rtl_sdr"],
         "rtl_tcp": ["rtl_tcp_connector"],
         "sdrplay": ["soapy_connector", "soapy_sdrplay"],
+        "dubok": ["soapy_connector", "soapy_dubok"],
         "hackrf": ["soapy_connector", "soapy_hackrf"],
         "perseussdr": ["perseustest", "nmux"],
         "airspy": ["soapy_connector", "soapy_airspy"],
@@ -334,6 +335,12 @@ class FeatureDetector(object):
         You can get it [here](https://github.com/SDRplay/SoapySDRPlay).
         """
         return self._has_soapy_driver("sdrplay")
+
+    def has_soapy_dubok(self):
+        """
+        The SoapySDR module for DubokSDR devices is required for interfacing with DubokSDR devices
+        """
+        return self._has_soapy_driver("dubok")
 
     def has_soapy_airspy(self):
         """
@@ -657,4 +664,3 @@ class FeatureDetector(object):
         distributions, or you can compile it from source.
         """
         return self.command_is_runnable("multimon-ng --help")
-
