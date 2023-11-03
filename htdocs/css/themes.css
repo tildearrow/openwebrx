@@ -78,14 +78,18 @@ body.theme-night {
 
 
 /* theme implementation follows */
-body.has-theme .webrx-top-container,
+body.has-theme .webrx-top-bar,
 body.has-theme #openwebrx-frequency-container,
 body.has-theme #webrx-canvas-background {
     background-color: var(--theme-color2);
     background-blend-mode: overlay;
-    /* the next box-shadow is to make waterfall look like it is under the top-bar */
-    /* remove the box-shadow, and/or remove this comment */
+}
+body.has-theme #openwebrx-frequency-container {
     box-shadow: 0px 10px 24px -10px var(--theme-color1);
+}
+
+body.has-theme #openwebrx-panel-receiver {
+  border-color: var(--theme-color1) !important;
 }
 
 body.has-theme .openwebrx-panel,
