@@ -232,7 +232,7 @@ Locator.prototype.getColor = function() {
 
     if (!colors.length) return null;
 
-    return chroma.average(colors, 'hsl', weight).alpha(
+    return chroma.average(colors, 'lrgb', weight).alpha(
         maxw * (0.4 + Math.min(0.5, colors.length / 15))
     );
 };
