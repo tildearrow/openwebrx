@@ -2032,7 +2032,7 @@ function nr_changed() {
 }
 
 function set_ui_scheme(theme) {
-    const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy'];
+    const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy', 'night'];
 
     themes.forEach(function(theme) {
         $('body').removeClass('theme-' + theme);
