@@ -80,7 +80,7 @@ body.theme-night {
 /* theme implementation follows */
 body.has-theme #openwebrx-frequency-container {
     background-color: var(--theme-color2);
-    background-blend-mode: multiply;
+    background-blend-mode: overlay;
 }
 
 body.has-theme .openwebrx-panel,
