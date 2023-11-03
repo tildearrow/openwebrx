@@ -22,7 +22,6 @@
 
 /* Theme: brown */
 body.theme-brown {
-    --theme-top-bar: #47270026;
     --theme-color1: #270700;
     --theme-color2: #472700;
     --theme-gradient-color1: #270700;
@@ -31,7 +30,6 @@ body.theme-brown {
 
 /* Theme: red */
 body.theme-red {
-    --theme-top-bar: #47000026;
     --theme-color1: #270000;
     --theme-color2: #470000;
     --theme-gradient-color1: #270000;
@@ -40,7 +38,6 @@ body.theme-red {
 
 /* Theme: green */
 body.theme-green {
-    --theme-top-bar: #00370026;
     --theme-color1: #001700;
     --theme-color2: #003700;
     --theme-gradient-color1: #001700;
@@ -49,7 +46,6 @@ body.theme-green {
 
 /* Theme: khaki */
 body.theme-khaki {
-    --theme-top-bar: #373F1726;
     --theme-color1: #171F07;
     --theme-color2: #373F17;
     --theme-gradient-color1: #171F07;
@@ -58,7 +54,6 @@ body.theme-khaki {
 
 /* Theme: blue */
 body.theme-blue {
-    --theme-top-bar: #00004726;
     --theme-color1: #000027;
     --theme-color2: #000047;
     --theme-gradient-color1: #000027;
@@ -67,22 +62,30 @@ body.theme-blue {
 
 /* Theme: navy */
 body.theme-navy {
-    --theme-top-bar: #00374726;
     --theme-color1: #001727;
     --theme-color2: #003747;
     --theme-gradient-color1: #001727;
     --theme-gradient-color2: #002F3F;
 }
 
-
-/* theme implementation follows */
-body.has-theme .webrx-top-bar {
-    background: var(--theme-top-bar);
+/* Theme: night */
+body.theme-night {
+    --theme-color1: #6c2ceb;
+    --theme-color2: #1a1f73;
+    --theme-gradient-color1: #6c2ceb;
+    --theme-gradient-color2: #3355e5;
 }
 
-body.has-theme #openwebrx-frequency-container {
+
+/* theme implementation follows */
+body.has-theme .webrx-top-container,
+body.has-theme #openwebrx-frequency-container,
+body.has-theme #webrx-canvas-background {
     background-color: var(--theme-color2);
     background-blend-mode: overlay;
+    /* the next box-shadow is to make waterfall look like it is under the top-bar */
+    /* remove the box-shadow, and/or remove this comment */
+    box-shadow: 0px 10px 24px -10px var(--theme-color1);
 }
 
 body.has-theme .openwebrx-panel,
@@ -105,6 +108,10 @@ body.has-theme .openwebrx-demodulator-button.highlighted,
 body.has-theme .openwebrx-button.highlighted {
     background-color: var(--theme-color1);
     filter: saturate(200%) brightness(150%);
+}
+body.has-theme .openwebrx-squelch-auto.openwebrx-button.highlighted {
+  /* disable filter to allow background animation on scanner */
+  filter: none;
 }
 
 body.has-theme .openwebrx-button {

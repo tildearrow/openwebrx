@@ -195,6 +195,7 @@ class GeneralSettingsController(SettingsFormController):
                         Option("khaki", "Khaki"),
                         Option("blue", "Blue"),
                         Option("navy", "Navy"),
+                        Option("night", "Night"),
                     ],
                 ),
                 NumberInput(
