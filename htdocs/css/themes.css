@@ -115,7 +115,6 @@ body.has-theme .openwebrx-button {
 body.has-theme .openwebrx-meta-slot {
     background-color: var(--theme-color2);
     filter: brightness(150%);
-    color: white;
 }
 
 body.has-theme #openwebrx-digimode-canvas-container {
