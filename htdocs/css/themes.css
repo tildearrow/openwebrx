@@ -81,11 +81,14 @@ body.has-theme .webrx-top-bar {
 }
 
 body.has-theme #openwebrx-frequency-container {
-    background-image: none;
-    background: linear-gradient(to bottom, var(--theme-gradient-color1) 0%, var(--theme-gradient-color2) 100%);
+    background-color: var(--theme-color2);
+    background-blend-mode: overlay;
 }
 
-body.has-theme .openwebrx-panel {
+body.has-theme .openwebrx-panel,
+body.has-theme .openwebrx-dialog,
+body.has-theme .openwebrx-panel select option,
+body.has-theme .openwebrx-dialog select option {
     background-color: var(--theme-color2);
 }
 
@@ -109,14 +112,20 @@ body.has-theme .openwebrx-button {
     background: linear-gradient(to bottom, var(--theme-gradient-color1) 0%, var(--theme-gradient-color2) 100%);
 }
 
+body.has-theme .openwebrx-meta-slot {
+    background-color: var(--theme-color2);
+    filter: brightness(150%);
+    color: white;
+}
+
 body.has-theme #openwebrx-digimode-canvas-container {
     background-color: var(--theme-color1);
 }
 
 body.has-theme #openwebrx-digimode-content-container .gradient {
+    box-shadow: 0px 10px 10px inset var(--theme-color2);
     background: initial;
 }
-
 
 /* these need more work */
 body.has-theme input[type=range] {
