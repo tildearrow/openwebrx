@@ -292,11 +292,7 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         for (var j=0 ; j<this.schedule.length ; ++j) {
             var freq = this.schedule[j].freq;
             var mode = this.schedule[j].mode;
-            var tune = mode === 'cw'?      freq - 800
-                     : mode === 'fax'?     freq - 1900
-                     : mode === 'rtty450'? freq - 1000
-                     : mode === 'sitorb'?  freq - 1000
-                     : freq;
+            var tune = Utils.offsetFreq(freq, mode);
 
             var name = ('0000' + this.schedule[j].time1).slice(-4)
                 + '&#8209;' + ('0000' + this.schedule[j].time2).slice(-4)

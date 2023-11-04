@@ -22,6 +22,26 @@ Utils.htmlEscape = function(input) {
     return $('<div/>').text(input).html()
 };
 
+// Change frequency as required by given modulation
+Utils.offsetFreq = function(freq, mod) {
+    switch(mod) {
+        case 'cw':
+            return freq - 800;
+        case 'fax':
+            return freq - 1900;
+        case 'cwdecoder':
+        case 'rtty450':
+        case 'rtty170':
+        case 'rtty85':
+        case 'sitorb':
+        case 'bpsk31':
+        case 'bpsk63':
+            return freq - 1000;
+    }
+
+    return freq;
+}
+
 // Wrap given callsign or other ID into a clickable link.
 Utils.linkify = function(id, url = null, content = null, tip = null) {
     // If no specific content, use the ID itself
