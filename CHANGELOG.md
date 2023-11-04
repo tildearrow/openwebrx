@@ -1,3 +1,10 @@
+**1.2.36**
+- Added several UI themes, switched via "Settings | Display | Theme".
+- Made text console window contain more text (RTTY, etc).
+- Added nano-scroller to the text console window.
+- Switched back to LRGB for mixing locator colors.
+- Renamed "Range" section to "Display".
+
 **1.2.35**
 - Added SITOR-B / NAVTEX decoder.
 - Fixed AIS map information bubbles.

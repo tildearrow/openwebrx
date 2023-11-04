@@ -1,3 +1,13 @@
+openwebrx (1.2.36) bullseye jammy; urgency=low
+
+  * Added several UI themes, switched via "Settings | Display | Theme".
+  * Made text console window contain more text (RTTY, etc).
+  * Added nano-scroller to the text console window.
+  * Switched back to LRGB for mixing locator colors.
+  * Renamed "Range" section to "Display".
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 3 Nov 2023 16:12:00 +0000
+
 openwebrx (1.2.35) bullseye jammy; urgency=low
 
   * Added SITOR-B / NAVTEX decoder.
