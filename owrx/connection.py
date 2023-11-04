@@ -140,6 +140,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         "fft_compression",
         "max_clients",
         "tuning_precision",
+        "ui_scheme",
         "ui_opacity",
         "ui_frame",
         "ui_swap_wheel",

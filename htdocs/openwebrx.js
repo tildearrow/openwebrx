@@ -37,6 +37,7 @@ var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
 var swap_wheel = false;
+var ui_theme = "default";
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -1141,6 +1142,11 @@ function on_ws_recv(evt) {
                             Utils.setVesselUrl(config['vessel_url']);
                         }
 
+                        if ('ui_scheme' in config) {
+                            ui_scheme = config['ui_scheme'];
+                            set_ui_scheme(ui_scheme);
+                        }
+
                         break;
                     case "secondary_config":
                         var s = json['value'];
@@ -1237,6 +1243,7 @@ function on_ws_recv(evt) {
                         break;
                     case 'modes':
                         Modes.setModes(json['value']);
+                        set_ui_scheme(ui_scheme);
                         break;
                     default:
                         console.warn('received message of unknown type: ' + json['type']);
@@ -2022,4 +2029,18 @@ function nr_changed() {
             "nr_threshold": nr_threshold
         }
     }));
+}
+
+function set_ui_scheme(theme) {
+    const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy', 'night'];
+
+    themes.forEach(function(theme) {
+        $('body').removeClass('theme-' + theme);
+    });
+    $('body').removeClass('has-theme');
+
+    if (theme && (theme != '') && (theme != 'default')) {
+        $('body').addClass('theme-' + theme);
+        $('body').addClass('has-theme');
+    }
 }
