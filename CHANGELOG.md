@@ -1,6 +1,6 @@
 **1.2.36**
-- Added several UI themes, switched via "Settings | Display | Theme".
-- Made text console window contain more text (RTTY, etc).
+- Added several UI themes, switched via "User interface color scheme".
+- Made text console window contain more text (RTTY, CW, etc).
 - Added nano-scroller to the text console window.
 - Switched back to LRGB for mixing locator colors.
 - Renamed "Range" section to "Display".
