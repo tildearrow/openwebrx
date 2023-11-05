@@ -2034,10 +2034,12 @@ function set_ui_frame(x) {
 function set_ui_opacity(x) {
     x = x<10? 10 : x>100? 100 : x;
     $('.openwebrx-panel').css('opacity', x/100);
+    $('#openwebrx-opacity-slider').val(x);
 }
 
 function set_ui_scheme(theme) {
     const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy', 'night'];
+    $('#openwebrx-themes-listbox').val(theme);
 
     // Save current theme name
     ui_scheme = theme;
