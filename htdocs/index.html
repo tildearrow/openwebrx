@@ -263,11 +263,11 @@
                     <div class="openwebrx-section">
                         <div class="openwebrx-panel-line">
                             <div title="Reset opacity" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_opacity(100);">
-                                <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#waterfall-default"></use></svg>
+                                <svg viewBox="56 -900 835 835"><use xlink:href="static/gfx/svg-defs.svg#opacity"></use></svg>
                             </div>
-                            <input title="Opacity" class="openwebrx-panel-slider" type="range" min="10" max="100" value="100" step="1" onchange="set_ui_opacity(this.value);">
+                            <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="10" max="100" value="100" step="1" oninput="set_ui_opacity(this.value);">
                             <div title="Theme" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_scheme('default');">
-                                <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#tuning-step"></use></svg>
+                                <svg viewBox="56 -900 835 835" style="overflow: visible"><use xlink:href="static/gfx/svg-defs.svg#theme-chooser"></use></svg>
                             </div>
                             <select id="openwebrx-themes-listbox" class="openwebrx-panel-listbox" onchange="set_ui_scheme(this.value);">
                                 <option value="default">Default</option>
