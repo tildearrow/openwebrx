@@ -71,9 +71,9 @@ body.theme-navy {
 /* Theme: black */
 body.theme-black {
     --theme-color1: #000000;
-    --theme-color2: #202020;
+    --theme-color2: #282828;
     --theme-gradient-color1: #000000;
-    --theme-gradient-color2: #303030;
+    --theme-gradient-color2: #404040;
 }
 
 /* Theme: night */
