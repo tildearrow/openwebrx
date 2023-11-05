@@ -1,47 +1,42 @@
 [
     {
+        "name" : "DDH47",
+        "frequency" : 146300,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDH9",
+        "frequency" : 11038000,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDH8",
+        "frequency" : 14466300,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDK2",
+        "frequency" : 4582000,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDH7",
+        "frequency" : 7645000,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "DDK9",
+        "frequency" : 10099800,
+        "modulation" : "rtty450"
+    },
+    {
+        "name" : "NAVTEX",
+        "frequency" : 489000,
+        "modulation" : "sitorb"
+    },
+    {
         "name" : "NAVTEX",
         "frequency" : 517000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 4209000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 6313000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 8415500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 12578000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 16805500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 19679500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 22375000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "SITOR-B",
-        "frequency" : 26099500,
         "modulation" : "sitorb"
     },
     {
@@ -50,34 +45,44 @@
         "modulation" : "sitorb"
     },
     {
-        "name" : "DDH47",
-        "frequency" : 147300,
-        "modulation" : "rtty450"
+        "name" : "MSI",
+        "frequency" : 4209000,
+        "modulation" : "sitorb"
     },
     {
-        "name" : "DDH9",
-        "frequency" : 11039000,
-        "modulation" : "rtty450"
+        "name" : "MSI",
+        "frequency" : 6313000,
+        "modulation" : "sitorb"
     },
     {
-        "name" : "DDH8",
-        "frequency" : 14467300,
-        "modulation" : "rtty450"
+        "name" : "MSI",
+        "frequency" : 8415500,
+        "modulation" : "sitorb"
     },
     {
-        "name" : "DDK2",
-        "frequency" : 4583000,
-        "modulation" : "rtty450"
+        "name" : "MSI",
+        "frequency" : 12578000,
+        "modulation" : "sitorb"
     },
     {
-        "name" : "DDH7",
-        "frequency" : 7646000,
-        "modulation" : "rtty450"
+        "name" : "MSI",
+        "frequency" : 16805500,
+        "modulation" : "sitorb"
     },
     {
-        "name" : "DDK9",
-        "frequency" : 10100800,
-        "modulation" : "rtty450"
+        "name" : "MSI",
+        "frequency" : 19679500,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "MSI",
+        "frequency" : 22375000,
+        "modulation" : "sitorb"
+    },
+    {
+        "name" : "MSI",
+        "frequency" : 26099500,
+        "modulation" : "sitorb"
     },
     {
         "name" : "NOAA-1",
