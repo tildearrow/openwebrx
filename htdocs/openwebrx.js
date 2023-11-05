@@ -2034,21 +2034,27 @@ function set_ui_frame(x) {
 function set_ui_opacity(x) {
     x = x<10? 10 : x>100? 100 : x;
     $('.openwebrx-panel').css('opacity', x/100);
-    $('#openwebrx-opacity-slider').val(x);
+    $('#openwebrx-opacity-slider')
+        .attr('title', 'Opacity (' + Math.round(x) + '%)')
+        .val(x);
 }
 
 function set_ui_scheme(theme) {
-    const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy', 'night'];
-    $('#openwebrx-themes-listbox').val(theme);
-
     // Save current theme name
     ui_scheme = theme;
 
-    themes.forEach(function(theme) {
-        $('body').removeClass('theme-' + theme);
-    });
+    // Set selector
+    var lb = $('#openwebrx-themes-listbox');
+    lb.val(theme);
+
+    // Remove existing theme
+    var opts = lb[0].options;
+    for(j=0 ; j<opts.length ; j++) {
+        $('body').removeClass('theme-' + opts[j].value);
+    }
     $('body').removeClass('has-theme');
 
+    // Apply new theme
     if (theme && (theme != '') && (theme != 'default')) {
         $('body').addClass('theme-' + theme);
         $('body').addClass('has-theme');

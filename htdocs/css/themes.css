@@ -68,6 +68,14 @@ body.theme-navy {
     --theme-gradient-color2: #002F3F;
 }
 
+/* Theme: black */
+body.theme-black {
+    --theme-color1: #000000;
+    --theme-color2: #202020;
+    --theme-gradient-color1: #000000;
+    --theme-gradient-color2: #303030;
+}
+
 /* Theme: night */
 body.theme-night {
     --theme-color1: #6c2ceb;

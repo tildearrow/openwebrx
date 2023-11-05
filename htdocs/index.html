@@ -262,10 +262,6 @@
                     <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangledown;&nbsp;Theme</div>
                     <div class="openwebrx-section">
                         <div class="openwebrx-panel-line">
-                            <div title="Reset opacity" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_opacity(100);">
-                                <svg viewBox="56 -900 835 835"><use xlink:href="static/gfx/svg-defs.svg#opacity"></use></svg>
-                            </div>
-                            <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="10" max="100" value="100" step="1" oninput="set_ui_opacity(this.value);">
                             <div title="Theme" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_scheme('default');">
                                 <svg viewBox="56 -900 835 835" style="overflow: visible"><use xlink:href="static/gfx/svg-defs.svg#theme-chooser"></use></svg>
                             </div>
@@ -277,7 +273,13 @@
                                 <option value="khaki">Khaki</option>
                                 <option value="blue">Blue</option>
                                 <option value="navy">Navy</option>
+                                <option value="black">Black</option>
+                                <option value="night">Night</option>
                             </select>
+                            <div title="Reset opacity" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_opacity(100);">
+                                <svg viewBox="56 -900 835 835"><use xlink:href="static/gfx/svg-defs.svg#opacity"></use></svg>
+                            </div>
+                            <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="set_ui_opacity(this.value);">
                         </div>
                     </div>
                     <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangledown;&nbsp;Display</div>
