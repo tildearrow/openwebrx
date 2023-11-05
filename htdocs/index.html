@@ -206,11 +206,11 @@
                     <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangledown;&nbsp;Controls</div>
                     <div class="openwebrx-section">
                         <div class="openwebrx-panel-line">
-                            <div title="Mute on/off" class="openwebrx-button openwebrx-slider-button openwebrx-mute-button" onclick="toggleMute();">
+                            <div title="Mute on/off" class="openwebrx-button openwebrx-slider-button openwebrx-mute-button" onclick="UI.toggleMute();">
                                 <svg class="unmuted" viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#speaker"></use></svg>
                                 <svg class="muted" viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#speaker-muted"></use></svg>
                             </div>
-                            <input title="Volume" id="openwebrx-panel-volume" class="openwebrx-panel-slider" type="range" min="0" max="150" value="50" step="1" onchange="updateVolume()" oninput="updateVolume()">
+                            <input title="Volume" id="openwebrx-panel-volume" class="openwebrx-panel-slider" type="range" min="0" max="150" value="50" step="1" onchange="UI.setVolume(this.value);" oninput="UI.setVolume(this.value);">
                             <div title="Tuning step" class="openwebrx-button openwebrx-slider-button" onclick="tuning_step_reset();">
                                 <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#tuning-step"></use></svg>
                             </div>
@@ -249,23 +249,23 @@
                             <input title="Waterfall minimum level" id="openwebrx-waterfall-color-min" class="openwebrx-panel-slider" type="range" min="-200" max="100" value="50" step="1" onchange="updateWaterfallColors(0);" oninput="updateVolume()">
                         </div>
                         <div class="openwebrx-panel-line">
-                            <div title="Noise reduction on/off" class="openwebrx-nr-toggle openwebrx-button openwebrx-slider-button" onclick="toggleNR();">
+                            <div title="Noise reduction on/off" class="openwebrx-nr-toggle openwebrx-button openwebrx-slider-button" onclick="UI.toggleNR();">
                                 <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#noise-reduce"></use></svg>
                             </div>
-                            <input title="Noise reduction level" disabled id="openwebrx-panel-nr" class="openwebrx-panel-slider" type="range" min="-10" max="10" value="0" step="1" onchange="updateNR()" oninput="updateNR()">
+                            <input title="Noise reduction level" disabled id="openwebrx-panel-nr" class="openwebrx-panel-slider" type="range" min="-10" max="10" value="0" step="1" onchange="UI.setNR(this.value)" oninput="UI.setNR(this.value)">
                             <div title="Set waterfall colors to default" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="waterfallColorsDefault()">
                                 <svg viewBox="0 0 80 80"><use xlink:href="static/gfx/svg-defs.svg#waterfall-default"></use></svg>
                             </div>
                             <input title="Waterfall maximum level" id="openwebrx-waterfall-color-max" class="openwebrx-panel-slider" type="range" min="-200" max="100" value="50" step="1" onchange="updateWaterfallColors(1);" oninput="updateVolume()">
                         </div>
                     </div>
-                    <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangledown;&nbsp;Theme</div>
-                    <div class="openwebrx-section">
+                    <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangle;&nbsp;Settings</div>
+                    <div class="openwebrx-section" style="display: none;">
                         <div class="openwebrx-panel-line">
-                            <div title="Theme" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_scheme('default');">
+                            <div title="Theme" class="openwebrx-button openwebrx-slider-button" onclick="UI.setTheme('default');">
                                 <svg viewBox="56 -900 835 835" style="overflow: visible"><use xlink:href="static/gfx/svg-defs.svg#theme-chooser"></use></svg>
                             </div>
-                            <select id="openwebrx-themes-listbox" class="openwebrx-panel-listbox" onchange="set_ui_scheme(this.value);">
+                            <select id="openwebrx-themes-listbox" class="openwebrx-panel-listbox" onchange="UI.setTheme(this.value);">
                                 <option value="default">Default</option>
                                 <option value="brown">Brown</option>
                                 <option value="red">Red</option>
@@ -276,10 +276,10 @@
                                 <option value="black">Black</option>
                                 <option value="night">Night</option>
                             </select>
-                            <div title="Reset opacity" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="set_ui_opacity(100);">
+                            <div title="Reset opacity" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="UI.setOpacity(100);" oncontextmenu="UI.toggleFrame();">
                                 <svg viewBox="56 -900 835 835"><use xlink:href="static/gfx/svg-defs.svg#opacity"></use></svg>
                             </div>
-                            <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="set_ui_opacity(this.value);">
+                            <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="UI.setOpacity(this.value);">
                         </div>
                     </div>
                     <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangledown;&nbsp;Display</div>

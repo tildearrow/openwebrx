@@ -34,14 +34,7 @@ var waterfall_setup_done = 0;
 var secondary_fft_size;
 var tuning_step_default = 1;
 var tuning_step = 1;
-var nr_enabled = false;
-var nr_threshold = 0;
 var swap_wheel = false;
-var ui_scheme = "default";
-
-function updateVolume() {
-    audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
-}
 
 function toggleSection(el) {
     var next_el = el.nextElementSibling;
@@ -54,43 +47,6 @@ function toggleSection(el) {
             next_el.style.display = "none";
         }
     }
-}
-
-function toggleMute() {
-    var $muteButton = $('.openwebrx-mute-button');
-    var $volumePanel = $('#openwebrx-panel-volume');
-    if ($muteButton.hasClass('muted')) {
-        $muteButton.removeClass('muted');
-        $volumePanel.prop('disabled', false).val(volumeBeforeMute);
-    } else {
-        $muteButton.addClass('muted');
-        volumeBeforeMute = $volumePanel.val();
-        $volumePanel.prop('disabled', true).val(0);
-    }
-
-    updateVolume();
-}
-
-function updateNR() {
-    var $nrPanel = $('#openwebrx-panel-nr');
-
-    nr_threshold = Math.round(parseFloat($nrPanel.val()));
-    $nrPanel.attr('title', 'Noise level (' + nr_threshold + ' dB)');
-    nr_changed();
-}
-
-function toggleNR() {
-    var $nrPanel = $('#openwebrx-panel-nr');
-
-    if ($nrPanel.prop('disabled')) {
-        $nrPanel.prop('disabled', false);
-        nr_enabled = true;
-    } else {
-        $nrPanel.prop('disabled', true);
-        nr_enabled = false;
-    }
-
-    nr_changed();
 }
 
 function toggleRecording() {
@@ -1094,12 +1050,12 @@ function on_ws_recv(evt) {
                             tuning_step_reset();
                         }
 
-                        if ('ui_opacity' in config) {
-                            set_ui_opacity(config['ui_opacity']);
-                        }
+//                        if ('ui_opacity' in config) {
+//                            UI.setOpacity(config['ui_opacity']);
+//                        }
 
                         if ('ui_frame' in config) {
-                            set_ui_frame(config['ui_frame']);
+                            UI.setFrame(config['ui_frame']);
                         }
 
                         if ('ui_swap_wheel' in config) {
@@ -1138,9 +1094,9 @@ function on_ws_recv(evt) {
                             Utils.setVesselUrl(config['vessel_url']);
                         }
 
-                        if ('ui_scheme' in config) {
-                            set_ui_scheme(config['ui_scheme']);
-                        }
+//                        if ('ui_scheme' in config) {
+//                            UI.setTheme(config['ui_scheme']);
+//                        }
 
                         break;
                     case "secondary_config":
@@ -1238,7 +1194,6 @@ function on_ws_recv(evt) {
                         break;
                     case 'modes':
                         Modes.setModes(json['value']);
-                        set_ui_scheme(ui_scheme);
                         break;
                     default:
                         console.warn('received message of unknown type: ' + json['type']);
@@ -1383,8 +1338,8 @@ function onAudioStart(apiType){
         toggle_panel("openwebrx-panel-log", !!was_error);
     }, 2000);
 
-    //Synchronise volume with slider
-    updateVolume();
+    // Load user interface settings from local storage
+    UI.loadSettings();
 }
 
 var reconnect_timeout = false;
@@ -1632,7 +1587,7 @@ function openwebrx_init() {
 function initSliders() {
     $('#openwebrx-panel-receiver').on('wheel', 'input[type=range]', function(ev){
         var $slider = $(this);
-        if (!$slider.attr('step')) return;
+        if (!$slider.attr('step') || $slider.attr('disabled')) return;
         var val = Number($slider.val());
         var step = Number($slider.attr('step'));
         if (ev.originalEvent.deltaY > 0) {
@@ -2014,49 +1969,4 @@ function tuning_step_changed() {
 function tuning_step_reset() {
     $('#openwebrx-tuning-step-listbox').val(tuning_step_default);
     tuning_step = tuning_step_default;
-}
-
-function nr_changed() {
-    ws.send(JSON.stringify({
-        "type": "connectionproperties",
-        "params": {
-            "nr_enabled": nr_enabled,
-            "nr_threshold": nr_threshold
-        }
-    }));
-}
-
-function set_ui_frame(x) {
-    $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
-    $('#openwebrx-dialog-bookmark').css('border', x? '2px solid':'');
-}
-
-function set_ui_opacity(x) {
-    x = x<10? 10 : x>100? 100 : x;
-    $('.openwebrx-panel').css('opacity', x/100);
-    $('#openwebrx-opacity-slider')
-        .attr('title', 'Opacity (' + Math.round(x) + '%)')
-        .val(x);
-}
-
-function set_ui_scheme(theme) {
-    // Save current theme name
-    ui_scheme = theme;
-
-    // Set selector
-    var lb = $('#openwebrx-themes-listbox');
-    lb.val(theme);
-
-    // Remove existing theme
-    var opts = lb[0].options;
-    for(j=0 ; j<opts.length ; j++) {
-        $('body').removeClass('theme-' + opts[j].value);
-    }
-    $('body').removeClass('has-theme');
-
-    // Apply new theme
-    if (theme && (theme != '') && (theme != 'default')) {
-        $('body').addClass('theme-' + theme);
-        $('body').addClass('has-theme');
-    }
 }
