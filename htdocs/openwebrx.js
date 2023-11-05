@@ -37,7 +37,7 @@ var tuning_step = 1;
 var nr_enabled = false;
 var nr_threshold = 0;
 var swap_wheel = false;
-var ui_theme = "default";
+var ui_scheme = "default";
 
 function updateVolume() {
     audioEngine.setVolume(parseFloat($("#openwebrx-panel-volume").val()) / 100);
@@ -1095,15 +1095,11 @@ function on_ws_recv(evt) {
                         }
 
                         if ('ui_opacity' in config) {
-                            var x = config['ui_opacity'];
-                            x = x<10? 10 : x>100? 100 : x;
-                            $('.openwebrx-panel').css('opacity', x/100);
+                            set_ui_opacity(config['ui_opacity']);
                         }
 
                         if ('ui_frame' in config) {
-                            var x = config['ui_frame'];
-                            $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
-                            $('#openwebrx-dialog-bookmark').css('border', x? '2px solid':'');
+                            set_ui_frame(config['ui_frame']);
                         }
 
                         if ('ui_swap_wheel' in config) {
@@ -1143,8 +1139,7 @@ function on_ws_recv(evt) {
                         }
 
                         if ('ui_scheme' in config) {
-                            ui_scheme = config['ui_scheme'];
-                            set_ui_scheme(ui_scheme);
+                            set_ui_scheme(config['ui_scheme']);
                         }
 
                         break;
@@ -2031,8 +2026,21 @@ function nr_changed() {
     }));
 }
 
+function set_ui_frame(x) {
+    $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
+    $('#openwebrx-dialog-bookmark').css('border', x? '2px solid':'');
+}
+
+function set_ui_opacity(x) {
+    x = x<10? 10 : x>100? 100 : x;
+    $('.openwebrx-panel').css('opacity', x/100);
+}
+
 function set_ui_scheme(theme) {
     const themes = ['brown', 'red', 'green', 'khaki', 'blue', 'navy', 'night'];
+
+    // Save current theme name
+    ui_scheme = theme;
 
     themes.forEach(function(theme) {
         $('body').removeClass('theme-' + theme);
