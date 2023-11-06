@@ -34,7 +34,6 @@ var waterfall_setup_done = 0;
 var secondary_fft_size;
 var tuning_step_default = 1;
 var tuning_step = 1;
-var swap_wheel = false;
 
 function toggleSection(el) {
     var next_el = el.nextElementSibling;
@@ -870,7 +869,7 @@ function canvas_mousewheel(evt) {
     // Zoom when mouse button down, tune otherwise
     // (optionally, invert this behavior)
     var zoom_me = (canvas_mouse2_down > 0) || evt.shiftKey?
-        !swap_wheel : swap_wheel;
+        !UI.getWheelSwap() : UI.getWheelSwap();
     if (zoom_me) {
         zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
     } else {
@@ -1048,10 +1047,6 @@ function on_ws_recv(evt) {
                         if ('tuning_step' in config) {
                             tuning_step_default = config['tuning_step'];
                             tuning_step_reset();
-                        }
-
-                        if ('ui_swap_wheel' in config) {
-                            swap_wheel = config['ui_swap_wheel'];
                         }
 
                         if ('allow_audio_recording' in config) {
@@ -1600,12 +1595,6 @@ function initSliders() {
     // Enable scanner by pressing the right mouse button on SQUELCH
     $('.openwebrx-squelch-auto').on('contextmenu', function() {
         toggleScanner();
-        return false;
-    });
-
-    // Toggle UI panel frames by pressing right mouse button on OPACITY
-    $('#openwebrx-opacity-reset').on('contextmenu', function() {
-        UI.toggleFrame();
         return false;
     });
 }

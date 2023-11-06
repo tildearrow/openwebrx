@@ -262,10 +262,10 @@
                     <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangle;&nbsp;Settings</div>
                     <div class="openwebrx-section" style="display: none;">
                         <div class="openwebrx-panel-line">
-                            <div title="Theme" class="openwebrx-button openwebrx-slider-button" onclick="UI.setTheme('default');">
+                            <div title="Reset theme" class="openwebrx-button openwebrx-slider-button" onclick="UI.setTheme('default');">
                                 <svg viewBox="56 -900 835 835" style="overflow: visible"><use xlink:href="static/gfx/svg-defs.svg#theme-chooser"></use></svg>
                             </div>
-                            <select id="openwebrx-themes-listbox" class="openwebrx-panel-listbox" onchange="UI.setTheme(this.value);">
+                            <select title="Theme" id="openwebrx-themes-listbox" class="openwebrx-panel-listbox" onchange="UI.setTheme(this.value);">
                                 <option value="default">Default</option>
                                 <option value="brown">Brown</option>
                                 <option value="red">Red</option>
@@ -276,10 +276,20 @@
                                 <option value="black">Black</option>
                                 <option value="night">Night</option>
                             </select>
-                            <div title="Reset opacity (right-click to toggle frame)" id="openwebrx-opacity-reset" class="openwebrx-button openwebrx-slider-button" onclick="UI.setOpacity(100);">
+                            <div title="Reset opacity" id="openwebrx-opacity-reset" class="openwebrx-button openwebrx-slider-button" onclick="UI.setOpacity(100);">
                                 <svg viewBox="56 -900 835 835"><use xlink:href="static/gfx/svg-defs.svg#opacity"></use></svg>
                             </div>
                             <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="UI.setOpacity(this.value);">
+                        </div>
+                        <div class="openwebrx-panel-line">
+                            <input id="openwebrx-frame-checkbox" type="checkbox" onchange="UI.setFrame(this.checked);">
+                                Draw white frame around panels
+                            </input>
+                        </div>
+                        <div class="openwebrx-panel-line">
+                            <input id="openwebrx-wheel-checkbox" type="checkbox" onchange="UI.setWheelSwap(this.checked);">
+                                Hold mouse wheel down to tune
+                            </input>
                         </div>
                     </div>
                     <div class="openwebrx-section-divider" onclick="toggleSection(this);">&blacktriangledown;&nbsp;Display</div>

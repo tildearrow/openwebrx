@@ -12,6 +12,7 @@ UI.volume = -1;
 UI.volumeMuted = -1;
 UI.nrThreshold = 0;
 UI.nrEnabled = false;
+UI.wheelSwap = false;
 
 //
 // Local Storage Access
@@ -47,6 +48,7 @@ UI.loadSettings = function() {
     if (this.has('ui_theme'))     this.setTheme(this.loadStr('ui_theme'));
     if (this.has('ui_frame'))     this.setFrame(this.loadBool('ui_frame'));
     if (this.has('ui_opacity'))   this.setOpacity(this.loadInt('ui_opacity'));
+    if (this.has('ui_wheel'))     this.setWheelSwap(this.loadBool('ui_wheel'));
     if (this.has('volume'))       this.setVolume(this.loadInt('volume'));
     if (this.has('nr_threshold')) this.setNR(this.loadInt('nr_threshold'));
 
@@ -137,18 +139,28 @@ UI.updateNR = function() {
 // Look & Feel Controls
 //
 
-// Toggle frame around receiver and other panels.
-UI.toggleFrame = function() {
-    this.setFrame(!this.frame);
-};
-
 // Show or hide frame around receiver and other panels.
 UI.setFrame = function(x) {
     if (this.frame != x) {
         this.frame = x;
         this.save('ui_frame', x);
+        $('#openwebrx-frame-checkbox').attr('checked', x);
         $('#openwebrx-panel-receiver').css('border', x? '2px solid':'');
         $('#openwebrx-dialog-bookmark').css('border', x? '2px solid':'');
+    }
+};
+
+// Get current mouse wheel function
+UI.getWheelSwap = function(x) {
+    return this.wheelSwap;
+};
+
+// Set mouse wheel function (zooming when swapped)
+UI.setWheelSwap = function(x) {
+    if (this.wheelSwap != x) {
+        this.wheelSwap = x;
+        this.save('ui_wheel', x);
+        $('#openwebrx-wheel-checkbox').attr('checked', x);
     }
 };
 

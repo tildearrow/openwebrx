@@ -153,7 +153,6 @@ defaultConfig = PropertyLayer(
     waterfall_auto_level_default_mode=False,
     waterfall_auto_min_range=50,
     key_locked=False,
-    ui_swap_wheel=False,
     magic_key="memagic",
     allow_center_freq_changes=False,
     allow_audio_recording=True,

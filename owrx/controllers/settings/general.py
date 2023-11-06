@@ -190,10 +190,6 @@ class GeneralSettingsController(SettingsFormController):
                     options=[Option(str(i), "{} Hz".format(10 ** i)) for i in range(0, 6)],
                     converter=IntConverter(),
                 ),
-                CheckboxInput(
-                    "ui_swap_wheel",
-                    "Make mouse wheel control zoom, tune by holding wheel down",
-                ),
                 NumberInput(
                     "eibi_bookmarks_range",
                     "Shortwave bookmarks range",
