@@ -276,7 +276,7 @@
                                 <option value="black">Black</option>
                                 <option value="night">Night</option>
                             </select>
-                            <div title="Reset opacity" id="openwebrx-waterfall-colors-default" class="openwebrx-button openwebrx-slider-button" onclick="UI.setOpacity(100);" oncontextmenu="UI.toggleFrame();">
+                            <div title="Reset opacity (right-click to toggle frame)" id="openwebrx-opacity-reset" class="openwebrx-button openwebrx-slider-button" onclick="UI.setOpacity(100);">
                                 <svg viewBox="56 -900 835 835"><use xlink:href="static/gfx/svg-defs.svg#opacity"></use></svg>
                             </div>
                             <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="UI.setOpacity(this.value);">

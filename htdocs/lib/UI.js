@@ -44,11 +44,11 @@ UI.loadBool = function(key) {
 
 // Load UI settings from local storage.
 UI.loadSettings = function() {
-    if (this.has('ui_theme'))    this.setTheme(this.loadStr('ui_theme'));
-    if (this.has('ui_frame'))    this.setFrame(this.loadBool('ui_frame'));
-    if (this.has('ui_opacity'))  this.setOpacity(this.loadInt('ui_opacity'));
-    if (this.has('volume'))      this.setVolume(this.loadInt('volume'));
-    if (this.has('nrThreshold')) this.setNR(this.loadInt('nrThreshold'));
+    if (this.has('ui_theme'))     this.setTheme(this.loadStr('ui_theme'));
+    if (this.has('ui_frame'))     this.setFrame(this.loadBool('ui_frame'));
+    if (this.has('ui_opacity'))   this.setOpacity(this.loadInt('ui_opacity'));
+    if (this.has('volume'))       this.setVolume(this.loadInt('volume'));
+    if (this.has('nr_threshold')) this.setNR(this.loadInt('nr_threshold'));
 
     // Reapply mute
     if (this.has('volumeMuted')) {
@@ -58,8 +58,8 @@ UI.loadSettings = function() {
     }
 
     // Reapply NR
-    if (this.has('nrEnabled')) {
-        var x = this.loadBool('nrEnabled');
+    if (this.has('nr_enabled')) {
+        var x = this.loadBool('nr_enabled');
         if (x != this.nrEnabled) this.toggleNR();
     }
 };
@@ -107,7 +107,7 @@ UI.toggleMute = function() {
 UI.setNR = function(x) {
     if (this.nrThreshold != x) {
         this.nrThreshold = x;
-        this.save('nrThreshold', x);
+        this.save('nr_threshold', x);
         $('#openwebrx-panel-nr').attr('title', 'Noise level (' + x + ' dB)').val(x);
         this.updateNR();
     }
@@ -117,7 +117,7 @@ UI.setNR = function(x) {
 UI.toggleNR = function() {
     var $nrPanel = $('#openwebrx-panel-nr');
     this.nrEnabled = !!$nrPanel.prop('disabled');
-    this.save('nrEnabled', this.nrEnabled);
+    this.save('nr_enabled', this.nrEnabled);
     $nrPanel.prop('disabled', !this.nrEnabled);
     this.updateNR();
 }

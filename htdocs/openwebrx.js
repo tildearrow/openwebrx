@@ -1050,14 +1050,6 @@ function on_ws_recv(evt) {
                             tuning_step_reset();
                         }
 
-//                        if ('ui_opacity' in config) {
-//                            UI.setOpacity(config['ui_opacity']);
-//                        }
-
-                        if ('ui_frame' in config) {
-                            UI.setFrame(config['ui_frame']);
-                        }
-
                         if ('ui_swap_wheel' in config) {
                             swap_wheel = config['ui_swap_wheel'];
                         }
@@ -1093,10 +1085,6 @@ function on_ws_recv(evt) {
                         if ('vessel_url' in config) {
                             Utils.setVesselUrl(config['vessel_url']);
                         }
-
-//                        if ('ui_scheme' in config) {
-//                            UI.setTheme(config['ui_scheme']);
-//                        }
 
                         break;
                     case "secondary_config":
@@ -1612,6 +1600,12 @@ function initSliders() {
     // Enable scanner by pressing the right mouse button on SQUELCH
     $('.openwebrx-squelch-auto').on('contextmenu', function() {
         toggleScanner();
+        return false;
+    });
+
+    // Toggle UI panel frames by pressing right mouse button on OPACITY
+    $('#openwebrx-opacity-reset').on('contextmenu', function() {
+        UI.toggleFrame();
         return false;
     });
 }

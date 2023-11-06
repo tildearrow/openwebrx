@@ -185,32 +185,6 @@ class GeneralSettingsController(SettingsFormController):
             Section(
                 "Display settings",
                 DropdownInput(
-                    "ui_scheme",
-                    "User interface color scheme",
-                    options=[
-                        Option("default", "Default"),
-                        Option("brown", "Brown"),
-                        Option("red", "Red"),
-                        Option("green", "Green"),
-                        Option("khaki", "Khaki"),
-                        Option("blue", "Blue"),
-                        Option("navy", "Navy"),
-                        Option("night", "Night"),
-                    ],
-                ),
-                NumberInput(
-                    "ui_opacity",
-                    "User interface opacity",
-                    infotext="Specifies how opaque user interface is, "
-                    + "10% for near invisible, 100% for totally solid.",
-                    validator=RangeValidator(10, 100),
-                    append="%",
-                ),
-                CheckboxInput(
-                    "ui_frame",
-                    "Show frame around receiver panel",
-                ),
-                DropdownInput(
                     "tuning_precision",
                     "Tuning precision",
                     options=[Option(str(i), "{} Hz".format(10 ** i)) for i in range(0, 6)],
