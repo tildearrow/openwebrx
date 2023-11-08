@@ -43,6 +43,13 @@ function MarkerManager() {
         'Stations'  : false,
         'Repeaters' : false
     };
+
+    // Load saved shown/hidden status, by type
+    for (type in this.symbols) {
+        if (LS.has('marker-' + type)) {
+            this.enabled[type] = LS.loadBool('marker-' + type);
+        }
+    }
 }
 
 MarkerManager.prototype.getColor = function(type) {
@@ -61,7 +68,11 @@ MarkerManager.prototype.isEnabled = function(type) {
 };
 
 MarkerManager.prototype.toggle = function(map, type, onoff) {
+    // If state not supplied, toggle existing state
+    if (typeof(onoff) === 'undefined') onoff = !this.isEnabled(type);
+
     // Keep track of each feature table being show or hidden
+    LS.save('marker-' + type, onoff);
     this.enabled[type] = onoff;
 
     // Show or hide features on the map

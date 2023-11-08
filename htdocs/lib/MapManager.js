@@ -34,17 +34,19 @@ function MapManager() {
 
         // Clicking clock display toggles legend box on/off
         $('#openwebrx-clock-utc').css('cursor', 'pointer').on('click', function() {
-            var el = document.getElementById('openwebrx-map-selectors');
-            if (el) {
-                el.style.display = el.style.display === 'none'?
-                    'block' : 'none';
-            }
+            self.toggleLegend();
         });
 
         // Toggle color modes on click
         $('#openwebrx-map-colormode').on('change', function() {
             self.lman.setColorMode($(this).val());
         });
+
+        // Restore saved control settings
+        if (LS.has('openwebrx-map-selectors'))
+            self.toggleLegend(LS.loadBool('openwebrx-map-selectors'));
+        if (LS.has('mapColorMode'))
+            self.lman.setColorMode(LS.loadStr('mapColorMode'));
     });
 
     // Connect web socket
@@ -199,4 +201,16 @@ MapManager.prototype.setupLegendFilters = function($legend) {
         }
         self.mman.toggle(map, $el.data('selector'), onoff);
     });
+};
+
+//
+// Toggle map legend
+//
+MapManager.prototype.toggleLegend = function(on) {
+    var el = document.getElementById('openwebrx-map-selectors');
+    if (el) {
+        if (typeof(on) === 'undefined') on = el.style.display === 'none';
+        el.style.display = on? 'block' : 'none';
+        LS.save('openwebrx-map-selectors', on);
+    }
 };

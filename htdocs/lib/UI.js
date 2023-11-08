@@ -22,57 +22,30 @@ UI.sections = {
     'display' : true
 };
 
-//
-// Local Storage Access
-//
-
-// Return true of setting exist in storage.
-UI.has = function(key) {
-    return localStorage && (localStorage.getItem(key)!=null);
-};
-
-// Save named UI setting to local storage.
-UI.save = function(key, value) {
-    if (localStorage) localStorage.setItem(key, value);
-};
-
-// Load named UI setting from local storage.
-UI.loadStr = function(key) {
-    return localStorage? localStorage.getItem(key) : null;
-};
-
-UI.loadInt = function(key) {
-    var x = localStorage? localStorage.getItem(key) : null;
-    return x!=null? parseInt(x) : 0;
-}
-
-UI.loadBool = function(key) {
-    var x = localStorage? localStorage.getItem(key) : null;
-    return x==='true';
-}
-
 // Load UI settings from local storage.
 UI.loadSettings = function() {
-    if (this.has('ui_theme'))     this.setTheme(this.loadStr('ui_theme'));
-    if (this.has('ui_opacity'))   this.setOpacity(this.loadInt('ui_opacity'));
-    if (this.has('ui_frame'))     this.toggleFrame(this.loadBool('ui_frame'));
-    if (this.has('ui_wheel'))     this.toggleWheelSwap(this.loadBool('ui_wheel'));
-    if (this.has('volume'))       this.setVolume(this.loadInt('volume'));
-    if (this.has('nr_threshold')) this.setNR(this.loadInt('nr_threshold'));
-    if (this.has('nr_enabled'))   this.toggleNR(this.loadBool('nr_enabled'));
+    if (LS.has('ui_theme'))     this.setTheme(LS.loadStr('ui_theme'));
+    if (LS.has('ui_opacity'))   this.setOpacity(LS.loadInt('ui_opacity'));
+    if (LS.has('ui_frame'))     this.toggleFrame(LS.loadBool('ui_frame'));
+    if (LS.has('ui_wheel'))     this.toggleWheelSwap(LS.loadBool('ui_wheel'));
+    if (LS.has('volume'))       this.setVolume(LS.loadInt('volume'));
+    if (LS.has('nr_threshold')) this.setNR(LS.loadInt('nr_threshold'));
+    if (LS.has('nr_enabled'))   this.toggleNR(LS.loadBool('nr_enabled'));
 
     // Reapply mute
-    if (this.has('volumeMuted')) {
-        var x = this.loadInt('volumeMuted');
+    if (LS.has('volumeMuted')) {
+        var x = LS.loadInt('volumeMuted');
         this.toggleMute(x>=0);
         this.volumeMuted = x;
     }
 
     // Toggle UI sections
-    for (const [section, state] of Object.entries(this.sections)) {
+    for (section in this.sections) {
         var id = 'openwebrx-section-' + section;
         var el = document.getElementById(id);
-        if (el) this.toggleSection(el, this.has(id)? this.loadBool(id) : state);
+        if (el) this.toggleSection(el,
+            LS.has(id)? LS.loadBool(id) : this.sections[section]
+        );
     }
 };
 
@@ -84,7 +57,7 @@ UI.loadSettings = function() {
 UI.setVolume = function(x) {
     if (this.volume != x) {
         this.volume = x;
-        this.save('volume', x);
+        LS.save('volume', x);
         $('#openwebrx-panel-volume').val(x)
         if (audioEngine) audioEngine.setVolume(x / 100);
     }
@@ -110,7 +83,7 @@ UI.toggleMute = function(on) {
     }
 
     // Save muted volume, or lack thereof
-    this.save('volumeMuted', this.volumeMuted);
+    LS.save('volumeMuted', this.volumeMuted);
 };
 
 //
@@ -121,7 +94,7 @@ UI.toggleMute = function(on) {
 UI.setNR = function(x) {
     if (this.nrThreshold != x) {
         this.nrThreshold = x;
-        this.save('nr_threshold', x);
+        LS.save('nr_threshold', x);
         $('#openwebrx-panel-nr').attr('title', 'Noise level (' + x + ' dB)').val(x);
         this.updateNR();
     }
@@ -134,7 +107,7 @@ UI.toggleNR = function(on) {
     // If no argument given, toggle NR
     this.nrEnabled = !!(typeof(on)==='undefined'? $nrPanel.prop('disabled') : on);
 
-    this.save('nr_enabled', this.nrEnabled);
+    LS.save('nr_enabled', this.nrEnabled);
     $nrPanel.prop('disabled', !this.nrEnabled);
     this.updateNR();
 }
@@ -163,11 +136,11 @@ UI.toggleSection = function(el, on) {
         if ((next_el.style.display === 'none') && (toggle || on)) {
             el.innerHTML = el.innerHTML.replace('\u25B4', '\u25BE');
             next_el.style.display = 'block';
-            this.save(el.id, true);
+            LS.save(el.id, true);
         } else if (toggle || !on) {
             el.innerHTML = el.innerHTML.replace('\u25BE', '\u25B4');
             next_el.style.display = 'none';
-            this.save(el.id, false);
+            LS.save(el.id, false);
         }
     }
 };
@@ -179,7 +152,7 @@ UI.toggleFrame = function(on) {
 
     if (this.frame != on) {
         this.frame = on;
-        this.save('ui_frame', on);
+        LS.save('ui_frame', on);
         $('#openwebrx-frame-checkbox').attr('checked', on);
         $('#openwebrx-panel-receiver').css('border', on? '2px solid':'');
         $('#openwebrx-dialog-bookmark').css('border', on? '2px solid':'');
@@ -198,7 +171,7 @@ UI.toggleWheelSwap = function(on) {
 
     if (this.wheelSwap != on) {
         this.wheelSwap = on;
-        this.save('ui_wheel', on);
+        LS.save('ui_wheel', on);
         $('#openwebrx-wheel-checkbox').attr('checked', on);
     }
 };
@@ -210,7 +183,7 @@ UI.setOpacity = function(x) {
 
     if (this.opacity != x) {
         this.opacity = x;
-        this.save('ui_opacity', x);
+        LS.save('ui_opacity', x);
         $('.openwebrx-panel').css('opacity', x/100);
         $('#openwebrx-opacity-slider')
             .attr('title', 'Opacity (' + Math.round(x) + '%)')
@@ -225,7 +198,7 @@ UI.setTheme = function(theme) {
 
     // Save current theme name
     this.theme = theme;
-    this.save('ui_theme', theme);
+    LS.save('ui_theme', theme);
 
     // Set selector
     var lb = $('#openwebrx-themes-listbox');

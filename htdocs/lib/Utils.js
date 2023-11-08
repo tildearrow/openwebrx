@@ -172,8 +172,40 @@ Utils.mmsi2country = function(mmsi) {
 };
 
 //
+// Local Storage Access
+//
+
+function LS() {}
+
+// Return true of setting exist in storage.
+LS.has = function(key) {
+    return localStorage && (localStorage.getItem(key)!=null);
+};
+
+// Save named UI setting to local storage.
+LS.save = function(key, value) {
+    if (localStorage) localStorage.setItem(key, value);
+};
+
+// Load named UI setting from local storage.
+LS.loadStr = function(key) {
+    return localStorage? localStorage.getItem(key) : null;
+};
+
+LS.loadInt = function(key) {
+    var x = localStorage? localStorage.getItem(key) : null;
+    return x!=null? parseInt(x) : 0;
+}
+
+LS.loadBool = function(key) {
+    var x = localStorage? localStorage.getItem(key) : null;
+    return x==='true';
+}
+
+//
 // HAM callsign prefix to country name conversion
 //
+
 Utils.CALL2COUNTRY = {
   "0S"  : "Principality of Seborga",
   "1A"  : "Sovereign Military Order of Malta",
@@ -948,6 +980,7 @@ Utils.CALL2COUNTRY = {
 //
 // AIS MID prefix to country name conversion
 //
+
 Utils.MID2COUNTRY = {
   "501" : "Adelie Land (France)",
   "401" : "Afghanistan",
