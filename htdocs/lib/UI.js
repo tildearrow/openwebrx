@@ -166,8 +166,8 @@ UI.toggleFrame = function(on) {
         this.frame = on;
         LS.save('ui_frame', on);
         $('#openwebrx-frame-checkbox').attr('checked', on);
-        $('#openwebrx-panel-receiver').css('border', on? '2px solid':'');
-        $('#openwebrx-dialog-bookmark').css('border', on? '2px solid':'');
+        $('#openwebrx-panel-receiver').css( 'border', on ? '2px solid white' : '2px solid transparent');
+        $('#openwebrx-dialog-bookmark').css('border', on ? '2px solid white' : '2px solid transparent');
     }
 };
 
