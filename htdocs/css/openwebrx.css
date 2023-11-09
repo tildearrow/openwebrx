@@ -657,7 +657,8 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-receiver
 {
-	width:110px;
+    width:110px;
+    border: 2px solid transparent;
 }
 
 
