@@ -135,13 +135,13 @@ UI.toggleSection = function(el, on) {
 
     var next_el = el.nextElementSibling;
     if (next_el) {
-        if ((next_el.style.display === 'none') && (toggle || on)) {
+        if ((next_el.classList.contains('closed')) && (toggle || on)) {
             el.innerHTML = el.innerHTML.replace('\u25B4', '\u25BE');
-            next_el.style.display = 'block';
+            next_el.classList.remove('closed');
             LS.save(el.id, true);
         } else if (toggle || !on) {
             el.innerHTML = el.innerHTML.replace('\u25BE', '\u25B4');
-            next_el.style.display = 'none';
+            next_el.classList.add('closed');
             LS.save(el.id, false);
         }
     }
