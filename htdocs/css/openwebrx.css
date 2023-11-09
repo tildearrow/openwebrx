@@ -1683,4 +1683,10 @@ img.openwebrx-mirror-img
 
 .openwebrx-section {
     display: block;
+    overflow-y: hidden;
+    transition: max-height 0.25s ease-out;
+    max-height: 15rem;
+}
+.openwebrx-section.closed {
+    max-height: 0;
 }
