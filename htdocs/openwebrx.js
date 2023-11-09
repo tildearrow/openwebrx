@@ -1720,10 +1720,6 @@ function initSpectrum() {
     spectrum = new Spectrum(canvas, 150);
 }
 
-function toggleSpectrum() {
-    spectrum.toggle();
-}
-
 function stopScanner() {
     if (scanner.isRunning()) {
         // Stop scanner

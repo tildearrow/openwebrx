@@ -13,6 +13,7 @@ UI.volumeMuted = -1;
 UI.nrThreshold = 0;
 UI.nrEnabled = false;
 UI.wheelSwap = false;
+UI.spectrum = false;
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -28,6 +29,7 @@ UI.loadSettings = function() {
     if (LS.has('ui_opacity'))   this.setOpacity(LS.loadInt('ui_opacity'));
     if (LS.has('ui_frame'))     this.toggleFrame(LS.loadBool('ui_frame'));
     if (LS.has('ui_wheel'))     this.toggleWheelSwap(LS.loadBool('ui_wheel'));
+    if (LS.has('ui_spectrum'))  this.toggleSpectrum(LS.loadBool('ui_spectrum'));
     if (LS.has('volume'))       this.setVolume(LS.loadInt('volume'));
     if (LS.has('nr_threshold')) this.setNR(LS.loadInt('nr_threshold'));
     if (LS.has('nr_enabled'))   this.toggleNR(LS.loadBool('nr_enabled'));
@@ -66,7 +68,7 @@ UI.setVolume = function(x) {
 // Toggle audio muting.
 UI.toggleMute = function(on) {
     // If no argument given, toggle mute
-    var toggle = typeof(on)==='undefined';
+    var toggle = typeof(on) === 'undefined';
     var $muteButton = $('.openwebrx-mute-button');
     var $volumePanel = $('#openwebrx-panel-volume');
 
@@ -143,6 +145,16 @@ UI.toggleSection = function(el, on) {
             LS.save(el.id, false);
         }
     }
+};
+
+// Show or hide spectrum display
+UI.toggleSpectrum = function(on) {
+    // If no argument given, toggle spectrum
+    if (typeof(on) === 'undefined') on = !this.spectrum;
+
+    this.spectrum = on;
+    LS.save('ui_spectrum', on);
+    if (spectrum) spectrum.toggle(on);
 };
 
 // Show or hide frame around receiver and other panels.
