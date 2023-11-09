@@ -1,3 +1,14 @@
+openwebrx (1.2.37) bullseye jammy; urgency=low
+
+  * Added "Settings" UI section for configuring user interface.
+  * Saving receiver and map UI settings in the browser storage.
+  * Removed themes, opacity, frame, wheel options from server settings.
+  * Animated UI sections collapse and expansion.
+  * Added RTTY, NAVTEX, and MSI bookmarks at proper offsets.
+  * Added "Black" UI theme.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 11 Nov 2023 16:12:00 +0000
+
 openwebrx (1.2.36) bullseye jammy; urgency=low
 
   * Added several UI themes, switched via "User interface color scheme".
@@ -6,7 +17,7 @@ openwebrx (1.2.36) bullseye jammy; urgency=low
   * Switched back to LRGB for mixing locator colors.
   * Renamed "Range" section to "Display".
 
- -- Marat Fayzullin <luarvique@gmail.com>  Sat, 3 Nov 2023 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 4 Nov 2023 16:12:00 +0000
 
 openwebrx (1.2.35) bullseye jammy; urgency=low
 

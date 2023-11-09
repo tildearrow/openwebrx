@@ -1,3 +1,11 @@
+**1.2.37**
+- Added "Settings" UI section for configuring user interface.
+- Saving receiver and map UI settings in the browser storage.
+- Removed themes, opacity, frame, wheel options from server settings.
+- Animated UI sections collapse and expansion.
+- Added RTTY, NAVTEX, and MSI bookmarks at proper offsets.
+- Added "Black" UI theme.
+
 **1.2.36**
 - Added several UI themes, switched via "User interface color scheme".
 - Made text console window contain more text (RTTY, CW, etc).
