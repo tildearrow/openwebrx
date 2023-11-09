@@ -282,14 +282,16 @@
                             <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="UI.setOpacity(this.value);">
                         </div>
                         <div class="openwebrx-panel-line">
-                            <input id="openwebrx-frame-checkbox" type="checkbox" onchange="UI.toggleFrame(this.checked);">
+                            <label>
+                                <input id="openwebrx-frame-checkbox" type="checkbox" onchange="UI.toggleFrame(this.checked);" />
                                 Draw white frame around panels
-                            </input>
+                            </label>
                         </div>
                         <div class="openwebrx-panel-line">
-                            <input id="openwebrx-wheel-checkbox" type="checkbox" onchange="UI.toggleWheelSwap(this.checked);">
+                            <label>
+                                <input id="openwebrx-wheel-checkbox" type="checkbox" onchange="UI.toggleWheelSwap(this.checked);" />
                                 Hold mouse wheel down to tune
-                            </input>
+                            </label>
                         </div>
                     </div>
                     <div id="openwebrx-section-display" class="openwebrx-section-divider" onclick="UI.toggleSection(this);">&blacktriangledown;&nbsp;Display</div>
