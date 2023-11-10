@@ -474,6 +474,11 @@ input[type=range]:disabled {
 	height: 100%;
 }
 
+.openwebrx-checkbox
+{
+	color: #aaa;
+}
+
 .openwebrx-button
 {
 	background-color: #373737;
@@ -695,7 +700,6 @@ img.openwebrx-mirror-img
 .openwebrx-panel-line
 {
     padding-top: 5px;
-    color: #aaa;
 }
 
 .openwebrx-panel-flex-line {
