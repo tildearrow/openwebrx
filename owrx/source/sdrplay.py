@@ -57,8 +57,8 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
                 infotext = "The high dynamic resolution (HDR) mode will "
                 + "only work when the center frequency is set to 135kHz, "
                 + "175kHz, 220kHz, 250kHz, 340kHz, 475kHz, 516kHz, 875kHz, "
-                + "1.125MHz, or 1.9MHz. It will not work at other center "
-                + "frequencies."
+                + "1.125MHz, or 1.9MHz. It will not work on devices other "
+                + "than RSPdx or at other center frequencies."
             ),
             DropdownInput(
                 "if_mode",
