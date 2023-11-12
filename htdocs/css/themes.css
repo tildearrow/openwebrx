@@ -124,7 +124,12 @@ body.has-theme .openwebrx-button {
 
 body.has-theme .openwebrx-meta-slot {
     background-color: var(--theme-color2);
+    color:white;
     filter: brightness(150%);
+}
+
+body.has-theme .openwebrx-meta-user-image {
+    filter: brightness(50%);
 }
 
 body.has-theme #openwebrx-digimode-canvas-container {
@@ -144,8 +149,4 @@ body.has-theme input[type=range] {
 body.has-theme input[type=range]::-webkit-slider-runnable-track,
 body.has-theme input[type=range]:focus::-webkit-slider-runnable-track {
     /* background: #001727; */
-}
-
-body.has-theme .openwebrx-meta-slot {
-  color:white;
 }
