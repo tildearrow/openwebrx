@@ -25,20 +25,23 @@ UI.sections = {
 
 // Load UI settings from local storage.
 UI.loadSettings = function() {
-    if (LS.has('ui_theme'))     this.setTheme(LS.loadStr('ui_theme'));
-    if (LS.has('ui_opacity'))   this.setOpacity(LS.loadInt('ui_opacity'));
-    if (LS.has('ui_frame'))     this.toggleFrame(LS.loadBool('ui_frame'));
-    if (LS.has('ui_wheel'))     this.toggleWheelSwap(LS.loadBool('ui_wheel'));
-    if (LS.has('ui_spectrum'))  this.toggleSpectrum(LS.loadBool('ui_spectrum'));
-    if (LS.has('volume'))       this.setVolume(LS.loadInt('volume'));
-    if (LS.has('nr_threshold')) this.setNR(LS.loadInt('nr_threshold'));
-    if (LS.has('nr_enabled'))   this.toggleNR(LS.loadBool('nr_enabled'));
+    this.setTheme(LS.has('ui_theme')? LS.loadStr('ui_theme') : 'default');
+    this.setOpacity(LS.has('ui_opacity')? LS.loadInt('ui_opacity') : 100);
+    this.toggleFrame(LS.has('ui_frame')? LS.loadBool('ui_frame') : false);
+    this.toggleWheelSwap(LS.has('ui_wheel')? LS.loadBool('ui_wheel') : false);
+    this.toggleSpectrum(LS.has('ui_spectrum')? LS.loadBool('ui_spectrum') : false);
+    this.setNR(LS.has('nr_threshold')? LS.loadInt('nr_threshold') : false);
+    this.toggleNR(LS.has('nr_enabled')? LS.loadBool('nr_enabled') : false);
 
-    // Reapply mute
-    if (LS.has('volumeMuted')) {
-        var x = LS.loadInt('volumeMuted');
-        this.toggleMute(x>=0);
-        this.volumeMuted = x;
+    // Get volume and mute
+    var volume = LS.has('volume')? LS.loadInt('volume') : 50;
+    var muted  = LS.has('volumeMuted')? LS.loadInt('volumeMuted') : -1;
+    if (muted >= 0) {
+        if (this.volumeMuted < 0) this.toggleMute(true);
+        this.volumeMuted = muted;
+    } else {
+        if (this.volumeMuted >= 0) this.toggleMute(false);
+        this.setVolume(volume);
     }
 
     // Toggle UI sections
@@ -57,6 +60,7 @@ UI.loadSettings = function() {
 
 // Set audio volume in 0..150 range.
 UI.setVolume = function(x) {
+    x = Math.round(parseFloat(x));
     if (this.volume != x) {
         this.volume = x;
         LS.save('volume', x);
@@ -73,15 +77,15 @@ UI.toggleMute = function(on) {
     var $volumePanel = $('#openwebrx-panel-volume');
 
     if ($volumePanel.prop('disabled') && (toggle || !on)) {
-        $muteButton.removeClass('muted');
-        $volumePanel.prop('disabled', false);
         this.setVolume(this.volumeMuted);
         this.volumeMuted = -1;
+        $muteButton.removeClass('muted');
+        $volumePanel.prop('disabled', false);
     } else if (toggle || on) {
-        $muteButton.addClass('muted');
-        $volumePanel.prop('disabled', true);
         this.volumeMuted = this.volume;
         this.setVolume(0);
+        $muteButton.addClass('muted');
+        $volumePanel.prop('disabled', true);
     }
 
     // Save muted volume, or lack thereof
@@ -94,6 +98,7 @@ UI.toggleMute = function(on) {
 
 // Set noise reduction threshold in decibels.
 UI.setNR = function(x) {
+    x = Math.round(parseFloat(x));
     if (this.nrThreshold != x) {
         this.nrThreshold = x;
         LS.save('nr_threshold', x);

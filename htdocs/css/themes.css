@@ -122,10 +122,11 @@ body.has-theme .openwebrx-button {
     background: linear-gradient(to bottom, var(--theme-gradient-color1) 0%, var(--theme-gradient-color2) 100%);
 }
 
-body.has-theme .openwebrx-meta-slot {
-    background-color: var(--theme-color2);
-    filter: brightness(150%);
-}
+// not good to display call information on
+//body.has-theme .openwebrx-meta-slot {
+//    background-color: var(--theme-color2);
+//    filter: brightness(150%);
+//}
 
 body.has-theme #openwebrx-digimode-canvas-container {
     background-color: var(--theme-color1);
