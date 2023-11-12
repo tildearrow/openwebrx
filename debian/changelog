@@ -3,7 +3,7 @@ openwebrx (1.2.38) bullseye jammy; urgency=low
   * Fixed digital voice panel colors.
   * Fixed volume and mute controls.
   * Fixed NR controls.
-  * Adding explanation of the RSPdx HDR mode.
+  * Added explanation of the RSPdx HDR mode.
   * Updated HPSDR settings to Jakob's latest version.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 13 Nov 2023 16:12:00 +0000

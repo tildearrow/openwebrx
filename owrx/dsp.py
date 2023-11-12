@@ -595,7 +595,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return Empty()
 
     def setDemodulator(self, mod):
+        # this kills both primary and secondary demodulators
         self.chain.stopDemodulator()
+
         try:
             demodulator = self._getDemodulator(mod)
             if demodulator is None:
@@ -610,6 +612,11 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 buffer = Buffer(self.chain.getOutputFormat())
                 self.chain.setWriter(buffer)
                 self.wireOutput(self.audioOutput, buffer)
+
+            # recreate secondary demodulator, if present
+            if "secondary_mod" in self.props:
+                self.setSecondaryDemodulator(self.props["secondary_mod"])
+
         except DemodulatorError as de:
             self.handler.write_demodulator_error(str(de))
 
