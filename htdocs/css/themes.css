@@ -145,3 +145,7 @@ body.has-theme input[type=range]::-webkit-slider-runnable-track,
 body.has-theme input[type=range]:focus::-webkit-slider-runnable-track {
     /* background: #001727; */
 }
+
+body.has-theme .openwebrx-meta-slot {
+  color:white;
+}
