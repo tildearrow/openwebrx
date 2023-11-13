@@ -148,7 +148,7 @@ class Repeaters(object):
             pm   = Config.get()
             lat  = pm["receiver_gps"]["lat"]
             lon  = pm["receiver_gps"]["lon"]
-            hdrs = { "User-Agent": "OpenWebRX+/" + openwebrx_version }
+            hdrs = { "User-Agent": "(OpenWebRX+, luarvique@gmail.com)" }
             # Start with US/Canada database for north-wester quartersphere
             if lat > 0 and lon < 0:
                 scps = ["export.php", "exportROW.php"]
