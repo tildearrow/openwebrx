@@ -356,16 +356,6 @@ Demodulator.prototype.disableBandpass = function() {
     this.low_cut = null;
     this.high_cut = null;
     this.set()
-}
-
-Demodulator.prototype.setLowCut = function(low_cut) {
-    this.low_cut = low_cut;
-    this.set();
-};
-
-Demodulator.prototype.setHighCut = function(high_cut) {
-    this.high_cut = high_cut;
-    this.set();
 };
 
 Demodulator.prototype.moveBandpass = function(low_new, high_new) {
@@ -388,8 +378,9 @@ Demodulator.prototype.moveBandpass = function(low_new, high_new) {
     if (high_new <= this.low_cut) return;
 
     // Set new bounds
-    this.setLowCut(low_new);
-    this.setHighCut(high_new);
+    this.low_cut  = low_new;
+    this.high_cut = high_new;
+    this.set();
 };
 
 Demodulator.prototype.getBandpass = function() {
