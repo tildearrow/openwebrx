@@ -186,7 +186,7 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
-        DigitalMode("cwdecoder", "CW Decoder", underlying=["usb"]),
+        DigitalMode("cwdecoder", "CW Decoder", underlying=["usb", "lsb"]),
 # Replaced by Jakob's RTTY decoder
 #        DigitalMode("mfrtty170", "RTTY-170", underlying=["usb"]),
 #        DigitalMode("mfrtty450", "RTTY-450", underlying=["usb"]),

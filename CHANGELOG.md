@@ -4,8 +4,9 @@
 - Fixed digital voice panel colors.
 - Fixed volume and mute controls.
 - Fixed NR controls.
-- Adding explanation of the RSPdx HDR mode.
+- Added explanation of the RSPdx HDR mode.
 - Updated HPSDR settings to Jakob's latest version.
+- Allowed LSB as underlying CW decoder mode.
 
 **1.2.37**
 - Added "Settings" UI section for configuring user interface.
