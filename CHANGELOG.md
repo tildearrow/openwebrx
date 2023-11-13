@@ -1,5 +1,6 @@
 **1.2.38**
 - Fixed primary modulation change with digital decoders.
+- Fixed secondary frequency when changing bandpass.
 - Fixed digital voice panel colors.
 - Fixed volume and mute controls.
 - Fixed NR controls.

@@ -1930,6 +1930,15 @@ function secondary_demod_waterfall_set_zoom(low_cut, high_cut) {
             width: secondary_demod_canvas_width + "px"
         });
     });
+
+    // Make sure secondary demod frequency is within bandpass
+    var f = secondary_demod_channel_freq;
+    if ((f < low_cut) || (f > high_cut)) {
+        if ((-f >= low_cut) && (-f <= high_cut)) f = -f;
+        else f = Math.floor((low_cut + high_cut) / 2);
+        secondary_demod_channel_freq = f;
+    }
+
     secondary_demod_update_channel_freq_from_event();
 }
 
