@@ -21,24 +21,30 @@ class SettingsController(AuthorizationMixin, WebpageController):
         variables["clients"] = self.renderClients()
         return variables
 
+#            <form class="settings-clients" method="POST">
+#            </form>
+
     def renderClients(self):
         return """
-            <table class='table'>
-                <tr>
-                    <th>Connection Time</th>
-                    <th>IP Address</th>
-                    <th>SDR Profile</th>
-                    <th>Actions</th>
-                </tr>
-                {clients}
-            </table>
+                <table class='table'>
+                    <tr>
+                        <th>Connection Time</th>
+                        <th>IP Address</th>
+                        <th>SDR Profile</th>
+                        <th>Actions</th>
+                    </tr>
+                    {clients}
+                </table>
         """.format(
             clients="".join(self.renderClient(c) for c in WebSocketConnection.listAll())
         )
 
     def renderClient(self, c):
-        return "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td></td></tr>".format(
-            c[0].strftime('%Y-%m-%d %H:%M:%S'), self.renderIp(c[1]), c[2] + " " + c[3]
+        return "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3}</td></tr>".format(
+            c["ts"].strftime('%Y-%m-%d %H:%M:%S'),
+            self.renderIp(c["ip"]),
+            c["sdr"] + " " + c["band"] if "sdr" in c else "n/a",
+            self.renderButtons(c["ip"])
         )
 
     def renderIp(self, ip):
@@ -46,6 +52,11 @@ class SettingsController(AuthorizationMixin, WebpageController):
         return """
             <a href="https://www.geolocation.com/en_us?ip={0}#ipresult" target="_blank">{1}</a>
         """.format(ip, ip)
+
+    def renderButtons(self, ip):
+        return """
+            <button type="button" class="btn btn-sm btn-danger client-ban" value="{0}">ban</button>
+        """.format(ip)
 
 
 class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageController, metaclass=ABCMeta):

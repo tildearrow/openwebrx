@@ -58,12 +58,18 @@ class WebSocketConnection(object):
 
     @staticmethod
     def listAll():
-        return [(
-            x.startTime,
-            x.handler.client_address[0],
-            x.messageHandler.sdr.getName(),
-            x.messageHandler.sdr.getProfileName()
-        ) for x in WebSocketConnection.connections]
+        result = []
+        for x in WebSocketConnection.connections:
+            entry = {
+                "ts" : x.startTime,
+                "ip" : x.handler.client_address[0]
+            }
+            rx = x.messageHandler
+            if hasattr(rx, "sdr"):
+                entry["sdr"]  = rx.sdr.getName()
+                entry["band"] = rx.sdr.getProfileName()
+            result.append(entry)
+        return result
 
     def __init__(self, handler, messageHandler: Handler):
         self.startTime = datetime.utcnow()
