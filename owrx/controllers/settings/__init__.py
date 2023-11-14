@@ -97,7 +97,6 @@ class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageControl
         variables["title"] = self.getTitle()
         variables["modal"] = self.buildModal()
         variables["error"] = self.renderGlobalError()
-        variables["clients"] = self.renderClients()
         return variables
 
     def parseFormData(self):
