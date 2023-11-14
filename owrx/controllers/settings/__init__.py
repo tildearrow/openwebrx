@@ -2,8 +2,10 @@ from owrx.config import Config
 from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.template import WebpageController
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
+from owrx.websocket import WebSocketConnection
 from abc import ABCMeta, abstractmethod
 from urllib.parse import parse_qs
+import re
 
 import logging
 
@@ -13,6 +15,37 @@ logger = logging.getLogger(__name__)
 class SettingsController(AuthorizationMixin, WebpageController):
     def indexAction(self):
         self.serve_template("settings.html", **self.template_variables())
+
+    def template_variables(self):
+        variables = super().template_variables()
+        variables["clients"] = self.renderClients()
+        return variables
+
+    def renderClients(self):
+        return """
+            <table class='table'>
+                <tr>
+                    <th>Connection Time</th>
+                    <th>IP Address</th>
+                    <th>SDR Profile</th>
+                    <th>Actions</th>
+                </tr>
+                {clients}
+            </table>
+        """.format(
+            clients="".join(self.renderClient(c) for c in WebSocketConnection.listAll())
+        )
+
+    def renderClient(self, c):
+        return "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td></td></tr>".format(
+            c[0].strftime('%Y-%m-%d %H:%M:%S'), self.renderIp(c[1]), c[2] + " " + c[3]
+        )
+
+    def renderIp(self, ip):
+        ip = re.sub("^::ffff:", "", ip)
+        return """
+            <a href="https://www.geolocation.com/en_us?ip={0}#ipresult" target="_blank">{1}</a>
+        """.format(ip, ip)
 
 
 class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageController, metaclass=ABCMeta):
@@ -64,6 +97,7 @@ class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageControl
         variables["title"] = self.getTitle()
         variables["modal"] = self.buildModal()
         variables["error"] = self.renderGlobalError()
+        variables["clients"] = self.renderClients()
         return variables
 
     def parseFormData(self):
