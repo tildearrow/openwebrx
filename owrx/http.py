@@ -6,6 +6,7 @@ from owrx.controllers.assets import OwrxAssetsController, AprsSymbolsController,
 from owrx.controllers.websocket import WebSocketController
 from owrx.controllers.api import ApiController
 from owrx.controllers.metrics import MetricsController
+from owrx.controllers.clients import ClientController
 from owrx.controllers.settings import SettingsController
 from owrx.controllers.settings.general import GeneralSettingsController
 from owrx.controllers.settings.sdr import (
@@ -106,8 +107,11 @@ class Router(object):
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
             StaticRoute("/settings", SettingsController),
-            RegexRoute("^/settings/ban/(.+)$", SettingsController, options={"action": "ban"}),
-            RegexRoute("^/settings/unban/(.+)$", SettingsController, options={"action": "unban"}),
+            StaticRoute("/clients", ClientController),
+            RegexRoute("^/clients/ban/(.+)$", ClientController, options={"action": "ban"}),
+            RegexRoute("^/clients/unban/(.+)$", ClientController, options={"action": "unban"}),
+            RegexRoute("^/settings/ban/(.+)$", ClientController, options={"action": "ban"}),
+            RegexRoute("^/settings/unban/(.+)$", ClientController, options={"action": "unban"}),
             StaticRoute("/settings/general", GeneralSettingsController),
             StaticRoute(
                 "/settings/general", GeneralSettingsController, method="POST", options={"action": "processFormData"}
