@@ -79,7 +79,7 @@ class TextParser(LineBasedModule):
         try:
             self.fileName = Storage().getFilePath(fileName + ".txt")
             logger.debug("Opening log file '%s'..." % self.fileName)
-            self.file = open(self.fileName, "wb")
+            self.file = open(self.fileName, "wb", buffering = 0)
             self.cntLines = 0
 
         except Exception as exptn:
