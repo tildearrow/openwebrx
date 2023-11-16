@@ -107,11 +107,6 @@ class Router(object):
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
             StaticRoute("/settings", SettingsController),
-            StaticRoute("/clients", ClientController),
-            RegexRoute("^/clients/ban/(.+)$", ClientController, options={"action": "ban"}),
-            RegexRoute("^/clients/unban/(.+)$", ClientController, options={"action": "unban"}),
-            RegexRoute("^/settings/ban/(.+)$", ClientController, options={"action": "ban"}),
-            RegexRoute("^/settings/unban/(.+)$", ClientController, options={"action": "unban"}),
             StaticRoute("/settings/general", GeneralSettingsController),
             StaticRoute(
                 "/settings/general", GeneralSettingsController, method="POST", options={"action": "processFormData"}
@@ -166,6 +161,9 @@ class Router(object):
             StaticRoute(
                 "/settings/decoding", DecodingSettingsController, method="POST", options={"action": "processFormData"}
             ),
+            StaticRoute("/clients", ClientController),
+            RegexRoute("^/ban/(.+)$", ClientController, options={"action": "ban"}),
+            RegexRoute("^/unban/(.+)$", ClientController, options={"action": "unban"}),
             StaticRoute("/login", SessionController, options={"action": "loginAction"}),
             StaticRoute("/login", SessionController, method="POST", options={"action": "processLoginAction"}),
             StaticRoute("/logout", SessionController, options={"action": "logoutAction"}),
