@@ -23,12 +23,14 @@ from owrx.controllers.session import SessionController
 from owrx.controllers.profile import ProfileController
 from owrx.controllers.imageupload import ImageUploadController
 from owrx.controllers.robots import RobotsController
+from owrx.websocket import WebSocketConnection
 from owrx.storage import Storage
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import re
 from abc import ABC, abstractmethod
 from http.cookies import SimpleCookie
+from datetime import datetime
 
 import logging
 
@@ -104,6 +106,8 @@ class Router(object):
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
             StaticRoute("/settings", SettingsController),
+            RegexRoute("^/settings/ban/(.+)$", SettingsController, options={"action": "ban"}),
+            RegexRoute("^/settings/unban/(.+)$", SettingsController, options={"action": "unban"}),
             StaticRoute("/settings/general", GeneralSettingsController),
             StaticRoute(
                 "/settings/general", GeneralSettingsController, method="POST", options={"action": "processFormData"}
@@ -173,12 +177,15 @@ class Router(object):
                 return r
 
     def route(self, handler, request):
-        route = self.find_route(request)
-        if route is not None:
-            controller = route.controller
-            controller(handler, request, route.controllerOptions).handle_request()
-        else:
+        if WebSocketConnection.isIpBanned(handler.client_address[0]):
             handler.send_error(404, "Not Found", "The page you requested could not be found.")
+        else:
+            route = self.find_route(request)
+            if route is not None:
+                controller = route.controller
+                controller(handler, request, route.controllerOptions).handle_request()
+            else:
+                handler.send_error(404, "Not Found", "The page you requested could not be found.")
 
 
 class RequestHandler(BaseHTTPRequestHandler):
