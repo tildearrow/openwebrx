@@ -181,6 +181,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/settings/SchedulerInput.js",
             "lib/settings/ExponentialInput.js",
             "lib/settings/LogMessages.js",
+            "lib/settings/ClientList.js",
             "settings.js",
         ],
     }

@@ -171,8 +171,12 @@ UI.toggleFrame = function(on) {
         this.frame = on;
         LS.save('ui_frame', on);
         $('#openwebrx-frame-checkbox').attr('checked', on);
-        $('#openwebrx-panel-receiver').css( 'border', on ? '2px solid white' : '2px solid transparent');
-        $('#openwebrx-dialog-bookmark').css('border', on ? '2px solid white' : '2px solid transparent');
+
+        var border = on ? '2px solid white' : '2px solid transparent';
+        $('#openwebrx-panel-receiver').css( 'border', border);
+        $('#openwebrx-dialog-bookmark').css('border', border);
+//        $('#openwebrx-digimode-canvas-container').css('border', border);
+//        $('.openwebrx-message-panel').css('border', border);
     }
 };
 

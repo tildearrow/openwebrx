@@ -6,6 +6,7 @@ from owrx.controllers.assets import OwrxAssetsController, AprsSymbolsController,
 from owrx.controllers.websocket import WebSocketController
 from owrx.controllers.api import ApiController
 from owrx.controllers.metrics import MetricsController
+from owrx.controllers.clients import ClientController
 from owrx.controllers.settings import SettingsController
 from owrx.controllers.settings.general import GeneralSettingsController
 from owrx.controllers.settings.sdr import (
@@ -23,12 +24,14 @@ from owrx.controllers.session import SessionController
 from owrx.controllers.profile import ProfileController
 from owrx.controllers.imageupload import ImageUploadController
 from owrx.controllers.robots import RobotsController
+from owrx.websocket import WebSocketConnection
 from owrx.storage import Storage
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
 import re
 from abc import ABC, abstractmethod
 from http.cookies import SimpleCookie
+from datetime import datetime
 
 import logging
 
@@ -158,6 +161,9 @@ class Router(object):
             StaticRoute(
                 "/settings/decoding", DecodingSettingsController, method="POST", options={"action": "processFormData"}
             ),
+            StaticRoute("/clients", ClientController),
+            StaticRoute("/ban", ClientController, method="POST", options={"action": "ban"}),
+            StaticRoute("/unban", ClientController, method="POST", options={"action": "unban"}),
             StaticRoute("/login", SessionController, options={"action": "loginAction"}),
             StaticRoute("/login", SessionController, method="POST", options={"action": "processLoginAction"}),
             StaticRoute("/logout", SessionController, options={"action": "logoutAction"}),
@@ -173,12 +179,15 @@ class Router(object):
                 return r
 
     def route(self, handler, request):
-        route = self.find_route(request)
-        if route is not None:
-            controller = route.controller
-            controller(handler, request, route.controllerOptions).handle_request()
-        else:
+        if WebSocketConnection.isIpBanned(handler.client_address[0]):
             handler.send_error(404, "Not Found", "The page you requested could not be found.")
+        else:
+            route = self.find_route(request)
+            if route is None:
+                handler.send_error(404, "Not Found", "The page you requested could not be found.")
+            else:
+                controller = route.controller
+                controller(handler, request, route.controllerOptions).handle_request()
 
 
 class RequestHandler(BaseHTTPRequestHandler):

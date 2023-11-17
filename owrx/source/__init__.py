@@ -280,6 +280,9 @@ class SdrSource(ABC):
     def getName(self):
         return self.props["name"]
 
+    def getProfileName(self):
+        return self.getProfiles()[self.getProfileId()]["name"]
+
     def getProps(self):
         return self.props
 
