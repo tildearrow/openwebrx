@@ -183,11 +183,11 @@ class Router(object):
             handler.send_error(404, "Not Found", "The page you requested could not be found.")
         else:
             route = self.find_route(request)
-            if route is not None:
+            if route is None:
+                handler.send_error(404, "Not Found", "The page you requested could not be found.")
+            else:
                 controller = route.controller
                 controller(handler, request, route.controllerOptions).handle_request()
-            else:
-                handler.send_error(404, "Not Found", "The page you requested could not be found.")
 
 
 class RequestHandler(BaseHTTPRequestHandler):
