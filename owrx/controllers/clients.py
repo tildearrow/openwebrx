@@ -2,6 +2,7 @@ from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.template import WebpageController
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
 from owrx.websocket import WebSocketConnection
+import json
 import re
 
 import logging
@@ -29,6 +30,22 @@ class ClientController(AuthorizationMixin, WebpageController):
                         <th>Actions</th>
                     </tr>
                     {clients}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td colspan="2">
+                            ban for
+                            <select id="ban-minutes">
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="60">1 hour</option>
+                                <option value="180">3 hours</option>
+                                <option value="360">6 hours</option>
+                                <option value="720">12 hours</option>
+                                <option value="1440">1 day</option>
+                            </select>
+                        </td>
+                    </tr>
                 </table>
         """.format(
             clients="".join(ClientController.renderClient(c) for c in WebSocketConnection.listAll())
@@ -59,13 +76,22 @@ class ClientController(AuthorizationMixin, WebpageController):
         """.format(action, c["ip"], action)
 
     def ban(self):
-        ip = self.request.matches.group(1)
-        logger.info("Banning {0} for {1} minutes".format(ip, 15))
-        WebSocketConnection.banIp(ip, 15)
-        self.send_response("{}", content_type="application/json", code=200)
+        try:
+            data = json.loads(self.get_body().decode("utf-8"))
+            mins = int(data["mins"]) if "mins" in data else 0
+            if "ip" in data and mins > 0:
+                logger.info("Banning {0} for {1} minutes".format(data["ip"], mins))
+                WebSocketConnection.banIp(data["ip"], mins)
+            self.send_response("{}", content_type="application/json", code=200)
+        except:
+            self.send_response("{}", content_type="application/json", code=400)
 
     def unban(self):
-        ip = self.request.matches.group(1)
-        logger.info("Unbanning {0}".format(ip))
-        WebSocketConnection.unbanIp(ip)
-        self.send_response("{}", content_type="application/json", code=200)
+        try:
+            data = json.loads(self.get_body().decode("utf-8"))
+            if "ip" in data:
+                logger.info("Unbanning {0}".format(data["ip"]))
+                WebSocketConnection.unbanIp(data["ip"])
+            self.send_response("{}", content_type="application/json", code=200)
+        except:
+            self.send_response("{}", content_type="application/json", code=400)

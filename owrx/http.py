@@ -162,8 +162,8 @@ class Router(object):
                 "/settings/decoding", DecodingSettingsController, method="POST", options={"action": "processFormData"}
             ),
             StaticRoute("/clients", ClientController),
-            RegexRoute("^/ban/(.+)$", ClientController, options={"action": "ban"}),
-            RegexRoute("^/unban/(.+)$", ClientController, options={"action": "unban"}),
+            StaticRoute("/ban", ClientController, method="POST", options={"action": "ban"}),
+            StaticRoute("/unban", ClientController, method="POST", options={"action": "unban"}),
             StaticRoute("/login", SessionController, options={"action": "loginAction"}),
             StaticRoute("/login", SessionController, method="POST", options={"action": "processLoginAction"}),
             StaticRoute("/logout", SessionController, options={"action": "logoutAction"}),
