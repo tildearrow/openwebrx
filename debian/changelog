@@ -1,3 +1,13 @@
+openwebrx (1.2.39) bullseye jammy; urgency=low
+
+  * Added connected clients display to the Settings page.
+  * Added ability to ban clients for chosen amount of time.
+  * Added ability to unban previously banned clients.
+  * Fixed agent string to make RepeaterBook work.
+  * Disabled buffering when saving logs from background decoders.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 18 Nov 2023 16:12:00 +0000
+
 openwebrx (1.2.38) bullseye jammy; urgency=low
 
   * Fixed primary modulation change with digital decoders.

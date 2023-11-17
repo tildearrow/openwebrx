@@ -1,3 +1,10 @@
+**1.2.39**
+- Added connected clients display to the Settings page.
+- Added ability to ban clients for chosen amount of time.
+- Added ability to unban previously banned clients.
+- Fixed agent string to make RepeaterBook work.
+- Disabled buffering when saving logs from background decoders.
+
 **1.2.38**
 - Fixed primary modulation change with digital decoders.
 - Fixed secondary frequency when changing bandpass.
