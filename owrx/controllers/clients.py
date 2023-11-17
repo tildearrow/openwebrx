@@ -33,7 +33,7 @@ class ClientController(AuthorizationMixin, WebpageController):
                     <tr>
                         <td></td>
                         <td></td>
-                        <td colspan="2">
+                        <td colspan="2" style="text-align:right;">
                             ban for
                             <select id="ban-minutes">
                                 <option value="15">15 minutes</option>
