@@ -21,6 +21,7 @@ from abc import ABCMeta, abstractmethod
 import json
 import threading
 import struct
+import re
 
 import logging
 
@@ -345,7 +346,8 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 elif message["type"] == "sendmessage":
                     if "text" in message:
                         ClientRegistry.getSharedInstance().broadcastChatMessage(
-                            self.conn.getIp(), message["text"]
+                            re.sub("^::ffff:", "", self.conn.getIp()),
+                            message["text"]
                         )
 
             else:

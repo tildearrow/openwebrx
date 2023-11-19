@@ -120,8 +120,13 @@ function jumpBySteps(steps) {
     }
 }
 
-function sendChatMessage(message) {
-    ws.send(JSON.stringify({ "type": "sendmessage", "text": message }));
+function recvChatMessage(sender, text) {
+    divlog('<font color="#c0ff80"><b>' + sender + ':</b> '
+        + text + '</font>', false);
+}
+
+function sendChatMessage(text) {
+    ws.send(JSON.stringify({ "type": "sendmessage", "text": text }));
 }
 
 var waterfall_min_level;
@@ -1173,7 +1178,7 @@ function on_ws_recv(evt) {
                         divlog(json['value'], true);
                         break;
                     case 'chat_message':
-                        divlog(json['sender'] + ': ' + json['text'], true);
+                        recvChatMessage(json['sender'], json['text']);
                         break;
                     case 'backoff':
                         divlog("Server is currently busy: " + json['reason'], true);
