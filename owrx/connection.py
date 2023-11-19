@@ -3,7 +3,7 @@ from owrx.dsp import DspManager
 from owrx.cpu import CpuUsageThread
 from owrx.sdr import SdrService
 from owrx.source import SdrSourceState, SdrClientClass, SdrSourceEventClient
-from owrx.client import ClientRegistry, TooManyClientsException
+from owrx.client import ClientRegistry, TooManyClientsException, BannedClientException
 from owrx.feature import FeatureDetector
 from owrx.version import openwebrx_version
 from owrx.bands import Bandplan
@@ -164,6 +164,10 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
             ClientRegistry.getSharedInstance().addClient(self)
         except TooManyClientsException:
             self.write_backoff_message("Too many clients")
+            self.close()
+            raise
+        except BannedClientException:
+            self.write_backoff_message("Client IP banned")
             self.close()
             raise
 
@@ -479,6 +483,10 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
 
     def write_backoff_message(self, reason):
         self.send({"type": "backoff", "reason": reason})
+
+    def write_chat_message(self, sender, text):
+        logger.debug("Sending {0}".format({"type": "chat_message", "sender": sender, "text": text}))
+        self.send({"type": "chat_message", "sender": sender, "text": text})
 
     def write_modes(self, modes):
         def to_json(m):

@@ -24,7 +24,8 @@ from owrx.controllers.session import SessionController
 from owrx.controllers.profile import ProfileController
 from owrx.controllers.imageupload import ImageUploadController
 from owrx.controllers.robots import RobotsController
-from owrx.websocket import WebSocketConnection
+from owrx.controllers.chat import ChatController
+from owrx.client import ClientRegistry
 from owrx.storage import Storage
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -171,6 +172,7 @@ class Router(object):
             StaticRoute("/pwchange", ProfileController, method="POST", options={"action": "processPwChange"}),
             StaticRoute("/imageupload", ImageUploadController),
             StaticRoute("/imageupload", ImageUploadController, method="POST", options={"action": "processImage"}),
+            StaticRoute("/msgsend", ChatController, method="POST", options={"action": "send"}),
         ]
 
     def find_route(self, request):
@@ -179,7 +181,7 @@ class Router(object):
                 return r
 
     def route(self, handler, request):
-        if WebSocketConnection.isIpBanned(handler.client_address[0]):
+        if ClientRegistry.getSharedInstance().isIpBanned(handler.client_address[0]):
             handler.send_error(404, "Not Found", "The page you requested could not be found.")
         else:
             route = self.find_route(request)

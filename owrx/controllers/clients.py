@@ -1,7 +1,7 @@
 from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.template import WebpageController
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
-from owrx.websocket import WebSocketConnection
+from owrx.client import ClientRegistry
 import json
 import re
 
@@ -48,7 +48,7 @@ class ClientController(AuthorizationMixin, WebpageController):
                     </tr>
                 </table>
         """.format(
-            clients="".join(ClientController.renderClient(c) for c in WebSocketConnection.listAll())
+            clients="".join(ClientController.renderClient(c) for c in ClientRegistry.getSharedInstance().listAll())
         )
 
     @staticmethod
@@ -81,9 +81,10 @@ class ClientController(AuthorizationMixin, WebpageController):
             mins = int(data["mins"]) if "mins" in data else 0
             if "ip" in data and mins > 0:
                 logger.info("Banning {0} for {1} minutes".format(data["ip"], mins))
-                WebSocketConnection.banIp(data["ip"], mins)
+                ClientRegistry.getSharedInstance().banIp(data["ip"], mins)
             self.send_response("{}", content_type="application/json", code=200)
-        except:
+        except Exception as e:
+            logger.debug("ban(): " + str(e))
             self.send_response("{}", content_type="application/json", code=400)
 
     def unban(self):
@@ -91,7 +92,8 @@ class ClientController(AuthorizationMixin, WebpageController):
             data = json.loads(self.get_body().decode("utf-8"))
             if "ip" in data:
                 logger.info("Unbanning {0}".format(data["ip"]))
-                WebSocketConnection.unbanIp(data["ip"])
+                ClientRegistry.getSharedInstance().unbanIp(data["ip"])
             self.send_response("{}", content_type="application/json", code=200)
-        except:
+        except Exception as e:
+            logger.debug("unban(): " + str(e))
             self.send_response("{}", content_type="application/json", code=400)

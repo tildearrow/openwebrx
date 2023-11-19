@@ -6,7 +6,7 @@ from multiprocessing import Pipe
 import select
 import threading
 from abc import ABC, abstractmethod
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import logging
 
@@ -47,7 +47,6 @@ class Handler(ABC):
 
 class WebSocketConnection(object):
     connections = []
-    bans = {}
 
     @staticmethod
     def closeAll():
@@ -56,59 +55,6 @@ class WebSocketConnection(object):
                 c.close()
             except:
                 logger.exception("exception while shutting down websocket connections")
-
-    @staticmethod
-    def listAll():
-        result = []
-        for c in WebSocketConnection.connections:
-            entry = {
-                "ts"  : c.startTime,
-                "ip"  : c.handler.client_address[0],
-                "ban" : False
-            }
-            rx = c.messageHandler
-            if hasattr(rx, "sdr"):
-                entry["sdr"]  = rx.sdr.getName()
-                entry["band"] = rx.sdr.getProfileName()
-            result.append(entry)
-        WebSocketConnection.cleanBans()
-        for ip in WebSocketConnection.bans:
-            result.append({
-                "ts"  : WebSocketConnection.bans[ip],
-                "ip"  : ip,
-                "ban" : True
-            })
-        return result
-
-    @staticmethod
-    def banIp(ip: str, minutes: int):
-        WebSocketConnection.cleanBans()
-        WebSocketConnection.bans[ip] = datetime.now() + timedelta(minutes=minutes)
-        banned = []
-        for c in WebSocketConnection.connections:
-            if ip == c.handler.client_address[0]:
-                banned.append(c)
-        for c in banned:
-            try:
-                c.close()
-            except:
-                logger.exception("exception while banning %s" % ip)
-
-    @staticmethod
-    def unbanIp(ip: str):
-        if ip in WebSocketConnection.bans:
-            del WebSocketConnection.bans[ip]
-
-    @staticmethod
-    def isIpBanned(ip: str):
-        return ip in WebSocketConnection.bans and datetime.now() < WebSocketConnection.bans[ip]
-
-    @staticmethod
-    def cleanBans():
-        now = datetime.now()
-        old = [ip for ip in WebSocketConnection.bans if now >= WebSocketConnection.bans[ip]]
-        for ip in old:
-            del WebSocketConnection.bans[ip]
 
     def __init__(self, handler, messageHandler: Handler):
         self.startTime = datetime.now()
@@ -352,3 +298,9 @@ class WebSocketConnection(object):
     def sendPong(self):
         header = self.get_header(0, OPCODE_PONG)
         self._sendBytes(header)
+
+    def getIp(self):
+        return self.handler.client_address[0]
+
+    def getStartTime(self):
+        return self.startTime
