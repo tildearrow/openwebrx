@@ -120,8 +120,8 @@ function jumpBySteps(steps) {
     }
 }
 
-function recvChatMessage(sender, text) {
-    divlog('<font color="#c0ff80"><b>' + sender + ':</b> '
+function recvChatMessage(sender, text, color = "white") {
+    divlog('<font color="' + color + '"><b>' + sender + ':</b> '
         + text + '</font>', false);
 }
 
@@ -1178,7 +1178,7 @@ function on_ws_recv(evt) {
                         divlog(json['value'], true);
                         break;
                     case 'chat_message':
-                        recvChatMessage(json['sender'], json['text']);
+                        recvChatMessage(json['sender'], json['text'], json['color']);
                         break;
                     case 'backoff':
                         divlog("Server is currently busy: " + json['reason'], true);

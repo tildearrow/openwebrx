@@ -21,7 +21,6 @@ from abc import ABCMeta, abstractmethod
 import json
 import threading
 import struct
-import re
 
 import logging
 
@@ -346,8 +345,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 elif message["type"] == "sendmessage":
                     if "text" in message:
                         ClientRegistry.getSharedInstance().broadcastChatMessage(
-                            re.sub("^::ffff:", "", self.conn.getIp()),
-                            message["text"]
+                            self, message["text"]
                         )
 
             else:
@@ -491,9 +489,14 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
     def write_backoff_message(self, reason):
         self.send({"type": "backoff", "reason": reason})
 
-    def write_chat_message(self, sender, text):
+    def write_chat_message(self, sender, text, color = "white"):
         logger.debug("Sending {0}".format({"type": "chat_message", "sender": sender, "text": text}))
-        self.send({"type": "chat_message", "sender": sender, "text": text})
+        self.send({
+            "type": "chat_message",
+            "sender": sender,
+            "text": text,
+            "color": color
+        })
 
     def write_modes(self, modes):
         def to_json(m):

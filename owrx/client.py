@@ -1,4 +1,5 @@
 from owrx.config import Config
+from owrx.color import ColorCache
 from datetime import datetime, timedelta
 import threading
 
@@ -29,6 +30,9 @@ class ClientRegistry(object):
     def __init__(self):
         self.clients = []
         self.bans = {}
+        self.chat = {}
+        self.chatCount = 0
+        self.chatColors = ColorCache()
         Config.get().wireProperty("max_clients", self._checkClientCount)
         super().__init__()
 
@@ -51,6 +55,8 @@ class ClientRegistry(object):
 
     def removeClient(self, client):
         try:
+            if client in self.chat:
+                del self.chat[client]
             self.clients.remove(client)
         except ValueError:
             pass
@@ -62,9 +68,18 @@ class ClientRegistry(object):
             client.close()
 
     # Broadcast chat message to all connected clients.
-    def broadcastChatMessage(self, sender: str, text: str):
+    def broadcastChatMessage(self, client, text: str):
+        if client in self.chat:
+            name  = self.chat[client]["name"]
+            color = self.chat[client]["color"]
+        else:
+            name  = "User%04d" % (self.chatCount + 1)
+            color = self.chatColors.getColor(name)
+            self.chat[client] = { "name": name, "color": color }
+            self.chatCount = (self.chatCount + 1) % 9999
+
         for c in self.clients:
-            c.write_chat_message(sender, text)
+            c.write_chat_message(name, text, color)
 
     # List all active and banned clients.
     def listAll(self):
