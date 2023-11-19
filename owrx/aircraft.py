@@ -1,4 +1,5 @@
-from owrx.toolbox import TextParser, ColorCache
+from owrx.toolbox import TextParser
+from owrx.color import ColorCache
 from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
 from owrx.config import Config
