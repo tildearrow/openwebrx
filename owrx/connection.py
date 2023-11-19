@@ -342,6 +342,11 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                         self.connectionProperties = message["params"]
                         if self.dsp:
                             self.getDsp().setProperties(self.connectionProperties)
+                elif message["type"] == "sendmessage":
+                    if "text" in message:
+                        ClientRegistry.getSharedInstance().broadcastChatMessage(
+                            self.conn.getIp(), message["text"]
+                        )
 
             else:
                 logger.warning("received message without type: {0}".format(message))

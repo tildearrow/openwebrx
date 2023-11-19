@@ -105,6 +105,7 @@ function tuneBySteps(steps) {
         var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
         var f = demodulator.get_offset_frequency();
         demodulator.set_offset_frequency(f + steps * tuning_step);
+sendChatMessage("Tuned to " + (f + steps * tuning_step) + "Hz");
     }
 }
 
@@ -117,6 +118,10 @@ function jumpBySteps(steps) {
             "type": "setfrequency", "params": { "frequency": f, "key": key }
         }));
     }
+}
+
+function sendChatMessage(message) {
+    ws.send(JSON.stringify({ "type": "sendmessage", "text": message }));
 }
 
 var waterfall_min_level;
@@ -1166,6 +1171,9 @@ function on_ws_recv(evt) {
                         break;
                     case 'log_message':
                         divlog(json['value'], true);
+                        break;
+                    case 'chat_message':
+                        divlog(json['sender'] + ': ' + json['text'], true);
                         break;
                     case 'backoff':
                         divlog("Server is currently busy: " + json['reason'], true);

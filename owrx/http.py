@@ -24,7 +24,6 @@ from owrx.controllers.session import SessionController
 from owrx.controllers.profile import ProfileController
 from owrx.controllers.imageupload import ImageUploadController
 from owrx.controllers.robots import RobotsController
-from owrx.controllers.chat import ChatController
 from owrx.client import ClientRegistry
 from owrx.storage import Storage
 from http.server import BaseHTTPRequestHandler
@@ -172,7 +171,6 @@ class Router(object):
             StaticRoute("/pwchange", ProfileController, method="POST", options={"action": "processPwChange"}),
             StaticRoute("/imageupload", ImageUploadController),
             StaticRoute("/imageupload", ImageUploadController, method="POST", options={"action": "processImage"}),
-            StaticRoute("/msgsend", ChatController, method="POST", options={"action": "send"}),
         ]
 
     def find_route(self, request):
