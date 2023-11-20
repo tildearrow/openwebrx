@@ -345,7 +345,9 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 elif message["type"] == "sendmessage":
                     if "text" in message:
                         ClientRegistry.getSharedInstance().broadcastChatMessage(
-                            self, message["text"]
+                            self,
+                            message["text"],
+                            message["name"] if "name" in message else None
                         )
 
             else:

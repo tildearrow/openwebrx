@@ -253,19 +253,19 @@ UI.setNickname = function(nickname) {
     }
 };
 
-UI.recvChatMessage = function(sender, text, color = 'white') {
+UI.recvChatMessage = function(nickname, text, color = 'white') {
     // Show chat panel
     toggle_panel('openwebrx-panel-log', true);
 
     divlog(
-        '[<span class="nickname" style="color:' + color + ';">' + sender
+        '[<span class="nickname" style="color:' + color + ';">' + nickname
       + '</span>]:&nbsp;' + '<span class="chatmessage">' + text + '</span>'
     );
 };
 
-UI.sendChatMessage = function(text, sender = '') {
+UI.sendChatMessage = function(text, nickname = '') {
     ws.send(JSON.stringify({
-        'type': 'sendmessage', 'sender': sender, 'text': text
+        'type': 'sendmessage', 'name': nickname, 'text': text
     }));
 };
 

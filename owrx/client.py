@@ -68,12 +68,20 @@ class ClientRegistry(object):
             client.close()
 
     # Broadcast chat message to all connected clients.
-    def broadcastChatMessage(self, client, text: str):
+    def broadcastChatMessage(self, client, text: str, name: str = None):
+        # Names have to be 3+ characters
+        if name is not None and len(name) < 1:
+            name = None
         if client in self.chat:
-            name  = self.chat[client]["name"]
-            color = self.chat[client]["color"]
+            curname = self.chat[client]["name"]
+            color   = self.chat[client]["color"]
+            if name is None or name == curname:
+                name = curname
+            else:
+                self.chatColors.rename(curname, name)
+                self.chat[client]["name"] = name
         else:
-            name  = "User%04d" % (self.chatCount + 1)
+            name  = "User%d" % (self.chatCount + 1) if name is None else name
             color = self.chatColors.getColor(name)
             self.chat[client] = { "name": name, "color": color }
             self.chatCount = (self.chatCount + 1) % 9999
