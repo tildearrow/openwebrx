@@ -1023,9 +1023,9 @@ function on_ws_recv(evt) {
             );
             var versionInfo = 'Unknown server';
             if (params.server && params.server === 'openwebrx' && params.version) {
-                versionInfo = 'OpenWebRX<b>+</b> version: <b>' + params.version + "</b>";
+                versionInfo = 'OpenWebRX+ version: ' + params.version;
             }
-            divlog('Server acknowledged WebSocket connection, ' + versionInfo + "");
+            divlog('Server acknowledged WebSocket connection, ' + versionInfo);
         } else {
             try {
                 var json = JSON.parse(evt.data);
@@ -1067,17 +1067,15 @@ function on_ws_recv(evt) {
                             fft_size = config['fft_size'];
                             waterfall_clear();
                         }
-                        var streams_msg = "";
                         if ('audio_compression' in config) {
                             var audio_compression = config['audio_compression'];
                             audioEngine.setCompression(audio_compression);
-                            streams_msg = "Audio stream is <b>" + ((audio_compression === "adpcm") ? "compressed" : "uncompressed") + "</b>. ";
+                            divlog("Audio stream is " + ((audio_compression === "adpcm") ? "compressed" : "uncompressed") + ".");
                         }
                         if ('fft_compression' in config) {
                             fft_compression = config['fft_compression'];
-                            streams_msg += "FFT stream is <b>" + ((fft_compression === "adpcm") ? "compressed" : "uncompressed") + "</b>.";
+                            divlog("FFT stream is " + ((fft_compression === "adpcm") ? "compressed" : "uncompressed") + ".");
                         }
-                        if (streams_msg.length) divlog(streams_msg);
                         if ('max_clients' in config)
                             $('#openwebrx-bar-clients').progressbar().setMaxClients(config['max_clients']);
 
@@ -1331,7 +1329,7 @@ function waterfall_measure_minmax_do(what) {
 function on_ws_opened() {
     $('#openwebrx-error-overlay').hide();
     ws.send("SERVER DE CLIENT client=openwebrx.js type=receiver");
-    divlog("WebSocket opened to <b>" + ws.url + "</b>");
+    divlog("WebSocket opened to " + ws.url);
     if (!networkSpeedMeasurement) {
         networkSpeedMeasurement = new Measurement();
         networkSpeedMeasurement.report(60000, 1000, function(rate){
@@ -1372,7 +1370,7 @@ var mute = false;
 var audio_buffer_maximal_length_sec = 1; //actual number of samples are calculated from sample rate
 
 function onAudioStart(apiType){
-    divlog('Web Audio API initialized, with <b>' + apiType  + '</b> API, sample rate: <b>' + audioEngine.getSampleRate() + "</b>Hz");
+    divlog('Web Audio API succesfully initialized, using ' + apiType  + ' API, sample rate: ' + audioEngine.getSampleRate() + " Hz");
 
     hideOverlay();
 
@@ -1727,11 +1725,6 @@ function toggle_panel(what, on) {
     }
     item.style.transitionDuration = "600ms";
     item.style.transitionDelay = "0ms";
-    if (what === "openwebrx-panel-log") {
-        setTimeout(function () {
-            $('#chatMessage').focus();
-        }, 50);
-    }
 }
 
 function first_show_panel(panel) {

@@ -240,16 +240,11 @@ UI.setTheme = function(theme) {
     }
 };
 
-// Set user interface theme.
+// Set chat nickname.
 UI.setNickname = function(nickname) {
-    // Do not set twice
-    if (this.nickname === nickname) return;
-
-    // Save current theme name
-    this.nickname = nickname;
-    LS.save('nickname', nickname);
-
-    // Set input
-    $('#chatCallsign').val(nickname);
+    if (this.nickname !== nickname) {
+        this.nickname = nickname;
+        LS.save('nickname', nickname);
+        $('#chatCallsign').val(nickname);
+    }
 };
-
