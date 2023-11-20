@@ -261,11 +261,6 @@ UI.recvChatMessage = function(sender, text, color = 'white') {
         '[<span class="nickname" style="color:' + color + ';">' + sender
       + '</span>]:&nbsp;' + '<span class="chatmessage">' + text + '</span>'
     );
-
-    // Scroll to the bottom
-    var nano = $('#openwebrx-log-scroll');
-    nano.nanoScroller();
-    nano.nanoScroller({scroll: 'bottom'});
 };
 
 UI.sendChatMessage = function(text, sender = '') {
