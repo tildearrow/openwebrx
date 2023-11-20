@@ -309,9 +309,28 @@ input[type=range]:disabled {
 #openwebrx-log-scroll
 {
     /*overflow-y:auto;*/
-    height: 125px;
+    height: 155px;
     max-width: 619px;
     width: 100%;
+}
+
+#openwebrx-messages .nickname {
+    color: #bbb;
+    font-weight: bold;
+}
+
+#openwebrx-messages .chatmessage {
+}
+
+#openwebrx-chat-inputs {
+  height: 1.5rem;
+  position: absolute;
+  bottom: 0;
+  width: 99%
+}
+
+#openwebrx-log-scroll .nano-content, #openwebrx-log-scroll .nano-pane {
+  height: 126px;
 }
 
 .nano .nano-pane   { background: #444; }

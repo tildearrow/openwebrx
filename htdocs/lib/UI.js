@@ -25,6 +25,7 @@ UI.sections = {
 
 // Load UI settings from local storage.
 UI.loadSettings = function() {
+    this.setNickname(LS.has('nickname')? LS.loadStr('nickname') : '');
     this.setTheme(LS.has('ui_theme')? LS.loadStr('ui_theme') : 'default');
     this.setOpacity(LS.has('ui_opacity')? LS.loadInt('ui_opacity') : 100);
     this.toggleFrame(LS.has('ui_frame')? LS.loadBool('ui_frame') : false);
@@ -238,3 +239,17 @@ UI.setTheme = function(theme) {
         $('body').addClass('has-theme');
     }
 };
+
+// Set user interface theme.
+UI.setNickname = function(nickname) {
+    // Do not set twice
+    if (this.nickname === nickname) return;
+
+    // Save current theme name
+    this.nickname = nickname;
+    LS.save('nickname', nickname);
+
+    // Set input
+    $('#chatCallsign').val(nickname);
+};
+

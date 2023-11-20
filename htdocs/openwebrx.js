@@ -121,8 +121,13 @@ function jumpBySteps(steps) {
 }
 
 function recvChatMessage(sender, text, color = "white") {
-    divlog('<font color="' + color + '"><b>' + sender + ':</b> '
-        + text + '</font>', false);
+    toggle_panel("openwebrx-panel-log", true); //show panel
+    $('#openwebrx-messages')[0].innerHTML +=
+    "[<span class='nickname' style='color: " + color + "'>" + sender + "</span>]:&nbsp;" +
+    "<span class='chatmessage'>" + text + "</span><br />";
+    var nano = $('#openwebrx-log-scroll');
+    nano.nanoScroller();
+    nano.nanoScroller({scroll: 'bottom'});
 }
 
 function sendChatMessage(text, sender = "") {
@@ -130,6 +135,47 @@ function sendChatMessage(text, sender = "") {
         "type": "sendmessage", "sender": sender, "text": text
     }));
 }
+
+var lastChatMsg = "";
+function chatSendMessage () {
+    var callsign = $('#chatCallsign').val();
+    UI.setNickname(callsign);
+    var msg = $('#chatMessage').val().trim();
+    if (msg.length > 0) {
+        lastChatMsg = msg;
+        sendChatMessage(msg, callsign);
+    }
+    $('#chatMessage').val('');
+}
+
+function chatKeyDown (event) {
+    // basic support of last msg
+    // TODO: make msg history to browse with up/down arrows
+
+    var input = $('#chatMessage');
+    if (event.key == "Enter") {
+        chatSendMessage();
+    } else if (event.key == "ArrowUp") {
+        input.focus().val(lastChatMsg);
+    } else if (event.key == "ArrowDown") {
+        input.focus().val('');
+    }
+}
+
+// focus the chat input when the log window is clicked,
+// this needs to be handled onLoad, since jQuery is not loaded yet.
+document.addEventListener("DOMContentLoaded", function (event) {
+    $('.nano-content').mouseup(function () {
+        const selection = window.getSelection().toString();
+        if (selection === '') {
+            // it's a click, we focus on the msg input
+            $('#chatMessage').focus();
+        } else {
+            // it's a mouse text-selection, ignore it.
+        }
+    });
+    $('#chatMessage').on('keydown', chatKeyDown)
+});
 
 var waterfall_min_level;
 var waterfall_max_level;
@@ -977,9 +1023,9 @@ function on_ws_recv(evt) {
             );
             var versionInfo = 'Unknown server';
             if (params.server && params.server === 'openwebrx' && params.version) {
-                versionInfo = 'OpenWebRX+ version: ' + params.version;
+                versionInfo = 'OpenWebRX<b>+</b> version: <b>' + params.version + "</b>";
             }
-            divlog('Server acknowledged WebSocket connection, ' + versionInfo);
+            divlog('Server acknowledged WebSocket connection, ' + versionInfo + "");
         } else {
             try {
                 var json = JSON.parse(evt.data);
@@ -1021,15 +1067,17 @@ function on_ws_recv(evt) {
                             fft_size = config['fft_size'];
                             waterfall_clear();
                         }
+                        var streams_msg = "";
                         if ('audio_compression' in config) {
                             var audio_compression = config['audio_compression'];
                             audioEngine.setCompression(audio_compression);
-                            divlog("Audio stream is " + ((audio_compression === "adpcm") ? "compressed" : "uncompressed") + ".");
+                            streams_msg = "Audio stream is <b>" + ((audio_compression === "adpcm") ? "compressed" : "uncompressed") + "</b>. ";
                         }
                         if ('fft_compression' in config) {
                             fft_compression = config['fft_compression'];
-                            divlog("FFT stream is " + ((fft_compression === "adpcm") ? "compressed" : "uncompressed") + ".");
+                            streams_msg += "FFT stream is <b>" + ((fft_compression === "adpcm") ? "compressed" : "uncompressed") + "</b>.";
                         }
+                        if (streams_msg.length) divlog(streams_msg);
                         if ('max_clients' in config)
                             $('#openwebrx-bar-clients').progressbar().setMaxClients(config['max_clients']);
 
@@ -1283,7 +1331,7 @@ function waterfall_measure_minmax_do(what) {
 function on_ws_opened() {
     $('#openwebrx-error-overlay').hide();
     ws.send("SERVER DE CLIENT client=openwebrx.js type=receiver");
-    divlog("WebSocket opened to " + ws.url);
+    divlog("WebSocket opened to <b>" + ws.url + "</b>");
     if (!networkSpeedMeasurement) {
         networkSpeedMeasurement = new Measurement();
         networkSpeedMeasurement.report(60000, 1000, function(rate){
@@ -1311,7 +1359,7 @@ function divlog(what, is_error) {
         what = "<span class=\"webrx-error\">" + what + "</span>";
         toggle_panel("openwebrx-panel-log", true); //show panel if any error is present
     }
-    $('#openwebrx-debugdiv')[0].innerHTML += what + "<br />";
+    $('#openwebrx-messages')[0].innerHTML += what + "<br />";
     var nano = $('#openwebrx-log-scroll');
     nano.nanoScroller();
     nano.nanoScroller({scroll: 'bottom'});
@@ -1324,7 +1372,7 @@ var mute = false;
 var audio_buffer_maximal_length_sec = 1; //actual number of samples are calculated from sample rate
 
 function onAudioStart(apiType){
-    divlog('Web Audio API succesfully initialized, using ' + apiType  + ' API, sample rate: ' + audioEngine.getSampleRate() + " Hz");
+    divlog('Web Audio API initialized, with <b>' + apiType  + '</b> API, sample rate: <b>' + audioEngine.getSampleRate() + "</b>Hz");
 
     hideOverlay();
 
@@ -1679,6 +1727,11 @@ function toggle_panel(what, on) {
     }
     item.style.transitionDuration = "600ms";
     item.style.transitionDelay = "0ms";
+    if (what === "openwebrx-panel-log") {
+        setTimeout(function () {
+            $('#chatMessage').focus();
+        }, 50);
+    }
 }
 
 function first_show_panel(panel) {
