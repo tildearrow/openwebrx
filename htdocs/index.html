@@ -169,18 +169,18 @@
                                 <div id="openwebrx-client-log-title">OpenWebRX+ message log</div>
                                 <div>
                                     Author: <a href="http://fms.komkon.org/" target="_blank">Marat Fayzullin</a> |
-                                    <a href="https://www.openwebrx.de" target="_blank">OpenWebRX</a>,
-                                    Support and information: <a href="https://groups.io/g/openwebrx" target="_blank">Groups.io Mailinglist</a>
+                                    <a href="https://www.openwebrx.de" target="_blank">OpenWebRX</a>
+                                    support and information: <a href="https://groups.io/g/openwebrx" target="_blank">Groups.io Mailinglist</a>
                                 </div>
-                                <hr>
+                                <hr />
                                 <div id="openwebrx-messages"></div>
                             </div>
                         </div>
                         <div id="openwebrx-chat-inputs">
                             <div class="input-group" style="display: flex; justify-content: space-between;">
-                                <input id="chatCallsign" style="width:15%; margin-right: 0.2rem" placeholder="Callsign" />
-                                <input id="chatMessage" style="width:99%; margin-right: 0.2rem" />
-                                <div class="openwebrx-button" onClick="chatSendMessage()">Send</div>
+                                <input id="chatNickname" style="width:15%; margin-right: 0.2rem" placeholder="Callsign" />
+                                <input id="chatMessage" style="width:99%; margin-right: 0.2rem" onkeydown="UI.chatKeyPress(event);" />
+                                <div class="openwebrx-button" onclick="UI.chatSend();">Send</div>
                             </div>
                         </div>
                     </div>

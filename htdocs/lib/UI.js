@@ -14,6 +14,7 @@ UI.nrThreshold = 0;
 UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
+UI.nickname = '';
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -25,9 +26,9 @@ UI.sections = {
 
 // Load UI settings from local storage.
 UI.loadSettings = function() {
-    this.setNickname(LS.has('nickname')? LS.loadStr('nickname') : '');
     this.setTheme(LS.has('ui_theme')? LS.loadStr('ui_theme') : 'default');
     this.setOpacity(LS.has('ui_opacity')? LS.loadInt('ui_opacity') : 100);
+    this.setNickname(LS.has('nickname')? LS.loadStr('nickname') : '');
     this.toggleFrame(LS.has('ui_frame')? LS.loadBool('ui_frame') : false);
     this.toggleWheelSwap(LS.has('ui_wheel')? LS.loadBool('ui_wheel') : false);
     this.toggleSpectrum(LS.has('ui_spectrum')? LS.loadBool('ui_spectrum') : false);
@@ -82,15 +83,14 @@ UI.toggleMute = function(on) {
         this.volumeMuted = -1;
         $muteButton.removeClass('muted');
         $volumePanel.prop('disabled', false);
+        LS.save('volumeMuted', this.volumeMuted);
     } else if (toggle || on) {
         this.volumeMuted = this.volume;
         this.setVolume(0);
         $muteButton.addClass('muted');
         $volumePanel.prop('disabled', true);
+        LS.save('volumeMuted', this.volumeMuted);
     }
-
-    // Save muted volume, or lack thereof
-    LS.save('volumeMuted', this.volumeMuted);
 };
 
 //
@@ -240,11 +240,53 @@ UI.setTheme = function(theme) {
     }
 };
 
+//
+// Chat
+//
+
 // Set chat nickname.
 UI.setNickname = function(nickname) {
     if (this.nickname !== nickname) {
         this.nickname = nickname;
         LS.save('nickname', nickname);
-        $('#chatCallsign').val(nickname);
+        $('#chatNickname').val(nickname);
+    }
+};
+
+UI.recvChatMessage = function(sender, text, color = 'white') {
+    // Show chat panel
+    toggle_panel('openwebrx-panel-log', true);
+
+    divlog(
+        '[<span class="nickname" style="color:' + color + ';">' + sender
+      + '</span>]:&nbsp;' + '<span class="chatmessage">' + text + '</span>'
+    );
+
+    // Scroll to the bottom
+    var nano = $('#openwebrx-log-scroll');
+    nano.nanoScroller();
+    nano.nanoScroller({scroll: 'bottom'});
+};
+
+UI.sendChatMessage = function(text, sender = '') {
+    ws.send(JSON.stringify({
+        'type': 'sendmessage', 'sender': sender, 'text': text
+    }));
+};
+
+// Collect nick and message from controls and send message.
+UI.chatSend = function() {
+    this.setNickname($('#chatNickname').val().trim());
+
+    var msg = $('#chatMessage').val().trim();
+    if (msg.length > 0) this.sendChatMessage(msg, this.nickname);
+    $('#chatMessage').val('');
+};
+
+// Attach events to chat controls.
+UI.chatKeyPress = function(event) {
+    if (event.key === 'Enter') {
+        event.preventDefault();
+        this.chatSend();
     }
 };

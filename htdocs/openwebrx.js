@@ -105,7 +105,6 @@ function tuneBySteps(steps) {
         var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
         var f = demodulator.get_offset_frequency();
         demodulator.set_offset_frequency(f + steps * tuning_step);
-sendChatMessage("Tuned to " + (f + steps * tuning_step) + "Hz");
     }
 }
 
@@ -119,63 +118,6 @@ function jumpBySteps(steps) {
         }));
     }
 }
-
-function recvChatMessage(sender, text, color = "white") {
-    toggle_panel("openwebrx-panel-log", true); //show panel
-    $('#openwebrx-messages')[0].innerHTML +=
-    "[<span class='nickname' style='color: " + color + "'>" + sender + "</span>]:&nbsp;" +
-    "<span class='chatmessage'>" + text + "</span><br />";
-    var nano = $('#openwebrx-log-scroll');
-    nano.nanoScroller();
-    nano.nanoScroller({scroll: 'bottom'});
-}
-
-function sendChatMessage(text, sender = "") {
-    ws.send(JSON.stringify({
-        "type": "sendmessage", "sender": sender, "text": text
-    }));
-}
-
-var lastChatMsg = "";
-function chatSendMessage () {
-    var callsign = $('#chatCallsign').val();
-    UI.setNickname(callsign);
-    var msg = $('#chatMessage').val().trim();
-    if (msg.length > 0) {
-        lastChatMsg = msg;
-        sendChatMessage(msg, callsign);
-    }
-    $('#chatMessage').val('');
-}
-
-function chatKeyDown (event) {
-    // basic support of last msg
-    // TODO: make msg history to browse with up/down arrows
-
-    var input = $('#chatMessage');
-    if (event.key == "Enter") {
-        chatSendMessage();
-    } else if (event.key == "ArrowUp") {
-        input.focus().val(lastChatMsg);
-    } else if (event.key == "ArrowDown") {
-        input.focus().val('');
-    }
-}
-
-// focus the chat input when the log window is clicked,
-// this needs to be handled onLoad, since jQuery is not loaded yet.
-document.addEventListener("DOMContentLoaded", function (event) {
-    $('.nano-content').mouseup(function () {
-        const selection = window.getSelection().toString();
-        if (selection === '') {
-            // it's a click, we focus on the msg input
-            $('#chatMessage').focus();
-        } else {
-            // it's a mouse text-selection, ignore it.
-        }
-    });
-    $('#chatMessage').on('keydown', chatKeyDown)
-});
 
 var waterfall_min_level;
 var waterfall_max_level;
@@ -1226,7 +1168,7 @@ function on_ws_recv(evt) {
                         divlog(json['value'], true);
                         break;
                     case 'chat_message':
-                        recvChatMessage(json['sender'], json['text'], json['color']);
+                        UI.recvChatMessage(json['sender'], json['text'], json['color']);
                         break;
                     case 'backoff':
                         divlog("Server is currently busy: " + json['reason'], true);
