@@ -258,8 +258,10 @@ UI.recvChatMessage = function(nickname, text, color = 'white') {
     toggle_panel('openwebrx-panel-log', true);
 
     divlog(
-        '[<span class="nickname" style="color:' + color + ';">' + nickname
-      + '</span>]:&nbsp;' + '<span class="chatmessage">' + text + '</span>'
+        '[<span class="nickname" style="color:' + color + ';">'
+      + Utils.htmlEscape(nickname) + '</span>]:&nbsp;'
+      + '<span class="chatmessage">' + Utils.htmlEscape(text)
+      + '</span>'
     );
 };
 
