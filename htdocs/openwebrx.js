@@ -125,8 +125,10 @@ function recvChatMessage(sender, text, color = "white") {
         + text + '</font>', false);
 }
 
-function sendChatMessage(text) {
-    ws.send(JSON.stringify({ "type": "sendmessage", "text": text }));
+function sendChatMessage(text, sender = "") {
+    ws.send(JSON.stringify({
+        "type": "sendmessage", "sender": sender, "text": text
+    }));
 }
 
 var waterfall_min_level;
