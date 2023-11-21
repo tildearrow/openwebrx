@@ -178,9 +178,9 @@
                         </div>
                         <div id="openwebrx-chat-inputs">
                             <div class="input-group" style="display: flex; justify-content: space-between;">
-                                <input id="chatNickname" style="width:15%; margin-right: 0.2rem" placeholder="Callsign" />
-                                <input id="chatMessage" style="width:99%; margin-right: 0.2rem" onkeydown="UI.chatKeyPress(event);" />
-                                <div class="openwebrx-button" onclick="UI.chatSend();">Send</div>
+                                <input id="openwebrx-chat-name" style="width:15%; margin-right: 0.2rem" placeholder="Name" />
+                                <input id="openwebrx-chat-message" style="width:99%; margin-right: 0.2rem" placeholder="Message" onkeydown="Chat.keyPress(event);" />
+                                <div class="openwebrx-button" onclick="Chat.send();">Send</div>
                             </div>
                         </div>
                     </div>

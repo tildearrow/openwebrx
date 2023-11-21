@@ -314,7 +314,7 @@ input[type=range]:disabled {
     width: 100%;
 }
 
-#openwebrx-messages .nickname {
+#openwebrx-messages .chatname {
     color: #bbb;
     font-weight: bold;
 }

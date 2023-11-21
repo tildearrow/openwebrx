@@ -136,13 +136,3 @@ body.has-theme #openwebrx-digimode-content-container .gradient {
     box-shadow: 0px 10px 10px inset var(--theme-color2);
     background: initial;
 }
-
-/* these need more work */
-body.has-theme input[type=range] {
-    /* --track-background: #001727; */
-}
-
-body.has-theme input[type=range]::-webkit-slider-runnable-track,
-body.has-theme input[type=range]:focus::-webkit-slider-runnable-track {
-    /* background: #001727; */
-}

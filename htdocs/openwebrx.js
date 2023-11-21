@@ -1168,7 +1168,7 @@ function on_ws_recv(evt) {
                         divlog(json['value'], true);
                         break;
                     case 'chat_message':
-                        UI.recvChatMessage(json['sender'], json['text'], json['color']);
+                        Chat.recvMessage(json['name'], json['text'], json['color']);
                         break;
                     case 'backoff':
                         divlog("Server is currently busy: " + json['reason'], true);
@@ -1326,6 +1326,7 @@ function onAudioStart(apiType){
 
     // Load user interface settings from local storage
     UI.loadSettings();
+    Chat.loadSettings();
 }
 
 var reconnect_timeout = false;

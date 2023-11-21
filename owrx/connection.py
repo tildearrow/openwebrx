@@ -491,11 +491,10 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
     def write_backoff_message(self, reason):
         self.send({"type": "backoff", "reason": reason})
 
-    def write_chat_message(self, sender, text, color = "white"):
-        logger.debug("Sending {0}".format({"type": "chat_message", "sender": sender, "text": text}))
+    def write_chat_message(self, name, text, color = "white"):
         self.send({
             "type": "chat_message",
-            "sender": sender,
+            "name": name,
             "text": text,
             "color": color
         })
