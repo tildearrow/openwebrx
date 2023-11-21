@@ -167,7 +167,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
             self.close()
             raise
         except BannedClientException:
-            self.write_backoff_message("Client IP banned")
+            self.write_backoff_message("Client address banned")
             self.close()
             raise
 

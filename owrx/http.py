@@ -24,7 +24,6 @@ from owrx.controllers.session import SessionController
 from owrx.controllers.profile import ProfileController
 from owrx.controllers.imageupload import ImageUploadController
 from owrx.controllers.robots import RobotsController
-from owrx.client import ClientRegistry
 from owrx.storage import Storage
 from http.server import BaseHTTPRequestHandler
 from urllib.parse import urlparse, parse_qs
@@ -179,15 +178,12 @@ class Router(object):
                 return r
 
     def route(self, handler, request):
-        if ClientRegistry.getSharedInstance().isIpBanned(handler.client_address[0]):
-            handler.send_error(404, "Not Found", "The page you requested could not be found.")
+        route = self.find_route(request)
+        if route is not None:
+            controller = route.controller
+            controller(handler, request, route.controllerOptions).handle_request()
         else:
-            route = self.find_route(request)
-            if route is None:
-                handler.send_error(404, "Not Found", "The page you requested could not be found.")
-            else:
-                controller = route.controller
-                controller(handler, request, route.controllerOptions).handle_request()
+            handler.send_error(404, "Not Found", "The page you requested could not be found.")
 
 
 class RequestHandler(BaseHTTPRequestHandler):
