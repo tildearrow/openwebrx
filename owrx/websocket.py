@@ -298,9 +298,3 @@ class WebSocketConnection(object):
     def sendPong(self):
         header = self.get_header(0, OPCODE_PONG)
         self._sendBytes(header)
-
-    def getIp(self):
-        return self.handler.client_address[0]
-
-    def getStartTime(self):
-        return self.startTime
