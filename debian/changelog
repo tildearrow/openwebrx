@@ -1,3 +1,14 @@
+openwebrx (1.2.40) bullseye jammy; urgency=low
+
+  * Added chat between currently connected users.
+  * Added ability to manage clients connected via reverse proxy.
+  * The proxy has to provide correct X-Forwarded-For header.
+  * Relaxed policy so that only socket connections are banned.
+  * Moved all client-related code to client.py.
+  * Moved ColorCache implementation to color.py.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 25 Nov 2023 16:12:00 +0000
+
 openwebrx (1.2.39) bullseye jammy; urgency=low
 
   * Added connected clients display to the Settings page.

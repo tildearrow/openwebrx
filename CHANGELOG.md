@@ -1,3 +1,11 @@
+**1.2.40**
+- Added chat between currently connected users.
+- Added ability to manage clients connected via reverse proxy.
+- The proxy has to provide correct X-Forwarded-For header.
+- Relaxed policy so that only socket connections are banned.
+- Moved all client-related code to client.py.
+- Moved ColorCache implementation to color.py.
+
 **1.2.39**
 - Added connected clients display to the Settings page.
 - Added ability to ban clients for chosen amount of time.
