@@ -35,6 +35,7 @@ class ClientRegistry(object):
         self.chat = {}
         self.chatCount = 1
         self.chatColors = ColorCache()
+        self.chatLock = threading.Lock()
         Config.get().wireProperty("max_clients", self._checkClientCount)
         super().__init__()
 
@@ -71,31 +72,32 @@ class ClientRegistry(object):
 
     # Broadcast chat message to all connected clients.
     def broadcastChatMessage(self, client, text: str, name: str = None):
-        if name is not None:
-            # Names can only include alphanumerics
-            name = re.sub("\W+", "", name)
-            # Cannot have duplicate names
-            if client not in self.chat or name != self.chat[client]["name"]:
-                for c in self.chat:
-                    if name == self.chat[c]["name"]:
-                        name = None
-                        break
-        # If we have seen this client chatting before...
-        if client in self.chat:
-            # Rename existing client as needed, keep color
-            curname = self.chat[client]["name"]
-            color   = self.chat[client]["color"]
-            if not name or name == curname:
-                name = curname
+        with self.chatLock:
+            if name is not None:
+                # Names can only include alphanumerics
+                name = re.sub("\W+", "", name)
+                # Cannot have duplicate names
+                if client not in self.chat or name != self.chat[client]["name"]:
+                    for c in self.chat:
+                        if name == self.chat[c]["name"]:
+                            name = None
+                            break
+            # If we have seen this client chatting before...
+            if client in self.chat:
+                # Rename existing client as needed, keep color
+                curname = self.chat[client]["name"]
+                color   = self.chat[client]["color"]
+                if not name or name == curname:
+                    name = curname
+                else:
+                    self.chatColors.rename(curname, name)
+                    self.chat[client]["name"] = name
             else:
-                self.chatColors.rename(curname, name)
-                self.chat[client]["name"] = name
-        else:
-            # Create name and color for a new client
-            name  = "User%d" % self.chatCount if not name else name
-            color = self.chatColors.getColor(name)
-            self.chat[client] = { "name": name, "color": color }
-            self.chatCount = self.chatCount + 1
+                # Create name and color for a new client
+                name  = "User%d" % self.chatCount if not name else name
+                color = self.chatColors.getColor(name)
+                self.chat[client] = { "name": name, "color": color }
+                self.chatCount = self.chatCount + 1
 
         # Broadcast message to all clients
         for c in self.clients:
