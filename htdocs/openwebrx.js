@@ -1057,6 +1057,7 @@ function on_ws_recv(evt) {
                         if ('allow_chat' in config) {
                             var x = config['allow_chat'];
                             $('#openwebrx-chat-inputs').css('display', x? '':'none');
+                            $('#openwebrx-chat-label').html(x? 'Chat':'Log');
                         }
 
                         if ('receiver_gps' in config) {
