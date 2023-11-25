@@ -156,6 +156,7 @@ defaultConfig = PropertyLayer(
     magic_key="memagic",
     allow_center_freq_changes=False,
     allow_audio_recording=True,
+    allow_chat=True,
     tuning_precision=2,
     squelch_auto_margin=10,
     google_maps_api_key="",

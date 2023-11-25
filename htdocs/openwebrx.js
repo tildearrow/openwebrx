@@ -1054,6 +1054,11 @@ function on_ws_recv(evt) {
                             $('.openwebrx-record-button').css('display', x? '':'none');
                         }
 
+                        if ('allow_chat' in config) {
+                            var x = config['allow_chat'];
+                            $('#openwebrx-chat-inputs').css('display', x? '':'none');
+                        }
+
                         if ('receiver_gps' in config) {
                             var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
                             adsb_panel.setReceiverPos(config['receiver_gps']);

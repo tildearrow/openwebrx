@@ -72,6 +72,11 @@ class ClientRegistry(object):
 
     # Broadcast chat message to all connected clients.
     def broadcastChatMessage(self, client, text: str, name: str = None):
+        # If chat disabled, ignore messages
+        pm = Config.get()
+        if not pm["allow_chat"]:
+            return
+        # Make sure there are no race conditions
         with self.chatLock:
             if name is not None:
                 # Names can only include alphanumerics
