@@ -103,6 +103,11 @@ class ClientRegistry(object):
         for c in self.clients:
             c.write_chat_message(name, text, color)
 
+    # Broadcast administrative message to all connected clients.
+    def broadcastAdminMessage(self, text: str):
+        for c in self.clients:
+            c.write_log_message(text)
+
     # Get client IP address from the handler.
     def getIp(self, handler):
         ip = handler.client_address[0]

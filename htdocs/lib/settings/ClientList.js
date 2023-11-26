@@ -23,4 +23,18 @@ $.fn.clientList = function() {
             return false;
         });
     });
+
+    $('#broadcast-send').on('click', function(e) {
+        var text = $('#broadcast-text').val();
+        if (text.length > 0) {
+            $.ajax("/broadcast", {
+                data: JSON.stringify({ text: text }),
+                contentType: 'application/json',
+                method: 'POST'
+            }).done(function() {
+                $('#broadcast-text').val('');
+            });
+        }
+        return false;
+    });
 }

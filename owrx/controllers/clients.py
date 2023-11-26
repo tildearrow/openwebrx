@@ -97,3 +97,15 @@ class ClientController(AuthorizationMixin, WebpageController):
         except Exception as e:
             logger.debug("unban(): " + str(e))
             self.send_response("{}", content_type="application/json", code=400)
+
+    def broadcast(self):
+        try:
+            data = json.loads(self.get_body().decode("utf-8"))
+            text = data["text"].strip() if "text" in data else ""
+            if len(text) > 0:
+                logger.info("Broadcasting '{0}' to all clients".format(text))
+                ClientRegistry.getSharedInstance().broadcastAdminMessage(text)
+            self.send_response("{}", content_type="application/json", code=200)
+        except Exception as e:
+            logger.debug("broadcast(): " + str(e))
+            self.send_response("{}", content_type="application/json", code=400)
