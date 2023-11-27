@@ -399,11 +399,10 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                         ).on('change', function (e) {
                             if (e.target.checked) {
                                 addMapOverlay(mel.name);
-                                LS.save('leaflet-layer-' + mel.name, 'true');
                             } else {
                                 removeMapOverlay(mel.name);
-                                LS.save('leaflet-layer-' + mel.name, 'false');
                             }
+                            LS.save('leaflet-layer-' + mel.name, e.target.checked);
                         })
                     );
                     if (enabled) addMapOverlay(mel.name);
