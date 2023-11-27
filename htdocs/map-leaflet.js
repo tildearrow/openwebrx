@@ -313,16 +313,17 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                     }
                 });
 
+                var map_idx = LS.loadInt('leaflet_map_idx'); // should return 0 if not found
                 $.each(mapSources, function (idx, ms) {
                     $('#openwebrx-map-source').append(
                         $('<option></option>')
-                            .attr('selected', idx == 0 ? true : false)
+                            .attr('selected', idx == map_idx ? true : false)
                             .attr('value', idx)
                             .attr('title', ms.info)
                             .text(ms.name)
                     );
                     ms.layer = L.tileLayer(ms.url, ms.options);
-                    if (idx == 0) ms.layer.addTo(map);
+                    if (idx == map_idx) ms.layer.addTo(map);
                 });
 
                 var apiKeys = {};
@@ -375,6 +376,7 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                             map.removeLayer(ms.layer);
                     });
                     map.addLayer(m.layer);
+                    LS.save('leaflet_map_idx', id);
                     $('#openwebrx-map-extralayers').find('input').each(function (idx, inp) {
                         if ($(inp).is(':checked')) {
                             addMapOverlay($(inp).attr('name'));
@@ -385,12 +387,14 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                     if (!isMapEligible(mel)) return;
                     if ($('#openwebrx-map-layer-' + mel.name).length)
                         return; // checkbox with that name exists already
+                    var enabled = LS.loadBool('leaflet-layer-' + mel.name); // should return false if not found
                     $('#openwebrx-map-extralayers').append(
                         $('<label>' +
                             '<input type="checkbox" ' +
                             'name="' + mel.name + '" ' +
                             'idx="' + idx + '" ' +
                             'id="openwebrx-map-layer-' + mel.name + '"' +
+                            (enabled ? ' checked ' : '') +
                             '>' + mel.name + '</label>'
                         ).on('change', function (e) {
                             if (e.target.checked) {
@@ -398,8 +402,10 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                             } else {
                                 removeMapOverlay(mel.name);
                             }
+                            LS.save('leaflet-layer-' + mel.name, e.target.checked);
                         })
                     );
+                    if (enabled) addMapOverlay(mel.name);
                });
 
                 // Create map legend selectors
