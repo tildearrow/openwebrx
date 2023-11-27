@@ -388,24 +388,23 @@ MapManager.prototype.initializeMap = function(receiver_gps, api_key, weather_key
                     if ($('#openwebrx-map-layer-' + mel.name).length)
                         return; // checkbox with that name exists already
                     var enabled = LS.loadBool('leaflet-layer-' + mel.name); // should return false if not found
+                    if (enabled) addMapOverlay(mel.name);
                     $('#openwebrx-map-extralayers').append(
-                        $('<label>' +
-                            '<input type="checkbox" ' +
+                        $('<label><input type="checkbox" ' +
                             'name="' + mel.name + '" ' +
                             'idx="' + idx + '" ' +
                             'id="openwebrx-map-layer-' + mel.name + '"' +
                             (enabled ? ' checked ' : '') +
                             '>' + mel.name + '</label>'
                         ).on('change', function (e) {
+                            LS.save('leaflet-layer-' + mel.name, e.target.checked);
                             if (e.target.checked) {
                                 addMapOverlay(mel.name);
                             } else {
                                 removeMapOverlay(mel.name);
                             }
-                            LS.save('leaflet-layer-' + mel.name, e.target.checked);
                         })
                     );
-                    if (enabled) addMapOverlay(mel.name);
                });
 
                 // Create map legend selectors
