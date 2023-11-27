@@ -323,14 +323,13 @@ input[type=range]:disabled {
 }
 
 #openwebrx-chat-inputs {
+  margin-top: 5px;
   height: 1.5rem;
-  position: absolute;
-  bottom: 0;
-  width: 99%
+  width: 99%;
 }
 
 #openwebrx-log-scroll .nano-content, #openwebrx-log-scroll .nano-pane {
-  height: 126px;
+  height: 100%;
 }
 
 .nano .nano-pane   { background: #444; }

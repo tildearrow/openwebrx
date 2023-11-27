@@ -92,6 +92,10 @@ class GeneralSettingsController(SettingsFormController):
                     + "and shown when a client session times out.",
                 ),
                 CheckboxInput(
+                    "allow_chat",
+                    "Allow users to chat with each other",
+                ),
+                CheckboxInput(
                     "allow_audio_recording",
                     "Allow users to record received audio",
                 ),
