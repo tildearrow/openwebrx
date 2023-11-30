@@ -1,3 +1,10 @@
+**1.2.41**
+- Added message broadcasting function for admin.
+- Added ability to disable chat between clients.
+- Fixed Settings crash when a client has no SDR selected.
+- Fixed colors resetting when tuning outside profile.
+- Leaflet map now saves map and layer selections.
+
 **1.2.40**
 - Added chat between currently connected users.
 - Added ability to manage clients connected via reverse proxy.

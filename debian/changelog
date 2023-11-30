@@ -1,3 +1,13 @@
+openwebrx (1.2.41) bullseye jammy; urgency=low
+
+  * Added message broadcasting function for admin.
+  * Added ability to disable chat between clients.
+  * Fixed Settings crash when a client has no SDR selected.
+  * Fixed colors resetting when tuning outside profile.
+  * Leaflet map now saves map and layer selections.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 2 Dec 2023 16:12:00 +0000
+
 openwebrx (1.2.40) bullseye jammy; urgency=low
 
   * Added chat between currently connected users.
