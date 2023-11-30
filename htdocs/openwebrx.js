@@ -991,8 +991,6 @@ function on_ws_recv(evt) {
                         waterfallAutoButton[waterfall_measure_minmax_continuous ? 'addClass' : 'removeClass']('highlighted');
                         $('#openwebrx-waterfall-color-min, #openwebrx-waterfall-color-max').prop('disabled', waterfall_measure_minmax_continuous);
 
-                        waterfallColorsDefault();
-
                         var initial_demodulator_params = {};
                         if ('start_mod' in config)
                             initial_demodulator_params['mod'] = config['start_mod'];
@@ -1037,6 +1035,7 @@ function on_ws_recv(evt) {
 
                             stopScanner();
                             tuning_step_reset();
+                            waterfallColorsDefault();
                             waterfall_clear();
                             zoom_set(0);
                         }
