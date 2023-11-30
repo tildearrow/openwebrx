@@ -163,6 +163,7 @@ class Router(object):
             StaticRoute("/clients", ClientController),
             StaticRoute("/ban", ClientController, method="POST", options={"action": "ban"}),
             StaticRoute("/unban", ClientController, method="POST", options={"action": "unban"}),
+            StaticRoute("/broadcast", ClientController, method="POST", options={"action": "broadcast"}),
             StaticRoute("/login", SessionController, options={"action": "loginAction"}),
             StaticRoute("/login", SessionController, method="POST", options={"action": "processLoginAction"}),
             StaticRoute("/logout", SessionController, options={"action": "logoutAction"}),
