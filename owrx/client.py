@@ -108,6 +108,11 @@ class ClientRegistry(object):
         for c in self.clients:
             c.write_chat_message(name, text, color)
 
+    # Broadcast administrative message to all connected clients.
+    def broadcastAdminMessage(self, text: str):
+        for c in self.clients:
+            c.write_log_message(text)
+
     # Get client IP address from the handler.
     def getIp(self, handler):
         ip = handler.client_address[0]
@@ -121,21 +126,27 @@ class ClientRegistry(object):
     # List all active and banned clients.
     def listAll(self):
         result = []
+        # List active clients
         for c in self.clients:
-            result.append({
+            entry = {
                 "ts"   : c.conn.startTime,
                 "ip"   : self.getIp(c.conn.handler),
-                "sdr"  : c.sdr.getName(),
-                "band" : c.sdr.getProfileName(),
                 "ban"  : False
-            })
+            }
+            if c.sdr:
+                entry["sdr"]  = c.sdr.getName()
+                entry["band"] = c.sdr.getProfileName()
+            result.append(entry)
+        # Flush out stale bans
         self.expireBans()
+        # List banned clients
         for ip in self.bans:
             result.append({
                 "ts"  : self.bans[ip],
                 "ip"  : ip,
                 "ban" : True
             })
+        # Done
         return result
 
     # Ban a client, by IP, for given number of minutes.
