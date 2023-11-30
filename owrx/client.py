@@ -133,7 +133,7 @@ class ClientRegistry(object):
                 "ip"   : self.getIp(c.conn.handler),
                 "ban"  : False
             }
-            if c.sdr:
+            if c.sdr is not None:
                 entry["sdr"]  = c.sdr.getName()
                 entry["band"] = c.sdr.getProfileName()
             result.append(entry)
