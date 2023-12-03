@@ -30,10 +30,12 @@ import os.path
 
 class ThreadedHttpServer(ThreadingMixIn, HTTPServer):
     def __init__(self, web_port, RequestHandlerClass, use_ipv6):
-        bind_address = "0.0.0.0"
+        coreConfig = CoreConfig()
+        bind_address = coreConfig.get_bind_address()
+        if not bind_address:
+            bind_address = "::" if use_ipv6 else "0.0.0.0"
         if use_ipv6:
             self.address_family = socket.AF_INET6
-            bind_address = "::"
         super().__init__((bind_address, web_port), RequestHandlerClass)
 
 

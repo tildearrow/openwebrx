@@ -13,6 +13,7 @@ class CoreConfig(object):
             "temporary_directory": "/tmp",
             "log_level": "INFO",
             "temperature_sensor": "/sys/class/thermal/thermal_zone0/temp",
+            "bind_address": "",
         },
         "web": {
             "port": 8073,
@@ -62,6 +63,7 @@ class CoreConfig(object):
         CoreConfig.checkDirectory(self.data_directory, "data_directory")
         self.temporary_directory = config.get("core", "temporary_directory")
         self.temperature_sensor = config.get("core", "temperature_sensor")
+        self.bind_address = config.get("core", "bind_address")
         CoreConfig.checkDirectory(self.temporary_directory, "temporary_directory")
         self.log_level = config.get("core", "log_level")
         self.web_port = config.getint("web", "port")
@@ -97,3 +99,6 @@ class CoreConfig(object):
 
     def get_log_level(self) -> str:
         return self.log_level
+
+    def get_bind_address(self) -> str:
+        return self.bind_address

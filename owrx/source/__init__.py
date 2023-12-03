@@ -175,7 +175,7 @@ class SdrSource(ABC):
         self.busyState = SdrBusyState.IDLE
         self.restartTimer = None
         self.maxRetries = 10
-        self.retryDelay = 60
+        self.retryDelay = 15
         self.retryCount = 0
 
         self.validateProfiles()
