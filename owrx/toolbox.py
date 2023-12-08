@@ -131,11 +131,15 @@ class RdsParser(TextParser):
     def parse(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
+        # Delete constantly changing group ID
+        if "group" in data:
+            del data["group"]
         # Only update if there is new data
         if data.items() <= self.rds.items():
             return None
         else:
             self.rds.update(data)
+            logger.debug("Updated RDS: {0}".format(self.rds))
             return self.rds
 
 

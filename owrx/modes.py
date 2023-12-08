@@ -271,7 +271,8 @@ class Modes(object):
             bandpass=Bandpass(-85500, 85500),
             requirements=["rds"],
             service=False,
-            squelch=False
+            squelch=False,
+            secondaryFft=False
         ),
     ]
 
