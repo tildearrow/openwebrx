@@ -1567,13 +1567,13 @@ function openwebrx_init() {
     initSpectrum();
     initPanels();
     $('#openwebrx-panel-receiver').demodulatorPanel();
-    window.addEventListener("resize", openwebrx_resize);
+    window.addEventListener('resize', openwebrx_resize);
     bookmarks = new BookmarkBar();
     scanner = new Scanner(bookmarks, 1000);
     initSliders();
 
     // Create and run clock
-    clock = new Clock($("#openwebrx-clock-utc"));
+    clock = new Clock($('#openwebrx-clock-utc'));
 }
 
 function initSliders() {
@@ -1711,6 +1711,9 @@ function initPanels() {
         });
         if (panel_displayed(el)) first_show_panel(el);
     });
+
+    // Apply nano-scroller to all panels that have 'nano' class
+    $('.nano').nanoScroller();
 }
 
 function initSpectrum() {
