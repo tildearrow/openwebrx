@@ -386,7 +386,6 @@ class SdrSource(ABC):
                 else:
                     failed = True
                 self.setState(SdrSourceState.STOPPED)
-                self.retryCount = 0
 
             self.monitor = threading.Thread(target=wait_for_process_to_end, name="source_monitor")
             self.monitor.start()
