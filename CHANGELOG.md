@@ -1,3 +1,10 @@
+**1.2.42**
+- Added broadcast FM RDS decoder, using Redsea.
+- Added bind_address core configuration parameter.
+- Descreased SDR initialization retry time to 15 seconds.
+- Stopped some failed sources from restarting indefinitely.
+- Enabled nano-scroller in relevant panels on startup.
+
 **1.2.41**
 - Added message broadcasting function for admin.
 - Added ability to disable chat between clients.

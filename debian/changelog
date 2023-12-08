@@ -1,3 +1,13 @@
+openwebrx (1.2.42) bullseye jammy; urgency=low
+
+  * Added broadcast FM RDS decoder, using Redsea.
+  * Added bind_address core configuration parameter.
+  * Descreased SDR initialization retry time to 15 seconds.
+  * Stopped some failed sources from restarting indefinitely.
+  * Enabled nano-scroller in relevant panels on startup.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Sat, 9 Dec 2023 16:12:00 +0000
+
 openwebrx (1.2.41) bullseye jammy; urgency=low
 
   * Added message broadcasting function for admin.
