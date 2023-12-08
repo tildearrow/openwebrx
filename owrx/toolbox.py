@@ -142,6 +142,11 @@ class RdsParser(TextParser):
             logger.debug("Updated RDS: {0}".format(self.rds))
             return self.rds
 
+    def setDialFrequency(self, frequency: int) -> None:
+        super().setDialFrequency(frequency)
+        # Clear RDS data when frequency changed
+        self.rds = { "mode": "RDS", "frequency": frequency }
+
 
 class IsmParser(TextParser):
     def __init__(self, service: bool = False):

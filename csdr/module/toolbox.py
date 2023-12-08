@@ -157,8 +157,8 @@ class RedseaModule(WavFileModule):
 
     def getCommand(self):
         return [
-            "redsea", "-f", "/dev/stdin", "-i", "mpx",
-            "-r", str(self.sampleRate)
+            "redsea", "--file", "/dev/stdin", "--input", "mpx",
+            "--samplerate", str(self.sampleRate), "--rbds"
         ]
 
     def getOutputFormat(self) -> Format:
