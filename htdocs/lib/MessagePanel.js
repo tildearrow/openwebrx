@@ -670,11 +670,11 @@ RdsMessagePanel.prototype.render = function() {
 RdsMessagePanel.prototype.pushMessage = function(msg) {
     var pi   = msg.hasOwnProperty('pi')? 'PI:' + msg.pi : '';
     var ps   = msg.hasOwnProperty('ps')? msg.ps : '---';
-    var ct   = msg.hasOwnProperty('clock_time')? msg.clock_time : '&nbsp;';
-    var pty  = msg.hasOwnProperty('prog_type')? msg.prog_type : '&nbsp;';
+    var ct   = msg.hasOwnProperty('clock_time')? msg.clock_time : '';
+    var pty  = msg.hasOwnProperty('prog_type')? msg.prog_type : '';
     var name = msg.hasOwnProperty('callsign')? msg.callsign : '';
     var freq = msg.hasOwnProperty('frequency')? msg.frequency : 0;
-    var text = msg.hasOwnProperty('radiotext')? msg.radiotext : '&nbsp;';
+    var text = msg.hasOwnProperty('radiotext')? msg.radiotext : '';
 
     // Combine callsign with frequency
     $('#rds-name').html(
