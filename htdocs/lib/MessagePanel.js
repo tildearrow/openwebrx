@@ -642,7 +642,8 @@ $.fn.ismMessagePanel = function() {
 };
 
 RdsMessagePanel = function(el) {
-    MessagePanel.call(this, el);
+    this.el = el;
+    this.render();
 }
 
 RdsMessagePanel.prototype = Object.create(MessagePanel.prototype);
@@ -653,30 +654,45 @@ RdsMessagePanel.prototype.supportsMessage = function(message) {
 
 RdsMessagePanel.prototype.render = function() {
     $(this.el).append($(
-        '<table><thead><tr>' +
-        '<td class="attr"><b>RDS Information</b></td>' +
-        '</tr></thead><tbody></tbody></table>'
+        '<div>' +
+            '<span id="rds-name" class="name" />' +
+            '<span id="rds-pi" class="pi" />' +
+        '</div>' +
+        '<div id="rds-ps" class="ps" />' +
+        '<div id="rds-text" class="text" />' +
+        '<div>' +
+            '<span id="rds-pty" class="pty" />' +
+            '<span id="rds-ct" class="ct" />' +
+        '</div>'
     ));
 };
 
-RdsMessagePanel.prototype.formatAttr = function(msg, key) {
-    return('<tr><td class="attr">' +
-        '<div style="border-bottom:1px dotted;">' +
-        '<span style="float:left;">' + key + '</span>' +
-        '<span style="float:right;">' + msg[key] + '</span>' +
-        '</div></td></tr>'
-    );
-};
-
 RdsMessagePanel.prototype.pushMessage = function(msg) {
-    // Append message header (address, time, etc)
-    var $b = $(this.el).find('tbody');
-    $b.empty();
+    var pi   = msg.hasOwnProperty('pi')? 'PI:' + msg.pi : '';
+    var ps   = msg.hasOwnProperty('ps')? msg.ps : '---';
+    var ct   = msg.hasOwnProperty('clock_time')? msg.clock_time : '&nbsp;';
+    var pty  = msg.hasOwnProperty('prog_type')? msg.prog_type : '&nbsp;';
+    var name = msg.hasOwnProperty('callsign')? msg.callsign : '';
+    var freq = msg.hasOwnProperty('frequency')? msg.frequency : 0;
+    var text = msg.hasOwnProperty('radiotext')? msg.radiotext : '&nbsp;';
 
-    // Append attributes
-    for (var key in msg) {
-        $b.append($(this.formatAttr(msg, key)));
+    // Combine callsign with frequency
+    $('#rds-name').html(
+        name + (name && freq? ' ':'') +
+        (freq? '' + (freq/1000000).toFixed(1) : '')
+    );
+
+    // CT = "2023-12-08T16:40:00-05:00" => "2023-12-08 16:40:00"
+    if (ct) {
+        var matches = ct.match(/^(\d\d\d\d-\d\d-\d\d)T(\d\d:\d\d:\d\d)/);
+        if (matches) ct = matches[1] + '&nbsp;' + matches[2];
     }
+
+    $('#rds-pi').html(pi);
+    $('#rds-ps').html(Utils.htmlEscape(ps));
+    $('#rds-text').html(Utils.htmlEscape(text));
+    $('#rds-pty').html(pty);
+    $('#rds-ct').html(ct);
 };
 
 $.fn.rdsMessagePanel = function() {
