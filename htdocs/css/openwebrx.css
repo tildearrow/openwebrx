@@ -1391,6 +1391,18 @@ img.openwebrx-mirror-img
     padding-right: 10px;
 }
 
+#openwebrx-panel-rds-message {
+    height: 310px;
+}
+
+#openwebrx-panel-rds-message tbody {
+    height: 280px;
+}
+
+#openwebrx-panel-rds-message .attr {
+    width: 560px;
+}
+
 #openwebrx-panel-sstv-message {
     height: 310px;
     width: 365px;
@@ -1533,6 +1545,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-content-container,
+#openwebrx-panel-digimodes[data-mode="rds"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ft8"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="wspr"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="jt65"]    #openwebrx-digimode-select-channel,
@@ -1554,6 +1567,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-select-channel,
+#openwebrx-panel-digimodes[data-mode="rds"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="zvei"]    #openwebrx-digimode-select-channel
 {
@@ -1580,7 +1594,8 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="msk144"]  #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-canvas-container,
-#openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container
+#openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container,
+#openwebrx-panel-digimodes[data-mode="rds"]     #openwebrx-digimode-canvas-container
 {
     height: 200px;
     margin: -10px;

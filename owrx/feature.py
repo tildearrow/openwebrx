@@ -91,6 +91,7 @@ class FeatureDetector(object):
         "acars": ["acarsdec"],
         "page": ["multimon"],
         "selcall": ["multimon"],
+        "rds": ["redsea"],
         "png": ["imagemagick"],
     }
 
@@ -658,3 +659,9 @@ class FeatureDetector(object):
         """
         return self.command_is_runnable("multimon-ng --help")
 
+    def has_redsea(self):
+        """
+        OpenWebRX uses the [redsea](https://github.com/windytan/redsea) tool to decode RDS
+        information from FM broadcasts. You will have to compile it from source.
+        """
+        return self.command_is_runnable("redsea --version")

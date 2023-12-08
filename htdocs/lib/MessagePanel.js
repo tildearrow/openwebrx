@@ -641,6 +641,51 @@ $.fn.ismMessagePanel = function() {
     return this.data('panel');
 };
 
+RdsMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+}
+
+RdsMessagePanel.prototype = Object.create(MessagePanel.prototype);
+
+RdsMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'RDS';
+};
+
+RdsMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table><thead><tr>' +
+        '<td class="attr"><b>RDS Information</b></td>' +
+        '</tr></thead><tbody></tbody></table>'
+    ));
+};
+
+RdsMessagePanel.prototype.formatAttr = function(msg, key) {
+    return('<tr><td class="attr">' +
+        '<div style="border-bottom:1px dotted;">' +
+        '<span style="float:left;">' + key + '</span>' +
+        '<span style="float:right;">' + msg[key] + '</span>' +
+        '</div></td></tr>'
+    );
+};
+
+RdsMessagePanel.prototype.pushMessage = function(msg) {
+    // Append message header (address, time, etc)
+    var $b = $(this.el).find('tbody');
+    $b.empty();
+
+    // Append attributes
+    for (var key in msg) {
+        $b.append($(this.formatAttr(msg, key)));
+    }
+};
+
+$.fn.rdsMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new RdsMessagePanel(this));
+    }
+    return this.data('panel');
+};
+
 SstvMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();

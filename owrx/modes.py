@@ -264,6 +264,15 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
+        DigitalMode(
+            "rds",
+            "RDS",
+            underlying=["wfm"],
+            bandpass=Bandpass(-85500, 85500),
+            requirements=["rds"],
+            service=False,
+            squelch=False
+        ),
     ]
 
     @staticmethod
