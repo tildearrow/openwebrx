@@ -139,7 +139,6 @@ class RdsParser(TextParser):
             return None
         else:
             self.rds.update(data)
-            logger.debug("Updated RDS: {0}".format(self.rds))
             return self.rds
 
     def setDialFrequency(self, frequency: int) -> None:
