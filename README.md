@@ -2,11 +2,13 @@ OpenWebRX+
 =========
 
 This is the **improved version** of the OpenWebRX online SDR. The pre-built OpenWebRX+ packages are available from the [package repository](https://luarvique.github.io/ppa/). Pre-built disk images are available from the [Releases page](https://github.com/luarvique/openwebrx/releases). News, support, and general discussion can be found in the [Telegram channel](https://t.me/openwebrx) and related [chat](https://t.me/openwebrx_chat). Features found in OpenWebRX+ that are not present in the original version:
-* AIS, SSTV, FAX, FLEX, POCSAG, HFDL, VDL2, ADSB, ACARS, ISM, SAM, SITOR-B, RTTY, and CW decoders.
+* AIS, SSTV, FAX, FLEX, POCSAG, HFDL, VDL2, ADSB, ACARS, ISM, RDS, SAM, SITOR-B, RTTY, and CW decoders.
 * DTMF, EEA, EIA, CCIR, and several ZVEY SELCALL decoders.
 * Background SSTV and FAX decoding with received images browser.
+* Built-in chat between receiver users.
 * Built-in recorder for received audio.
 * Built-in scanner over bookmarks.
+* Ability for the admin to see user connections and ban abusive users.
 * Adjustable noise filtering based on spectral subtraction.
 * Adjustable tuning step.
 * Automatically created bookmarks for shortwave broadcasts.
