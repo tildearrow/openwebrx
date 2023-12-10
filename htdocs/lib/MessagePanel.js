@@ -684,7 +684,7 @@ RdsMessagePanel.prototype.pushMessage = function(msg) {
 
     // CT = "2023-12-08T16:40:00-05:00" => "2023-12-08 16:40:00"
     if (ct) {
-        var matches = ct.match(/^(\d\d\d\d-\d\d-\d\d)T(\d\d:\d\d:\d\d)/);
+        var matches = ct.match(/^(.*)T(.*)[Z+\-]/);
         if (matches) ct = matches[1] + '&nbsp;' + matches[2];
     }
 
