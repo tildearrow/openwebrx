@@ -33,6 +33,10 @@ class DecodingSettingsController(SettingsFormController):
                     infotext='See <a href="https://en.wikipedia.org/wiki/FM_broadcasting#Pre-emphasis_and_de-emphasis"'
                     + ' target="_blank">this Wikipedia article</a> for more information',
                 ),
+                CheckboxInput(
+                    "rds_usa",
+                    "Decode USA-specific RDS information from WFM broadcasts",
+                ),
             ),
             Section(
                 "Digital voice",

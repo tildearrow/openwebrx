@@ -4,6 +4,7 @@ from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser, RdsParser
 from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
+from owrx.config import Config
 
 import os
 
@@ -192,11 +193,13 @@ class AcarsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class RdsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self):
+        pm = Config.get()
+        self.usa = pm["rds_usa"]
         self.sampleRate = 171000
         self.parser = RdsParser()
         workers = [
             Convert(Format.FLOAT, Format.SHORT),
-            RedseaModule(self.sampleRate),
+            RedseaModule(self.sampleRate, usa=self.usa),
             self.parser,
         ]
         # Connect all the workers

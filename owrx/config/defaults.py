@@ -207,5 +207,6 @@ defaultConfig = PropertyLayer(
     acars_ttl=1800,
     fax_postprocess=True,
     fax_color=False,
-    fax_am=False
+    fax_am=False,
+    rds_usa=False
 ).readonly()
