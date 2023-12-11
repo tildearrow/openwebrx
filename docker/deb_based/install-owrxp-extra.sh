@@ -35,7 +35,7 @@ esac
 
 
 echo "+ Install dev packages..."
-BUILD_PACKAGES="git cmake make patch wget sudo gcc g++ libusb-1.0-0-dev libsoapysdr-dev debhelper cmake libprotobuf-dev protobuf-compiler libcodecserver-dev build-essential xxd qt5-qmake libpulse-dev libfaad-dev libopus-dev libfftw3-dev  pkg-config libglib2.0-dev libconfig++-dev libliquid-dev libairspyhf-dev libpopt-dev libiio-dev libad9361-dev libhidapi-dev libasound2-dev qtmultimedia5-dev  libqt5serialport5-dev qttools5-dev qttools5-dev-tools libboost-all-dev libfftw3-dev libreadline-dev libusb-1.0-0-dev libudev-dev asciidoctor gfortran libhamlib-dev libsndfile1-dev"
+BUILD_PACKAGES="git cmake make patch wget sudo gcc g++ libusb-1.0-0-dev libsoapysdr-dev debhelper cmake libprotobuf-dev protobuf-compiler libcodecserver-dev build-essential xxd qt5-qmake libpulse-dev libfaad-dev libopus-dev libfftw3-dev  pkg-config libglib2.0-dev libconfig++-dev libliquid-dev libairspyhf-dev libpopt-dev libiio-dev libad9361-dev libhidapi-dev libasound2-dev qtmultimedia5-dev  libqt5serialport5-dev qttools5-dev qttools5-dev-tools libboost-all-dev libfftw3-dev libreadline-dev libusb-1.0-0-dev libudev-dev asciidoctor gfortran libhamlib-dev libsndfile1-dev libliquid-dev autoconf build-essential automake"
 apt-get -y install --no-install-recommends $BUILD_PACKAGES
 
 echo "+ Install SDRPlay..."
@@ -48,6 +48,12 @@ mkdir -p /etc/udev/rules.d
 cd ..
 rm -rf sdrplay
 rm $SDRPLAY_BINARY
+
+echo "+ Install redsea (RDS)"
+git clone https://github.com/windytan/redsea.git
+pushd redsea
+./autogen.sh && ./configure && make && make install
+popd
 
 echo "+ Install PerseusSDR..."
 git clone https://github.com/Microtelecom/libperseus-sdr.git
