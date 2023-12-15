@@ -219,7 +219,7 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate, bandWidth, invert=False):
+    def __init__(self, baudRate=100, bandWidth=170, invert=False):
         self.baudRate = baudRate
         self.bandWidth = bandWidth
         self.invert = invert
@@ -233,8 +233,8 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             FmDemod(),
             Lowpass(Format.FLOAT, cutoff),
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
-            SitorDecoder(jitter=1, invert=invert),
-            Ccir476Decoder(fec=True, allowErrors=16),
+            SitorDecoder(jitter=1, allowErrors=16, invert=invert),
+            Ccir476Decoder(),
         ]
         super().__init__(workers)
 
@@ -253,7 +253,7 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate, bandWidth, invert=False):
+    def __init__(self, baudRate=100, bandWidth=170, invert=False):
         self.baudRate = baudRate
         self.bandWidth = bandWidth
         self.invert = invert
