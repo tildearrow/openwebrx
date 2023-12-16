@@ -1,3 +1,11 @@
+**1.2.43**
+- Added option to switch between US and EU RDS decoding.
+- Refactored and improved CW, SITOR-B, and CCIR476 decoders.
+- Fixed info bubble not updating in Google map.
+- Fixed resizing RDS display on mobile devices.
+- Fixed date/time parsing in RDS display.
+- Fixed CW decoder to print underscores for unrecognized characters.
+
 **1.2.42**
 - Added broadcast FM RDS decoder, using Redsea.
 - Added bind_address core configuration parameter.
