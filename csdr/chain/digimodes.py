@@ -123,26 +123,23 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate: float):
+    def __init__(self, baudRate: float, showCw: bool = false):
         self.sampleRate = 12000
-        self.offset = 800
-        self.baudRate = baudRate
+        self.showCw = showCw
         workers = [
-            Shift(float(self.offset) / self.sampleRate),
             Agc(Format.COMPLEX_FLOAT),
-            CwDecoder(self.sampleRate, self.offset, int(self.baudRate)),
+            CwDecoder(self.sampleRate, self.showCw),
         ]
         super().__init__(workers)
 
     def getBandwidth(self):
-        return self.baudRate
+        return 100
 
     def setSampleRate(self, sampleRate: int) -> None:
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(0, Shift(float(self.offset) / sampleRate))
-        self.replace(2, CwDecoder(sampleRate, self.offset, int(self.baudRate)))
+        self.replace(1, CwDecoder(sampleRate, self.showCw))
 
 
 class MFRttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
