@@ -210,7 +210,7 @@ MapManager.prototype.processUpdates = function(updates) {
                     expectedCallsign = false;
                 }
 
-                if (infoWindow && infoWindow.callsign && infoWindow.callsign === update.callsign) {
+                if (infoWindow && infoWindow.name && infoWindow.name === update.callsign) {
                     showMarkerInfoWindow(update.callsign, marker.position);
                 }
             break;
