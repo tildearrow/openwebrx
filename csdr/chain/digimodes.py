@@ -3,7 +3,7 @@ from csdr.module.msk144 import Msk144Module, ParserAdapter
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, SitorDecoder, Ccir476Decoder, DscDecoder, Ccir493Decoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, SitorBDecoder, Ccir476Decoder, DscDecoder, Ccir493Decoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.direwolf import DirewolfModule
 from owrx.sstv import SstvParser
@@ -233,7 +233,7 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             FmDemod(),
             Lowpass(Format.FLOAT, cutoff),
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
-            SitorDecoder(jitter=1, allowErrors=16, invert=invert),
+            SitorBDecoder(jitter=1, allowErrors=16, invert=invert),
             Ccir476Decoder(),
         ]
         super().__init__(workers)
