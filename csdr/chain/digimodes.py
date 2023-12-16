@@ -267,7 +267,7 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             FmDemod(),
             Lowpass(Format.FLOAT, cutoff),
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
-            Ccir493Decoder(fec=True, invert=invert),
+            Ccir493Decoder(invert=invert),
             DscDecoder(),
         ]
         super().__init__(workers)
