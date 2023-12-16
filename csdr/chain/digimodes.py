@@ -123,7 +123,7 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate: float, showCw: bool = false):
+    def __init__(self, baudRate: float, showCw: bool = False):
         self.sampleRate = 12000
         self.showCw = showCw
         workers = [
