@@ -19,12 +19,18 @@ class DecodingSettingsController(SettingsFormController):
     def getSections(self):
         return [
             Section(
-                "Demodulator settings",
+                "Miscellaneous",
                 NumberInput(
                     "squelch_auto_margin",
                     "Auto-Squelch threshold",
                     infotext="Offset to be added to the current signal level when using the auto-squelch",
                     append="dB",
+                ),
+                NumberInput(
+                    "digimodes_fft_size",
+                    "Secondary FFT size",
+                    infotext="Secondary waterfall resolution in digital modes",
+                    append="bins"
                 ),
                 DropdownInput(
                     "wfm_deemphasis_tau",
@@ -36,6 +42,14 @@ class DecodingSettingsController(SettingsFormController):
                 CheckboxInput(
                     "rds_usa",
                     "Decode USA-specific RDS information from WFM broadcasts",
+                ),
+                CheckboxInput(
+                    "paging_filter",
+                    "Filter out empty, numeric, or unreadable pager messages",
+                ),
+                CheckboxInput(
+                    "cw_showcw",
+                    "Show CW codes (dits / dahs) when decoding CW",
                 ),
             ),
             Section(
@@ -56,17 +70,6 @@ class DecodingSettingsController(SettingsFormController):
                     "digital_voice_nxdn_id_lookup",
                     'Enable lookup of NXDN ids in the <a href="https://www.radioid.net/" target="_blank">'
                     + "radioid</a> database to show callsigns and names",
-                ),
-            ),
-            Section(
-                "Digimodes",
-                NumberInput("digimodes_fft_size", "Digimodes FFT size", append="bins"),
-            ),
-            Section(
-                "Pager messages",
-                CheckboxInput(
-                    "paging_filter",
-                    "Filter out empty, numeric, or unreadable pager messages",
                 ),
             ),
             Section(
@@ -103,7 +106,7 @@ class DecodingSettingsController(SettingsFormController):
                 CheckboxInput("fax_am", "Use amplitude modulation"),
             ),
             Section(
-                "Decoding settings",
+                "WSJT decoders",
                 NumberInput("decoding_queue_workers", "Number of decoding workers"),
                 NumberInput("decoding_queue_length", "Maximum length of decoding job queue"),
                 NumberInput(

@@ -123,9 +123,11 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate: float, showCw: bool = False):
+    def __init__(self, bandWidth: float = 100):
+        pm = Config.get()
         self.sampleRate = 12000
-        self.showCw = showCw
+        self.bandWidth = bandWidth
+        self.showCw = pm["cw_showcw"]
         workers = [
             Agc(Format.COMPLEX_FLOAT),
             CwDecoder(self.sampleRate, self.showCw),
@@ -133,7 +135,7 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         super().__init__(workers)
 
     def getBandwidth(self):
-        return 100
+        return self.bandWidth
 
     def setSampleRate(self, sampleRate: int) -> None:
         if sampleRate == self.sampleRate:

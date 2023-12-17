@@ -1,7 +1,10 @@
 openwebrx (1.2.43) bullseye jammy; urgency=low
 
   * Added option to switch between US and EU RDS decoding.
+  * Added option to show dits and dahs when decoding CW.
   * Refactored and improved CW, SITOR-B, and CCIR476 decoders.
+  * Reorganized "Demodulation and Decoding Settings" page.
+  * Increased CW decoder bandwidth to 100Hz.
   * Fixed info bubble not updating in Google map.
   * Fixed resizing RDS display on mobile devices.  
   * Fixed date/time parsing in RDS display.

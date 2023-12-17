@@ -208,5 +208,6 @@ defaultConfig = PropertyLayer(
     fax_postprocess=True,
     fax_color=False,
     fax_am=False,
-    rds_usa=False
+    rds_usa=False,
+    cw_showcw=False
 ).readonly()
