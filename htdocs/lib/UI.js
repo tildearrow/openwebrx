@@ -76,7 +76,7 @@ UI.toggleMute = function(on) {
     var $muteButton = $('.openwebrx-mute-button');
     var $volumePanel = $('#openwebrx-panel-volume');
 
-    if ($volumePanel.prop('disabled') && (toggle || !on)) {
+    if ((this.volumeMuted >= 0) && (toggle || !on)) {
         this.setVolume(this.volumeMuted);
         this.volumeMuted = -1;
         $muteButton.removeClass('muted');
