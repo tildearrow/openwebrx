@@ -37,11 +37,19 @@ UI.loadSettings = function() {
     var volume = LS.has('volume')? LS.loadInt('volume') : 50;
     var muted  = LS.has('volumeMuted')? LS.loadInt('volumeMuted') : -1;
     if (muted >= 0) {
-        if (this.volumeMuted < 0) this.toggleMute(true);
-        this.volumeMuted = muted;
+        if (this.volumeMuted >= 0) {
+            this.volumeMuted = muted;
+        } else {
+            this.volume = muted;
+            this.toggleMute(true);
+        }
     } else {
-        if (this.volumeMuted >= 0) this.toggleMute(false);
-        this.setVolume(volume);
+        if (this.volumeMuted < 0) {
+            this.setVolume(volume);
+        } else {
+            this.volumeMuted = volume;
+            this.toggleMute(false);
+        }
     }
 
     // Toggle UI sections
