@@ -146,7 +146,7 @@ var mapExtraLayers = [
         name: 'Maidenhead-QTH',
         createLayer: async function () {
             await $.when($.getScript('https://ha8tks.github.io/Leaflet.Maidenhead/src/L.Maidenhead.js'));
-            return L.maidenhead({ color: 'rgba(255, 0, 0, 0.4)' });
+            return L.maidenhead({ color: 'rgba(100, 100, 100, 0.6)' });
         }
     },
 ];
