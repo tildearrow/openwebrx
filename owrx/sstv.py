@@ -75,16 +75,17 @@ class SstvParser(ThreadModule):
     def closeFile(self):
         if self.file is not None:
             try:
-                logger.debug("Closing bitmap file '%s'." % self.file.name)
+                filePath = self.file.name
+                logger.debug("Closing bitmap file '%s'." % filePath)
                 self.file.close()
                 self.file = None
                 if self.height==0 or self.line<self.height:
-                    logger.debug("Deleting short bitmap file '%s'." % self.file.name)
-                    os.unlink(self.file.name)
+                    logger.debug("Deleting short bitmap file '%s'." % filePath)
+                    os.unlink(filePath)
                 else:
                     # Convert file from BMP to PNG
-                    logger.debug("Converting '%s' to PNG..." % self.file.name)
-                    Storage.convertImage(self.file.name)
+                    logger.debug("Converting '%s' to PNG..." % filePath)
+                    Storage.convertImage(filePath)
                     # Delete excessive files from storage
                     logger.debug("Performing storage cleanup...")
                     Storage.getSharedInstance().cleanStoredFiles()

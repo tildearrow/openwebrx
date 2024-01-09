@@ -35,10 +35,10 @@ class Storage(object):
         with self.lock:
             if not os.path.exists(filePath):
                 return open(filePath, "wb", buffering = buffering)
-            elif filePath.contains("."):
+            elif "." in filePath:
                 filePathX = "-{0}.".join(filePath.rsplit(".", 1))
                 for i in range(99):
-                    filePath1 = filePathX.format(i)
+                    filePath1 = filePathX.format(i + 1)
                     if not os.path.exists(filePath1):
                         return open(filePath1, "wb", buffering = buffering)
 
