@@ -91,7 +91,7 @@ class Storage(object):
 
     # Convert given file from BMP to PNG format using ImageMagick
     @staticmethod
-    def convertImage(self, inFile: str):
+    def convertImage(inFile: str):
         # Adds storage path
         if not inFile.startswith('/'):
             inFile = self.getFilePath(inFile)
