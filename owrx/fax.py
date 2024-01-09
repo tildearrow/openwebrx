@@ -32,19 +32,19 @@ class FaxParser(ThreadModule):
     def closeFile(self):
         if self.file is not None:
             try:
-                logger.debug("Closing bitmap file '%s'." % self.fileName)
+                logger.debug("Closing bitmap file '%s'." % self.file.name)
                 self.file.close()
                 self.file = None
                 if self.height==0 or self.line<self.height:
-                    logger.debug("Deleting short bitmap file '%s'." % self.fileName)
-                    os.unlink(self.fileName)
+                    logger.debug("Deleting short bitmap file '%s'." % self.file.name)
+                    os.unlink(self.file.name)
                 else:
                     # Convert file from BMP to PNG
-                    logger.debug("Converting '%s' to PNG..." % self.fileName)
-                    Storage().convertImage(self.fileName)
+                    logger.debug("Converting '%s' to PNG..." % self.file.name)
+                    Storage.convertImage(self.file.name)
                     # Delete excessive files from storage
                     logger.debug("Performing storage cleanup...")
-                    Storage().cleanStoredFiles()
+                    Storage.getSharedInstance().cleanStoredFiles()
 
             except Exception as e:
                 logger.debug("Exception closing file: %s" % str(e))
@@ -53,9 +53,8 @@ class FaxParser(ThreadModule):
     def newFile(self, fileName):
         self.closeFile()
         try:
-            self.fileName = Storage().getFilePath(fileName + ".bmp")
-            logger.debug("Opening bitmap file '%s'..." % self.fileName)
-            self.file = open(self.fileName, "wb")
+            logger.debug("Opening bitmap file '%s'..." % fileName)
+            self.file = Storage.getSharedInstance().newFile(fileName)
 
         except Exception as e:
             logger.debug("Exception opening file: %s" % str(e))
@@ -207,7 +206,7 @@ class FaxParser(ThreadModule):
                     # Find mode name and time
                     modeName  = "IOC-%d %dLPM" % (self.ioc, self.lpm)
                     timeStamp = datetime.utcnow().strftime("%H:%M:%S")
-                    fileName  = Storage().makeFileName("FAX-{0}", self.frequency)
+                    fileName  = Storage.makeFileName("FAX-{0}", self.frequency)
                     logger.debug("%s receiving %dx%d %s frame as '%s'." % (
                         self.myName(), self.width, self.height,
                         modeName, fileName
@@ -215,7 +214,7 @@ class FaxParser(ThreadModule):
                     # If running as a service...
                     if self.service:
                         # Create a new image file and write BMP header
-                        self.newFile(fileName)
+                        self.newFile(fileName + ".bmp")
                         self.writeFile(self.data[0:headerSize])
                         # Empty result
                         out = {}

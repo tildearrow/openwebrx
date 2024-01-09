@@ -32,12 +32,12 @@ class TextParser(LineBasedModule):
     def closeFile(self):
         if self.file is not None:
             try:
-                logger.debug("Closing log file '%s'." % self.fileName)
+                logger.debug("Closing log file '%s'." % self.file.name)
                 self.file.close()
                 self.file = None
                 # Delete excessive files from storage
                 logger.debug("Performing storage cleanup...")
-                Storage().cleanStoredFiles()
+                Storage.getSharedInstance().cleanStoredFiles()
 
             except Exception as exptn:
                 logger.debug("Exception closing file: %s" % str(exptn))
@@ -46,9 +46,8 @@ class TextParser(LineBasedModule):
     def newFile(self, fileName):
         self.closeFile()
         try:
-            self.fileName = Storage().getFilePath(fileName + ".txt")
-            logger.debug("Opening log file '%s'..." % self.fileName)
-            self.file = open(self.fileName, "wb", buffering = 0)
+            logger.debug("Opening log file '%s'..." % fileName)
+            self.file = Storage.getSharedInstance().newFile(fileName, buffering = 0)
             self.cntLines = 0
 
         except Exception as exptn:
@@ -58,7 +57,7 @@ class TextParser(LineBasedModule):
     def writeFile(self, data):
         # If no file open, create and open a new file
         if self.file is None and self.filePfx is not None:
-            self.newFile(Storage().makeFileName(self.filePfx+"-{0}", self.frequency))
+            self.newFile(Storage.makeFileName(self.filePfx+"-{0}", self.frequency) + ".txt")
         # If file open now...
         if self.file is not None:
             # Write new line into the file

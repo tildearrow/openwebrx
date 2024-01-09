@@ -6,14 +6,14 @@ import re
 
 class FileController(AssetsController):
     def getFilePath(self, file):
-        return Storage().getFilePath(file)
+        return Storage.getFilePath(file)
 
 
 class FilesController(WebpageController):
     def template_variables(self):
         isimg = re.compile(r'.*\.(png|bmp|gif|jpg)$')
         issnd = re.compile(r'.*\.(mp3|wav)$')
-        files = Storage().getStoredFiles()
+        files = Storage.getSharedInstance().getStoredFiles()
         rows  = ""
 
         for i in range(len(files)):

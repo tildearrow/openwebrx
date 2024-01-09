@@ -101,7 +101,7 @@ class Router(object):
             StaticRoute("/policy", PolicyController),
             StaticRoute("/features", FeatureController),
             StaticRoute("/files", FilesController),
-            RegexRoute("^/files/(%s)$" % Storage().getNamePattern(), FileController),
+            RegexRoute("^/files/(%s)$" % Storage.getNamePattern(), FileController),
             StaticRoute("/api/features", ApiController),
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
