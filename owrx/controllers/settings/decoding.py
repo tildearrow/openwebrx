@@ -101,6 +101,12 @@ class DecodingSettingsController(SettingsFormController):
             ),
             Section(
                 "Fax transmissions",
+                NumberInput(
+                    "fax_lpm",
+                    "Transmission speed",
+                    validator=RangeValidator(30, 480),
+                    append="lpm",
+                ),
                 CheckboxInput("fax_postprocess", "Post-process received images to reduce noise"),
                 CheckboxInput("fax_color", "Receive color images"),
                 CheckboxInput("fax_am", "Use amplitude modulation"),

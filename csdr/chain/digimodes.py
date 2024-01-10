@@ -192,7 +192,7 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         pm = Config.get()
         self.parser      = FaxParser(service=service)
         self.sampleRate  = 12000
-        self.lpm         = 120
+        self.lpm         = pm["fax_lpm"]
         self.dbgTime     = 300000
         self.postProcess = pm["fax_postprocess"]
         self.color       = pm["fax_color"]
