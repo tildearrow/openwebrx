@@ -1,3 +1,13 @@
+**1.2.44**
+- Added Storage API for creating files that avoids name collisions.
+- Added admin-configurable FAX LPM parameter (default is 120).
+- Added reference to documentation to the console window.
+- Added maidenhead layer to Leaflet-based maps.
+- Fixed volume resetting to zero on page reload.
+- Fixed step tuning when waterfall is zoomed.
+- Fixed browser console error on vendor-provided markers.
+- Increased upper limit on aircraft data retention to 100000 seconds.
+
 **1.2.43**
 - Added support for JS plugins developed by Stanislav Lechev.
 - Added option to switch between US and EU RDS decoding.

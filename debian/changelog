@@ -1,3 +1,16 @@
+openwebrx (1.2.44) bullseye jammy; urgency=low
+
+  * Added Storage API for creating files that avoids name collisions.
+  * Added admin-configurable FAX LPM parameter (default is 120).
+  * Added reference to documentation to the console window.
+  * Added maidenhead layer to Leaflet-based maps.
+  * Fixed volume resetting to zero on page reload.
+  * Fixed step tuning when waterfall is zoomed.
+  * Fixed browser console error on vendor-provided markers.
+  * Increased upper limit on aircraft data retention to 100000 seconds.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Thu, 11 Jan 2024 16:12:00 +0000
+
 openwebrx (1.2.43) bullseye jammy; urgency=low
 
   * Added support for JS plugins developed by Stanislav Lechev.
