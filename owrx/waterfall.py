@@ -284,6 +284,11 @@ class Ha7ilmWaterfall(Waterfall):
         super().__init__([0x000000, 0x2E6893, 0x69A5D0, 0x214B69, 0x9DC4E0, 0xFFF775, 0xFF8A8A, 0xB20000])
 
 
+class ZoranWaterfall(Waterfall):
+    def __init__(self):
+        super().__init__([0x000000, 0x000965, 0x00E0FF, 0x2EFF00, 0xFFEC00, 0xFF0000])
+
+
 class CustomWaterfall(Waterfall):
     def __init__(self):
         config = Config.get()
@@ -297,8 +302,9 @@ class CustomWaterfall(Waterfall):
 
 class WaterfallOptions(DropdownEnum):
     DEFAULT = ("Google Turbo (OpenWebRX default)", GoogleTurboWaterfall)
-    TEEJEEZ = ("Original colorscheme by teejeez (default in OpenWebRX < 0.20)", TeejeezWaterfall)
+    TEEJEEZ = ("Original theme by teejeez (default in OpenWebRX < 0.20)", TeejeezWaterfall)
     HA7ILM = ("Old theme by HA7ILM", Ha7ilmWaterfall)
+    ZORAN = ("Theme by Zoran (9A6NDZ)", ZoranWaterfall)
     CUSTOM = ("Custom", CustomWaterfall)
 
     def __new__(cls, *args, **kwargs):

@@ -3,6 +3,7 @@
 - Added admin-configurable FAX LPM parameter (default is 120).
 - Added reference to documentation to the console window.
 - Added maidenhead layer to Leaflet-based maps.
+- Added waterfall color theme by Zoran (9A6NDZ).
 - Fixed volume resetting to zero on page reload.
 - Fixed step tuning when waterfall is zoomed.
 - Fixed browser console error on vendor-provided markers.
