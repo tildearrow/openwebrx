@@ -1041,9 +1041,12 @@ function on_ws_recv(evt) {
 
                             stopScanner();
                             tuning_step_reset();
-                            waterfallColorsDefault();
                             waterfall_clear();
                             zoom_set(0);
+                        }
+
+                        if ('sdr_id' in config || 'profile_id' in config || 'waterfall_levels' in config) {
+                            waterfallColorsDefault();
                         }
 
                         if ('tuning_precision' in config)
