@@ -77,7 +77,7 @@ class DirewolfConfig:
                 pass
         return self.port
 
-    def getConfig(self, is_service):
+    def getConfig(self, is_service, is_ais):
         pm = Config.get()
 
         config = """
@@ -94,7 +94,8 @@ AGWPORT off
             port=self.getPort(), callsign=pm["aprs_callsign"]
         )
 
-        if is_service and pm["aprs_igate_enabled"]:
+        # Do not send AIS reports to IGATE
+        if is_service and not is_ais and pm["aprs_igate_enabled"]:
             pbeacon = ""
 
             if pm["aprs_igate_beacon"]:
@@ -173,7 +174,7 @@ class DirewolfModule(AutoStartModule, DirewolfConfigSubscriber):
         self.direwolfConfig = DirewolfConfig()
         self.direwolfConfig.wire(self)
         file = open(self.direwolfConfigPath, "w")
-        file.write(self.direwolfConfig.getConfig(self.service))
+        file.write(self.direwolfConfig.getConfig(self.service, self.ais))
         file.close()
 
         # direwolf -c {direwolf_config} -r {audio_rate} -t 0 -q d -q h 1>&2
