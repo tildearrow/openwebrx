@@ -301,19 +301,23 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (this.schedule) {
-        for (var j=0 ; j<this.schedule.length ; ++j) {
-            var freq = this.schedule[j].freq;
-            var mode = this.schedule[j].mode;
-            var tune = Utils.offsetFreq(freq, mode);
+        var odd = false;
+        var list = this.schedule.map(function(x) {
+            var row = '<tr title="'
+                + "Transmitting to " + x.tgt
+                + (x.lang? ' (' + x.lang.replace(/:.*/, '') + ')' : '')
+                + '" style="background-color:' + (odd? '#E0FFE0':'#FFFFFF')
+                + ';"><td>' + ('0000' + x.time1).slice(-4)
+                + '&#8209;' + ('0000' + x.time2).slice(-4)
+                + '</td><td width="100%">' + x.name + '</td>'
+                + '<td style="text-align:right;">' + Utils.linkifyFreq(x.freq, x.mode? x.mode : 'am') + '</td>'
+                + '</tr>';
 
-            var name = ('0000' + this.schedule[j].time1).slice(-4)
-                + '&#8209;' + ('0000' + this.schedule[j].time2).slice(-4)
-                + '&nbsp;&nbsp;' + this.schedule[j].name;
+            odd = !odd;
+            return row;
+        }).join("");
 
-            scheduleString += Utils.makeListItem(name, Utils.linkifyFreq(
-                this.schedule[j].freq, mode? mode : 'am'
-            ));
-        }
+        scheduleString = '<table align="center" class="openwebrx-map-info">' + list + '</table>';
     }
 
     if (detailsString.length > 0) {
