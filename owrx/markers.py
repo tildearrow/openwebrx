@@ -306,15 +306,15 @@ class Markers(object):
             targets = {}
             comment = ""
             langstr = ""
-            for row in schedule:
-                lang   = row["lang"]
-                target = row["tgt"]
-                if target and target not in targets:
-                    targets[target] = True
-                    comment += (", " if comment else " to ") + target
-                if lang and lang not in langs:
-                    langs[lang] = True
-                    langstr += (", " if langstr else "") + re.sub(r"(:|\s*\().*$", "", lang)
+#            for row in schedule:
+#                lang   = row["lang"]
+#                target = row["tgt"]
+#                if target and target not in targets:
+#                    targets[target] = True
+#                    comment += (", " if comment else " to ") + target
+#                if lang and lang not in langs:
+#                    langs[lang] = True
+#                    langstr += (", " if langstr else "") + re.sub(r"(:|\s*\().*$", "", lang)
 
             # Compose comment
             comment = ("Transmitting" + comment) if comment else "Transmitter"

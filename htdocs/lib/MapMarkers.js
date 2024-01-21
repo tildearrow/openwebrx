@@ -303,10 +303,12 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     if (this.schedule) {
         var odd = false;
         var list = this.schedule.map(function(x) {
-            var row = '<tr title="'
-                + "Transmitting to " + x.tgt
-                + (x.lang? ' (' + x.lang.replace(/:.*/, '') + ')' : '')
-                + '" style="background-color:' + (odd? '#E0FFE0':'#FFFFFF')
+            var hint = x.tgt? 'Transmitting to ' + x.tgt : '';
+            if (hint && x.lang) hint += ' (' + x.lang.replace(/ *[:(].*/, '') + ')';
+
+            var row = '<tr '
+                + (hint? 'title="' + hint + '" ' : '')
+                + 'style="background-color:' + (odd? '#E0FFE0':'#FFFFFF')
                 + ';"><td>' + ('0000' + x.time1).slice(-4)
                 + '&#8209;' + ('0000' + x.time2).slice(-4)
                 + '</td><td width="100%">' + x.name + '</td>'
