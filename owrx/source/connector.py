@@ -2,6 +2,7 @@ from owrx.source import SdrSource, SdrDeviceDescription
 from owrx.socket import getAvailablePort
 from owrx.property import PropertyDeleted
 import socket
+import threading
 from owrx.command import Flag, Option
 from typing import List
 from owrx.form.input import Input, NumberInput, CheckboxInput
@@ -11,6 +12,7 @@ class ConnectorSource(SdrSource):
     def __init__(self, id, props):
         self.controlSocket = None
         self.controlPort = getAvailablePort()
+        self.controlLock = threading.Lock()
         super().__init__(id, props)
 
     def getCommandMapper(self):
@@ -33,11 +35,13 @@ class ConnectorSource(SdrSource):
         )
 
     def sendControlMessage(self, changes):
-        for prop, value in changes.items():
-            if value is PropertyDeleted:
-                value = None
-            self.logger.debug("sending property change over control socket: {0} changed to {1}".format(prop, value))
-            self.controlSocket.sendall("{prop}:{value}\n".format(prop=prop, value=value).encode())
+        with self.controlLock:
+            if self.controlSocket:
+                for prop, value in changes.items():
+                    if value is PropertyDeleted:
+                        value = None
+                    self.logger.debug("sending property change over control socket: {0} changed to {1}".format(prop, value))
+                    self.controlSocket.sendall("{prop}:{value}\n".format(prop=prop, value=value).encode())
 
     def onPropertyChange(self, changes):
         if self.monitor is None:
@@ -53,14 +57,16 @@ class ConnectorSource(SdrSource):
 
     def postStart(self):
         self.logger.debug("opening control socket...")
-        self.controlSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.controlSocket.connect(("localhost", self.controlPort))
+        with self.controlLock:
+            self.controlSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.controlSocket.connect(("localhost", self.controlPort))
 
     def stop(self):
-        super().stop()
-        if self.controlSocket:
-            self.controlSocket.close()
-            self.controlSocket = None
+        with self.controlLock:
+            super().stop()
+            if self.controlSocket:
+                self.controlSocket.close()
+                self.controlSocket = None
 
     def getControlPort(self):
         return self.controlPort
