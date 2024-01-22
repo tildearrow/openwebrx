@@ -1,7 +1,7 @@
 from owrx.controllers.status import StatusController
 from owrx.controllers.template import IndexController, MapController, PolicyController
 from owrx.controllers.feature import FeatureController
-from owrx.controllers.file import FilesController, FileController, FileDeleteController
+from owrx.controllers.file import FilesController, FileController
 from owrx.controllers.assets import OwrxAssetsController, AprsSymbolsController, CompiledAssetsController
 from owrx.controllers.websocket import WebSocketController
 from owrx.controllers.api import ApiController
@@ -102,7 +102,7 @@ class Router(object):
             StaticRoute("/features", FeatureController),
             StaticRoute("/files", FilesController),
             RegexRoute("^/files/(%s)$" % Storage.getNamePattern(), FileController),
-            StaticRoute("/files/delete", FileDeleteController, method="POST", options={"action": "delete"}),
+            StaticRoute("/files/delete", FilesController, method="POST", options={"action": "delete"}),
             StaticRoute("/api/features", ApiController),
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),

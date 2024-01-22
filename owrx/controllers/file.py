@@ -1,11 +1,10 @@
-from owrx.controllers.admin import Authentication, AuthorizationMixin
+from owrx.controllers.admin import Authentication
 from owrx.controllers.template import WebpageController
 from owrx.controllers.assets import AssetsController
 from owrx.storage import Storage
 
 import json
 import re
-import os
 import logging
 
 logger = logging.getLogger(__name__)
@@ -16,28 +15,20 @@ class FileController(AssetsController):
         return Storage.getFilePath(file)
 
 
-class FileDeleteController(AuthorizationMixin, WebpageController):
-    def delete(self):
-        try:
-            data = json.loads(self.get_body().decode("utf-8"))
-            file = data["name"].strip() if "name" in data else ""
-            if len(file) > 0 and re.match(Storage.getNamePattern(), file):
-                file = Storage.getFilePath(file)
-                logger.info("Deleting '{0}'.".format(file))
-                os.remove(file)
-            self.send_response("{}", content_type="application/json", code=200)
-        except Exception as e:
-            logger.debug("delete(): " + str(e))
-            self.send_response("{}", content_type="application/json", code=400)
-
-
 class FilesController(WebpageController):
+    def __init__(self, handler, request, options):
+        self.authentication = Authentication()
+        self.user  = self.authentication.getUser(request)
+        self.isimg = re.compile(r'.*\.(png|bmp|gif|jpg)$')
+        self.issnd = re.compile(r'.*\.(mp3|wav)$')
+        super().__init__(handler, request, options)
+
+    def isAuthorized(self):
+        return self.user is not None and self.user.is_enabled() and not self.user.must_change_password
+
     def template_variables(self):
         # We need to know if the user is authorized to delete files
-        user  = Authentication().getUser(self.request)
-        admin = user is not None and user.is_enabled() and not user.must_change_password
-        isimg = re.compile(r'.*\.(png|bmp|gif|jpg)$')
-        issnd = re.compile(r'.*\.(mp3|wav)$')
+        admin = self.isAuthorized()
         files = Storage.getSharedInstance().getStoredFiles()
         rows  = ""
 
@@ -46,9 +37,9 @@ class FilesController(WebpageController):
             if i % 3 == 0:
                 rows += '<tr>\n'
             # Show images as they are, show document icon for the rest
-            if isimg.match(files[i]):
+            if self.isimg.match(files[i]):
                 shot = "/files/" + files[i]
-            elif issnd.match(files[i]):
+            elif self.issnd.match(files[i]):
                 shot = "static/gfx/audio-file.png"
             else:
                 shot = "static/gfx/text-file.png"
@@ -73,6 +64,7 @@ class FilesController(WebpageController):
         if len(files) > 0 and len(files) % 3 != 0:
             rows += '</tr>\n'
 
+        # Assign variables
         variables = super().template_variables()
         variables["rows"] = rows
         return variables
@@ -80,3 +72,14 @@ class FilesController(WebpageController):
     def indexAction(self):
         self.serve_template("files.html", **self.template_variables())
 
+    def delete(self):
+        try:
+            data = json.loads(self.get_body().decode("utf-8"))
+            file = data["name"].strip() if "name" in data else ""
+            # Only delete if we have a file name AND are authorized
+            if self.isAuthorized() and len(file) > 0:
+                Storage.getSharedInstance().deleteFile(file)
+            self.send_response("{}", content_type="application/json", code=200)
+        except Exception as e:
+            logger.debug("delete(): " + str(e))
+            self.send_response("{}", content_type="application/json", code=400)

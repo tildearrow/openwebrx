@@ -44,6 +44,17 @@ class Storage(object):
 
         raise FileExistsError("File '{0}' already exists.".format(filePath))
 
+    # Delete stored file by name, the name must match pattern
+    def deleteFile(self, fileName: str):
+        if re.match(self.filePattern, fileName):
+            filePath = self.getFilePath(fileName)
+            logger.info("Deleting '{0}'.".format(filePath))
+            with self.lock:
+                try:
+                    os.unlink(filePath)
+                except Exception as e:
+                    logger.debug("deleteFile(): " + str(e))
+
     # Get list of stored files, sorted in reverse alphabetic order
     # (so that newer files appear first)
     def getStoredFiles(self):
