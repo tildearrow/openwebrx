@@ -40,3 +40,8 @@ img {
 .file-tile {
     width: 32%;
 }
+
+.file-delete {
+    position: relative;
+    bottom : 5px;
+}
