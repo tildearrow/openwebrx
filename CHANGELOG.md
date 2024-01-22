@@ -1,3 +1,10 @@
+**1.2.45**
+- Added ability to delete files, when authorized.
+- Added locking to connector-based SDR sources.
+- Improved EIBI schedules display on the map.
+- Fixed HL2 noise after HL2 first initialized.
+- No longer reporting AIS messages to IGATE.
+
 **1.2.44**
 - Added Storage API for creating files that avoids name collisions.
 - Added admin-configurable FAX LPM parameter (default is 120).
