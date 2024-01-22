@@ -101,16 +101,19 @@ class SourceStateHandler(SdrSourceEventClient):
         self.source.removeClient(self)
 
     def onFail(self):
-        del self.pm[self.key]
+        if self.key in self.pm:
+            del self.pm[self.key]
 
     def onDisable(self):
-        del self.pm[self.key]
+        if self.key in self.pm:
+            del self.pm[self.key]
 
     def onEnable(self):
         self.pm[self.key] = self.source
 
     def onShutdown(self):
-        del self.pm[self.key]
+        if self.key in self.pm:
+            del self.pm[self.key]
 
 
 class ActiveSdrSources(PropertyReadOnly):

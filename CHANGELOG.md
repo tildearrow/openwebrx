@@ -2,6 +2,7 @@
 - Added ability to delete files, when authorized.
 - Added locking to connector-based SDR sources.
 - Improved EIBI schedules display on the map.
+- Fixed exception when disabling SDR source twice.
 - Fixed HL2 noise after HL2 first initialized.
 - No longer reporting AIS messages to IGATE.
 
