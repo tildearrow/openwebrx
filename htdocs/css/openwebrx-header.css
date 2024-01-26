@@ -116,7 +116,7 @@
 .openwebrx-main-buttons .button img,
 .openwebrx-main-buttons .button svg {
     height: 38px;
-    filter: drop-shadow(0 0 4px white);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.75));
 }
 
 .openwebrx-main-buttons a {
