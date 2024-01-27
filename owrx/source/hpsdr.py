@@ -29,13 +29,6 @@ from typing import List
 #   Radio 2: (Remote IP: 192.168.1.22, Server port: 7301)
 
 class HpsdrSource(ConnectorSource):
-    def postStart(self):
-        super().postStart()
-        # Force-send center frequency, since "cold" Hermes Lite 2 often
-        # comes up with distorted output until frequency is changed
-        if "center_freq" in self.sdrProps:
-            self.sendControlMessage({ "center_freq": self.sdrProps["center_freq"] })
-
     def getCommandMapper(self):
         return (
             super()
