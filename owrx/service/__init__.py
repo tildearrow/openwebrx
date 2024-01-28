@@ -403,10 +403,13 @@ class Services(object):
             band = handler.source.getProfileName()
             for service in handler.services:
                 if isinstance(service, ServiceDemodulatorChain):
-                    result.append({
-                        "sdr"  : sdr,
-                        "band" : band,
-                        "freq" : service.getFrequency(),
-                        "mode" : service.getMode()
-                    })
+                    freq = service.getFrequency()
+                    mode = service.getMode()
+                    if freq and mode:
+                        result.append({
+                            "sdr"  : sdr,
+                            "band" : band,
+                            "freq" : freq,
+                            "mode" : mode
+                        })
         return result

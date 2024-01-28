@@ -37,12 +37,8 @@ class ServiceController(AuthorizationMixin, WebpageController):
     @staticmethod
     def renderService(c):
         # Choose units based on frequency
-        mode = c["mode"]
         freq = c["freq"]
-        if freq is None:
-            freq = ""
-            unit = ""
-        elif freq >= 1000000000:
+        if freq >= 1000000000:
             freq = freq / 1000000000
             unit = "GHz"
         elif freq >= 30000000:
@@ -55,8 +51,7 @@ class ServiceController(AuthorizationMixin, WebpageController):
             unit = "Hz"
         # Removing trailing zeros, converting mode to upper case
         freq = re.sub(r"\.?0+$", "", "{0}".format(freq))
-        mode = "???" if mode is None else mode.upper()
         # Format row
         return "<tr><td>{0}</td><td>{1} {2}</td><td>{3}{4}</td></tr>".format(
-            mode, c["sdr"], c["band"], freq, unit
+            c["mode"].upper(), c["sdr"], c["band"], freq, unit
         )
