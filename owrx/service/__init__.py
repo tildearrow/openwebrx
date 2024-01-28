@@ -276,6 +276,8 @@ class ServiceHandler(SdrSourceEventClient):
         else:
             chain.setBandPass(None, None)
         chain.setReader(source.getBuffer().getReader())
+        chain.setFrequency(dial["frequency"])
+        chain.setMode(dial["mode"])
 
         # dummy buffer, we don't use the output right now
         buffer = Buffer(chain.getOutputFormat())
@@ -392,3 +394,19 @@ class Services(object):
         for scheduler in list(Services.schedulers.values()):
             scheduler.shutdown()
         Services.schedulers = {}
+
+    @staticmethod
+    def listAll():
+        result = []
+        for handler in list(Services.handlers.values()):
+            sdr  = handler.source.getName()
+            band = handler.source.getProfileName()
+            for service in handler.services:
+                if isinstance(service, ServiceDemodulatorChain):
+                    result.append({
+                        "sdr"  : sdr,
+                        "band" : band,
+                        "freq" : service.getFrequency(),
+                        "mode" : service.getMode()
+                    })
+        return result

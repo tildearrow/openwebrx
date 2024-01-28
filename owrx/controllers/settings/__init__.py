@@ -2,6 +2,7 @@ from owrx.config import Config
 from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.template import WebpageController
 from owrx.controllers.clients import ClientController
+from owrx.controllers.services import ServiceController
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
 from owrx.websocket import WebSocketConnection
 from abc import ABCMeta, abstractmethod
@@ -19,6 +20,7 @@ class SettingsController(AuthorizationMixin, WebpageController):
     def template_variables(self):
         variables = super().template_variables()
         variables["clients"] = ClientController.renderClients()
+        variables["services"] = ServiceController.renderServices()
         return variables
 
 

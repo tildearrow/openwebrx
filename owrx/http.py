@@ -7,6 +7,7 @@ from owrx.controllers.websocket import WebSocketController
 from owrx.controllers.api import ApiController
 from owrx.controllers.metrics import MetricsController
 from owrx.controllers.clients import ClientController
+from owrx.controllers.services import ServiceController
 from owrx.controllers.settings import SettingsController
 from owrx.controllers.settings.general import GeneralSettingsController
 from owrx.controllers.settings.sdr import (
@@ -162,6 +163,7 @@ class Router(object):
                 "/settings/decoding", DecodingSettingsController, method="POST", options={"action": "processFormData"}
             ),
             StaticRoute("/clients", ClientController),
+            StaticRoute("/services", ServiceController),
             StaticRoute("/ban", ClientController, method="POST", options={"action": "ban"}),
             StaticRoute("/unban", ClientController, method="POST", options={"action": "unban"}),
             StaticRoute("/broadcast", ClientController, method="POST", options={"action": "broadcast"}),
