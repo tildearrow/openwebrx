@@ -1,3 +1,13 @@
+openwebrx (1.2.46) bullseye jammy; urgency=low
+
+  * Added list of active services to the Settings page.
+  * Added new toolbar icons, based on Google design.
+  * Added Help icon leading to documentation.
+  * Fixed race condition when sending map to a new client.
+  * Removed HL2 frequency workaround (fixed in hpsdrconnector).
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 29 Jan 2024 16:12:00 +0000
+
 openwebrx (1.2.45) bullseye jammy; urgency=low
 
   * Added ability to delete files, when authorized.

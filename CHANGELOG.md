@@ -1,3 +1,10 @@
+**1.2.46**
+- Added list of active services to the Settings page.
+- Added new toolbar icons, based on Google design.
+- Added Help icon leading to documentation.
+- Fixed race condition when sending map to a new client.
+- Removed HL2 frequency workaround (fixed in hpsdrconnector).
+
 **1.2.45**
 - Added ability to delete files, when authorized.
 - Added locking to connector-based SDR sources.
