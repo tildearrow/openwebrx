@@ -58,8 +58,8 @@ class Map(object):
 
     def addClient(self, client):
         self.clients.append(client)
-        client.write_update(
-            [
+        with self.positionsLock:
+            positions = [
                 {
                     "callsign": callsign,
                     "location": record["location"].__dict__(),
@@ -70,7 +70,7 @@ class Map(object):
                 }
                 for (callsign, record) in self.positions.items()
             ]
-        )
+        client.write_update(positions)
 
     def removeClient(self, client):
         try:
