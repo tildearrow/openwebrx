@@ -91,10 +91,12 @@ class Input(ABC):
     def parse(self, data):
         if self.id in data:
             value = self.converter.convert_from_form(data[self.id][0])
-            if self.validator is not None:
-                self.validator.validate(self.id, value)
             return {self.id: value}
         return {}
+
+    def validate(self, data):
+        if self.id in data and self.validator is not None:
+            self.validator.validate(self.id, data[self.id])
 
     def getLabel(self):
         return self.label
@@ -329,8 +331,8 @@ class ModesInput(DropdownInput):
 
 
 class ExponentialInput(Input):
-    def __init__(self, id, label, unit, infotext=None):
-        super().__init__(id, label, infotext=infotext)
+    def __init__(self, id, label, unit, infotext=None, validator: Validator = None):
+        super().__init__(id, label, infotext=infotext, validator=validator)
         self.unit = unit
 
     def defaultConverter(self):

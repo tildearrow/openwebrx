@@ -3,7 +3,9 @@ from owrx.property import PropertyStack, PropertyLayer, PropertyValidator, Prope
 from owrx.property.validators import OrValidator, RegexValidator, BoolValidator
 from owrx.modes import Modes, DigitalMode
 from csdr.chain import Chain
-from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, SecondaryDemodulator, DialFrequencyReceiver, MetaProvider, SlotFilterChain, SecondarySelectorChain, DeemphasisTauChain, DemodulatorError
+from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, \
+    SecondaryDemodulator, DialFrequencyReceiver, MetaProvider, SlotFilterChain, SecondarySelectorChain, \
+    DeemphasisTauChain, DemodulatorError, RdsChain, DabServiceSelector
 from csdr.chain.selector import Selector, SecondarySelector
 from csdr.chain.clientaudio import ClientAudioChain
 from csdr.chain.fft import FftChain
@@ -110,6 +112,9 @@ class ClientDemodulatorChain(Chain):
 
         if isinstance(self.demodulator, DeemphasisTauChain):
             self.demodulator.setDeemphasisTau(self.wfmDeemphasisTau)
+
+        if isinstance(self.demodulator, RdsChain):
+            self.demodulator.setRdsRbds(self.rdsRbds)
 
         self._updateDialFrequency()
         self._syncSquelch()
@@ -332,6 +337,11 @@ class ClientDemodulatorChain(Chain):
             return
         self.demodulator.setSlotFilter(filter)
 
+    def setDabServiceId(self, serviceId: int) -> None:
+        if not isinstance(self.demodulator, DabServiceSelector):
+            return
+        self.demodulator.setDabServiceId(serviceId)
+
     def setSecondaryFftSize(self, size: int) -> None:
         if size == self.secondaryFftSize:
             return
@@ -396,6 +406,13 @@ class ClientDemodulatorChain(Chain):
         if isinstance(self.demodulator, DeemphasisTauChain):
             self.demodulator.setDeemphasisTau(self.wfmDeemphasisTau)
 
+    def setRdsRbds(self, rdsRbds: bool) -> None:
+        if rdsRbds == self.rdsRbds:
+            return
+        self.rdsRbds = rdsRbds
+        if isinstance(self.demodulator, RdsChain):
+            self.demodulator.setRdsRbds(self.rdsRbds)
+
 
 class ModulationValidator(OrValidator):
     """
@@ -430,6 +447,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             "mod": ModulationValidator(),
             "secondary_offset_freq": "int",
             "dmr_filter": "int",
+            "dab_service_id": "int",
             "nr_enabled": "bool",
             "nr_threshold": "int",
         }
@@ -448,6 +466,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 "start_mod",
                 "start_freq",
                 "wfm_deemphasis_tau",
+                "wfm_rds_rbds",
                 "digital_voice_codecserver",
             ),
         )
@@ -515,7 +534,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props.wireProperty("high_cut", self.setHighCut),
             self.props.wireProperty("mod", self.setDemodulator),
             self.props.wireProperty("dmr_filter", self.chain.setSlotFilter),
+            self.props.wireProperty("dab_service_id", self.chain.setDabServiceId),
             self.props.wireProperty("wfm_deemphasis_tau", self.chain.setWfmDeemphasisTau),
+            self.props.wireProperty("wfm_rds_rbds", self.chain.setRdsRbds),
             self.props.wireProperty("secondary_mod", self.setSecondaryDemodulator),
             self.props.wireProperty("secondary_offset_freq", self.chain.setSecondaryFrequencyOffset),
             self.props.wireProperty("nr_enabled", self.chain.setNrEnabled),
@@ -559,7 +580,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return NFm(self.props["output_rate"])
         elif demod == "wfm":
             from csdr.chain.analog import WFm
-            return WFm(self.props["hd_output_rate"], self.props["wfm_deemphasis_tau"])
+            return WFm(self.props["hd_output_rate"], self.props["wfm_deemphasis_tau"], self.props["wfm_rds_rbds"])
         elif demod == "am":
             from csdr.chain.analog import Am
             return Am()
@@ -590,6 +611,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif demod == "freedv":
             from csdr.chain.freedv import FreeDV
             return FreeDV()
+        elif demod == "dab":
+            from csdr.chain.dablin import Dablin
+            return Dablin()
         elif demod == "empty":
             from csdr.chain.analog import Empty
             return Empty()

@@ -15,7 +15,7 @@ from owrx.property.filter import ByLambda
 from owrx.form.input import Input, TextInput, NumberInput, CheckboxInput, ModesInput, ExponentialInput, DropdownInput, Option
 from owrx.form.input.converter import Converter, OptionalConverter, IntConverter
 from owrx.form.input.device import GainInput, SchedulerInput, WaterfallLevelsInput
-from owrx.form.input.validator import RequiredValidator, RangeValidator
+from owrx.form.input.validator import RequiredValidator, Range, RangeListValidator
 from owrx.form.section import OptionalSection
 from owrx.feature import FeatureDetector
 from owrx.log import LogPipe, HistoryHandler
@@ -691,7 +691,12 @@ class SdrDeviceDescription(object):
             ),
             SchedulerInput("scheduler", "Scheduler"),
             ExponentialInput("center_freq", "Center frequency", "Hz"),
-            ExponentialInput("samp_rate", "Sample rate", "S/s"),
+            ExponentialInput(
+                "samp_rate",
+                "Sample rate",
+                "S/s",
+                validator=RangeListValidator(self.getSampleRateRanges())
+            ),
             ExponentialInput("start_freq", "Initial frequency", "Hz"),
             ModesInput("start_mod", "Initial modulation"),
             NumberInput("initial_squelch_level", "Initial squelch level", append="dBFS"),
@@ -726,7 +731,7 @@ class SdrDeviceDescription(object):
         return True
 
     def getDeviceMandatoryKeys(self):
-        return ["name", "enabled"]
+        return ["name", "type", "enabled"]
 
     def getDeviceOptionalKeys(self):
         keys = [
@@ -736,6 +741,7 @@ class SdrDeviceDescription(object):
             "rf_gain",
             "lfo_offset",
             "waterfall_levels",
+            "waterfall_auto_level_default_mode",
             "scheduler",
         ]
         if self.supportsPpm():
@@ -768,3 +774,7 @@ class SdrDeviceDescription(object):
             self.getProfileMandatoryKeys(),
             self.getProfileOptionalKeys(),
         )
+
+    def getSampleRateRanges(self) -> List[Range]:
+        # semi-sane default value. should be overridden with more specific values per device.
+        return [Range(500000, 10000000)]
