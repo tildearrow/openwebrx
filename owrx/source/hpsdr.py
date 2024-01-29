@@ -1,8 +1,7 @@
 from owrx.source.connector import ConnectorSource, ConnectorDeviceDescription
 from owrx.command import Option, Flag
-from owrx.form.error import ValidationError
 from owrx.form.input import Input, NumberInput, TextInput, CheckboxInput
-from owrx.form.input.validator import RangeValidator
+from owrx.form.input.validator import RangeValidator, Range
 from typing import List
 
 # These are the command line options available:
@@ -46,6 +45,7 @@ class HpsdrSource(ConnectorSource):
             )
         )
 
+
 class RemoteInput(TextInput):
     def __init__(self):
         super().__init__(
@@ -56,6 +56,7 @@ class RemoteInput(TextInput):
                 "If there is more than one HPSDR radio on the network, IP addresses of the desired radios should always be specified."
             )
         )
+
 
 class HpsdrDeviceDescription(ConnectorDeviceDescription):
     def getName(self):
@@ -88,3 +89,10 @@ class HpsdrDeviceDescription(ConnectorDeviceDescription):
     def getProfileOptionalKeys(self):
         return list(filter(lambda x : x != "iqswap", super().getProfileOptionalKeys()))
 
+    def getSampleRateRanges(self) -> List[Range]:
+        return [
+            Range(48000),
+            Range(96000),
+            Range(192000),
+            Range(384000),
+        ]

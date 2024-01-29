@@ -1,7 +1,7 @@
 from owrx.source.soapy import SoapyConnectorSource, SoapyConnectorDeviceDescription
 from owrx.form.input import Input, CheckboxInput, DropdownInput, NumberInput, DropdownEnum
 from owrx.form.input.device import BiasTeeInput, GainInput
-from owrx.form.input.validator import RangeValidator
+from owrx.form.input.validator import Range, RangeValidator
 from typing import List
 
 
@@ -13,9 +13,9 @@ class SdrplaySource(SoapyConnectorSource):
                 "bias_tee": "biasT_ctrl",
                 "rf_notch": "rfnotch_ctrl",
                 "dab_notch": "dabnotch_ctrl",
+                "external_reference": "extref_ctrl",
                 "hdr_mode": "hdr_ctrl",
                 "if_mode": "if_mode",
-                "external_reference": "extref_ctrl",
                 "rfgain_sel": "rfgain_sel",
                 "agc_setpoint": "agc_setpoint",
             }
@@ -52,6 +52,10 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
                 "Enable DAB notch filter",
             ),
             CheckboxInput(
+                "external_reference",
+                "Enable external reference clock",
+            ),
+            CheckboxInput(
                 "hdr_mode",
                 "Enable HDR mode (RSPdx only)",
                 infotext = "The high dynamic resolution (HDR) mode will "
@@ -84,7 +88,34 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
         ]
 
     def getDeviceOptionalKeys(self):
-        return super().getDeviceOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "hdr_mode", "if_mode", "rfgain_sel", "agc_setpoint"]
+        return super().getDeviceOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "external_reference", "hdr_mode", "if_mode", "rfgain_sel", "agc_setpoint"]
 
     def getProfileOptionalKeys(self):
-        return super().getProfileOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "hdr_mode", "if_mode", "rfgain_sel", "agc_setpoint"]
+        return super().getProfileOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "external_reference", "hdr_mode", "if_mode", "rfgain_sel", "agc_setpoint"]
+
+    def getSampleRateRanges(self) -> List[Range]:
+        # this is from SoapySDRPlay3's implementation of listSampleRates().
+        # i don't think it's accurate, but this is the limitation we'd be running into if we had proper soapy
+        # integration.
+        return [
+            Range(62500),
+            Range(96000),
+            Range(125000),
+            Range(192000),
+            Range(250000),
+            Range(384000),
+            Range(500000),
+            Range(768000),
+            Range(1000000),
+            Range(1536000),
+            Range(2000000),
+            Range(2048000),
+            Range(3000000),
+            Range(4000000),
+            Range(5000000),
+            Range(6000000),
+            Range(7000000),
+            Range(8000000),
+            Range(9000000),
+            Range(10000000),
+        ]
