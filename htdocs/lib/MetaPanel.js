@@ -359,12 +359,280 @@ M17MetaPanel.prototype.clear = function() {
     this.setDestination();
 };
 
+function WfmMetaPanel(el) {
+    MetaPanel.call(this, el);
+    this.modes = ['WFM'];
+    this.enabled = false;
+    this.timeout = false;
+    this.clear();
+}
+
+WfmMetaPanel.prototype = new MetaPanel();
+
+WfmMetaPanel.prototype.update = function(data) {
+    if (!this.isSupported(data)) return;
+    var me = this;
+
+    // automatically clear metadata panel when no RDS data is received for more than ten seconds
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(function(){
+        me.clear();
+    }, 10000);
+
+    if ('pi' in data && data.pi !== this.pi) {
+        this.clear();
+        this.pi = data.pi;
+    }
+
+    var $el = $(this.el);
+
+    if ('ps' in data) {
+        this.ps = data.ps;
+    }
+
+    if ('prog_type' in data) {
+        $el.find('.rds-prog_type').text(data['prog_type']);
+    }
+
+    if ('callsign' in data) {
+        this.callsign = data.callsign;
+    }
+
+    if ('pi' in data) {
+        this.pi = data.pi
+    }
+
+    if ('clock_time' in data) {
+        var date = new Date(Date.parse(data.clock_time));
+        $el.find('.rds-clock').text(date.toLocaleString([], {dateStyle: 'short', timeStyle: 'short'}));
+    }
+
+    if ('radiotext_plus' in data) {
+        // prefer displaying radiotext plus over radiotext
+        this.radiotext_plus = this.radiotext_plus || {
+            item_toggle: -1,
+            news: []
+        };
+
+        var tags = {};
+        if ('tags' in data.radiotext_plus) {
+            tags = Object.fromEntries(data.radiotext_plus.tags.map(function (tag) {
+                return [tag['content-type'], tag['data']]
+            }));
+        }
+
+        if (data.radiotext_plus.item_toggle !== this.radiotext_plus.item_toggle) {
+            this.radiotext_plus.item_toggle = data.radiotext_plus.item_toggle;
+            this.radiotext_plus.item = '';
+        }
+
+        this.radiotext_plus.item_running = !!data.radiotext_plus.item_running;
+
+        if ('item.artist' in tags && 'item.title' in tags) {
+            this.radiotext_plus.item = tags['item.artist'] + ' - ' + tags['item.title'];
+        } else {
+            var items = Object.entries(tags).filter(function (e) {
+                return e[0].startsWith("item.")
+            })
+            if (items.length) {
+                this.radiotext_plus.item = items.map(function (e) {
+                    return e[0].substr(5, 1).toUpperCase() + e[0].substr(6) + ': ' + e[1];
+                }).join('; ');
+            }
+        }
+
+        if ('programme.now' in tags) {
+            this.radiotext_plus.programme = tags['programme.now'];
+        }
+
+        if ('programme.homepage' in tags) {
+            this.radiotext_plus.homepage = tags['programme.homepage'];
+        }
+
+        if ('stationname.long' in tags) {
+            this.long_stationname = tags['stationname.long'];
+        }
+
+        if ('stationname.short' in tags) {
+            this.short_stationname = tags['stationname.short'];
+        }
+
+        if ('info.news' in tags) {
+            var n = tags['info.news'];
+            var i = this.radiotext_plus.news.indexOf(n);
+            if (i >= 0) {
+                this.radiotext_plus.news.splice(i, 1);
+            }
+            this.radiotext_plus.news.push(n);
+            // limit the number of items
+            this.radiotext_plus.news = this.radiotext_plus.news.slice(-5);
+        }
+
+        if ('info.weather' in tags) {
+            this.radiotext_plus.weather = tags['info.weather'];
+        }
+
+    }
+
+    if ('radiotext' in data && !this.radiotext_plus) {
+        this.radiotext = data.radiotext;
+    }
+
+    if (this.radiotext_plus) {
+        $el.find('.rds-radiotext').empty();
+        if (this.radiotext_plus.item_running) {
+            $el.find('.rds-rtplus-item').text(this.radiotext_plus.item || '');
+        } else {
+            $el.find('.rds-rtplus-item').empty();
+        }
+        $el.find('.rds-rtplus-programme').text(this.radiotext_plus.programme || '');
+        $el.find('.rds-rtplus-news').empty().html(this.radiotext_plus.news.map(function(n){
+            return $('<li>').text(n);
+        }));
+        $el.find('.rds-rtplus-weather').text(this.radiotext_plus.weather || '');
+        if (this.radiotext_plus.homepage) {
+            var url = this.radiotext_plus.homepage;
+            // prefix with a protcol if not present. we'll assume https, should be generally available these days.
+            if (url.indexOf('://') < 0) url = 'https://' + url;
+            // avoid updating the link if not necessary since that would prevent the user from clicking it
+            if ($el.find('.rds-rtplus-homepage a').attr('href') !== url) {
+                var link = $('<a href="' + url + '" target="_blank"></a>').text(this.radiotext_plus.homepage);
+                $el.find('.rds-rtplus-homepage').html(link);
+            }
+        }
+    } else {
+        $el.find('.rds-radiotext-plus .autoclear').empty();
+        $el.find('.rds-radiotext').text(this.radiotext || '');
+    }
+
+    $el.find('.rds-stationname').text(this.long_stationname || this.ps);
+    $el.find('.rds-identifier').text(this.short_stationname || this.callsign || this.pi);
+};
+
+WfmMetaPanel.prototype.isSupported = function(data) {
+    return this.modes.includes(data.mode);
+};
+
+WfmMetaPanel.prototype.setEnabled = function(enabled) {
+    if (enabled === this.enabled) return;
+    this.enabled = enabled;
+    if (enabled) {
+        $(this.el).removeClass('disabled').html(
+            '<div class="rds-container">' +
+                '<div class="rds-identifier rds-autoclear"></div>' +
+                '<div class="rds-stationname rds-autoclear"></div>' +
+                '<div class="rds-radiotext rds-autoclear"></div>' +
+                '<div class="rds-radiotext-plus">' +
+                    '<div class="rds-rtplus-programme rds-autoclear"></div>' +
+                    '<div class="rds-rtplus-item rds-autoclear"></div>' +
+                    '<ul class="rds-rtplus-news rds-autoclear"></ul>' +
+                    '<div class="rds-rtplus-weather rds-autoclear"></div>' +
+                    '<div class="rds-rtplus-homepage rds-autoclear"></div>' +
+                '</div>' +
+                '<div class="rds-prog_type rds-autoclear"></div>' +
+                '<div class="rds-clock rds-autoclear"></div>' +
+            '</div>'
+        );
+    } else {
+        $(this.el).addClass('disabled').emtpy()
+    }
+};
+
+WfmMetaPanel.prototype.clear = function() {
+    $(this.el).find('.rds-autoclear').empty();
+    this.pi = '';
+    this.ps = '';
+    this.callsign = '';
+    this.long_stationname = '';
+    this.short_stationname = '';
+
+    this.radiotext = '';
+    this.radiotext_plus = false;
+};
+
+function DabMetaPanel(el) {
+    MetaPanel.call(this, el);
+    var me = this;
+    this.modes = ['DAB'];
+    this.service_id = 0;
+    this.$select = $('<select id="dab-service-id"></select>');
+    this.$select.on("change", function() {
+        me.service_id = parseInt($(this).val());
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setDabServiceId(me.service_id);
+    });
+    var $container = $(
+        '<div class="dab-container">' +
+            '<div class="dab-auto-clear dab-ensemble-id"></div>' +
+            '<div class="dab-auto-clear dab-ensemble-label"></div>' +
+            '<div class="dab-auto-clear dab-timestamp"></div>' +
+            '<label for="dab-service-id">DAB Programme:</label>' +
+        '</div>'
+    );
+    $container.append(this.$select);
+    $(this.el).append($container);
+    this.clear();
+    this.programmeTimeout = false;
+}
+
+DabMetaPanel.prototype = new MetaPanel();
+
+DabMetaPanel.prototype.isSupported = function(data) {
+    return this.modes.includes(data.mode);
+}
+
+
+DabMetaPanel.prototype.update = function(data) {
+    if (!this.isSupported(data)) return;
+
+    if ('ensemble_id' in data) {
+        $(this.el).find('.dab-ensemble-id').text('0x' + data.ensemble_id.toString(16));
+    }
+
+    if ('ensemble_label' in data) {
+        $(this.el).find('.dab-ensemble-label').text(data.ensemble_label);
+    }
+
+    if ('timestamp' in data) {
+        var date = new Date(data.timestamp * 1000);
+        $(this.el).find('.dab-timestamp').text(date.toLocaleString([], {dateStyle: 'short', timeStyle: 'medium'}));
+    }
+
+    if ('programmes' in data) {
+        var options = Object.entries(data.programmes).map(function(e) {
+            return '<option value="' + e[0] + '">' + e[1] + '</option>';
+        });
+        this.$select.html(
+            options.join('') +
+            '<option value="" disabled selected hidden>Loading...</option>'
+        );
+
+        var me = this;
+        if (this.programmeTimeout) clearTimeout(this.programmeTimeout);
+        this.programmeTimeout = setTimeout(function() {
+            // user has selected a programme to play. don't interfere.
+            me.$select.val(this.service_id);
+            if (me.$select.val()) return;
+            me.$select.val(me.$select.find('option:first').val()).change();
+        }, 1000);
+    }
+}
+
+DabMetaPanel.prototype.clear = function() {
+    this.service_id = 0;
+    $(this.el).find('.dab-auto-clear').empty();
+    this.$select.html(
+        '<option value="" disabled selected hidden>Loading...</option>'
+    );
+}
+
 MetaPanel.types = {
     dmr: DmrMetaPanel,
     ysf: YsfMetaPanel,
     dstar: DStarMetaPanel,
     nxdn: NxdnMetaPanel,
     m17: M17MetaPanel,
+    wfm: WfmMetaPanel,
+    dab: DabMetaPanel,
 };
 
 $.fn.metaPanel = function() {

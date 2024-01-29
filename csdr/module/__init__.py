@@ -86,6 +86,9 @@ class ThreadModule(AutoStartModule, Thread, metaclass=ABCMeta):
         self.reader.stop()
 
     def start(self):
+        # don't start twice.
+        if self.is_alive():
+            return
         Thread.start(self)
 
 
@@ -164,7 +167,7 @@ class JsonParser(LineBasedModule):
             logger.debug(msg)
             return msg
         except json.JSONDecodeError:
-            logger.exception("error parsing rtl433 json")
+            logger.exception("error parsing decoder json")
 
 
 class PopenModule(AutoStartModule, metaclass=ABCMeta):
@@ -222,7 +225,7 @@ class LogReader(Thread):
 
             # log all completed lines
             for line in lines[0:-1]:
-                self.logger.info("{}: {}".format("STDOUT", line.strip(b'\n').decode()))
+                self.logger.info("{}: {}".format("STDOUT", line.decode(errors="replace")))
 
     def stop(self):
         self.reader.stop()

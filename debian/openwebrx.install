@@ -3,3 +3,5 @@ bookmarks.json etc/openwebrx/
 bookmarks.d etc/openwebrx/
 openwebrx.conf etc/openwebrx/
 systemd/openwebrx.service lib/systemd/system/
+debian/openwebrx.svg usr/share/icons/hicolor/scalable/apps
+debian/openwebrx.desktop usr/share/applications

@@ -2,7 +2,8 @@ from abc import ABCMeta, abstractmethod
 from owrx.command import Option
 from owrx.source.connector import ConnectorSource, ConnectorDeviceDescription
 from typing import List
-from owrx.form.input import Input, TextInput
+from owrx.form.input import Input, NumberInput, TextInput
+from owrx.form.input.validator import RangeValidator
 from owrx.form.input.device import GainInput
 from owrx.soapy import SoapySettings
 
@@ -17,6 +18,7 @@ class SoapyConnectorSource(ConnectorSource, metaclass=ABCMeta):
                 {
                     "antenna": Option("-a"),
                     "soapy_settings": Option("-t"),
+                    "channel": Option("-n"),
                 }
             )
         )
@@ -71,24 +73,26 @@ class SoapyConnectorSource(ConnectorSource, metaclass=ABCMeta):
         return values
 
     def onPropertyChange(self, changes):
-        # Make sure we do not damage the original dictonary
-        changes  = changes.copy()
         mappings = self.getSoapySettingsMappings()
-        settings = {}
-        # Delete properties that are converted into settings
-        for prop in list(changes):
+        affectsSettings = False
+        forward = {}
+        for prop, value in changes.items():
             if prop in mappings.keys():
-                settings[mappings[prop]] = self.convertSoapySettingsValue(changes.pop(prop))
-        # If any properties got converted, add them as "settings" property
-        if settings:
-            changes["settings"] = ",".join("{0}={1}".format(k, v) for k, v in settings.items())
-        # Apply actual changes
-        super().onPropertyChange(changes)
+                affectsSettings = True
+            else:
+                forward[prop] = value
+        if affectsSettings:
+            settings = {}
+            for owrx_key, soapy_key in mappings.items():
+                if owrx_key in self.props:
+                    settings[soapy_key] = self.convertSoapySettingsValue(self.props[owrx_key])
+            forward["settings"] = ",".join("{0}={1}".format(k, v) for k, v in settings.items())
+        super().onPropertyChange(forward)
 
 
 class SoapyConnectorDeviceDescription(ConnectorDeviceDescription):
     def getInputs(self) -> List[Input]:
-        return super().getInputs() + [
+        inputs = super().getInputs() + [
             TextInput(
                 "device",
                 "Device identifier",
@@ -102,9 +106,25 @@ class SoapyConnectorDeviceDescription(ConnectorDeviceDescription):
             ),
             TextInput("antenna", "Antenna"),
         ]
+        if self.getNumberOfChannels() > 1:
+            inputs += [
+                NumberInput(
+                    "channel",
+                    "Select SoapySDR Channel",
+                    validator=RangeValidator(0, self.getNumberOfChannels() - 1)
+                )
+            ]
+        return inputs
+
+    def getNumberOfChannels(self) -> int:
+        """
+        can be overridden for sdr devices that have multiple channels. will allow the user to select a channel from
+        the device selection screen if > 1
+        """
+        return 1
 
     def getDeviceOptionalKeys(self):
-        return super().getDeviceOptionalKeys() + ["device", "rf_gain", "antenna"]
+        return super().getDeviceOptionalKeys() + ["device", "rf_gain", "antenna", "channel"]
 
     def getProfileOptionalKeys(self):
         return super().getProfileOptionalKeys() + ["antenna"]
