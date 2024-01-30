@@ -93,7 +93,7 @@ class FeatureDetector(object):
         "page": ["multimon"],
         "selcall": ["multimon"],
         "rds": ["redsea"],
-        "dab": ["csdreti", "dablin"]
+        "dab": ["csdreti", "dablin"],
         "png": ["imagemagick"],
     }
 
