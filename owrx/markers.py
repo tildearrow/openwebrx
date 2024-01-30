@@ -6,7 +6,7 @@ from owrx.aprs import getSymbolData
 from owrx.eibi import EIBI
 from owrx.repeaters import Repeaters
 from json import JSONEncoder
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import urllib
 import threading
@@ -170,12 +170,12 @@ class Markers(object):
                 del self.txmarkers[key]
 
             # Create a timestamp far into the future, for permanent markers
-            permanent = datetime.utcnow() + timedelta(weeks=500)
+            permanent = datetime.now(timezone.utc) + timedelta(weeks=500)
 
             # Update station markers that have transmissions
             for key in tx.keys():
                 r = tx[key]
-                map.updateLocation(r.getId(), r, r.getMode(), permanent)
+                map.updateLocation(r.getId(), r, r.getMode(), timestamp=permanent)
                 self.txmarkers[key] = r
 
             # Done with the schedule
@@ -200,7 +200,7 @@ class Markers(object):
                     # Update receiver markers that are online
                     for key in rx.keys():
                         r = rx[key]
-                        map.updateLocation(r.getId(), r, r.getMode(), permanent)
+                        map.updateLocation(r.getId(), r, r.getMode(), timestamp=permanent)
                         self.rxmarkers[key] = r
                     # Done updating receivers
                     norx = None
@@ -244,8 +244,10 @@ class Markers(object):
 
     # Update given markers on the map
     def updateMap(self, markers):
+        # Create a timestamp far into the future, for permanent markers
+        permanent = datetime.now(timezone.utc) + timedelta(weeks=500)
         for r in markers.values():
-            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), permanent)
+            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), timestamp=permanent)
 
     # Scrape online databases, updating cache file
     def updateCache(self):

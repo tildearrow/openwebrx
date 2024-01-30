@@ -15,7 +15,7 @@ from owrx.property.filter import ByLambda
 from owrx.form.input import Input, TextInput, NumberInput, CheckboxInput, ModesInput, ExponentialInput, DropdownInput, Option
 from owrx.form.input.converter import Converter, OptionalConverter, IntConverter
 from owrx.form.input.device import GainInput, SchedulerInput, WaterfallLevelsInput
-from owrx.form.input.validator import RequiredValidator, Range, RangeListValidator
+from owrx.form.input.validator import RequiredValidator, Range, RangeValidator, RangeListValidator
 from owrx.form.section import OptionalSection
 from owrx.feature import FeatureDetector
 from owrx.log import LogPipe, HistoryHandler
