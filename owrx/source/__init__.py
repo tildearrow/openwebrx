@@ -183,6 +183,8 @@ class SdrSource(ABC):
         if self.isAlwaysOn() and self.isEnabled():
             self.start()
 
+        props.filter("always-on").wire(self._handleAlwaysOnChanged)
+
     def isEnabled(self):
         return self.enabled
 
@@ -198,6 +200,12 @@ class SdrSource(ABC):
                 c.onEnable()
             else:
                 c.onDisable()
+
+    def _handleAlwaysOnChanged(self, changes):
+        if self.isAlwaysOn():
+            self.start()
+        else:
+            self.checkStatus()
 
     def _handleCenterFreqChanged(self, changes):
         # propagate profile center_freq changes to the top layer
@@ -737,12 +745,12 @@ class SdrDeviceDescription(object):
         keys = [
             "always-on",
             "services",
-            "key_locked",
             "rf_gain",
             "lfo_offset",
             "waterfall_levels",
             "waterfall_auto_level_default_mode",
             "scheduler",
+            "key_locked",
         ]
         if self.supportsPpm():
             keys += ["ppm"]

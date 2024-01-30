@@ -32,6 +32,7 @@ class WaveFile(object):
     def __del__(self):
         # Close and delete currently open file, if any
         if self.waveFile is not None:
+            logger.warning("WaveFile going out of scope but not unlinked!")
             self.close()
             self.unlink()
 
@@ -83,48 +84,52 @@ class AudioWriter(object):
     def _scheduleNextSwitch(self):
         self.cancelTimer()
         delta = self.getNextDecodingTime() - datetime.utcnow()
-        self.timer = threading.Timer(delta.total_seconds(), self.switchFiles)
+        self.timer = threading.Timer(delta.total_seconds(), self._switchFiles)
         self.timer.start()
 
-    def switchFiles(self):
+    def _switchFiles(self):
         with self.switchingLock:
             file = self.wavefile
             self.wavefile = self.getWaveFile()
 
-        # if previously open file exists...
-        if file is not None:
-            file.close()
-            tmp_dir = CoreConfig().get_temporary_directory()
+        if file is None:
+            logger.warning("switchfiles() with no wave file. sequencing problem?")
+            return
 
-            for profile in self.profiles:
-                # create hardlinks for the individual profiles
-                filename = "{tmp_dir}/openwebrx-audiochopper-{pid}-{timestamp}.wav".format(
-                    tmp_dir=tmp_dir,
-                    pid=id(profile),
-                    timestamp=file.getTimestamp().strftime(profile.getFileTimestampFormat()),
-                )
-                try:
-                    os.link(file.getFileName(), filename)
-                except OSError:
-                    logger.exception("Error while linking job files")
-                    continue
+        file.close()
+        tmp_dir = CoreConfig().get_temporary_directory()
 
-                job = self.chopper.createJob(profile, filename)
-                try:
-                    DecoderQueue.getSharedInstance().put(job)
-                except Full:
-                    logger.warning("decoding queue overflow; dropping one file")
-                    job.unlink()
-
+        for profile in self.profiles:
+            # create hardlinks for the individual profiles
+            filename = "{tmp_dir}/openwebrx-audiochopper-{pid}-{timestamp}.wav".format(
+                tmp_dir=tmp_dir,
+                pid=id(profile),
+                timestamp=file.getTimestamp().strftime(profile.getFileTimestampFormat()),
+            )
             try:
-                # our master can be deleted now, the profiles will delete their hardlinked copies after processing
-                file.unlink()
+                os.link(file.getFileName(), filename)
             except OSError:
-                logger.exception("Error while unlinking job files")
+                logger.exception("Error while linking job files")
+                continue
 
-            self._scheduleNextSwitch()
+            job = self.chopper.createJob(profile, filename)
+            try:
+                DecoderQueue.getSharedInstance().put(job)
+            except Full:
+                logger.warning("decoding queue overflow; dropping one file")
+                job.unlink()
+
+        try:
+            # our master can be deleted now, the profiles will delete their hardlinked copies after processing
+            file.unlink()
+        except OSError:
+            logger.exception("Error while unlinking job files")
+
+        self._scheduleNextSwitch()
 
     def start(self):
+        if self.wavefile is not None:
+            logger.warning("wavefile is not none on startup, sequencing problem?")
         self.wavefile = self.getWaveFile()
         self._scheduleNextSwitch()
 

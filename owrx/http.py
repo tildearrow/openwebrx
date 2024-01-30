@@ -1,11 +1,11 @@
 from owrx.controllers.status import StatusController
 from owrx.controllers.template import IndexController, MapController, PolicyController
 from owrx.controllers.feature import FeatureController
-from owrx.controllers.file import FilesController, FileController
 from owrx.controllers.assets import OwrxAssetsController, AprsSymbolsController, CompiledAssetsController
 from owrx.controllers.websocket import WebSocketController
 from owrx.controllers.api import ApiController
 from owrx.controllers.metrics import MetricsController
+from owrx.controllers.file import FilesController, FileController
 from owrx.controllers.clients import ClientController
 from owrx.controllers.services import ServiceController
 from owrx.controllers.settings import SettingsController
@@ -99,11 +99,7 @@ class Router(object):
             StaticRoute("/ws/", WebSocketController),
             RegexRoute("^(/favicon.ico)$", OwrxAssetsController),
             StaticRoute("/map", MapController),
-            StaticRoute("/policy", PolicyController),
             StaticRoute("/features", FeatureController),
-            StaticRoute("/files", FilesController),
-            RegexRoute("^/files/(%s)$" % Storage.getNamePattern(), FileController),
-            StaticRoute("/files/delete", FilesController, method="POST", options={"action": "delete"}),
             StaticRoute("/api/features", ApiController),
             StaticRoute("/metrics", MetricsController, options={"action": "prometheusAction"}),
             StaticRoute("/metrics.json", MetricsController),
@@ -162,11 +158,6 @@ class Router(object):
             StaticRoute(
                 "/settings/decoding", DecodingSettingsController, method="POST", options={"action": "processFormData"}
             ),
-            StaticRoute("/clients", ClientController),
-            StaticRoute("/services", ServiceController),
-            StaticRoute("/ban", ClientController, method="POST", options={"action": "ban"}),
-            StaticRoute("/unban", ClientController, method="POST", options={"action": "unban"}),
-            StaticRoute("/broadcast", ClientController, method="POST", options={"action": "broadcast"}),
             StaticRoute("/login", SessionController, options={"action": "loginAction"}),
             StaticRoute("/login", SessionController, method="POST", options={"action": "processLoginAction"}),
             StaticRoute("/logout", SessionController, options={"action": "logoutAction"}),
@@ -174,6 +165,15 @@ class Router(object):
             StaticRoute("/pwchange", ProfileController, method="POST", options={"action": "processPwChange"}),
             StaticRoute("/imageupload", ImageUploadController),
             StaticRoute("/imageupload", ImageUploadController, method="POST", options={"action": "processImage"}),
+            StaticRoute("/files", FilesController),
+            RegexRoute("^/files/(%s)$" % Storage.getNamePattern(), FileController),
+            StaticRoute("/files/delete", FilesController, method="POST", options={"action": "delete"}),
+            StaticRoute("/policy", PolicyController),
+            StaticRoute("/clients", ClientController),
+            StaticRoute("/services", ServiceController),
+            StaticRoute("/ban", ClientController, method="POST", options={"action": "ban"}),
+            StaticRoute("/unban", ClientController, method="POST", options={"action": "unban"}),
+            StaticRoute("/broadcast", ClientController, method="POST", options={"action": "broadcast"}),
         ]
 
     def find_route(self, request):

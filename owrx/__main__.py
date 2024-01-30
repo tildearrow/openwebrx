@@ -29,10 +29,8 @@ import ssl
 import os.path
 
 class ThreadedHttpServer(ThreadingMixIn, HTTPServer):
-    def __init__(self, web_port, RequestHandlerClass, use_ipv6):
-        coreConfig = CoreConfig()
-        bind_address = coreConfig.get_bind_address()
-        if not bind_address:
+    def __init__(self, web_port, RequestHandlerClass, use_ipv6, bind_address=None):
+        if bind_address is None:
             bind_address = "::" if use_ipv6 else "0.0.0.0"
         if use_ipv6:
             self.address_family = socket.AF_INET6
@@ -101,7 +99,8 @@ Author contact info:    Marat Fayzullin <luarvique@gmail.com>
 Documentation:          https://github.com/jketterl/openwebrx/wiki
 Support and info:       https://groups.io/g/openwebrx
 
-    """
+        """,
+        flush=True
     )
 
     logger.info("OpenWebRX+ version {0} starting up...".format(openwebrx_version))
@@ -142,7 +141,7 @@ Support and info:       https://groups.io/g/openwebrx
 
     try:
         # This is our HTTP server
-        server = ThreadedHttpServer(coreConfig.get_web_port(), RequestHandler, coreConfig.get_web_ipv6())
+        server = ThreadedHttpServer(coreConfig.get_web_port(), RequestHandler, coreConfig.get_web_ipv6(), coreConfig.get_web_bind_address())
         # We expect to find SSL certificate here
         keyFile  = "/etc/openwebrx/key.pem"
         certFile = "/etc/openwebrx/cert.pem"
@@ -157,6 +156,7 @@ Support and info:       https://groups.io/g/openwebrx
             logger.info("    " + certFile)
             logger.info("    " + keyFile)
         # Run the server
+        logger.info("Ready to serve requests.")
         server.serve_forever()
     except SignalException:
         pass

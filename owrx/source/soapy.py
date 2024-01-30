@@ -73,24 +73,26 @@ class SoapyConnectorSource(ConnectorSource, metaclass=ABCMeta):
         return values
 
     def onPropertyChange(self, changes):
-        # Make sure we do not damage the original dictonary
-        changes  = changes.copy()
         mappings = self.getSoapySettingsMappings()
-        settings = {}
-        # Delete properties that are converted into settings
-        for prop in list(changes):
+        affectsSettings = False
+        forward = {}
+        for prop, value in changes.items():
             if prop in mappings.keys():
-                settings[mappings[prop]] = self.convertSoapySettingsValue(changes.pop(prop))
-        # If any properties got converted, add them as "settings" property
-        if settings:
-            changes["settings"] = ",".join("{0}={1}".format(k, v) for k, v in settings.items())
-        # Apply actual changes
-        super().onPropertyChange(changes)
+                affectsSettings = True
+            else:
+                forward[prop] = value
+        if affectsSettings:
+            settings = {}
+            for owrx_key, soapy_key in mappings.items():
+                if owrx_key in self.props:
+                    settings[soapy_key] = self.convertSoapySettingsValue(self.props[owrx_key])
+            forward["settings"] = ",".join("{0}={1}".format(k, v) for k, v in settings.items())
+        super().onPropertyChange(forward)
 
 
 class SoapyConnectorDeviceDescription(ConnectorDeviceDescription):
     def getInputs(self) -> List[Input]:
-        return super().getInputs() + [
+        inputs = super().getInputs() + [
             TextInput(
                 "device",
                 "Device identifier",

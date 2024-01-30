@@ -14,7 +14,7 @@ class SdrplaySource(SoapyConnectorSource):
                 "rf_notch": "rfnotch_ctrl",
                 "dab_notch": "dabnotch_ctrl",
                 "external_reference": "extref_ctrl",
-                "hdr_mode": "hdr_ctrl",
+                "hdr_ctrl": "hdr_ctrl",
                 "if_mode": "if_mode",
                 "rfgain_sel": "rfgain_sel",
                 "agc_setpoint": "agc_setpoint",
@@ -56,7 +56,7 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
                 "Enable external reference clock",
             ),
             CheckboxInput(
-                "hdr_mode",
+                "hdr_ctrl",
                 "Enable HDR mode (RSPdx only)",
                 infotext = "The high dynamic resolution (HDR) mode will "
                 + "only work when the center frequency is set to 135kHz, "
@@ -88,10 +88,16 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
         ]
 
     def getDeviceOptionalKeys(self):
-        return super().getDeviceOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "external_reference", "hdr_mode", "if_mode", "rfgain_sel", "agc_setpoint"]
+        return super().getDeviceOptionalKeys() + [
+            "bias_tee", "rf_notch", "dab_notch", "external_reference", "hdr_ctrl",
+            "if_mode", "rfgain_sel", "agc_setpoint"
+        ]
 
     def getProfileOptionalKeys(self):
-        return super().getProfileOptionalKeys() + ["bias_tee", "rf_notch", "dab_notch", "external_reference", "hdr_mode", "if_mode", "rfgain_sel", "agc_setpoint"]
+        return super().getProfileOptionalKeys() + [
+            "bias_tee", "rf_notch", "dab_notch", "external_reference", "hdr_ctrl",
+            "if_mode", "rfgain_sel", "agc_setpoint"
+        ]
 
     def getSampleRateRanges(self) -> List[Range]:
         # this is from SoapySDRPlay3's implementation of listSampleRates().

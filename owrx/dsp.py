@@ -51,6 +51,7 @@ class ClientDemodulatorChain(Chain):
         self.centerFrequency = None
         self.frequencyOffset = None
         self.wfmDeemphasisTau = 50e-6
+        self.rdsRbds = False
         inputRate = demod.getFixedAudioRate() if isinstance(demod, FixedAudioRateChain) else outputRate
         oRate = hdOutputRate if isinstance(demod, HdAudio) else outputRate
         self.clientAudioChain = ClientAudioChain(demod.getOutputFormat(), inputRate, oRate, audioCompression, nrEnabled, nrThreshold)
