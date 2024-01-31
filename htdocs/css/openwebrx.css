@@ -1721,24 +1721,24 @@ img.openwebrx-mirror-img
 }
 
 .rds-container .rds-radiotext-plus .rds-rtplus-item:not(:empty):before {
-	content: "&#9835; ";
+	content: "\266B  ";
 }
 
 .rds-container .rds-radiotext-plus .rds-rtplus-programme:not(:empty):before {
-	content: "&#128197; ";
+	content: "\1F4C5  ";
 }
 
 .rds-container .rds-radiotext-plus ul.rds-rtplus-news {
-	list-style-type: "&#128240; ";
+	list-style-type: "\1F4F0  ";
 	padding-left: 1.5lh;
 }
 
 .rds-container .rds-radiotext-plus .rds-rtplus-weather:not(:empty):before {
-	content: "&#9925; ";
+	content: "\26C5  ";
 }
 
 .rds-container .rds-radiotext-plus .rds-rtplus-homepage:not(:empty):before {
-	content: "&#128279; ";
+	content: "\1F517  ";
 }
 
 #openwebrx-panel-metadata-dab {

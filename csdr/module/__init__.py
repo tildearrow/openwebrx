@@ -164,7 +164,7 @@ class JsonParser(LineBasedModule):
         try:
             msg = json.loads(line)
             msg["mode"] = self.mode
-            logger.debug(msg)
+#            logger.debug(msg)
             return msg
         except json.JSONDecodeError:
             logger.exception("error parsing decoder json")
