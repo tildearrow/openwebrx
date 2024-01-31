@@ -8,9 +8,9 @@ from owrx.config import Config
 logger = logging.getLogger(__name__)
 
 
-keyRegex = re.compile("^([a-zA-Z]+)-([0-9a-f]{32})-([0-9a-f]{64})$")
-keyChallengeRegex = re.compile("^([a-zA-Z]+)-([0-9a-f]{32})-([0-9a-f]{32})$")
-headerRegex = re.compile("^ReceiverId (.*)$")
+keyRegex = re.compile(r"^([a-zA-Z]+)-([0-9a-f]{32})-([0-9a-f]{64})$")
+keyChallengeRegex = re.compile(r"^([a-zA-Z]+)-([0-9a-f]{32})-([0-9a-f]{32})$")
+headerRegex = re.compile(r"^ReceiverId (.*)$")
 
 
 class KeyException(Exception):

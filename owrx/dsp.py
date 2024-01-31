@@ -421,7 +421,7 @@ class ModulationValidator(OrValidator):
     """
 
     def __init__(self):
-        super().__init__(BoolValidator(), RegexValidator(re.compile("^[a-z0-9]+$")))
+        super().__init__(BoolValidator(), RegexValidator(re.compile(r"^[a-z0-9]+$")))
 
 
 class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient):
