@@ -471,7 +471,6 @@ WfmMetaPanel.prototype.update = function(data) {
         if ('info.weather' in tags) {
             this.radiotext_plus.weather = tags['info.weather'];
         }
-
     }
 
     if ('radiotext' in data && !this.radiotext_plus) {
@@ -579,7 +578,6 @@ DabMetaPanel.prototype = new MetaPanel();
 DabMetaPanel.prototype.isSupported = function(data) {
     return this.modes.includes(data.mode);
 }
-
 
 DabMetaPanel.prototype.update = function(data) {
     if (!this.isSupported(data)) return;

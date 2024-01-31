@@ -41,11 +41,7 @@ class DecodingSettingsController(SettingsFormController):
                 ),
                 CheckboxInput(
                     "wfm_rds_rbds",
-                    "Enable RBDS decoding (US RDS standard)",
-                ),
-                CheckboxInput(
-                    "rds_usa",
-                    "Decode USA-specific RDS information from WFM broadcasts",
+                    "Decode USA-specific RBDS information from WFM broadcasts",
                 ),
                 CheckboxInput(
                     "paging_filter",

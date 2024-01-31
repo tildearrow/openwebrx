@@ -151,9 +151,9 @@ class AcarsDecModule(WavFileModule):
 
 
 class RedseaModule(WavFileModule):
-    def __init__(self, sampleRate: int = 171000, usa: bool = False):
+    def __init__(self, sampleRate: int = 171000, rbds: bool = False):
         self.sampleRate = sampleRate
-        self.usa = usa
+        self.rbds = rbds
         super().__init__()
 
     def getCommand(self):
@@ -161,7 +161,7 @@ class RedseaModule(WavFileModule):
             "redsea", "--file", "/dev/stdin", "--input", "mpx",
             "--samplerate", str(self.sampleRate)
         ]
-        if self.usa:
+        if self.rbds:
             cmd += ["--rbds"]
         return cmd
 
