@@ -4,7 +4,7 @@
 	an open-source SDR receiver software with a web UI.
 	Copyright (c) 2013-2015 by Andras Retzler <randras@sdr.hu>
 	Copyright (c) 2019-2021 by Jakob Ketterl <dd5jfk@darc.de>
-	Copyright (c) 2022-2023 by Marat Fayzullin <luarvique@gmail.com>
+	Copyright (c) 2022-2024 by Marat Fayzullin <luarvique@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -1648,43 +1648,6 @@ img.openwebrx-mirror-img
     height: 27px;
 }
 
-@keyframes openwebrx-record-animation {
-    0% { background: #ff0000; color: white; }
-   50% { background: #800000; color: white; }
-  100% { background: #ff0000; color: white; }
-}
-
-.openwebrx-record-button {
-    color: #ff8080;
-    float: right;
-    margin-top: 13px;
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-}
-
-@keyframes openwebrx-scan-animation {
-    0% { background: #00ff00; color: white; }
-   50% { background: #008000; color: white; }
-  100% { background: #00ff00; color: white; }
-}
-
-.openwebrx-squelch-auto {
-    animation-duration: 1s;
-    animation-iteration-count: infinite;
-}
-
-.openwebrx-squelch-auto .scanner {
-    display: none;
-}
-
-.openwebrx-squelch-auto.highlighted .scanner {
-    display: initial;
-}
-
-.openwebrx-squelch-auto.highlighted .squelch {
-    display: none;
-}
-
 .openwebrx-slider-button svg {
     position:relative;
     top: 1px;
@@ -1730,6 +1693,123 @@ img.openwebrx-mirror-img
     flex: 0 0 auto;
 }
 
+#openwebrx-panel-metadata-wfm {
+	width: 300px;
+	max-height: 300px;
+}
+
+.rds-container {
+	width: 100%;
+	text-align: center;
+	overflow: hidden auto;
+}
+
+.rds-container > *, .rds-radiotext-plus > * {
+	margin: 2px 0;
+}
+
+.rds-container .rds-stationname {
+	font-family: roboto-mono;
+	font-size: 18pt;
+	padding: 10px 0;
+}
+
+.rds-container .rds-stationname,
+.rds-container .rds-identifier,
+.rds-container .rds-prog_type {
+	min-height: 1lh;
+}
+
+.rds-container .rds-radiotext-plus .rds-rtplus-item:not(:empty):before {
+	content: "&#9835; ";
+}
+
+.rds-container .rds-radiotext-plus .rds-rtplus-programme:not(:empty):before {
+	content: "&#128197; ";
+}
+
+.rds-container .rds-radiotext-plus ul.rds-rtplus-news {
+	list-style-type: "&#128240; ";
+	padding-left: 1.5lh;
+}
+
+.rds-container .rds-radiotext-plus .rds-rtplus-weather:not(:empty):before {
+	content: "&#9925; ";
+}
+
+.rds-container .rds-radiotext-plus .rds-rtplus-homepage:not(:empty):before {
+	content: "&#128279; ";
+}
+
+#openwebrx-panel-metadata-dab {
+	width: 300px;
+}
+
+#openwebrx-panel-metadata-dab .dab-container {
+	width: 100%;
+}
+
+.dab-container > * {
+	margin: 2px 0;
+	text-align: center;
+	overflow: hidden auto;
+}
+
+.dab-container label {
+	display: block;
+	margin: 5px 0;
+}
+
+.dab-container select#dab-service-id {
+	width: 100%;
+	padding: 3px;
+}
+
+.dab-container .dab-ensemble-id:not(:empty):before {
+	content: "Ensemble ID: ";
+}
+
+.dab-container .dab-ensemble-label:not(:empty):before {
+	content: "Ensemble: ";
+}
+
+@keyframes openwebrx-record-animation {
+    0% { background: #ff0000; color: white; }
+   50% { background: #800000; color: white; }
+  100% { background: #ff0000; color: white; }
+}
+
+.openwebrx-record-button {
+    color: #ff8080;
+    float: right;
+    margin-top: 13px;
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes openwebrx-scan-animation {
+    0% { background: #00ff00; color: white; }
+   50% { background: #008000; color: white; }
+  100% { background: #00ff00; color: white; }
+}
+
+.openwebrx-squelch-auto {
+    animation-duration: 1s;
+    animation-iteration-count: infinite;
+}
+
+.openwebrx-squelch-auto .scanner {
+    display: none;
+}
+
+.openwebrx-squelch-auto.highlighted .scanner {
+    display: initial;
+}
+
+.openwebrx-squelch-auto.highlighted .squelch {
+    display: none;
+}
+
 .openwebrx-spectrum-container {
     transition-property: height, opacity;
     transition-duration: 1s;
@@ -1773,3 +1853,4 @@ img.openwebrx-mirror-img
 .openwebrx-section.closed {
     max-height: 0;
 }
+
