@@ -344,7 +344,7 @@ class MessageParser(ABC):
 
 # Used in QSO-style modes (FT8, FT4, FST4)
 class QsoMessageParser(MessageParser):
-    locator_pattern = re.compile(".*\\s([A-Z0-9/]{2,})(\\sR)?\\s([A-R]{2}[0-9]{2})$")
+    locator_pattern = re.compile(r".*\\s([A-Z0-9/]{2,})(\\sR)?\\s([A-R]{2}[0-9]{2})$")
 
     def parse(self, msg):
         m = QsoMessageParser.locator_pattern.match(msg)
@@ -359,7 +359,7 @@ class QsoMessageParser(MessageParser):
 
 # Used in propagation reporting / beacon modes (WSPR / FST4W)
 class BeaconMessageParser(MessageParser):
-    wspr_splitter_pattern = re.compile("([A-Z0-9/]*)\\s([A-R]{2}[0-9]{2})\\s([0-9]+)")
+    wspr_splitter_pattern = re.compile(r"([A-Z0-9/]*)\\s([A-R]{2}[0-9]{2})\\s([0-9]+)")
 
     def parse(self, msg):
         m = BeaconMessageParser.wspr_splitter_pattern.match(msg)

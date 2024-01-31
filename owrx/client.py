@@ -80,7 +80,7 @@ class ClientRegistry(object):
         with self.chatLock:
             if name is not None:
                 # Names can only include alphanumerics
-                name = re.sub("\W+", "", name)
+                name = re.sub(r"\W+", "", name)
                 # Cannot have duplicate names
                 if client not in self.chat or name != self.chat[client]["name"]:
                     for c in self.chat:
