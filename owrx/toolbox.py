@@ -120,32 +120,6 @@ class TextParser(LineBasedModule):
         return out if not self.service else None
 
 
-class RdsParser(TextParser):
-    def __init__(self, service: bool = False):
-        # Data will be accumulated here
-        self.rds = { "mode": "RDS" }
-        # Construct parent object
-        super().__init__(filePrefix="RDS", service=service)
-
-    def parse(self, msg: bytes):
-        # Expect JSON data in text form
-        data = json.loads(msg)
-        # Delete constantly changing group ID
-        if "group" in data:
-            del data["group"]
-        # Only update if there is new data
-        if data.items() <= self.rds.items():
-            return None
-        else:
-            self.rds.update(data)
-            return self.rds
-
-    def setDialFrequency(self, frequency: int) -> None:
-        super().setDialFrequency(frequency)
-        # Clear RDS data when frequency changed
-        self.rds = { "mode": "RDS", "frequency": frequency }
-
-
 class IsmParser(TextParser):
     def __init__(self, service: bool = False):
         # Colors will be assigned via this cache

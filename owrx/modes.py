@@ -231,16 +231,6 @@ class Modes(object):
             squelch=False
         ),
         DigitalMode(
-            "rds",
-            "RDS",
-            underlying=["wfm"],
-            bandpass=Bandpass(-75000, 75000),
-            requirements=["rds"],
-            service=False,
-            squelch=False,
-            secondaryFft=False
-        ),
-        DigitalMode(
             "hfdl",
             "HFDL",
             underlying=["empty"],
