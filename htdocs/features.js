@@ -3,8 +3,8 @@ $(function(){
 
     function yes_no(v) {
         return v?
-            '<td style="color:green;">YES</td>' :
-            '<td style="color:red;">NO</td>';
+            '<td style="color:#00FF00;">YES</td>' :
+            '<td style="color:#FF0000;">NO</td>';
     }
 
     $.ajax('api/features').done(function(data){
