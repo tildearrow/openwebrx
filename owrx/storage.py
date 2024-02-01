@@ -107,7 +107,7 @@ class Storage(object):
         if not inFile.startswith('/'):
             inFile = self.getFilePath(inFile)
         # Only converting BMP files for now
-        outFile = re.sub('\.bmp$', '.png', inFile)
+        outFile = re.sub(r'\.bmp$', '.png', inFile)
         if outFile==inFile:
             return
         try:

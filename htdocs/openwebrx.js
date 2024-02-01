@@ -4,7 +4,7 @@
 	an open-source SDR receiver software with a web UI.
 	Copyright (c) 2013-2015 by Andras Retzler <randras@sdr.hu>
 	Copyright (c) 2019-2021 by Jakob Ketterl <dd5jfk@darc.de>
-	Copyright (c) 2022-2023 by Marat Fayzullin <luarvique@gmail.com>
+	Copyright (c) 2022-2024 by Marat Fayzullin <luarvique@gmail.com>
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU Affero General Public License as
@@ -1134,6 +1134,9 @@ function on_ws_recv(evt) {
                         break;
                     case "features":
                         Modes.setFeatures(json['value']);
+                        $('#openwebrx-panel-metadata-wfm').metaPanel().each(function() {
+                            this.setEnabled(!!json.value.rds);
+                        });
                         break;
                     case "metadata":
                         $('.openwebrx-meta-panel').metaPanel().each(function(){

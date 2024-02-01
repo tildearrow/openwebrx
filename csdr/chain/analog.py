@@ -1,6 +1,11 @@
-from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, HdAudio, DeemphasisTauChain
-from pycsdr.modules import AmDemod, DcBlock, FmDemod, Limit, NfmDeemphasis, Agc, Afc, WfmDeemphasis, FractionalDecimator, RealPart
+from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, HdAudio, \
+    DeemphasisTauChain, MetaProvider, RdsChain
+from pycsdr.modules import AmDemod, DcBlock, FmDemod, Limit, NfmDeemphasis, Agc, Afc, \
+    WfmDeemphasis, FractionalDecimator, RealPart, Writer, Buffer
 from pycsdr.types import Format, AgcProfile
+from csdr.chain.redsea import Redsea
+from typing import Optional
+from owrx.feature import FeatureDetector
 
 
 class Am(BaseDemodulatorChain):
@@ -38,17 +43,28 @@ class NFm(BaseDemodulatorChain):
         self.replace(2, NfmDeemphasis(sampleRate))
 
 
-class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAudio):
-    def __init__(self, sampleRate: int, tau: float):
+class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAudio, MetaProvider, RdsChain):
+    def __init__(self, sampleRate: int, tau: float, rdsRbds: bool):
         self.sampleRate = sampleRate
         self.tau = tau
+        self.rdsRbds = rdsRbds
+        self.limit = Limit()
+        # this buffer is used to tap into the raw audio stream for redsea RDS decoding
+        self.metaTapBuffer = Buffer(Format.FLOAT)
         workers = [
             FmDemod(),
-            Limit(),
+            self.limit,
             FractionalDecimator(Format.FLOAT, 200000.0 / self.sampleRate, prefilter=True),
             WfmDeemphasis(self.sampleRate, self.tau),
         ]
+        self.metaChain = None
+        self.metaWriter = None
         super().__init__(workers)
+
+    def _connect(self, w1, w2, buffer: Optional[Buffer] = None) -> None:
+        if w1 is self.limit:
+            buffer = self.metaTapBuffer
+        super()._connect(w1, w2, buffer)
 
     def getFixedIfSampleRate(self):
         return 200000
@@ -65,6 +81,30 @@ class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAu
         self.sampleRate = sampleRate
         self.replace(2, FractionalDecimator(Format.FLOAT, 200000.0 / self.sampleRate, prefilter=True))
         self.replace(3, WfmDeemphasis(self.sampleRate, self.tau))
+
+    def setMetaWriter(self, writer: Writer) -> None:
+        if not FeatureDetector().is_available("rds"):
+            return
+        if self.metaChain is None:
+            self.metaChain = Redsea(self.getFixedIfSampleRate(), self.rdsRbds)
+            self.metaChain.setReader(self.metaTapBuffer.getReader())
+        self.metaWriter = writer
+        self.metaChain.setWriter(self.metaWriter)
+
+    def stop(self):
+        super().stop()
+        if self.metaChain is not None:
+            self.metaChain.stop()
+            self.metaChain = None
+            self.metaWriter = None
+
+    def setRdsRbds(self, rdsRbds: bool) -> None:
+        self.rdsRbds = rdsRbds
+        if self.metaChain is not None:
+            self.metaChain.stop()
+            self.metaChain = Redsea(self.getFixedIfSampleRate(), self.rdsRbds)
+            self.metaChain.setReader(self.metaTapBuffer.getReader())
+            self.metaChain.setWriter(self.metaWriter)
 
 
 class Ssb(BaseDemodulatorChain):

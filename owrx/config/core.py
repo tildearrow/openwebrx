@@ -1,6 +1,7 @@
 from owrx.config import ConfigError
 from configparser import ConfigParser
 from pathlib import Path
+from typing import Optional
 import os
 
 
@@ -13,11 +14,12 @@ class CoreConfig(object):
             "temporary_directory": "/tmp",
             "log_level": "INFO",
             "temperature_sensor": "/sys/class/thermal/thermal_zone0/temp",
-            "bind_address": "",
         },
         "web": {
             "port": 8073,
             "ipv6": True,
+            # won't work this way because values must be strings, but this is effectively the way it behaves.
+            #"bind_address": None,
         },
         "aprs": {
             "symbols_path": "/usr/share/aprs-symbols/png"
@@ -62,13 +64,13 @@ class CoreConfig(object):
         self.data_directory = config.get("core", "data_directory")
         CoreConfig.checkDirectory(self.data_directory, "data_directory")
         self.temporary_directory = config.get("core", "temporary_directory")
-        self.temperature_sensor = config.get("core", "temperature_sensor")
-        self.bind_address = config.get("core", "bind_address")
         CoreConfig.checkDirectory(self.temporary_directory, "temporary_directory")
         self.log_level = config.get("core", "log_level")
         self.web_port = config.getint("web", "port")
         self.web_ipv6 = config.getboolean("web", "ipv6")
+        self.web_bind_address = config.get("web", "bind_address", fallback=None)
         self.aprs_symbols_path = config.get("aprs", "symbols_path")
+        self.temperature_sensor = config.get("core", "temperature_sensor")
 
     @staticmethod
     def checkDirectory(dir, key):
@@ -85,14 +87,14 @@ class CoreConfig(object):
     def get_web_ipv6(self) -> bool:
         return self.web_ipv6
 
+    def get_web_bind_address(self) -> Optional[str]:
+        return self.web_bind_address
+
     def get_data_directory(self) -> str:
         return self.data_directory
 
     def get_temporary_directory(self) -> str:
         return self.temporary_directory
-
-    def get_temperature_sensor(self):
-        return self.temperature_sensor
 
     def get_aprs_symbols_path(self) -> str:
         return self.aprs_symbols_path
@@ -100,5 +102,6 @@ class CoreConfig(object):
     def get_log_level(self) -> str:
         return self.log_level
 
-    def get_bind_address(self) -> str:
-        return self.bind_address
+    def get_temperature_sensor(self):
+        return self.temperature_sensor
+

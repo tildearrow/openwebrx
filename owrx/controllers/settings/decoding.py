@@ -40,8 +40,8 @@ class DecodingSettingsController(SettingsFormController):
                     + ' target="_blank">this Wikipedia article</a> for more information',
                 ),
                 CheckboxInput(
-                    "rds_usa",
-                    "Decode USA-specific RDS information from WFM broadcasts",
+                    "wfm_rds_rbds",
+                    "Decode USA-specific RBDS information from WFM broadcasts",
                 ),
                 CheckboxInput(
                     "paging_filter",

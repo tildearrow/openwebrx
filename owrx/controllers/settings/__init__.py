@@ -29,6 +29,7 @@ class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageControl
         super().__init__(handler, request, options)
         self.errors = {}
         self.globalError = None
+        self.formData = None
 
     @abstractmethod
     def getSections(self):
@@ -44,8 +45,18 @@ class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageControl
     def getErrors(self):
         return self.errors
 
+    def buildRenderData(self):
+        # this basially builds an intermediate result to be rendered
+        # relevant when the form has to be displayed again due to errors
+        # in this specific scenario, we mix the config with the data the user already submitted
+        # we use a copy of the config so that whatever we apply here does not get accidentally stored
+        res = self.getData().__dict__()
+        if self.formData is not None:
+            self._applyConfigData(res, self.formData)
+        return res
+
     def render_sections(self):
-        sections = "".join(section.render(self.getData(), self.getErrors()) for section in self.getSections())
+        sections = "".join(section.render(self.buildRenderData(), self.getErrors()) for section in self.getSections())
         buttons = self.render_buttons()
         return """
             <form class="settings-body" method="POST">
@@ -106,6 +117,7 @@ class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageControl
             self.globalError = str(e)
             return self.indexAction()
 
+        self.formData = data
         if errors:
             self.errors = self._mergeErrors(errors)
             return self.indexAction()
@@ -118,14 +130,17 @@ class SettingsFormController(AuthorizationMixin, BreadcrumbMixin, WebpageControl
             self.globalError = str(e)
             return self.indexAction()
 
-    def processData(self, data):
-        config = self.getData()
+    def _applyConfigData(self, dest, data):
         for k, v in data.items():
             if v is None:
-                if k in config:
-                    del config[k]
+                if k in dest:
+                    del dest[k]
             else:
-                config[k] = v
+                dest[k] = v
+
+    def processData(self, data):
+        config = self.getData()
+        self._applyConfigData(config, data)
 
     def store(self):
         Config.get().store()

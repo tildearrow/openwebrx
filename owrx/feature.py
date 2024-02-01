@@ -61,6 +61,7 @@ class FeatureDetector(object):
         "perseussdr": ["perseustest", "nmux"],
         "airspy": ["soapy_connector", "soapy_airspy"],
         "airspyhf": ["soapy_connector", "soapy_airspyhf"],
+        "afedri": ["soapy_connector", "soapy_afedri"],
         "lime_sdr": ["soapy_connector", "soapy_lime_sdr"],
         "fifi_sdr": ["alsa", "rockprog", "nmux"],
         "pluto_sdr": ["soapy_connector", "soapy_pluto_sdr"],
@@ -92,6 +93,7 @@ class FeatureDetector(object):
         "page": ["multimon"],
         "selcall": ["multimon"],
         "rds": ["redsea"],
+        "dab": ["csdreti", "dablin"],
         "png": ["imagemagick"],
     }
 
@@ -261,7 +263,7 @@ class FeatureDetector(object):
             return False
 
     def _check_connector(self, command, required_version):
-        owrx_connector_version_regex = re.compile("^{} version (.*)$".format(re.escape(command)))
+        owrx_connector_version_regex = re.compile(r"^{} version (.*)$".format(re.escape(command)))
 
         try:
             process = subprocess.Popen([command, "--version"], stdout=subprocess.PIPE)
@@ -306,14 +308,10 @@ class FeatureDetector(object):
 
     def _has_soapy_driver(self, driver):
         try:
-            process = subprocess.Popen(["SoapySDRUtil", "--info"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
-            factory_regex = re.compile("^Available factories\\.\\.\\. ?(.*)$")
+            process = subprocess.Popen(["soapy_connector", "--listdrivers"], stdout=subprocess.PIPE, stderr=subprocess.DEVNULL)
 
-            drivers = []
-            for line in process.stdout:
-                matches = factory_regex.match(line.decode())
-                if matches:
-                    drivers = [s.strip() for s in matches.group(1).split(", ")]
+            drivers = [line.decode().strip() for line in process.stdout]
+            process.wait(1)
 
             return driver in drivers
         except FileNotFoundError:
@@ -352,6 +350,14 @@ class FeatureDetector(object):
         You can get it [here](https://github.com/pothosware/SoapyAirspyHF/wiki).
         """
         return self._has_soapy_driver("airspyhf")
+
+    def has_soapy_afedri(self):
+        """
+        The SoapyAfedri module allows using Afedri SDR-Net devices with SoapySDR.
+
+        You can get it [here](https://github.com/alexander-sholohov/SoapyAfedri).
+        """
+        return self._has_soapy_driver("afedri")
 
     def has_soapy_lime_sdr(self):
         """
@@ -448,7 +454,7 @@ class FeatureDetector(object):
         return reduce(and_, map(self.command_is_runnable, ["jt9", "wsprd"]), True)
 
     def _has_wsjtx_version(self, required_version):
-        wsjt_version_regex = re.compile("^WSJT-X (.*)$")
+        wsjt_version_regex = re.compile(r"^WSJT-X (.*)$")
 
         try:
             process = subprocess.Popen(["wsjtx_app_version", "--version"], stdout=subprocess.PIPE)
@@ -520,9 +526,9 @@ class FeatureDetector(object):
 
     def has_freedv_rx(self):
         """
-        The "freedv\_rx" executable is required to demodulate FreeDV digital transmissions. It comes together with the
+        The "freedv_rx" executable is required to demodulate FreeDV digital transmissions. It comes together with the
         codec2 library, but it's only a supplemental part and not installed by default or contained in its packages.
-        To install it, you will need to compile codec2 from source and manually install freedv\_rx.
+        To install it, you will need to compile codec2 from source and manually install freedv_rx.
 
         Detailed installation instructions are available on the
         [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
@@ -637,6 +643,48 @@ class FeatureDetector(object):
         """
         return self.command_is_runnable("dumpvdl2 --version")
 
+    def has_redsea(self):
+        """
+        OpenWebRX can decode RDS data on WFM broadcast station if the `redsea` decoder is available.
+
+        You can find more information [here](https://github.com/windytan/redsea)
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `redsea`.
+        """
+        return self.command_is_runnable("redsea --version")
+
+    def has_csdreti(self):
+        """
+        To decode DAB broadcast signals, OpenWebRX needs the ETI decoder from the
+        [`csdr-eti`](https://github.com/jketterl/csdr-eti) project, together with the
+        associated python bindings from [`pycsdr-eti`](https://github.com/jketterl/pycsdr-eti).
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, the `python3-csdr-eti` package should be all you
+        need.
+        """
+        required_version = LooseVersion("0.1")
+
+        try:
+            from csdreti.modules import csdreti_version
+            from csdreti.modules import version as pycsdreti_version
+
+            return (
+                LooseVersion(csdreti_version) >= required_version
+                and LooseVersion(pycsdreti_version) >= required_version
+            )
+        except ImportError:
+            return False
+
+    def has_dablin(self):
+        """
+        To decode DAB broadcast signals, OpenWebRX needs the [`dablin`](https://github.com/Opendigitalradio/dablin)
+        decoding software.
+
+        Dablin comes packaged with Debian and Ubuntu, so installing the `dablin` package should get you going.
+        """
+        return self.command_is_runnable("dablin -h")
+
     def has_acarsdec(self):
         """
         OpenWebRX uses the [acarsdec](https://github.com/TLeconte/acarsdec) tool to decode ACARS
@@ -659,9 +707,3 @@ class FeatureDetector(object):
         """
         return self.command_is_runnable("multimon-ng --help")
 
-    def has_redsea(self):
-        """
-        OpenWebRX uses the [redsea](https://github.com/windytan/redsea) tool to decode RDS
-        information from FM broadcasts. You will have to compile it from source.
-        """
-        return self.command_is_runnable("redsea --version")

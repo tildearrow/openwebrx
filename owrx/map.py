@@ -1,6 +1,7 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from owrx.config import Config
 from owrx.bands import Band
+from abc import abstractmethod, ABC, ABCMeta
 import threading
 import time
 import sys
@@ -8,12 +9,17 @@ import sys
 import logging
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.INFO)
 
 
 class Location(object):
+    def getTTL(self) -> timedelta:
+        pm = Config.get()
+        return timedelta(seconds=pm["map_position_retention_time"])
+
     def __dict__(self):
-        return {}
+        return {
+            "ttl": self.getTTL().total_seconds() * 1000
+        }
 
 
 class Map(object):
@@ -78,32 +84,36 @@ class Map(object):
         except ValueError:
             pass
 
-    def updateLocation(self, callsign, loc: Location, mode: str, band: Band = None, hops: list[str] = [], permanent: bool = False):
+    def updateLocation(self, key, loc: Location, mode: str, band: Band = None, hops: list[str] = [], timestamp: datetime = None):
+        if timestamp is None:
+            timestamp = datetime.now(timezone.utc)
+        else:
+            # if we get an external timestamp, make sure it's not already expired
+            if datetime.now(timezone.utc) - loc.getTTL() > timestamp:
+                return
+
         pm = Config.get()
         ignoreIndirect = pm["map_ignore_indirect_reports"]
         preferRecent = pm["map_prefer_recent_reports"]
         needBroadcast = False
-        ts = datetime.now()
-
-        # if location is permanent, shift its timestamp into the future
-        if permanent:
-            ts = ts + timedelta(weeks=500)
 
         with self.positionsLock:
             # ignore indirect reports if ignoreIndirect set
             if not ignoreIndirect or len(hops)==0:
                 # prefer messages with shorter hop count unless preferRecent set
-                if preferRecent or callsign not in self.positions or len(hops) <= len(self.positions[callsign]["hops"]):
-                    self.positions[callsign] = {"location": loc, "updated": ts, "mode": mode, "band": band, "hops": hops }
+                if preferRecent or key not in self.positions or len(hops) <= len(self.positions[key]["hops"]):
+                    if isinstance(loc, IncrementalUpdate) and key in self.positions:
+                        loc.update(self.positions[key]["location"])
+                    self.positions[key] = {"location": loc, "updated": timestamp, "mode": mode, "band": band, "hops": hops }
                     needBroadcast = True
 
         if needBroadcast:
             self.broadcast(
                 [
                     {
-                        "callsign": callsign,
+                        "callsign": key,
                         "location": loc.__dict__(),
-                        "lastseen": ts.timestamp() * 1000,
+                        "lastseen": timestamp.timestamp() * 1000,
                         "mode": mode,
                         "band": band.getName() if band is not None else None,
                         "hops": hops,
@@ -111,28 +121,29 @@ class Map(object):
                 ]
             )
 
-    def touchLocation(self, callsign):
+    def touchLocation(self, key):
         # not implemented on the client side yet, so do not use!
-        ts = datetime.now()
+        ts = datetime.now(timezone.utc)
         with self.positionsLock:
-            if callsign in self.positions:
-                self.positions[callsign]["updated"] = ts
-        self.broadcast([{"callsign": callsign, "lastseen": ts.timestamp() * 1000}])
+            if key in self.positions:
+                self.positions[key]["updated"] = ts
+        self.broadcast([{"callsign": key, "lastseen": ts.timestamp() * 1000}])
 
-    def removeLocation(self, callsign):
+    def removeLocation(self, key):
         with self.positionsLock:
-            if callsign in self.positions:
-                del self.positions[callsign]
+            if key in self.positions:
+                del self.positions[key]
                 # TODO broadcast removal to clients
 
     def removeOldPositions(self):
-        pm = Config.get()
-        retention = timedelta(seconds=pm["map_position_retention_time"])
-        cutoff = datetime.now() - retention
+        now = datetime.now(timezone.utc)
 
-        to_be_removed = [callsign for (callsign, pos) in self.positions.items() if pos["updated"] < cutoff]
-        for callsign in to_be_removed:
-            self.removeLocation(callsign)
+        with self.positionsLock:
+            to_be_removed = [
+                key for (key, pos) in self.positions.items() if now - pos["location"].getTTL() > pos["updated"]
+            ]
+        for key in to_be_removed:
+            self.removeLocation(key)
 
     def rebuildPositions(self):
         logger.debug("rebuilding map storage; size before: %i", sys.getsizeof(self.positions))
@@ -148,7 +159,10 @@ class LatLngLocation(Location):
         self.lon = lon
 
     def __dict__(self):
-        res = {"type": "latlon", "lat": self.lat, "lon": self.lon}
+        res = super().__dict__()
+        res.update(
+            {"type": "latlon", "lat": self.lat, "lon": self.lon}
+        )
         return res
 
 
@@ -157,5 +171,15 @@ class LocatorLocation(Location):
         self.locator = locator
 
     def __dict__(self):
-        return {"type": "locator", "locator": self.locator}
+        res = super().__dict__()
+        res.update(
+            {"type": "locator", "locator": self.locator}
+        )
+        return res
+
+
+class IncrementalUpdate(Location, metaclass=ABCMeta):
+    @abstractmethod
+    def update(self, previousLocation: Location):
+        pass
 

@@ -194,12 +194,12 @@ class AcarsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 class RdsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self):
         pm = Config.get()
-        self.usa = pm["rds_usa"]
+        self.rbds = pm["wfm_rds_rbds"]
         self.sampleRate = 171000
         self.parser = RdsParser()
         workers = [
             Convert(Format.FLOAT, Format.SHORT),
-            RedseaModule(self.sampleRate, usa=self.usa),
+            RedseaModule(self.sampleRate, usa=self.rbds),
             self.parser,
         ]
         # Connect all the workers

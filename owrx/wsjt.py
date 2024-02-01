@@ -344,7 +344,7 @@ class MessageParser(ABC):
 
 # Used in QSO-style modes (FT8, FT4, FST4)
 class QsoMessageParser(MessageParser):
-    locator_pattern = re.compile(".*\\s([A-Z0-9/]{2,})(\\sR)?\\s([A-R]{2}[0-9]{2})$")
+    locator_pattern = re.compile(r".*\\s([A-Z0-9/]{2,})(\\sR)?\\s([A-R]{2}[0-9]{2})$")
 
     def parse(self, msg):
         m = QsoMessageParser.locator_pattern.match(msg)
@@ -359,7 +359,7 @@ class QsoMessageParser(MessageParser):
 
 # Used in propagation reporting / beacon modes (WSPR / FST4W)
 class BeaconMessageParser(MessageParser):
-    wspr_splitter_pattern = re.compile("([A-Z0-9/]*)\\s([A-R]{2}[0-9]{2})\\s([0-9]+)")
+    wspr_splitter_pattern = re.compile(r"([A-Z0-9/]*)\\s([A-R]{2}[0-9]{2})\\s([0-9]+)")
 
     def parse(self, msg):
         m = BeaconMessageParser.wspr_splitter_pattern.match(msg)
@@ -377,6 +377,8 @@ class Jt9Decoder(Decoder):
         # '0003  -4  0.4 1762 #  CQ R2ABM KO85'
         # fst4 sample
         # '**** -23  0.6 3023 `  <...> <...> R 591631 BI53PV'
+        # MSK144 sample
+        # '221602   8  0.4 1488 &  K1JT WA4CQG EM72'
         msg, timestamp = self.parse_timestamp(msg)
         wsjt_msg = msg[17:53].strip()
 
