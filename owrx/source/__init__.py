@@ -212,12 +212,6 @@ class SdrSource(ABC):
         if "center_freq" in changes and changes["center_freq"] is not PropertyDeleted:
             self.setCenterFreq(changes["center_freq"])
 
-    def _handleAlwaysOnChanged(self, changes):
-        if self.isAlwaysOn():
-            self.start()
-        else:
-            self.checkStatus()
-
     def isFailed(self):
         return self.failed
 
