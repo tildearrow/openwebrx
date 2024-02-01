@@ -50,8 +50,12 @@ LocatorManager.prototype.update = function(id, data, map) {
     // Do not update unless locator present
     if (!(id in this.locators)) return false;
 
+    // Make sure we have valid band and mode names
+    if (!data.band) data.band = 'other';
+    if (!data.mode) data.mode = 'other';
+
     // Keep track of bands
-    if(!(data.band in this.bands)) {
+    if (!(data.band in this.bands)) {
         this.bands[data.band] = '#000000';
         this.assignColors(this.bands);
         if (this.colorMode === 'band') {
@@ -61,7 +65,7 @@ LocatorManager.prototype.update = function(id, data, map) {
     }
 
     // Keep track modes
-    if(!(data.mode in this.modes)) {
+    if (!(data.mode in this.modes)) {
         this.modes[data.mode] = '#000000';
         this.assignColors(this.modes);
         if (this.colorMode === 'mode') {
