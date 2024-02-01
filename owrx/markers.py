@@ -388,7 +388,7 @@ class Markers(object):
         result = {}
         try:
             data = urllib.request.urlopen(url).read().decode('utf-8')
-            data = json.loads(re.sub(r"^\s*//.*", "", data, flags=re.MULTILINE))
+            data = json.loads(re.sub("^\s*//.*", "", data, flags=re.MULTILINE))
 
             for entry in data:
                 if "lat" in entry and "lon" in entry and "url" in entry:

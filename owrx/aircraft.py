@@ -307,9 +307,9 @@ class AircraftManager(object):
 #
 class AircraftParser(TextParser):
     def __init__(self, filePrefix: str = None, service: bool = False):
-        self.reFlight = re.compile(r"^([0-9A-Z]{2}|[A-Z]{3})0*([0-9]+[A-Z]*)$")
-        self.reDots   = re.compile(r"^\.*([^\.].*?)\.*$")
-        self.reIATA   = re.compile(r"^..[0-9]+$")
+        self.reFlight = re.compile("^([0-9A-Z]{2}|[A-Z]{3})0*([0-9]+[A-Z]*)$")
+        self.reDots   = re.compile("^\.*([^\.].*?)\.*$")
+        self.reIATA   = re.compile("^..[0-9]+$")
         super().__init__(filePrefix=filePrefix, service=service)
 
     def parse(self, msg: bytes):

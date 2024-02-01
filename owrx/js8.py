@@ -83,7 +83,7 @@ class Js8TurboProfile(Js8Profile):
 
 
 class Js8Parser(AudioChopperParser):
-    decoderRegex = re.compile(r" ?<Decode(Started|Debug|Finished)>")
+    decoderRegex = re.compile(" ?<Decode(Started|Debug|Finished)>")
 
     def parse(self, profile: AudioChopperProfile, freq: int, raw_msg: bytes):
         try:

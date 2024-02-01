@@ -9,7 +9,7 @@ import pickle
 
 
 class M17Module(PopenModule):
-    lsfRegex = re.compile(r"SRC: ([a-zA-Z0-9]+), DEST: ([a-zA-Z0-9]+)")
+    lsfRegex = re.compile("SRC: ([a-zA-Z0-9]+), DEST: ([a-zA-Z0-9]+)")
 
     def __init__(self):
         super().__init__()

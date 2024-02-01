@@ -24,16 +24,16 @@ def fahrenheitToCelsius(f):
 encoding = "utf-8"
 
 # regex for altitute in comment field
-altitudeRegex = re.compile(r"(^.*)\\/A=([0-9]{6})(.*$)")
+altitudeRegex = re.compile("(^.*)\\/A=([0-9]{6})(.*$)")
 
 # regex for parsing third-party headers
-thirdpartyeRegex = re.compile(r"^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z0-9-]+\\*?)):(.*)$")
+thirdpartyeRegex = re.compile("^([a-zA-Z0-9-]+)>((([a-zA-Z0-9-]+\\*?,)*)([a-zA-Z0-9-]+\\*?)):(.*)$")
 
 # regex for getting the message id out of message
-messageIdRegex = re.compile(r"^(.*){([0-9]{1,5})$")
+messageIdRegex = re.compile("^(.*){([0-9]{1,5})$")
 
 # regex to filter aliases from the path
-noHopPattern = re.compile(r"^(WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)\\*?$")
+noHopPattern = re.compile("^(WIDE[0-9]?(-[0-9])?|ECHO|RELAY|TRACE|GATE)\\*?$")
 
 
 def decodeBase91(input):

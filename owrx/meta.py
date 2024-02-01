@@ -140,7 +140,7 @@ class DigihamEnricher(Enricher, metaclass=ABCMeta):
 class DmrEnricher(DigihamEnricher, RadioIDEnricher):
     # callsign must be uppercase alphanumeric and at the beginning
     # if there's anything after the callsign, it must be separated by a whitespace
-    talkerAliasRegex = re.compile(r"^([A-Z0-9]+)(\\s.*)?$")
+    talkerAliasRegex = re.compile("^([A-Z0-9]+)(\\s.*)?$")
 
     def __init__(self, parser):
         super().__init__("dmr", parser)

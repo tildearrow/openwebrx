@@ -302,7 +302,7 @@ class GeneralSettingsController(SettingsFormController):
                 else:
                     # get file extension (at least 3 characters)
                     # should be all lowercase since they are set by the upload script
-                    pattern = re.compile(r".*\\.([a-z]{3,})$")
+                    pattern = re.compile(".*\\.([a-z]{3,})$")
                     matches = pattern.match(data[image_id])
                     if matches is None:
                         logger.warning("could not determine file extension for %s", image_id)

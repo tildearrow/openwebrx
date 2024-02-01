@@ -263,7 +263,7 @@ class FeatureDetector(object):
             return False
 
     def _check_connector(self, command, required_version):
-        owrx_connector_version_regex = re.compile(r"^{} version (.*)$".format(re.escape(command)))
+        owrx_connector_version_regex = re.compile("^{} version (.*)$".format(re.escape(command)))
 
         try:
             process = subprocess.Popen([command, "--version"], stdout=subprocess.PIPE)
@@ -454,7 +454,7 @@ class FeatureDetector(object):
         return reduce(and_, map(self.command_is_runnable, ["jt9", "wsprd"]), True)
 
     def _has_wsjtx_version(self, required_version):
-        wsjt_version_regex = re.compile(r"^WSJT-X (.*)$")
+        wsjt_version_regex = re.compile("^WSJT-X (.*)$")
 
         try:
             process = subprocess.Popen(["wsjtx_app_version", "--version"], stdout=subprocess.PIPE)
@@ -526,9 +526,9 @@ class FeatureDetector(object):
 
     def has_freedv_rx(self):
         """
-        The "freedv_rx" executable is required to demodulate FreeDV digital transmissions. It comes together with the
+        The "freedv\_rx" executable is required to demodulate FreeDV digital transmissions. It comes together with the
         codec2 library, but it's only a supplemental part and not installed by default or contained in its packages.
-        To install it, you will need to compile codec2 from source and manually install freedv_rx.
+        To install it, you will need to compile codec2 from source and manually install freedv\_rx.
 
         Detailed installation instructions are available on the
         [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
