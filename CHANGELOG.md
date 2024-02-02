@@ -1,3 +1,18 @@
+**1.2.47**
+- Merged changes from Jakob Ketterl's original development branch.
+- Switched to updated CSDR, PyCSDR, OWRX Connector packages.
+- Fixed WSJT out-of-band reports showing as "null" on the map.
+- Fixed compatibility with Python 3.12+.
+- Fixed orientation of some APRS symbols.
+- Removed separate RDS decoder (now part of WFM).
+- [jketterl] Added support for DAB radio via Dablin (untested in OWRX+).
+- [jketterl] Added always-on RDS decoder in WFM mode.
+- [jketterl] Added checks for valid source bandwidths.
+- [jketterl] Added Afedri SDR source.
+- [jketterl] Added Linux desktop icon for OpenWebRX.
+- [jketterl] Fixed ThreadModule starting thread twice.
+- [jketterl] Removed depdendency on SoapySDRUtils.
+
 **1.2.46**
 - Added list of active services to the Settings page.
 - Added new toolbar icons, based on Google design.
