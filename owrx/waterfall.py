@@ -286,6 +286,7 @@ class Ha7ilmWaterfall(Waterfall):
 
 class ZoranWaterfall(Waterfall):
     def __init__(self):
+#        super().__init__([0x000000, 0x000965, 0x00E0FF, 0x00FFE0, 0x2EFF00, 0xECFF00, 0xFFEC00, 0xFF6500, 0xFF0000])
         super().__init__([0x000000, 0x000965, 0x00E0FF, 0x2EFF00, 0xFFEC00, 0xFF0000])
 
 
