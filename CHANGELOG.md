@@ -2,6 +2,7 @@
 - Merged changes from Jakob Ketterl's original development branch.
 - Switched to updated CSDR, PyCSDR, OWRX Connector packages.
 - Fixed WSJT out-of-band reports showing as "null" on the map.
+- Fixed top bar icons disappearing on mobile devices.
 - Fixed compatibility with Python 3.12+.
 - Fixed orientation of some APRS symbols.
 - Removed separate RDS decoder (now part of WFM).
