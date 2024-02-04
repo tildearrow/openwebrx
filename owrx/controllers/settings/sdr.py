@@ -420,14 +420,18 @@ class SdrProfileController(SdrFormControllerWithModal):
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
     def moveProfileUp(self):
+        logger.debug("@@@ PROFILE UP: " + self.profile_id)
         return self.moveProfile(self.profile_id, False)
 
     def moveProfileDown(self):
+        logger.debug("@@@ PROFILE DOWN: " + self.profile_id)
         return self.moveProfile(self.profile_id, True)
 
     def moveProfile(self, id: str, moveDown: bool):
+        logger.debug("@@@ MOVE_PROFILE")
         if id is None or id not in self.device["profiles"]:
             return self.send_response("profile not found", code=404)
+        logger.debug("@@@ ACTION")
         config = Config.get()
         profiles = list(self.device["profiles"].keys())
         n = profiles.index(id)
@@ -437,6 +441,7 @@ class SdrProfileController(SdrFormControllerWithModal):
             profiles = profiles[:n-1] + [profiles[n] , profiles[n-1]] + profiles[n+1:]
         self.device["profiles"] = { x: self.device["profiles"][x] for x in profiles }
         config.store()
+        logger.debug("@@@ ORDER: {0}".format(profiles))
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
 
