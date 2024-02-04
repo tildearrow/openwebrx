@@ -183,6 +183,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/settings/ExponentialInput.js",
             "lib/settings/LogMessages.js",
             "lib/settings/ClientList.js",
+            "lib/settings/Profiles.js",
             "settings.js",
         ],
     }

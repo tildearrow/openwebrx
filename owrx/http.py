@@ -137,6 +137,16 @@ class Router(object):
                 SdrProfileController,
                 options={"action": "deleteProfile"},
             ),
+            RegexRoute(
+                "^/settings/sdr/([^/]+)/moveprofileup/([^/]+)$",
+                SdrProfileController,
+                options={"action": "moveProfileUp"},
+            ),
+            RegexRoute(
+                "^/settings/sdr/([^/]+)/moveprofiledown/([^/]+)$",
+                SdrProfileController,
+                options={"action": "moveProfileDown"},
+            ),
             StaticRoute("/settings/bookmarks", BookmarksController),
             StaticRoute("/settings/bookmarks", BookmarksController, method="POST", options={"action": "new"}),
             RegexRoute("^/settings/bookmarks/(.+)$", BookmarksController, method="POST", options={"action": "update"}),

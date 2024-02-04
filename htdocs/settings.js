@@ -10,4 +10,5 @@ $(function(){
     $('.exponential-input').exponentialInput();
     $('.device-log-messages').logMessages();
     $('.client-list').clientList();
+    $('.buttons').profiles();
 });
