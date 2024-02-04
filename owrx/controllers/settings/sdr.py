@@ -16,10 +16,6 @@ from owrx.log import HistoryHandler
 from abc import ABCMeta, abstractmethod
 from uuid import uuid4
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 class SdrDeviceBreadcrumb(SettingsBreadcrumb):
     def __init__(self):
@@ -429,15 +425,12 @@ class SdrProfileController(SdrFormControllerWithModal):
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
     def moveProfileUp(self):
-        logger.debug("@@@ PROFILE UP: " + self.profile_id)
         return self.moveProfile(self.profile_id, False)
 
     def moveProfileDown(self):
-        logger.debug("@@@ PROFILE DOWN: " + self.profile_id)
         return self.moveProfile(self.profile_id, True)
 
     def moveProfile(self, id: str, moveDown: bool):
-        logger.debug("@@@ MOVE_PROFILE")
         if id is None or id not in self.device["profiles"]:
             return self.send_response("profile not found", code=404)
         ids = list(self.device["profiles"].keys())
@@ -452,7 +445,6 @@ class SdrProfileController(SdrFormControllerWithModal):
             del self.device["profiles"][id]
             self.device["profiles"][id] = profile
         config.store()
-        logger.debug("@@@ ORDER: {0}".format(profiles))
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
 
