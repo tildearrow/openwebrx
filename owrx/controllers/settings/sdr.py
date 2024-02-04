@@ -16,10 +16,6 @@ from owrx.log import HistoryHandler
 from abc import ABCMeta, abstractmethod
 from uuid import uuid4
 
-import logging
-
-logger = logging.getLogger(__name__)
-
 
 class SdrDeviceBreadcrumb(SettingsBreadcrumb):
     def __init__(self):
@@ -420,28 +416,26 @@ class SdrProfileController(SdrFormControllerWithModal):
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
     def moveProfileUp(self):
-        logger.debug("@@@ PROFILE UP: " + self.profile_id)
         return self.moveProfile(self.profile_id, False)
 
     def moveProfileDown(self):
-        logger.debug("@@@ PROFILE DOWN: " + self.profile_id)
         return self.moveProfile(self.profile_id, True)
 
     def moveProfile(self, id: str, moveDown: bool):
-        logger.debug("@@@ MOVE_PROFILE")
         if id is None or id not in self.device["profiles"]:
             return self.send_response("profile not found", code=404)
-        logger.debug("@@@ ACTION")
-        config = Config.get()
-        profiles = list(self.device["profiles"].keys())
-        n = profiles.index(id)
-        if moveDown and n + 1 < len(profiles):
-            profiles = profiles[:n] + [profiles[n+1] , profiles[n]] + profiles[n+2:]
+        ids = list(self.device["profiles"].keys())
+        n = ids.index(id)
+        if moveDown and n + 1 < len(ids):
+            ids = ids[:n] + [ids[n+1], ids[n]] + ids[n+2:]
         elif not moveDown and n > 0:
-            profiles = profiles[:n-1] + [profiles[n] , profiles[n-1]] + profiles[n+1:]
-        self.device["profiles"] = { x: self.device["profiles"][x] for x in profiles }
+            ids = ids[:n-1] + [ids[n], ids[n-1]] + ids[n+1:]
+        config = Config.get()
+        for id in ids:
+            profile = self.device["profiles"][id]
+            del self.device["profiles"][id]
+            self.device["profiles"][id] = profile
         config.store()
-        logger.debug("@@@ ORDER: {0}".format(profiles))
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
 
