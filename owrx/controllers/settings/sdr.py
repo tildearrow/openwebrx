@@ -403,8 +403,6 @@ class SdrProfileController(SdrFormControllerWithModal):
 
     def render_remove_button(self):
         return """
-            <button type="button" class="btn btn-success move-up">Move up</button>
-            <button type="button" class="btn btn-success move-down">Move down</button>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Remove profile...</button>
         """
 
