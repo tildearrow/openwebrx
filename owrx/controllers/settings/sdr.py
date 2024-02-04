@@ -16,6 +16,10 @@ from owrx.log import HistoryHandler
 from abc import ABCMeta, abstractmethod
 from uuid import uuid4
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class SdrDeviceBreadcrumb(SettingsBreadcrumb):
     def __init__(self):
@@ -403,6 +407,8 @@ class SdrProfileController(SdrFormControllerWithModal):
 
     def render_remove_button(self):
         return """
+            <button type="button" class="btn btn-success move-up">Move up</button>
+            <button type="button" class="btn btn-success move-down">Move down</button>
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Remove profile...</button>
         """
 
