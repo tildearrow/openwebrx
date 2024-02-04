@@ -392,10 +392,17 @@ class SdrProfileController(SdrFormControllerWithModal):
             return
         return super().processFormData()
 
-    def render_remove_button(self):
+    def render_buttons(self):
+        return self.render_move_buttons() + super().render_buttons()
+
+    def render_move_buttons(self):
         return """
             <button type="button" class="btn btn-success move-up">Move up</button>
             <button type="button" class="btn btn-success move-down">Move down</button>
+        """
+
+    def render_remove_button(self):
+        return """
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Remove profile...</button>
         """
 
