@@ -663,7 +663,7 @@ class FeatureDetector(object):
         If you are using the OpenWebRX Debian or Ubuntu repository, the `python3-csdr-eti` package should be all you
         need.
         """
-        required_version = LooseVersion("0.1")
+        required_version = LooseVersion("0.0.9")
 
         try:
             from csdreti.modules import csdreti_version
