@@ -14,6 +14,8 @@ GIT_OWRXCONNECTOR=https://github.com/luarvique/owrx_connector.git
 GIT_CODECSERVER=https://github.com/jketterl/codecserver.git
 GIT_DIGIHAM=https://github.com/jketterl/digiham.git
 GIT_PYDIGIHAM=https://github.com/jketterl/pydigiham.git
+GIT_CSDR_ETI=https://github.com/luarvique/csdr-eti.git
+GIT_PYCSDR_ETI=https://github.com/luarvique/pycsdr-eti.git
 GIT_JS8PY=https://github.com/jketterl/js8py.git
 GIT_SOAPYSDRPLAY3=https://github.com/luarvique/SoapySDRPlay3.git
 GIT_OPENWEBRX=https://github.com/luarvique/openwebrx.git
@@ -34,6 +36,10 @@ if [ "${1:-}" == "--ask" ]; then
 	[[ "$ret" == [Yy]* ]] && BUILD_DIGIHAM=y || BUILD_DIGIHAM=n
 	echo;read -n1 -p "Build pydigiham? [yN] " ret
 	[[ "$ret" == [Yy]* ]] && BUILD_PYDIGIHAM=y || BUILD_PYDIGIHAM=n
+	echo;read -n1 -p "Build csdr-eti? [yN] " ret
+	[[ "$ret" == [Yy]* ]] && BUILD_CSDR_ETI=y || BUILD_CSDR_ETI=n
+	echo;read -n1 -p "Build pycsdr-eti? [yN] " ret
+	[[ "$ret" == [Yy]* ]] && BUILD_PYCSDR_ETI=y || BUILD_PYCSDR_ETI=n
 	echo;read -n1 -p "Build js8py? [yN] " ret
 	[[ "$ret" == [Yy]* ]] && BUILD_JS8PY=y || BUILD_JS8PY=n
 	echo;read -n1 -p "Build SoapySDRPlay3? [yN] " ret
@@ -52,8 +58,30 @@ else
 	BUILD_CODECSERVER=y
 	BUILD_DIGIHAM=y
 	BUILD_PYDIGIHAM=y
+	BUILD_CSDR_ETI=y
+	BUILD_PYCSDR_ETI=y
 	BUILD_JS8PY=y
 	CLEAN_OUTPUT=y
+fi
+
+#
+# Update build targets based on dependencies
+#
+if [ "${BUILD_OWRX:-}" == "y" ]; then
+	BUILD_PYCSDR=y
+	BUILD_OWRXCONNECTOR=y
+fi
+if [ "${BUILD_PYCSDR_ETI:-}" == "y" ]; then
+	BUILD_CSDR_ETI=y
+fi
+if [ "${BUILD_PYDIGIHAM:-}" == "y" ]; then
+	BUILD_DIGIHAM=y
+fi
+if [ "${BUILD_DIGIHAM:-}" == "y" ]; then
+	BUILD_CODECSERVER=y
+fi
+if [ "${BUILD_PYCSDR:-}" == "y" ] || [ "${BUILD_OWRXCONNECTOR:-}" == "y" ] || [ "${BUILD_CSDR_ETI:-}" == "y" ]; then
+	BUILD_CSDR=y
 fi
 
 echo ======================================
@@ -64,8 +92,10 @@ echo "owrx connector: $BUILD_OWRXCONNECTOR"
 echo "codec server: $BUILD_CODECSERVER"
 echo "digiham: $BUILD_DIGIHAM"
 echo "pydigiham: $BUILD_PYDIGIHAM"
+echo "csdr-eti: $BUILD_CSDR_ETI"
+echo "pycsdr-eti: $BUILD_PYCSDR_ETI"
 echo "js8py: $BUILD_JS8PY"
-echo "Soapy SDRPlay3: $BUILD_SOAPYSDRPLAY3"
+echo "SoapySDRPlay3: $BUILD_SOAPYSDRPLAY3"
 echo "OpenWebRx: $BUILD_OWRX"
 echo "Clean OUTPUT folder: $CLEAN_OUTPUT"
 echo ======================================
@@ -82,7 +112,7 @@ fi
 mkdir -p ${BUILD_DIR} ${OUTPUT_DIR}
 pushd ${BUILD_DIR}
 
-if [ "${BUILD_CSDR:-}" == "y" ] || [ "${BUILD_PYCSDR:-}" == "y" ] || [ "${BUILD_OWRXCONNECTOR:-}" == "y" ]; then
+if [ "${BUILD_CSDR:-}" == "y" ]; then
 	echo "##### Building CSDR... #####"
 	git clone -b master "$GIT_CSDR"
 	pushd csdr
@@ -92,7 +122,7 @@ if [ "${BUILD_CSDR:-}" == "y" ] || [ "${BUILD_PYCSDR:-}" == "y" ] || [ "${BUILD_
 	fi
 	dpkg-buildpackage -us -uc
 	popd
-	# PyCSDR and OWRX-Connector builds depend on the latest CSDR
+	# PyCSDR, CSDR-ETI, and OWRX-Connector depend on the latest CSDR
 	sudo dpkg -i csdr*.deb libcsdr*.deb nmux*.deb
 fi
 
@@ -127,7 +157,7 @@ if [ "${BUILD_CODECSERVER:-}" == "y" ]; then
 	sudo dpkg -i libcodecserver_*.deb codecserver_*.deb libcodecserver-dev_*.deb
 fi
 
-if [ "${BUILD_DIGIHAM:-}" == "y" ] || [ "${BUILD_PYDIGIHAM:-}" == "y" ]; then
+if [ "${BUILD_DIGIHAM:-}" == "y" ]; then
 	echo "##### Building DigiHAM... #####"
 	git clone -b master "$GIT_DIGIHAM"
 	pushd digiham
@@ -146,6 +176,27 @@ if [ "${BUILD_PYDIGIHAM:-}" == "y" ]; then
 	# Not installing PyDigiHAM here since there are no further
 	# build steps depending on it
 	#sudo dpkg -i python3-digiham*.deb
+fi
+
+if [ "${BUILD_CSDR_ETI:-}" == "y" ]; then
+	echo "##### Building CSDR-ETI... #####"
+	git clone "$GIT_CSDR_ETI"
+	pushd csdr-eti
+	dpkg-buildpackage -us -uc
+	popd
+	# PyCSDR-ETI build depends on the latest CSDR-ETI
+	sudo dpkg -i libcsdr-eti*.deb
+fi
+
+if [ "${BUILD_PYCSDR_ETI:-}" == "y" ]; then
+	echo "##### Building PyCSDR-ETI... #####"
+	git clone "$GIT_PYCSDR_ETI"
+	pushd pycsdr-eti
+	dpkg-buildpackage -us -uc
+	popd
+	# Not installing PyCSDR-ETI here since there are no further
+	# build steps depending on it
+	#sudo dpkg -i python3-csdr-eti*.deb
 fi
 
 if [ "${BUILD_JS8PY:-}" == "y" ]; then
