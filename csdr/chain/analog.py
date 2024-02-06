@@ -3,7 +3,7 @@ from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain,
 from pycsdr.modules import AmDemod, DcBlock, FmDemod, Limit, NfmDeemphasis, Agc, Afc, \
     WfmDeemphasis, FractionalDecimator, RealPart, Writer, Buffer
 from pycsdr.types import Format, AgcProfile
-from csdr.chain.redsea import Redsea
+from csdr.chain.toolbox import RdsDemodulator
 from typing import Optional
 from owrx.feature import FeatureDetector
 
@@ -86,7 +86,7 @@ class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAu
         if not FeatureDetector().is_available("rds"):
             return
         if self.metaChain is None:
-            self.metaChain = Redsea(self.getFixedIfSampleRate(), self.rdsRbds)
+            self.metaChain = RdsDemodulator(self.getFixedIfSampleRate(), self.rdsRbds)
             self.metaChain.setReader(self.metaTapBuffer.getReader())
         self.metaWriter = writer
         self.metaChain.setWriter(self.metaWriter)
