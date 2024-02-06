@@ -2,7 +2,7 @@ from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain,
     MetaProvider, DabServiceSelector, DialFrequencyReceiver
 from csdr.module import PickleModule
 from csdreti.modules import EtiDecoder
-from owrx.dab.dablin import DablinModule
+from csdr.module.toolbox import DablinModule
 from pycsdr.modules import Downmix, Buffer, Shift, Writer
 from pycsdr.types import Format
 from typing import Optional
