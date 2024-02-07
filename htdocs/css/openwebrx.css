@@ -1533,7 +1533,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-content-container,
-#openwebrx-panel-digimodes[data-mode="rds"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ft8"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="wspr"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="jt65"]    #openwebrx-digimode-select-channel,
@@ -1555,7 +1554,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-select-channel,
-#openwebrx-panel-digimodes[data-mode="rds"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="zvei"]    #openwebrx-digimode-select-channel
 {
@@ -1583,7 +1581,6 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container,
-#openwebrx-panel-digimodes[data-mode="rds"]     #openwebrx-digimode-canvas-container
 {
     height: 200px;
     margin: -10px;
@@ -1641,6 +1638,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-metadata-wfm {
 	width: 350px;
 	max-height: 300px;
+	padding: 10px 10px 10px 10px;
 }
 
 .rds-container {
@@ -1649,20 +1647,47 @@ img.openwebrx-mirror-img
 	overflow: hidden auto;
 }
 
-.rds-container > *, .rds-radiotext-plus > * {
-	margin: 2px 0;
+.rds-container .rds-stationname {
+	font-weight: bold;
+	font-size: 18pt;
 }
 
-.rds-container .rds-stationname {
-	font-family: roboto-mono;
-	font-size: 18pt;
-	padding: 10px 0;
+.rds-container .rds-top-line,
+.rds-container .rds-bottom-line,
+.rds-container .rds-stationname,
+.rds-container .rds-radiotext,
+.rds-container .rds-radiotext-plus {
+	min-height: 1lh;
+}
+
+.rds-container .rds-top-line {
+	padding: 0 0 5px 0;
+}
+
+.rds-container .rds-bottom-line {
+	padding: 5px 0 0 0;
 }
 
 .rds-container .rds-stationname,
-.rds-container .rds-identifier,
+.rds-container .rds-radiotext,
+.rds-container .rds-radiotext-plus {
+	padding: 5px 0 5px 0;
+}
+
+.rds-container .rds-callsign {
+	float: left;
+}
+
+.rds-container .rds-identifier {
+	float: right;
+}
+
 .rds-container .rds-prog_type {
-	min-height: 1lh;
+	float: left;
+}
+
+.rds-container .rds-clock {
+	float: right;
 }
 
 .rds-container .rds-radiotext-plus .rds-rtplus-item:not(:empty):before {

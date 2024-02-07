@@ -507,7 +507,8 @@ WfmMetaPanel.prototype.update = function(data) {
     }
 
     $el.find('.rds-stationname').text(this.long_stationname || this.ps);
-    $el.find('.rds-identifier').text(this.short_stationname || this.callsign || this.pi);
+    $el.find('.rds-callsign').text(this.short_stationname || this.callsign);
+    $el.find('.rds-identifier').text(this.pi);
 };
 
 WfmMetaPanel.prototype.isSupported = function(data) {
@@ -520,7 +521,10 @@ WfmMetaPanel.prototype.setEnabled = function(enabled) {
     if (enabled) {
         $(this.el).removeClass('disabled').html(
             '<div class="rds-container">' +
-                '<div class="rds-identifier rds-autoclear"></div>' +
+                '<div class="rds-top-line">' +
+                    '<span class="rds-callsign rds-autoclear"></span>' +
+                    '<span class="rds-identifier rds-autoclear"></span>' +
+                '</div>' +
                 '<div class="rds-stationname rds-autoclear"></div>' +
                 '<div class="rds-radiotext rds-autoclear"></div>' +
                 '<div class="rds-radiotext-plus">' +
@@ -530,8 +534,10 @@ WfmMetaPanel.prototype.setEnabled = function(enabled) {
                     '<div class="rds-rtplus-weather rds-autoclear"></div>' +
                     '<div class="rds-rtplus-homepage rds-autoclear"></div>' +
                 '</div>' +
-                '<div class="rds-prog_type rds-autoclear"></div>' +
-                '<div class="rds-clock rds-autoclear"></div>' +
+                '<div class="rds-bottom-line">' +
+                    '<span class="rds-prog_type rds-autoclear"></span>' +
+                    '<span class="rds-clock rds-autoclear"></span>' +
+                '</div>' +
             '</div>'
         );
     } else {
