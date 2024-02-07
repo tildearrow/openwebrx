@@ -132,11 +132,9 @@ class RdsParser(TextParser):
         data = json.loads(msg)
         # Delete constantly changing group ID
         data.pop("group", None)
-        # Treat uncertain callsigns as normal
-        if "callsign_uncertain" in data:
-            data["callsign"] = data.pop("callsign_uncertain")
         # Clear callsign if PI changes
         if data.get("pi") != self.rds.get("pi"):
+            self.rds.pop("callsign_uncertain", None)
             self.rds.pop("callsign", None)
         # Only update if there is new data
         if data.items() <= self.rds.items():
