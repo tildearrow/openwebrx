@@ -1391,61 +1391,6 @@ img.openwebrx-mirror-img
     padding-right: 10px;
 }
 
-#openwebrx-panel-rds-message {
-    height: 350px;
-}
-
-#openwebrx-panel-rds-message .name {
-    display: inline-block;
-    text-align: left;
-    font-size: 16px;
-    width: 50%;
-    padding-bottom: 20px;
-    white-space: nowrap;
-}
-
-#openwebrx-panel-rds-message .pi {
-    display: inline-block;
-    text-align: right;
-    font-size: 16px;
-    width: 50%;
-    padding-bottom: 20px;
-    white-space: nowrap;
-}
-
-#openwebrx-panel-rds-message .ps {
-    text-align: center;
-    font-size: 35px;
-    font-weight: bold;
-    width: 100%;
-}
-
-#openwebrx-panel-rds-message .text {
-    text-align: center;
-    font-size: 16px;
-    font-weight: bold;
-    width: 100%;
-    padding-top: 20px;
-}
-
-#openwebrx-panel-rds-message .pty {
-    display: inline-block;
-    text-align: left;
-    font-size: 16px;
-    width: 50%;
-    padding-top: 20px;
-    white-space: nowrap;
-}
-
-#openwebrx-panel-rds-message .ct {
-    display: inline-block;
-    text-align: right;
-    font-size: 16px;
-    width: 50%;
-    padding-top: 20px;
-    white-space: nowrap;
-}
-
 #openwebrx-panel-sstv-message {
     height: 310px;
     width: 365px;
@@ -1694,7 +1639,7 @@ img.openwebrx-mirror-img
 }
 
 #openwebrx-panel-metadata-wfm {
-	width: 300px;
+	width: 350px;
 	max-height: 300px;
 }
 
@@ -1742,7 +1687,7 @@ img.openwebrx-mirror-img
 }
 
 #openwebrx-panel-metadata-dab {
-	width: 300px;
+	width: 350px;
 }
 
 #openwebrx-panel-metadata-dab .dab-container {

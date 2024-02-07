@@ -641,67 +641,6 @@ $.fn.ismMessagePanel = function() {
     return this.data('panel');
 };
 
-RdsMessagePanel = function(el) {
-    this.el = el;
-    this.render();
-}
-
-RdsMessagePanel.prototype = Object.create(MessagePanel.prototype);
-
-RdsMessagePanel.prototype.supportsMessage = function(message) {
-    return message['mode'] === 'RDS';
-};
-
-RdsMessagePanel.prototype.render = function() {
-    $(this.el).append($(
-        '<div>' +
-            '<span id="rds-name" class="name" />' +
-            '<span id="rds-pi" class="pi" />' +
-        '</div>' +
-        '<div id="rds-ps" class="ps" />' +
-        '<div id="rds-text" class="text" />' +
-        '<div>' +
-            '<span id="rds-pty" class="pty" />' +
-            '<span id="rds-ct" class="ct" />' +
-        '</div>'
-    ));
-};
-
-RdsMessagePanel.prototype.pushMessage = function(msg) {
-    var pi   = msg.hasOwnProperty('pi')? 'PI:' + msg.pi : '';
-    var ps   = msg.hasOwnProperty('ps')? msg.ps : '---';
-    var ct   = msg.hasOwnProperty('clock_time')? msg.clock_time : '';
-    var pty  = msg.hasOwnProperty('prog_type')? msg.prog_type : '';
-    var name = msg.hasOwnProperty('callsign')? msg.callsign : '';
-    var freq = msg.hasOwnProperty('frequency')? msg.frequency : 0;
-    var text = msg.hasOwnProperty('radiotext')? msg.radiotext : '';
-
-    // Combine callsign with frequency
-    $('#rds-name').html(
-        name + (name && freq? ' ':'') +
-        (freq? '' + (freq/1000000).toFixed(1) : '')
-    );
-
-    // CT = "2023-12-08T16:40:00-05:00" => "2023-12-08 16:40:00"
-    if (ct) {
-        var matches = ct.match(/^(.*)T(.*)[Z+\-]/);
-        if (matches) ct = matches[1] + '&nbsp;' + matches[2];
-    }
-
-    $('#rds-pi').html(pi);
-    $('#rds-ps').html(Utils.htmlEscape(ps));
-    $('#rds-text').html(Utils.htmlEscape(text));
-    $('#rds-pty').html(pty);
-    $('#rds-ct').html(ct);
-};
-
-$.fn.rdsMessagePanel = function() {
-    if (!this.data('panel')) {
-        this.data('panel', new RdsMessagePanel(this));
-    }
-    return this.data('panel');
-};
-
 SstvMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();

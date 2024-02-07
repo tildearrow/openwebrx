@@ -396,6 +396,8 @@ WfmMetaPanel.prototype.update = function(data) {
 
     if ('callsign' in data) {
         this.callsign = data.callsign;
+    } else if ('callsign_uncertain' in data) {
+        this.callsign = data.callsign_uncertain + '?';
     }
 
     if ('pi' in data) {

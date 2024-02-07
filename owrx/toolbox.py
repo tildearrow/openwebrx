@@ -132,10 +132,12 @@ class RdsParser(TextParser):
         data = json.loads(msg)
         # Delete constantly changing group ID
         data.pop("group", None)
-        # Clear callsign if PI changes
+        # Clear data when PI changes
         if data.get("pi") != self.rds.get("pi"):
-            self.rds.pop("callsign_uncertain", None)
-            self.rds.pop("callsign", None)
+            if "frequency" in self.rds:
+                self.rds = { "mode": "WFM", "frequency": self.rds["frequency"] }
+            else:
+                self.rds = { "mode": "WFM" }
         # Only update if there is new data
         if data.items() <= self.rds.items():
             return None

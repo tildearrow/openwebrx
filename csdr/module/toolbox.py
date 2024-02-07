@@ -150,23 +150,12 @@ class AcarsDecModule(WavFileModule):
         return Format.CHAR
 
 
-class RedseaModule(WavFileModule):
+class RedseaModule(ExecModule):
     def __init__(self, sampleRate: int = 171000, rbds: bool = False):
-        self.sampleRate = sampleRate
-        self.rbds = rbds
-        super().__init__()
-
-    def getCommand(self):
-        cmd = [
-            "redsea", "--file", "/dev/stdin", "--input", "mpx",
-            "--samplerate", str(self.sampleRate)
-        ]
-        if self.rbds:
+        cmd = [ "redsea", "--input", "mpx", "--samplerate", str(sampleRate) ]
+        if rbds:
             cmd += ["--rbds"]
-        return cmd
-
-    def getOutputFormat(self) -> Format:
-        return Format.CHAR
+        super().__init__(Format.SHORT, Format.CHAR, cmd)
 
 
 class DablinModule(ExecModule):
