@@ -1580,7 +1580,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="msk144"]  #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-canvas-container,
-#openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container,
+#openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container
 {
     height: 200px;
     margin: -10px;
