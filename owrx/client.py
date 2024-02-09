@@ -136,6 +136,8 @@ class ClientRegistry(object):
             if c.sdr is not None:
                 entry["sdr"]  = c.sdr.getName()
                 entry["band"] = c.sdr.getProfileName()
+            if c in self.chat:
+                entry["name"] = self.chat[c]["name"]
             result.append(entry)
         # Flush out stale bans
         self.expireBans()

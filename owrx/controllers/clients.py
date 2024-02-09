@@ -25,12 +25,14 @@ class ClientController(AuthorizationMixin, WebpageController):
                 <table class='table'>
                     <tr>
                         <th>IP Address</th>
+                        <th>Chat Name</th>
                         <th>SDR Profile</th>
                         <th>Local Time</th>
                         <th>Actions</th>
                     </tr>
                     {clients}
                     <tr>
+                        <td></td>
                         <td></td>
                         <td></td>
                         <td colspan="2" style="text-align:right;">
@@ -53,8 +55,9 @@ class ClientController(AuthorizationMixin, WebpageController):
 
     @staticmethod
     def renderClient(c):
-        return "<tr><td>{0}</td><td>{1}</td><td>{2} {3}</td><td>{4}</td></tr>".format(
+        return "<tr><td>{0}</td><td>{1}</td><td>{2}</td><td>{3} {4}</td><td>{5}</td></tr>".format(
             ClientController.renderIp(c["ip"]),
+            c["name"] if "name" in c else "",
             "banned" if c["ban"] else c["sdr"] + " " + c["band"] if "sdr" in c else "n/a",
             "until" if c["ban"] else "since",
             c["ts"].strftime('%H:%M:%S'),
