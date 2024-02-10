@@ -37,4 +37,4 @@ class HackrfDeviceDescription(SoapyConnectorDeviceDescription):
         return ["LNA", "AMP", "VGA"]
 
     def getSampleRateRanges(self) -> List[Range]:
-        return [Range(1000000, 20000000)]
+        return [Range(1000000, 28000000)]

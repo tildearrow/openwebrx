@@ -785,4 +785,4 @@ class SdrDeviceDescription(object):
 
     def getSampleRateRanges(self) -> List[Range]:
         # semi-sane default value. should be overridden with more specific values per device.
-        return [Range(500000, 10000000)]
+        return [Range(100000, 50000000)]
