@@ -508,7 +508,7 @@ WfmMetaPanel.prototype.update = function(data) {
 
     $el.find('.rds-stationname').text(this.long_stationname || this.ps);
     $el.find('.rds-callsign').text(this.short_stationname || this.callsign);
-    $el.find('.rds-identifier').text(this.pi);
+    $el.find('.rds-identifier').text('PI:' + this.pi);
 };
 
 WfmMetaPanel.prototype.isSupported = function(data) {
