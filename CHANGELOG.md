@@ -1,3 +1,14 @@
+**1.2.48**
+- Added chat nicknames to the clients display.
+- Fixed DAB support by adding missing Dablin class.
+- Fixed secondary waterfall height in SSTV and FAX modes.
+- Allowed full range of SDRPlay samplerates.
+- Allowed full range of HackRF samplerates.
+- Extended default samplerate range to 30Msps.
+- Improved RDS information display.
+- Switched RDS to ExecModule (YOU HAVE TO UPDATE REDSEA).
+- Switched RDS to the original, optimized parser.
+
 **1.2.47**
 - Merged changes from Jakob Ketterl's original development branch.
 - Switched to updated CSDR, PyCSDR, OWRX Connector packages.

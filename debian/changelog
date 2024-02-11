@@ -1,3 +1,17 @@
+openwebrx (1.2.48) bullseye jammy; urgency=low
+
+  * Added chat nicknames to the clients display.
+  * Fixed DAB support by adding missing Dablin class.
+  * Fixed secondary waterfall height in SSTV and FAX modes.
+  * Allowed full range of SDRPlay samplerates.
+  * Allowed full range of HackRF samplerates.
+  * Extended default samplerate range to 30Msps.
+  * Improved RDS information display.
+  * Switched RDS to ExecModule (YOU HAVE TO UPDATE REDSEA).
+  * Switched RDS to the original, optimized parser.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 12 Feb 2024 16:12:00 +0000
+
 openwebrx (1.2.47) bullseye jammy; urgency=low
 
   * Merged changes from Jakob Ketterl's original development branch.
