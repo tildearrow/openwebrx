@@ -56,6 +56,15 @@ git checkout 0.6.1
 cd ..
 rm -rf pydigiham
 
+git clone https://github.com/luarvique/csdr-eti.git
+cmakebuild csdr-eti
+
+git clone https://github.com/luarvique/pycsdr-eti.git
+cd pycsdr-eti
+./setup.py install install_headers
+cd ..
+rm -rf pycsdr-eti
+
 apt-get -y purge --autoremove $BUILD_PACKAGES
 apt-get clean
 rm -rf /var/lib/apt/lists/*
