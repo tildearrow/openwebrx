@@ -114,17 +114,5 @@ class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
             Range(768000),
             Range(1000000),
             Range(1536000),
-            # SoapySDRPlay3 will take any of the frequencies in this range,
-            # and SDRPlay hardware actually supports the whole range.
-            Range(2000000, 10000000),
-#            Range(2000000),
-#            Range(2048000),
-#            Range(3000000),
-#            Range(4000000),
-#            Range(5000000),
-#            Range(6000000),
-#            Range(7000000),
-#            Range(8000000),
-#            Range(9000000),
-#            Range(10000000),
+            Range(2000000, 10660000),
         ]

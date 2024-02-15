@@ -11,12 +11,13 @@ class Bandpass(object):
 
 
 class Mode:
-    def __init__(self, modulation: str, name: str, bandpass: Bandpass = None, requirements=None, service=False, squelch=True):
+    def __init__(self, modulation: str, name: str, bandpass: Bandpass = None, ifRate=None, requirements=None, service=False, squelch=True):
         self.modulation = modulation
         self.name = name
         self.requirements = requirements if requirements is not None else []
         self.service = service
         self.bandpass = bandpass
+        self.ifRate = ifRate
         self.squelch = squelch
 
     def is_available(self):
@@ -47,12 +48,13 @@ class DigitalMode(Mode):
         name,
         underlying,
         bandpass: Bandpass = None,
+        ifRate = None,
         requirements=None,
         service=False,
         squelch=True,
         secondaryFft=True
     ):
-        super().__init__(modulation, name, bandpass, requirements, service, squelch)
+        super().__init__(modulation, name, bandpass, ifRate, requirements, service, squelch)
         self.underlying = underlying
         self.secondaryFft = secondaryFft
 
@@ -133,7 +135,7 @@ class Modes(object):
             "freedv", "FreeDV", bandpass=Bandpass(300, 3000), requirements=["digital_voice_freedv"], squelch=False
         ),
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
-        AnalogMode("dab", "DAB", bandpass=Bandpass(-800000, 800000), requirements=["dab"], squelch=False),
+        AnalogMode("dab", "DAB", bandpass=None, ifRate=2.048e6, requirements=["dab"], squelch=False),
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
         DigitalMode("rtty170", "RTTY-170 (45)", underlying=["usb", "lsb"]),
