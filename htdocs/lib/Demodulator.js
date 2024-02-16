@@ -51,7 +51,7 @@ Envelope.prototype.draw = function(visible_range){
 
     var from = center_freq + this.demodulator.offset_frequency;
     var to = center_freq + this.demodulator.offset_frequency;
-    var fake_indicator = !this.demodulator.low_cut || !this.demodulator.high_cut;
+    var fake_indicator = this.demodulator.low_cut==null || this.demodulator.high_cut==null;
     if (fake_indicator) {
         // fake values just so that the tuning indicator shows up
         var fixedBw = 100000
