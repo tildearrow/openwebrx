@@ -1,6 +1,7 @@
 openwebrx (1.2.49) bullseye jammy; urgency=low
 
   * Optimizations to DAB processing made by Jakob.
+  * Coloring ground-to-air messages black.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Fri, 16 Feb 2024 16:12:00 +0000
 
