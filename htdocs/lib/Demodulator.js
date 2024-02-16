@@ -54,7 +54,7 @@ Envelope.prototype.draw = function(visible_range){
     var fake_indicator = this.demodulator.low_cut==null || this.demodulator.high_cut==null;
     if (fake_indicator) {
         // fake values just so that the tuning indicator shows up
-        var fixedBw = 100000
+        var fixedBw = 3000
         // if we know the if rate, we can display that
         if (this.demodulator.ifRate) {
             fixedBw = this.demodulator.ifRate / 2;
