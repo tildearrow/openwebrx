@@ -375,8 +375,9 @@ HfdlMessagePanel.prototype.render = function() {
 };
 
 HfdlMessagePanel.prototype.pushMessage = function(msg) {
-    var color = msg.color?  msg.color : '#00000000';
-    var data  = msg.type?   msg.type : '';
+    var bcolor = msg.color?  msg.color : '#000';
+    var fcolor = msg.color?  '#000' : '#FFF';
+    var data   = msg.type?   msg.type : '';
 
     // Only linkify ICAO-compliant flight IDs
     var flight =
@@ -421,7 +422,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
             '<td class="aircraft">' + aircraft + '</td>' +
             '<td class="data" style="text-align:left;">' + data + '</td>' +
         '</tr>'
-    ).css('background-color', color).css('color', '#000'));
+    ).css('background-color', bcolor).css('color', fcolor));
 
     // Append messsage if present
     if (msg.message) {
