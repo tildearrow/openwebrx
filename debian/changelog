@@ -1,3 +1,9 @@
+openwebrx (1.2.49) bullseye jammy; urgency=low
+
+  * Optimizations to DAB processing made by Jakob.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 16 Feb 2024 16:12:00 +0000
+
 openwebrx (1.2.48) bullseye jammy; urgency=low
 
   * Added chat nicknames to the clients display.

@@ -1,3 +1,6 @@
+**1.2.49**
+- Optimizations to DAB processing made by Jakob.
+
 **1.2.48**
 - Added chat nicknames to the clients display.
 - Fixed DAB support by adding missing Dablin class.
