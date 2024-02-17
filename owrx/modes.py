@@ -135,7 +135,7 @@ class Modes(object):
             "freedv", "FreeDV", bandpass=Bandpass(300, 3000), requirements=["digital_voice_freedv"], squelch=False
         ),
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
-        AnalogMode("dab", "DAB", bandpass=None, ifRate=2.048e6, requirements=["dab"], squelch=False),
+        AnalogMode("dab", "DAB", bandpass=None, ifRate=2048000, requirements=["dab"], squelch=False),
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
         DigitalMode("rtty170", "RTTY-170 (45)", underlying=["usb", "lsb"]),
@@ -227,7 +227,8 @@ class Modes(object):
             "ism",
             "ISM",
             underlying=["empty"],
-            bandpass=Bandpass(-125000, 125000),
+            bandpass=None,
+            ifRate=1200000,
             requirements=["ism"],
             service=True,
             squelch=False
@@ -263,7 +264,8 @@ class Modes(object):
             "adsb",
             "ADSB",
             underlying=["empty"],
-            bandpass=Bandpass(-1200000, 1200000),
+            bandpass=None,
+            ifRate=2400000,
             requirements=["adsb"],
             service=True,
             squelch=False,

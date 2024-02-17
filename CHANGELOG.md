@@ -1,5 +1,7 @@
 **1.2.49**
-- Optimizations to DAB processing made by Jakob.
+- Added optimizations to DAB processing made by Jakob.
+- Removed bandpass filters from ADS-B and ISM modes.
+- Increased ISM bandwidth to 1.2Msps.
 - Coloring ground-to-air messages black.
 
 **1.2.48**

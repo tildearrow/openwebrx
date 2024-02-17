@@ -9,7 +9,7 @@ import os
 
 class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
-        self.sampleRate = 250000
+        self.sampleRate = 1200000
         self.parser = IsmParser(service=service)
         workers = [
             Agc(Format.COMPLEX_FLOAT),
