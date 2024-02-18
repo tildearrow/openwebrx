@@ -10,6 +10,7 @@ from owrx.sstv import SstvParser
 from owrx.fax import FaxParser
 from owrx.config import Config
 
+
 class AudioChopperDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, mode: str, parser: AudioChopperParser):
         self.chopper = AudioChopper(mode, parser)
@@ -122,15 +123,16 @@ class RttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
 
 
-class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequencyReceiver):
     def __init__(self, bandWidth: float = 100):
         pm = Config.get()
         self.sampleRate = 12000
         self.bandWidth = bandWidth
         self.showCw = pm["cw_showcw"]
+        self.decoder = CwDecoder(self.sampleRate, self.showCw)
         workers = [
             Agc(Format.COMPLEX_FLOAT),
-            CwDecoder(self.sampleRate, self.showCw),
+            self.decoder
         ]
         super().__init__(workers)
 
@@ -141,7 +143,11 @@ class CwDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(1, CwDecoder(sampleRate, self.showCw))
+        self.decoder = CwDecoder(sampleRate, self.showCw)
+        self.replace(1, self.decoder)
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.decoder.reset()
 
 
 class MFRttyDemodulator(SecondaryDemodulator, SecondarySelectorChain):
