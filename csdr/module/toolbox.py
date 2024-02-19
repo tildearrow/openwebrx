@@ -5,7 +5,7 @@ from owrx.config import Config
 import os
 
 class Rtl433Module(ExecModule):
-    def __init__(self, sampleRate: int = 1200000, jsonOutput: bool = False):
+    def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
         self.sampleRate = sampleRate
         self.jsonOutput = jsonOutput
         cmd = [
