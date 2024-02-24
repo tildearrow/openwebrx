@@ -502,12 +502,15 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             }
         }
 
-        if (this.weather.rain && (this.weather.rain.day>0)) {
-            weatherString += Utils.makeListItem('Rain',
-                this.weather.rain.hour.toFixed(0) + ' mm/h, ' +
-                this.weather.rain.day.toFixed(0) + ' mm/day'
+        if (this.weather.rain) {
+            var rain = this.weather.rain.hour>0? this.weather.rain.hour.toFixed(0) + ' mm/h' : '';
+            if (this.weather.rain.day>0) {
+                rain += (rain!=''? ', ' : '') + this.weather.rain.day.toFixed(0) + ' mm/day';
+            }
 //                    this.weather.rain.sincemidnight + ' mm since midnight'
-            );
+            if (rain!='') {
+                weatherString += Utils.makeListItem('Rain', rain);
+            }
         }
 
         if (this.weather.snowfall) {
