@@ -1,4 +1,5 @@
 function Scanner(bookmarkBar, msec) {
+    this.modes     = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
     this.bbar      = bookmarkBar;
     this.bookmarks = null;
     this.msec      = msec;
@@ -7,9 +8,6 @@ function Scanner(bookmarkBar, msec) {
 }
 
 Scanner.prototype.tuneBookmark = function(b) {
-    // Must have frequency, skip digital voice modes
-    if (!b.frequency || !b.modulation || b.modulation=='dmr') return false;
-
     //console.log("TUNE: " + b.name + " at " + b.frequency + ": " + b.modulation);
 
     // Tune to the bookmark frequency
@@ -91,9 +89,13 @@ Scanner.prototype.stop = function() {
 Scanner.prototype.start = function() {
     // If timer is not running...
     if (!this.timer) {
-        // Get all bookmarks from the bookmark bar
-        this.bookmarks = this.bbar.getAllBookmarks();
-        this.current   = -1;
+        // Nothing found yet
+        this.current = -1;
+
+        // Get all scannable bookmarks from the bookmark bar
+        this.bookmarks = this.bbar.getAllBookmarks().filter(
+          (b) => !!b.frequency && !!b.modulation && this.modes.indexOf(b.modulation)>=0
+        );
 
         // If there are bookmarks to scan...
         if (this.bookmarks && this.bookmarks.length>0) {
