@@ -19,9 +19,10 @@ class DscParser(TextParser):
         if self.service:
             return None
         # Expect JSON data in text form
+        logger.debug("TEXT: {0}".format(msg))
         out = json.loads(msg)
         # Add mode name and a color to identify the sender
         out["mode"]  = "DSC"
         out["color"] = self.colors.getColor(out["src"])
-        logger.debug("{0}".format(out))
+        logger.debug("JSON: {0}".format(out))
         return out

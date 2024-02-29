@@ -81,8 +81,9 @@ class TextParser(LineBasedModule):
 
     # Compose name of this decoder, made of client/service and frequency
     def myName(self):
-        return "%s%s" % (
+        return "%s%s%s" % (
             "Service" if self.service else "Client",
+            " " + self.filePfx if self.filePfx else "",
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
 
