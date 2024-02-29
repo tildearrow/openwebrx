@@ -8,6 +8,7 @@ from pycsdr.types import Format
 from owrx.aprs.direwolf import DirewolfModule
 from owrx.sstv import SstvParser
 from owrx.fax import FaxParser
+from owrx.dsc import DscParser
 from owrx.config import Config
 
 
@@ -258,10 +259,11 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 
 class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
-    def __init__(self, baudRate=100, bandWidth=170, invert=False):
-        self.baudRate = baudRate
-        self.bandWidth = bandWidth
-        self.invert = invert
+    def __init__(self, baudRate=100, bandWidth=170, invert=False, service=False):
+        self.baudRate   = baudRate
+        self.bandWidth  = bandWidth
+        self.invert     = invert
+        self.parser     = DscParser(service=service)
         # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = 12000
         secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
@@ -274,6 +276,7 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
             Ccir493Decoder(invert=invert),
             DscDecoder(),
+            self.parser
         ]
         super().__init__(workers)
 
@@ -289,3 +292,4 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         loop_gain = self.sampleRate / self.getBandwidth() / 5
         self.replace(2, Lowpass(Format.FLOAT, cutoff))
         self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
+

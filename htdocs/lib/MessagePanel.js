@@ -562,6 +562,66 @@ $.fn.adsbMessagePanel = function() {
     return this.data('panel');
 };
 
+DscMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+}
+
+DscMessagePanel.prototype = Object.create(MessagePanel.prototype);
+
+DscMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'DSC';
+};
+
+DscMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="timestamp">Time</th>' +
+                '<th class="src">From</th>' +
+                '<th class="dst">To</th>' +
+                '<th class="data">Data</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+DscMessagePanel.prototype.pushMessage = function(msg) {
+    var tstamp = 0;
+    var src    = '*';
+    var dst    = '*';
+    var data   = '';
+
+    // Append report
+    var $b = $(this.el).find('tbody');
+    $b.append($(
+        '<tr>' +
+            '<td class="timestamp">' + tstamp + '</td>' +
+            '<td class="src">' + src + '</td>' +
+            '<td class="dst">' + dst + '</td>' +
+            '<td class="data" style="text-align:left;">' + data + '</td>' +
+        '</tr>'
+    ));
+
+    // Append messsage if present
+    if (msg.message) {
+        $b.append($(
+            '<tr><td class="message" colspan="4">' + Utils.htmlEscape(msg.message) + '</td></tr>'
+        ))
+    }
+
+    // Jump list to the last received message
+    this.scrollToBottom();
+};
+
+$.fn.dscMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new DscMessagePanel(this));
+    }
+    return this.data('panel');
+};
+
 IsmMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
