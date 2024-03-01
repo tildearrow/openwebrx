@@ -30,61 +30,6 @@
         "modulation" : "rtty450"
     },
     {
-        "name" : "NAVTEX",
-        "frequency" : 489000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "NAVTEX",
-        "frequency" : 517000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "NAVTEX",
-        "frequency" : 4208500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 4209000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 6313000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 8415500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 12578000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 16805500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 19679500,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 22375000,
-        "modulation" : "sitorb"
-    },
-    {
-        "name" : "MSI",
-        "frequency" : 26099500,
-        "modulation" : "sitorb"
-    },
-    {
         "name" : "NOAA-1",
         "frequency" : 162400000,
         "modulation" : "nfm"
