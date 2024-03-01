@@ -1076,15 +1076,13 @@ function on_ws_recv(evt) {
                         if ('flight_url' in config) {
                             var hfdl_panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
                             var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
-                            hfdl_panel.setFlightUrl(config['flight_url']);
-                            adsb_panel.setFlightUrl(config['flight_url']);
+                            Utils.setFlightUrl(config['flight_url']);
                         }
 
                         if ('modes_url' in config) {
                             var hfdl_panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
                             var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
-                            hfdl_panel.setModeSUrl(config['modes_url']);
-                            adsb_panel.setModeSUrl(config['modes_url']);
+                            Utils.setIcaoUrl(config['modes_url']);
                         }
 
                         if ('callsign_url' in config) {

@@ -6,6 +6,8 @@ function Utils() {}
 
 Utils.callsign_url = null;
 Utils.vessel_url = null;
+Utils.flight_url = null;
+Utils.icao_url = null;
 
 // Set URL for linkifying callsigns
 Utils.setCallsignUrl = function(url) {
@@ -15,6 +17,16 @@ Utils.setCallsignUrl = function(url) {
 // Set URL for linkifying AIS vessel IDs
 Utils.setVesselUrl = function(url) {
     this.vessel_url = url;
+};
+
+// Set URL for linkifying flight and aircraft IDs
+Utils.setFlightUrl = function(url) {
+    this.flight_url = url;
+};
+
+// Set URL for linkifying ICAO aircraft IDs
+Utils.setIcaoUrl = function(url) {
+    this.icao_url = url;
 };
 
 // Escape HTML code.
@@ -71,6 +83,16 @@ Utils.linkifyCallsign = function(callsign) {
 Utils.linkifyVessel = function(mmsi) {
     // Add country name as a tooltip
     return this.linkify(mmsi, this.vessel_url, mmsi, this.mmsi2country(mmsi));
+};
+
+// Create link to a flight or an aircraft
+Utils.linkifyFlight = function(flight, content = null) {
+    return this.linkify(flight, this.flight_url, content);
+};
+
+// Create link to a MODE-S ICAO ID
+Utils.linkifyIcao = function(icao, content = null) {
+    return this.linkify(icao, this.icao_url, content);
 };
 
 // Create link to tune OWRX to the given frequency and modulation.

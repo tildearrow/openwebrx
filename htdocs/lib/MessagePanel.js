@@ -342,22 +342,12 @@ HfdlMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
     this.modes = ['HFDL', 'VDL2', 'ADSB', 'ACARS'];
-    this.flight_url = null;
-    this.modes_url = null;
 }
 
 HfdlMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 HfdlMessagePanel.prototype.supportsMessage = function(message) {
     return this.modes.indexOf(message['mode']) >= 0;
-};
-
-HfdlMessagePanel.prototype.setFlightUrl = function(url) {
-    this.flight_url = url;
-};
-
-HfdlMessagePanel.prototype.setModeSUrl = function(url) {
-    this.modes_url = url;
 };
 
 HfdlMessagePanel.prototype.render = function() {
@@ -383,11 +373,11 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     var flight =
       !msg.flight? ''
     : !msg.flight.match(/^[A-Z]{3}[0-9]+[A-Z]*$/)? msg.flight
-    : Utils.linkify(msg.flight, this.flight_url);
+    : Utils.linkifyFlight(msg.flight);
 
     var aircraft =
-      msg.aircraft? Utils.linkify(msg.aircraft, this.flight_url)
-    : msg.icao?     Utils.linkify(msg.icao, this.modes_url)
+      msg.aircraft? Utils.linkifyFlight(msg.aircraft)
+    : msg.icao?     Utils.linkifyIcao(msg.icao)
     : '';
 
     var tstamp =
@@ -445,8 +435,6 @@ $.fn.hfdlMessagePanel = function() {
 AdsbMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.clearButton.css('display', 'none');
-    this.flight_url = null;
-    this.modes_url = null;
     this.receiver_pos = null;
 }
 
@@ -458,14 +446,6 @@ AdsbMessagePanel.prototype.supportsMessage = function(message) {
 
 AdsbMessagePanel.prototype.setReceiverPos = function(pos) {
     if (pos.lat && pos.lon) this.receiver_pos = pos;
-};
-
-AdsbMessagePanel.prototype.setFlightUrl = function(url) {
-    this.flight_url = url;
-};
-
-AdsbMessagePanel.prototype.setModeSUrl = function(url) {
-    this.modes_url = url;
 };
 
 AdsbMessagePanel.prototype.render = function() {
@@ -498,11 +478,11 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
 
         // Flight identificators
         var flight =
-          entry.flight? Utils.linkify(entry.flight, this.flight_url)
+          entry.flight? Utils.linkifyFlight(entry.flight)
         : '';
         var aircraft =
-          entry.aircraft? Utils.linkify(entry.aircraft, this.flight_url)
-        : entry.icao?     Utils.linkify(entry.icao, this.modes_url)
+          entry.aircraft? Utils.linkifyFlight(entry.aircraft)
+        : entry.icao?     Utils.linkifyIcao(entry.icao)
         : '';
 
         // Altitude and climb / descent
@@ -589,9 +569,15 @@ DscMessagePanel.prototype.render = function() {
 
 DscMessagePanel.prototype.pushMessage = function(msg) {
     var tstamp = 0;
-    var src    = '*';
-    var dst    = '*';
-    var data   = '';
+    var bcolor = msg.color? msg.color : '#000';
+    var fcolor = msg.color? '#000' : '#FFF';
+    var src    = msg.src? Utils.linkifyVessel(msg.src) : '*';
+    var dst    = msg.dst? Utils.linkifyVessel(msg.dst) : '*';
+    var data   = (
+      (msg.category? ' ' + msg.category : '')
+    + (msg.format?   ' ' + msg.format : '')
+    + (msg.eos?      ' ' + msg.eos : '')
+    ).trim().toUpperCase();
 
     // Append report
     var $b = $(this.el).find('tbody');
@@ -602,7 +588,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
             '<td class="dst">' + dst + '</td>' +
             '<td class="data" style="text-align:left;">' + data + '</td>' +
         '</tr>'
-    ));
+    ).css('background-color', bcolor).css('color', fcolor));
 
     // Append messsage if present
     if (msg.message) {
@@ -659,10 +645,10 @@ IsmMessagePanel.prototype.formatAttr = function(msg, key) {
 
 IsmMessagePanel.prototype.pushMessage = function(msg) {
     // Get basic information, assume white color if missing
-    var address = msg.hasOwnProperty('id')? msg.id : "???";
-    var device  = msg.hasOwnProperty('model')? msg.model : "";
-    var tstamp  = msg.hasOwnProperty('time')? msg.time : "";
-    var color   = msg.hasOwnProperty('color')? msg.color : "#FFF";
+    var address = msg.hasOwnProperty('id')? msg.id : '???';
+    var device  = msg.hasOwnProperty('model')? msg.model : '';
+    var tstamp  = msg.hasOwnProperty('time')? msg.time : '';
+    var color   = msg.hasOwnProperty('color')? msg.color : '#FFF';
 
     // Append message header (address, time, etc)
     var $b = $(this.el).find('tbody');

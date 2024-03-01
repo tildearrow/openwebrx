@@ -1,7 +1,3 @@
-// Marker.linkify() uses these URLs
-var flight_url   = null;
-var modes_url    = null;
-
 var mapSources = [
     {
         name: 'OpenStreetMap',
