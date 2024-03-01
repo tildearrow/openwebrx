@@ -22,6 +22,7 @@ class DscParser(TextParser):
         out = json.loads(msg)
         # Add mode name and a color to identify the sender
         out["mode"]  = "DSC"
-        out["color"] = self.colors.getColor(out["src"])
+        if "src" in out:
+            out["color"] = self.colors.getColor(out["src"])
         logger.debug("{0}".format(out))
         return out

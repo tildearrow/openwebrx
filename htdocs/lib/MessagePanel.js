@@ -418,7 +418,7 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     if (msg.message) {
         $b.append($(
             '<tr><td class="message" colspan="4">' + Utils.htmlEscape(msg.message) + '</td></tr>'
-        ))
+        ));
     }
 
     // Jump list to the last received message
@@ -571,8 +571,8 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     var pad    = function (i) { return ('' + i).padStart(2, "0") };
     var bcolor = msg.color? msg.color : '#000';
     var fcolor = msg.color? '#000' : '#FFF';
-    var src    = msg.src? Utils.linkifyVessel(msg.src) : '*';
-    var dst    = msg.dst? Utils.linkifyVessel(msg.dst) : '*';
+    var src    = msg.src? Utils.linkifyVessel(msg.src) : '';
+    var dst    = msg.dst? Utils.linkifyVessel(msg.dst) : '';
     var data   = (
       (msg.category? ' ' + msg.category : '')
     + (msg.format?   ' ' + msg.format : '')
@@ -595,6 +595,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     + (msg.num?    ' DIAL ' + msg.num : '')
     + (msg.rxfreq? ' RX ' + msg.rxfreq : '')
     + (msg.txfreq? ' TX ' + msg.txfreq : '')
+    + (msg.data?   ' ' + msg.data + ' &hellip;' : '')
     ).trim();
 
     // Append report
@@ -611,8 +612,8 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     // Append messsage if present
     if (message) {
         $b.append($(
-            '<tr><td class="message" colspan="4">' + Utils.htmlEscape(msg.message) + '</td></tr>'
-        ))
+            '<tr><td class="message" colspan="4">' + Utils.htmlEscape(message) + '</td></tr>'
+        ));
     }
 
     // Jump list to the last received message
