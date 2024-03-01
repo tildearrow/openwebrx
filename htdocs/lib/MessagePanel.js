@@ -612,7 +612,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     // Append messsage if present
     if (message) {
         $b.append($(
-            '<tr><td class="message" colspan="4">' + Utils.htmlEscape(message) + '</td></tr>'
+            '<tr><td class="message" colspan="4">' + message + '</td></tr>'
         ));
     }
 
