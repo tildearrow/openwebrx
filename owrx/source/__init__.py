@@ -193,7 +193,11 @@ class SdrSource(ABC):
             self.enabled = changes["enabled"]
         else:
             self.enabled = True
+        # If source disabled...
         if not self.enabled:
+            # Clear failed status
+            self.failed = False
+            # Stop source
             self.stop()
         for c in self.clients.copy():
             if self.isEnabled():
