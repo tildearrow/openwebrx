@@ -142,7 +142,7 @@ class Modes(object):
         DigitalMode("rtty450", "RTTY-450 (50N)", underlying=["usb", "lsb"]),
         DigitalMode("rtty85", "RTTY-85 (50N)", underlying=["usb", "lsb"]),
         DigitalMode("sitorb", "SITOR-B", underlying=["usb"]),
-        DigitalMode("dsc", "DSC", underlying=["usb"]),
+        DigitalMode("dsc", "DSC", underlying=["usb"], service=True),
         WsjtMode("ft8", "FT8"),
         WsjtMode("ft4", "FT4"),
         WsjtMode("jt65", "JT65"),
@@ -227,6 +227,8 @@ class Modes(object):
             "ISM",
             underlying=["empty"],
             bandpass=Bandpass(-125000, 125000),
+#            bandpass=None,
+#            ifRate=1200000,
             requirements=["ism"],
             service=True,
             squelch=False

@@ -557,7 +557,7 @@ DscMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th class="timestamp">Time</th>' +
+                '<th class="timestamp">UTC</th>' +
                 '<th class="src">From</th>' +
                 '<th class="dst">To</th>' +
                 '<th class="data">Data</th>' +
@@ -568,7 +568,7 @@ DscMessagePanel.prototype.render = function() {
 };
 
 DscMessagePanel.prototype.pushMessage = function(msg) {
-    var tstamp = 0;
+    var pad    = function (i) { return ('' + i).padStart(2, "0") };
     var bcolor = msg.color? msg.color : '#000';
     var fcolor = msg.color? '#000' : '#FFF';
     var src    = msg.src? Utils.linkifyVessel(msg.src) : '*';
@@ -579,11 +579,29 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     + (msg.eos?      ' ' + msg.eos : '')
     ).trim().toUpperCase();
 
+    var timestamp;
+    if (msg.time) {
+        timestamp = '<b>' + msg.time + '</b>'
+    } else {
+        var t = new Date();
+        timestamp = pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds());
+    }
+
+    // Combine remaining attributes into a message
+    var message = (
+      (msg.distress? ' ' + msg.distress : '')
+    + (msg.id?     ' SHIP ' + Utils.linkifyVessel(msg.id) : '')
+    + (msg.loc?    ' @' + msg.loc : '')
+    + (msg.num?    ' DIAL ' + msg.num : '')
+    + (msg.rxfreq? ' RX ' + msg.rxfreq : '')
+    + (msg.txfreq? ' TX ' + msg.txfreq : '')
+    ).trim();
+
     // Append report
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
-            '<td class="timestamp">' + tstamp + '</td>' +
+            '<td class="timestamp">' + timestamp + '</td>' +
             '<td class="src">' + src + '</td>' +
             '<td class="dst">' + dst + '</td>' +
             '<td class="data" style="text-align:left;">' + data + '</td>' +
@@ -591,7 +609,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     ).css('background-color', bcolor).css('color', fcolor));
 
     // Append messsage if present
-    if (msg.message) {
+    if (message) {
         $b.append($(
             '<tr><td class="message" colspan="4">' + Utils.htmlEscape(msg.message) + '</td></tr>'
         ))
