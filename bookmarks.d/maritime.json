@@ -86,7 +86,7 @@
     },
     {
         "name" : "DSC",
-        "frequency" : 156525000,
+        "frequency" : 156524000,
         "modulation" : "dsc"
     }
 ]
