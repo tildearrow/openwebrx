@@ -571,10 +571,8 @@ class FeatureDetector(object):
     def has_codecserver_ambe(self):
         """
         The [CodecServer](https://github.com/jketterl/codecserver) is used to decode
-        audio data from digital voice modes using the AMBE codec.
-
-        This feature flag checks for both the `codecserver` executable and the
-        configured AMBE codec.
+        audio data from digital voice modes using the AMBE codec. This feature checks
+        for both the `codecserver` executable and the configured AMBE codec.
         """
 
         config = Config.get()
