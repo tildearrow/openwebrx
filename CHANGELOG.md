@@ -1,3 +1,13 @@
+**1.2.50**
+- Added DSC decoder and bookmarks.
+- Rolled wide-band ISM back to 250kHz with bandpass.
+- Limited scanner to LSB, USB, CW, AM, SAM, and NFM modes.
+- Now clearing FAILED device status when disabling device.
+- Now resetting CW decoder state on frequency changes.
+- Moved all linkification to Utils.js.
+- Fixed APRS rain reports.
+- Added "openwebrx-extras" umbrella package.
+
 **1.2.49**
 - Added optimizations to DAB processing made by Jakob.
 - Removed bandpass filters from ADS-B and ISM modes.
