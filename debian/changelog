@@ -8,7 +8,6 @@ openwebrx (1.2.50) bullseye jammy; urgency=low
   * Now resetting CW decoder state on frequency changes.
   * Moved all linkification to Utils.js.
   * Fixed APRS rain reports.
-  * Added "openwebrx-extras" umbrella package.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 4 Mar 2024 16:12:00 +0000
 

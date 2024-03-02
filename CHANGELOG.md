@@ -7,7 +7,6 @@
 - Now resetting CW decoder state on frequency changes.
 - Moved all linkification to Utils.js.
 - Fixed APRS rain reports.
-- Added "openwebrx-extras" umbrella package.
 
 **1.2.49**
 - Added optimizations to DAB processing made by Jakob.

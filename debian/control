@@ -50,37 +50,3 @@ Recommends: python3-digiham (>= 0.6),
             imagemagick
 Description: multi-user web sdr
  Open source, multi-user SDR receiver with a web interface
-
-Package: openwebrx-extras
-Architecture: all
-Depends: openwebrx,
-         python3-digiham (>= 0.6),
-         direwolf (>= 1.4),
-         wsjtx,
-         js8call,
-         runds-connector (>= 0.2),
-         hpsdrconnector,
-         aprs-symbols,
-         m17-demod,
-         js8call,
-         python3-js8py (>= 0.1),
-         nmux (>= 0.18),
-         codecserver (>= 0.1),
-         msk144decoder,
-         dump1090-fa-minimal,
-         dumphfdl,
-         dumpvdl2,
-         acarsdec,
-         rtl-433,
-         extra-sdr-drivers,
-         perseus-tools,
-         dream-headless,
-         codec2,
-         redsea,
-         python3-csdr-eti,
-         dablin,
-         multimon-ng,
-         imagemagick
-Description: multi-user web sdr with all extras
- Open source, multi-user SDR receiver with a web interface, optional
- decoders, and tools
