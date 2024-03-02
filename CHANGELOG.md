@@ -5,6 +5,7 @@
 - Clarified installation instructions for some features.
 - Now clearing FAILED device status when disabling device.
 - Now resetting CW decoder state on frequency changes.
+- Updated feature descriptions in feature.py.
 - Moved all linkification to Utils.js.
 - Fixed APRS rain reports.
 
