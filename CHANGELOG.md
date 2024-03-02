@@ -2,6 +2,7 @@
 - Added DSC decoder and bookmarks.
 - Rolled wide-band ISM back to 250kHz with bandpass.
 - Limited scanner to LSB, USB, CW, AM, SAM, and NFM modes.
+- Clarified installation instructions for some features.
 - Now clearing FAILED device status when disabling device.
 - Now resetting CW decoder state on frequency changes.
 - Moved all linkification to Utils.js.
