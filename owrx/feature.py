@@ -612,7 +612,7 @@ class FeatureDetector(object):
 
     def has_rtl_433(self):
         """
-        OpenWebRX supports decoding various ISM (instrumentation) signals
+        OpenWebRX supports decoding ISM signals from various sensors
         by using the [RTL-433](https://github.com/merbanan/rtl_433)
         decoder suite. The `rtl-433` package is available in most Linux
         distributions.
