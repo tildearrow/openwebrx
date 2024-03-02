@@ -82,4 +82,5 @@ Depends: openwebrx,
          multimon-ng,
          imagemagick
 Description: multi-user web sdr with all extras
- Open source, multi-user SDR receiver with a web interface, optional decoders, and tools
+ Open source, multi-user SDR receiver with a web interface, optional
+ decoders, and tools

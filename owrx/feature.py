@@ -570,12 +570,11 @@ class FeatureDetector(object):
 
     def has_codecserver_ambe(self):
         """
-        Codecserver is used to decode audio data from digital voice modes using the AMBE codec.
+        The [CodecServer](https://github.com/jketterl/codecserver) is used to decode
+        audio data from digital voice modes using the AMBE codec.
 
-        You can find more information [here](https://github.com/jketterl/codecserver).
-
-        NOTE: this feature flag checks both the availability of codecserver as well as the availability of the AMBE
-        codec in the configured codecserver instance.
+        This feature flag checks for both the `codecserver` executable and the
+        configured AMBE codec.
         """
 
         config = Config.get()
@@ -596,74 +595,63 @@ class FeatureDetector(object):
 
     def has_dump1090(self):
         """
-        To be able to decode Mode-S and ADS-B traffic originating from airplanes, you need to install the dump1090
-        decoder. There is a number of forks available, any version that supports the `--ifile` and `--iformat` arguments
-        should work.
+        OpenWebRX supports decoding Mode-S and ADS-B airplane communications by using the
+        [Dump1090](https://github.com/flightaware/dump1090) decoder. You can install the
+        `dump1090-fa-minimal` package  from the OpenWebRX repositories.
 
-        Recommended fork: [dump1090 by Flightaware](https://github.com/flightaware/dump1090)
+        While there exist many Dump1090 forks, any version that supports `--ifile` and
+        `--iformat` arguments will work. We recommend using the
+        [Dump1090 by FlightAware](https://github.com/flightaware/dump1090).
 
-        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
-        `dump1090-fa-minimal`.
-
-        If you are running a different fork, please make sure that the command `dump1090` (without suffixes) runs the
-        version you would like to use. You can use symbolic links or the
-        [Debian alternatives system](https://wiki.debian.org/DebianAlternatives) to achieve this.
+        If you are using a different fork, please make sure that the `dump1090` command
+        (without suffixes) runs the desired verion. You can use symbolic links or the
+        [Debian alternatives system](https://wiki.debian.org/DebianAlternatives) to
+        achieve this.
         """
         return self.command_is_runnable("dump1090 --version")
 
     def has_rtl_433(self):
         """
-        OpenWebRX can make use of the `rtl_433` software to decode various signals in the ISM bands.
-
-        You can find more information [here](https://github.com/merbanan/rtl_433).
-
-        Debian and Ubuntu based systems should be able to install the package `rtl-433` from the package manager.
+        OpenWebRX supports decoding various ISM (instrumentation) signals
+        by using the [RTL-433](https://github.com/merbanan/rtl_433)
+        decoder suite. The `rtl-433` package is available in most Linux
+        distributions.
         """
         return self.command_is_runnable("rtl_433 -h")
 
     def has_dumphfdl(self):
         """
-        OpenWebRX supports decoding HFDL airplane communications using the `dumphfdl` decoder.
-
-        You can find more information [here](https://github.com/szpajder/dumphfdl)
-
-        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
-        `dumphfdl`.
+        OpenWebRX supports decoding HFDL airplane communications by using the
+        [DumpHFDL](https://github.com/szpajder/dumphfdl) decoder. You can
+        install the `dumphfdl` package from the OpenWebRX repositories.
         """
         return self.command_is_runnable("dumphfdl --version")
 
     def has_dumpvdl2(self):
         """
-        OpenWebRX supports decoding VDL Mode 2 airplane communications using the `dumpvdl2` decoder.
-
-        You can find more information [here](https://github.com/szpajder/dumpvdl2)
-
-        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
-        `dumpvdl2`.
+        OpenWebRX supports decoding VDL Mode 2 airplane communications by using the
+        [DumpVDL2](https://github.com/szpajder/dumpvdl2) decoder. You can
+        install the `dumpvdl2` package from the OpenWebRX repositories.
         """
         return self.command_is_runnable("dumpvdl2 --version")
 
     def has_redsea(self):
         """
-        OpenWebRX can decode RDS data on WFM broadcast station if the `redsea` decoder is available.
-
-        You can find more information [here](https://github.com/windytan/redsea)
-
-        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
-        `redsea`.
+        OpenWebRX uses the [RedSea](https://github.com/windytan/redsea)
+        decoder to obtain the RDS information from WFM broadcasts. You can
+        install the `redsea` package from the OpenWebRX repositories.
         """
         return self.command_is_runnable("redsea --version")
 
     def has_csdreti(self):
         """
         To decode DAB broadcast signals, OpenWebRX needs the ETI decoder from the
-        [`csdr-eti`](https://github.com/jketterl/csdr-eti) project, together with the
-        associated python bindings from [`pycsdr-eti`](https://github.com/jketterl/pycsdr-eti).
-
-        If you are using the OpenWebRX Debian or Ubuntu repository, the `python3-csdr-eti` package should be all you
-        need.
+        [`csdr-eti`](https://github.com/jketterl/csdr-eti) project, together with
+        the associated Python bindings from [`pycsdr-eti`](https://github.com/jketterl/pycsdr-eti).
+        The `python3-csdr-eti` package, found in the OpenWebRX repositories,
+        should be all you need.
         """
-        required_version = LooseVersion("0.0.9")
+        required_version = LooseVersion("0.0.11")
 
         try:
             from csdreti.modules import csdreti_version
@@ -678,32 +666,34 @@ class FeatureDetector(object):
 
     def has_dablin(self):
         """
-        To decode DAB broadcast signals, OpenWebRX needs the [`dablin`](https://github.com/Opendigitalradio/dablin)
-        decoding software.
-
-        Dablin comes packaged with Debian and Ubuntu, so installing the `dablin` package should get you going.
+        OpenWebRX uses the [Dablin](https://github.com/Opendigitalradio/dablin)
+        software to decode DAB broadcast signals. The `dablin` package is
+        available in most Linux distributions.
         """
         return self.command_is_runnable("dablin -h")
 
     def has_acarsdec(self):
         """
-        OpenWebRX uses the [acarsdec](https://github.com/TLeconte/acarsdec) tool to decode ACARS
-        traffic. You will have to compile it from source.
+        OpenWebRX supports decoding ACARS airplane communications by using the
+        [AcarsDec](https://github.com/TLeconte/acarsdec) decoder. You can
+        install the `acarsdec` package from the OpenWebRX repositories.
         """
         return self.command_is_runnable("acarsdec --help")
 
     def has_imagemagick(self):
         """
-        In order to automatically convert received images to the PNG format, you will need to install ImageMagick.
-        It is available as a package for most Linux distributions.
+        OpenWebRX converts received images to the PNG format with the
+        [ImageMagick](https://www.imagemagick.org/) tool. The
+        `imagemagick` package is available in most Linux distributions.
         """
         return self.command_is_runnable("convert -version")
 
     def has_multimon(self):
         """
-        OpenWebRX uses the [multimon-ng](https://github.com/EliasOenal/multimon-ng) decoder suite to decode FLEX,
-        POCSAG, and several other digital modes. Multimon-ng is available from the package manager on many
-        distributions, or you can compile it from source.
+        OpenWebRX supports decoding FLEX, POCSAG, and several other digital modes
+        by using the [MultiMon-NG](https://github.com/EliasOenal/multimon-ng)
+        decoder suite. The `multimon-ng` package is available in most Linux
+        distributions.
         """
         return self.command_is_runnable("multimon-ng --help")
 
