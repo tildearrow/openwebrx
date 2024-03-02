@@ -215,9 +215,8 @@ class FeatureDetector(object):
         """
         Nmux is a tool provided by the
         [CSDR](https://github.com/jketterl/csdr) project and used for
-        the internal multiplexing of IQ data streams. The `python3-csdr`
-        package, found in the OpenWebRX repositories, should be all you
-        need.
+        the internal multiplexing of IQ data streams. You can install
+        the `nmux` package from the OpenWebRX repositories.
         """
         return self.command_is_runnable("nmux --help")
 
