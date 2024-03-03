@@ -466,7 +466,10 @@ class FeatureDetector(object):
 
     def has_airspy_rx(self):
         """
-        In order to use an Airspy Receiver, you need to install the airspy_rx receiver software.
+        The [Airspy Host](https://github.com/airspy/airspyone_host)
+        software is required to interface with the Airspy devices.
+        You can find instructions on how to build and install it
+        [here](https://github.com/airspy/airspyone_host).
         """
         return self.command_is_runnable("airspy_rx --help")
 
@@ -573,9 +576,9 @@ class FeatureDetector(object):
 
     def has_rockprog(self):
         """
-        The "rockprog" executable is required to send commands to your FiFiSDR. It needs to be installed separately.
-
-        You can find instructions and downloads [here](https://o28.sischa.net/fifisdr/trac/wiki/De%3Arockprog).
+        The `rockprog` executable is required to interface with FiFiSDR
+        devices. You can download and install it from
+        [here](https://o28.sischa.net/fifisdr/trac/wiki/De%3Arockprog).
         """
         return self.command_is_runnable("rockprog")
 
