@@ -196,7 +196,10 @@ class FeatureDetector(object):
         [CSDR](https://github.com/jketterl/csdr) project. In addition, the
         [PyCSDR](https://github.com/jketterl/pycsdr) must be installed to
         provide CSDR Python bindings. The `python3-csdr` package, found in
-        the OpenWebRX repositories, should be all you need.
+        the OpenWebRX repositories, should be all you need:
+        ```
+          sudo apt install python3-csdr
+        ```
         """
         required_version = LooseVersion("0.18.0")
 
@@ -216,7 +219,10 @@ class FeatureDetector(object):
         Nmux is a tool provided by the
         [CSDR](https://github.com/jketterl/csdr) project and used for
         the internal multiplexing of IQ data streams. You can install
-        the `nmux` package from the OpenWebRX repositories.
+        the `nmux` package from the OpenWebRX repositories as follows:
+        ```
+          sudo apt install nmux
+        ```
         """
         return self.command_is_runnable("nmux --help")
 
@@ -246,7 +252,10 @@ class FeatureDetector(object):
         [PyDigiHAM](https://github.com/jketterl/pydigiham) must
         be installed to provide DigiHAM Python bindings. The
         `python3-digiham` package, found in the OpenWebRX
-        repositories, should be all you need.
+        repositories, should be all you need:
+        ```
+          sudo apt install python3-digiham
+        ```
         """
         required_version = LooseVersion("0.6")
 
@@ -281,18 +290,24 @@ class FeatureDetector(object):
     def has_rtl_connector(self):
         """
         The [OWRX Connector](https://github.com/jketterl/owrx_connector)
-        provides direct interfacing between RTL SDR hardware and OpenWebRX.
+        provides direct interfacing between RTL-SDR hardware and OpenWebRX.
         You can install the `owrx-connector` package from the OpenWebRX
-        repositories.
+        repositories as follows:
+        ```
+          sudo apt install owrx-connector
+        ```
         """
         return self._check_owrx_connector("rtl_connector")
 
     def has_rtl_tcp_connector(self):
         """
         The [OWRX Connector](https://github.com/jketterl/owrx_connector)
-        provides direct interfacing between networked RTL SDR hardware and
+        provides direct interfacing between networked RTL-SDR hardware and
         OpenWebRX. You can install the `owrx-connector` package from the
-        OpenWebRX repositories.
+        OpenWebRX repositories as follows:
+        ```
+          sudo apt install owrx-connector
+        ```
         """
         return self._check_owrx_connector("rtl_tcp_connector")
 
@@ -301,7 +316,10 @@ class FeatureDetector(object):
         The [OWRX Connector](https://github.com/jketterl/owrx_connector)
         provides direct interfacing between Soapy SDR API and OpenWebRX.
         You can install the `owrx-connector` package from the OpenWebRX
-        repositories.
+        repositories as follows:
+        ```
+          sudo apt install owrx-connector
+        ```
         """
         return self._check_owrx_connector("soapy_connector")
 
@@ -426,7 +444,10 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [M17 Demodulator](https://github.com/mobilinkd/m17-cxx-demod)
         to demodulate M17 digital voice signals. You can install the
-        `m17-demod` package from the OpenWebRX repositories.
+        `m17-demod` package from the OpenWebRX repositories as follows:
+        ```
+          sudo apt install m17-demod
+        ```
         """
         return self.command_is_runnable("m17-demod", 0)
 
@@ -435,7 +456,11 @@ class FeatureDetector(object):
         OpenWebRX uses the [Direwolf](https://github.com/wb2osz/direwolf)
         software modem to decode Packet Radio and report data back to APRS-IS.
         The same software is also used to decode maritime AIS transmissions.
-        The `direwolf` package is available in most Linux distributions.
+        The `direwolf` package is available in most Linux distributions and
+        can be installed as follows:
+        ```
+          sudo apt install direwolf
+        ```
         """
         return self.command_is_runnable("direwolf --help")
 
@@ -449,7 +474,11 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [WSJT-X](https://wsjt.sourceforge.io/) software
         suite to decode FT8 and other digital modes. The `wsjtx` package is
-        available in most Linux distributions.
+        available in most Linux distributions and can be installed as
+        follows:
+        ```
+          sudo apt install wsjtx
+        ```
         """
         return reduce(and_, map(self.command_is_runnable, ["jt9", "wsprd"]), True)
 
@@ -488,7 +517,11 @@ class FeatureDetector(object):
         OpenWebRX uses the
         [MSK144 Decoder](https://github.com/alexander-sholohov/msk144decoder)
         to decode the MSK144 digital mode. You can install the
-        `msk144decoder` package from the OpenWebRX repositories.
+        `msk144decoder` package from the OpenWebRX repositories
+        as follows:
+        ```
+          sudo apt install msk144decoder
+        ```
         """
         return self.command_is_runnable("msk144decoder")
 
@@ -496,8 +529,11 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [JS8Call](http://js8call.com/) software
         to decode JS8 communications. The `js8call` package is
-        available in most Linux distributions.
-
+        available in most Linux distributions and can be installed
+        as follows:
+        ```
+          sudo apt install js8call
+        ```
         Please note that the `js8` command line decoder is not added
         to the $PATH variable by some JS8Call package builds. You may
         have to make a link to it from the `/usr/bin` folder or add
@@ -510,7 +546,10 @@ class FeatureDetector(object):
         OpenWebRX uses the [JS8Py](https://github.com/jketterl/js8py)
         library to decode binary JS8 messages into readable text. You
         can install the `python3-js8py` package from the OpenWebRX
-        repositories.
+        repositories as follows:
+        ```
+          sudo apt install python3-js8py
+        ```
         """
         required_version = StrictVersion("0.1")
         try:
@@ -523,8 +562,12 @@ class FeatureDetector(object):
     def has_alsa(self):
         """
         Some SDR receivers identify themselves as sound cards. OpenWebRX relies
-        on the ALSA library to access such receivers. It can be installed by
-        installing the `alsa-utils` package in most Linux distributions.
+        on the ALSA library to access such receivers. It can be obtained by
+        installing the `alsa-utils` package in most Linux distributions, as
+        follows:
+        ```
+          sudo apt install alsa-utils
+        ```
         """
         return self.command_is_runnable("arecord --help")
 
@@ -538,12 +581,14 @@ class FeatureDetector(object):
 
     def has_freedv_rx(self):
         """
-        The "freedv\\_rx" executable is required to demodulate FreeDV digital transmissions. It comes together with the
-        codec2 library, but it's only a supplemental part and not installed by default or contained in its packages.
-        To install it, you will need to compile codec2 from source and manually install freedv\\_rx.
+        The `freedv\\_rx` executable is required to demodulate FreeDV digital
+        transmissions. It comes as part of the `codec2` library build, but is
+        not installed by default or contained inside the `codec2` packages.
 
-        Detailed installation instructions are available on the
-        [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
+        To obtain it, you will have to compile 'codec2' from the sources and
+        then manually install `freedv\\_rx`. The detailed installation
+        instructions are available from the
+        [OpenWebRX Wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
         """
         return self.command_is_runnable("freedv_rx")
 
@@ -568,8 +613,14 @@ class FeatureDetector(object):
 
     def has_hpsdr_connector(self):
         """
-        In order to use the HPSDR connector, you will need to install [hpsdrconnector]
-        (https://github.com/jancona/hpsdrconnector).
+        The [HPSDR Connector](https://github.com/jancona/hpsdrconnector)
+        is required to interface OpenWebRX with Hermes Lite 2, Red Pitaya,
+        and similar networked SDR devices. You can install the
+        `hpsdrconnector` package from the OpenWebRX repositories as
+        follows:
+        ```
+          sudo apt install hpsdrconnector
+        ```
         """
         return self.command_is_runnable("hpsdrconnector -h")
 
@@ -585,9 +636,13 @@ class FeatureDetector(object):
         """
         The [CodecServer](https://github.com/jketterl/codecserver) is used to decode
         audio data from digital voice modes using the AMBE codec. This feature checks
-        for both the `codecserver` executable and the configured AMBE codec.
+        for both the `codecserver` executable and the configured AMBE codec. The
+        `codecserver` package can be found in the OpenWebRX repositories and
+        installed as follows:
+        ```
+          sudo apt install codecserver
+        ```
         """
-
         config = Config.get()
         server = ""
         if "digital_voice_codecserver" in config:
@@ -608,8 +663,10 @@ class FeatureDetector(object):
         """
         OpenWebRX supports decoding Mode-S and ADS-B airplane communications by using the
         [Dump1090](https://github.com/flightaware/dump1090) decoder. You can install the
-        `dump1090-fa-minimal` package  from the OpenWebRX repositories.
-
+        `dump1090-fa-minimal` package from the OpenWebRX repositories as follows:
+        ```
+          sudo apt install dump1090-fa-minimal
+        ```
         While there exist many Dump1090 forks, any version that supports `--ifile` and
         `--iformat` arguments will work. We recommend using the
         [Dump1090 by FlightAware](https://github.com/flightaware/dump1090).
@@ -625,7 +682,10 @@ class FeatureDetector(object):
         OpenWebRX supports decoding ISM signals from various sensors
         by using the [RTL-433](https://github.com/merbanan/rtl_433)
         decoder suite. The `rtl-433` package is available in most Linux
-        distributions.
+        distributions and can be installed as follows:
+        ```
+          sudo apt install rtl-433
+        ```
         """
         return self.command_is_runnable("rtl_433 -h")
 
@@ -633,7 +693,11 @@ class FeatureDetector(object):
         """
         OpenWebRX supports decoding HFDL airplane communications by using the
         [DumpHFDL](https://github.com/szpajder/dumphfdl) decoder. You can
-        install the `dumphfdl` package from the OpenWebRX repositories.
+        install the `dumphfdl` package from the OpenWebRX repositories as
+        follows:
+        ```
+          sudo apt install dumphfdl
+        ```
         """
         return self.command_is_runnable("dumphfdl --version")
 
@@ -641,7 +705,11 @@ class FeatureDetector(object):
         """
         OpenWebRX supports decoding VDL Mode 2 airplane communications by using the
         [DumpVDL2](https://github.com/szpajder/dumpvdl2) decoder. You can
-        install the `dumpvdl2` package from the OpenWebRX repositories.
+        install the `dumpvdl2` package from the OpenWebRX repositories as
+        follows:
+        ```
+          sudo apt install dumpvdl2
+        ```
         """
         return self.command_is_runnable("dumpvdl2 --version")
 
@@ -649,7 +717,11 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [RedSea](https://github.com/windytan/redsea)
         decoder to obtain the RDS information from WFM broadcasts. You can
-        install the `redsea` package from the OpenWebRX repositories.
+        install the `redsea` package from the OpenWebRX repositories as
+        follows:
+        ```
+          sudo apt install redsea
+        ```
         """
         return self.command_is_runnable("redsea --version")
 
@@ -659,7 +731,10 @@ class FeatureDetector(object):
         [`csdr-eti`](https://github.com/jketterl/csdr-eti) project, together with
         the associated Python bindings from [`pycsdr-eti`](https://github.com/jketterl/pycsdr-eti).
         The `python3-csdr-eti` package, found in the OpenWebRX repositories,
-        should be all you need.
+        should be all you need:
+        ```
+          sudo apt install python3-csdr-eti
+        ```
         """
         required_version = LooseVersion("0.0.11")
 
@@ -678,7 +753,11 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [Dablin](https://github.com/Opendigitalradio/dablin)
         software to decode DAB broadcast signals. The `dablin` package is
-        available in most Linux distributions.
+        available in most Linux distributions and can be installed as
+        follows:
+        ```
+          sudo apt install dablin
+        ```
         """
         return self.command_is_runnable("dablin -h")
 
@@ -686,7 +765,11 @@ class FeatureDetector(object):
         """
         OpenWebRX supports decoding ACARS airplane communications by using the
         [AcarsDec](https://github.com/TLeconte/acarsdec) decoder. You can
-        install the `acarsdec` package from the OpenWebRX repositories.
+        install the `acarsdec` package from the OpenWebRX repositories as
+        follows:
+        ```
+          sudo apt install acarsdec
+        ```
         """
         return self.command_is_runnable("acarsdec --help")
 
@@ -694,7 +777,11 @@ class FeatureDetector(object):
         """
         OpenWebRX converts received images to the PNG format with the
         [ImageMagick](https://www.imagemagick.org/) tool. The
-        `imagemagick` package is available in most Linux distributions.
+        `imagemagick` package is available in most Linux distributions
+        and can be installed as follows:
+        ```
+          sudo apt install imagemagick
+        ```
         """
         return self.command_is_runnable("convert -version")
 
@@ -703,7 +790,10 @@ class FeatureDetector(object):
         OpenWebRX supports decoding FLEX, POCSAG, and several other digital modes
         by using the [MultiMon-NG](https://github.com/EliasOenal/multimon-ng)
         decoder suite. The `multimon-ng` package is available in most Linux
-        distributions.
+        distributions and can be installed as follows:
+        ```
+          sudo apt install multimon-ng
+        ```
         """
         return self.command_is_runnable("multimon-ng --help")
 
