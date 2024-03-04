@@ -88,9 +88,6 @@ WsjtMessagePanel.prototype.render = function() {
 WsjtMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
     var t = new Date(msg['timestamp']);
-    var pad = function (i) {
-        return ('' + i).padStart(2, "0");
-    };
     var linkedmsg = msg['msg'];
     var matches;
 
@@ -111,7 +108,7 @@ WsjtMessagePanel.prototype.pushMessage = function(msg) {
     }
     $b.append($(
         '<tr data-timestamp="' + msg['timestamp'] + '">' +
-        '<td>' + pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds()) + '</td>' +
+        '<td>' + Utils.HHMMSS(t) + '</td>' +
         '<td class="decimal">' + msg['db'] + '</td>' +
         '<td class="decimal">' + msg['dt'] + '</td>' +
         '<td class="decimal freq">' + msg['freq'] + '</td>' +
@@ -155,9 +152,6 @@ PacketMessagePanel.prototype.render = function() {
 
 PacketMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
-    var pad = function (i) {
-        return ('' + i).padStart(2, "0");
-    };
 
     if (msg.type && msg.type === 'thirdparty' && msg.data) {
         msg = msg.data;
@@ -177,11 +171,7 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         }
     }
 
-    var timestamp = '';
-    if (msg.timestamp) {
-        var t = new Date(msg.timestamp);
-        timestamp = pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds())
-    }
+    var timestamp = msg.timestamp? Utils.HHMMSS(new Date(msg.timestamp)) : '';
 
     var link = '';
     var classes = [];
@@ -568,7 +558,6 @@ DscMessagePanel.prototype.render = function() {
 };
 
 DscMessagePanel.prototype.pushMessage = function(msg) {
-    var pad    = function (i) { return ('' + i).padStart(2, "0") };
     var bcolor = msg.color? msg.color : '#000';
     var fcolor = msg.color? '#000' : '#FFF';
     var src    = msg.src? Utils.linkifyVessel(msg.src) : '';
@@ -579,12 +568,18 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     + (msg.eos?      ' ' + msg.eos : '')
     ).trim().toUpperCase();
 
-    var timestamp;
-    if (msg.time) {
-        timestamp = '<b>' + msg.time + '</b>'
-    } else {
-        var t = new Date();
-        timestamp = pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds());
+    // Format timestamp
+    var timestamp =
+      msg.time?      '<b>' + msg.time + '</b>'
+    : msg.timestamp? Utils.HHMMSS(new Date(msg.timestamp))
+    : Utils.HHMMSS(new Date());
+
+    // Format debugging data
+    var symbols = '';
+    if (msg.data) {
+        symbols = msg.data.replace(
+            /(.*)\|(.*)/, ' $1<span style="opacity:0.5;">|$2 &hellip;</span>'
+        );
     }
 
     // Combine remaining attributes into a message
@@ -595,7 +590,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     + (msg.num?    ' DIAL ' + msg.num : '')
     + (msg.rxfreq? ' RX ' + msg.rxfreq : '')
     + (msg.txfreq? ' TX ' + msg.txfreq : '')
-    + (msg.data?   ' ' + msg.data + ' &hellip;' : '')
+    + symbols
     ).trim();
 
     // Append report

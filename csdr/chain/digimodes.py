@@ -258,7 +258,7 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
 
 
-class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
+class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequencyReceiver):
     def __init__(self, baudRate=100, bandWidth=170, invert=False, service=False):
         self.baudRate   = baudRate
         self.bandWidth  = bandWidth
@@ -293,3 +293,5 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain):
         self.replace(2, Lowpass(Format.FLOAT, cutoff))
         self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
 
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)

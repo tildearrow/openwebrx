@@ -124,6 +124,12 @@ Utils.linkToMap = function(id, content = null, attrs = "") {
     }
 };
 
+// Print time in hours, minutes, and seconds.
+Utils.HHMMSS = function(t) {
+    var pad = function (i) { return ('' + i).padStart(2, "0") };
+    return pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds());
+};
+
 // Compute distance, in kilometers, between two latlons.
 Utils.distanceKm = function(p1, p2) {
     // Convert from map objects to latlons
