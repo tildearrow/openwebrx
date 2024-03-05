@@ -571,14 +571,14 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     // Format timestamp
     var timestamp =
       msg.time?      '<b>' + msg.time + '</b>'
-    : msg.timestamp? Utils.HHMMSS(new Date(msg.timestamp))
-    : Utils.HHMMSS(new Date());
+    : msg.timestamp? Utils.HHMMSS(new Date(msg.timestamp * 1000))
+    : '';
 
     // Format debugging data
     var symbols = '';
     if (msg.data) {
         symbols = msg.data.replace(
-            /(.*)\|(.*)/, ' $1<span style="opacity:0.5;">|$2 &hellip;</span>'
+            /(.*)\|(.*)/, ' $1<span style="opacity:0.5;"> | $2 &hellip;</span>'
         );
     }
 

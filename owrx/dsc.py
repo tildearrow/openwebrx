@@ -26,8 +26,7 @@ class DscParser(TextParser):
         # Expect JSON data in text form
         out = json.loads(msg)
         # Add mode name, time stamp, frequency, and color to identify sender
-        out["mode"]      = "DSC"
-        out["timestamp"] = self.getUtcTime()
+        out["mode"] = "DSC"
         if self.frequency != 0:
             out["frequency"] = self.frequency
         if "src" in out:
