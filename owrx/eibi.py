@@ -53,9 +53,7 @@ class EIBI(object):
             return freq - 800
         elif mode == "fax":
             return freq - 1900
-        elif mode == "rtty450":
-            return freq - 1000
-        elif mode == "sitorb":
+        elif mode in ["cwdecoder", "rtty450", "rtty170", "rtty85", "sitorb", "dsc", "bpsk31", "bpsk63"]:
             return freq - 1000
         else:
             return freq

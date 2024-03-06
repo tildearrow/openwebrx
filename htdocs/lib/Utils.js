@@ -46,6 +46,7 @@ Utils.offsetFreq = function(freq, mod) {
         case 'rtty170':
         case 'rtty85':
         case 'sitorb':
+        case 'dsc':
         case 'bpsk31':
         case 'bpsk63':
             return freq - 1000;

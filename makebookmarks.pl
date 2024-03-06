@@ -37,10 +37,11 @@ while(<STDIN>)
       if(lc($Mod) eq "rtty450") { $Freq -= 1.0; }
       if(lc($Mod) eq "rtty170") { $Freq -= 1.0; }
       if(lc($Mod) eq "rtty85")  { $Freq -= 1.0; }
-      # Set NAVTEX/SITOR-B frequencies 1kHz lower than the left carrier
+      # Set NAVTEX/SITOR-B/DSC frequencies 1kHz lower than the left carrier
       if(lc($Mod) eq "sitorb")  { $Freq -= 1.0; }
+      if(lc($Mod) eq "dsc")     { $Freq -= 1.0; }
       # Set CW frequencies 800Hz lower than the carrier
-      if(lc($Mod) eq "cw")  { $Freq -= 0.8; }
+      if(lc($Mod) eq "cw")      { $Freq -= 0.8; }
 
       printf("    {\n");
       printf("        \"name\" : \"%s\",\n", $Name);
