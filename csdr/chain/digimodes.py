@@ -283,6 +283,9 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequency
     def getBandwidth(self) -> float:
         return self.bandWidth
 
+    def getFixedAudioRate(self):
+        return self.sampleRate
+
     def setSampleRate(self, sampleRate: int) -> None:
         if sampleRate == self.sampleRate:
             return
