@@ -174,3 +174,29 @@ class DablinModule(ExecModule):
         self.serviceId = serviceId
         self.setArgs(self._buildArgs())
         self.restart()
+
+
+class SatDumpModule(ExecModule):
+    def __init__(self, mode: str = "noaa_apt", sampleRate: int = 50000, frequency: int = 137000000, options = None):
+        # Make sure we have output folder
+        self.outFolder = "/tmp/satdump"
+        try:
+            os.makedirs(self.outFolder, exist_ok = True)
+        except:
+            self.outFolder = "/tmp"
+        # Compose command line
+        cmd = [
+            "satdump", "live", mode, self.outFolder,
+            "--source", "file", "--file_path", "/dev/stdin",
+            "--samplerate", str(sampleRate),
+            "--frequency", str(frequency),
+            "--baseband_format", "f32",
+            "--finish_processing",
+        ]
+        # Add pipeline-specific options
+        if options:
+            for key in options.keys():
+                cmd.append("--" + key)
+                cmd.append(str(options[key]))
+        # Create parent object
+        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd)

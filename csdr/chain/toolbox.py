@@ -1,5 +1,5 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver, FixedIfSampleRateChain
-from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule
+from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule, SatDumpModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, IsmParser, RdsParser
@@ -210,3 +210,46 @@ class RdsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+
+
+class NoaaAptDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, satellite: int = 19, service: bool = False):
+        self.sampleRate = 50000
+        workers = [
+            SatDumpModule(mode = "noaa_apt", sampleRate = self.sampleRate, options = {
+                "satellite_number" : satellite,
+                "start_timestamp"  : datetime.utcnow().timestamp()
+            })
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
+
+    def supportsSquelch(self) -> bool:
+        return False
+
+    def setDialFrequency(self, frequency: int) -> None:
+        # TODO: Do something with the frequency or remove method
+        pass
+
+
+class MeteorLrptDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self, service: bool = False):
+        self.sampleRate = 150000
+        workers = [
+            SatDumpModule(mode = "meteor_m2-x_lrpt", sampleRate = self.sampleRate)
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
+
+    def supportsSquelch(self) -> bool:
+        return False
+
+    def setDialFrequency(self, frequency: int) -> None:
+        # TODO: Do something with the frequency or remove method
+        pass

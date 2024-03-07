@@ -347,6 +347,12 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator(service=True)
+        elif mod == "noaa-apt":
+            from csdr.chain.toolbox import NoaaAptDemodulator
+            return NoaaAptDemodulator(service=True)
+        elif mod == "meteor-lrpt":
+            from csdr.chain.toolbox import MeteorLrptDemodulator
+            return MeteorLrptDemodulator(service=True)
 
         raise ValueError("unsupported service modulation: {}".format(mod))
 

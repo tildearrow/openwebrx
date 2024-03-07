@@ -94,6 +94,7 @@ class FeatureDetector(object):
         "selcall": ["multimon"],
         "rds": ["redsea"],
         "dab": ["csdreti", "dablin"],
+        "wxsat": ["satdump"],
         "png": ["imagemagick"],
     }
 
@@ -714,3 +715,10 @@ class FeatureDetector(object):
         """
         return self.command_is_runnable("multimon-ng --help")
 
+    def has_satdump(self):
+        """
+        OpenWebRX uses [SatDump](https://github.com/SatDump/SatDump) software
+        suite to receive weather satellite transmissions. The `satdump`
+        package is available in some Linux distributions.
+        """
+        return self.command_is_runnable("satdump --help")
