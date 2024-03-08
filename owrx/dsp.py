@@ -417,11 +417,11 @@ class ClientDemodulatorChain(Chain):
 
 class ModulationValidator(OrValidator):
     """
-    This validator only allows alphanumeric characters and numbers, but no spaces or special characters
+    This validator only allows alphanumeric characters and dashes, but no spaces or special characters
     """
 
     def __init__(self):
-        super().__init__(BoolValidator(), RegexValidator(re.compile("^[a-z0-9]+$")))
+        super().__init__(BoolValidator(), RegexValidator(re.compile("^[a-z0-9\\-]+$")))
 
 
 class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient):

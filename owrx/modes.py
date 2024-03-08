@@ -269,26 +269,27 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
-        DigitalMode(
-            "noaa-apt",
-            "NOAA APT",
-            underlying=["empty"],
-            bandpass=Bandpass(-25000, 25000),
-            requirements=["wxsat"],
-            service=True,
-            squelch=False,
-            secondaryFft=False
-        ),
-        DigitalMode(
-            "meteor-lrpt",
-            "Meteor-M2 LRPT",
-            underlying=["empty"],
-            bandpass=Bandpass(-75000, 75000),
-            requirements=["wxsat"],
-            service=True,
-            squelch=False,
-            secondaryFft=False
-        ),
+# Work in progress
+#        DigitalMode(
+#            "noaa-apt",
+#            "NOAA APT",
+#            underlying=["empty"],
+#            bandpass=Bandpass(-25000, 25000),
+#            requirements=["wxsat"],
+#            service=True,
+#            squelch=False,
+#            secondaryFft=False
+#        ),
+#        DigitalMode(
+#            "meteor-lrpt",
+#            "Meteor-M2 LRPT",
+#            underlying=["empty"],
+#            bandpass=Bandpass(-75000, 75000),
+#            requirements=["wxsat"],
+#            service=True,
+#            squelch=False,
+#            secondaryFft=False
+#        ),
     ]
 
     @staticmethod
