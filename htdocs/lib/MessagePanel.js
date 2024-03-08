@@ -586,10 +586,10 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     var message = (
       (msg.distress? ' ' + msg.distress : '')
     + (msg.id?     ' SHIP ' + Utils.linkifyVessel(msg.id) : '')
-    + (msg.loc?    ' @' + msg.loc : '')
+    + (msg.loc?    ' AT ' + msg.loc : '')
     + (msg.num?    ' DIAL ' + msg.num : '')
-    + (msg.rxfreq? ' RX ' + msg.rxfreq : '')
-    + (msg.txfreq? ' TX ' + msg.txfreq : '')
+    + (msg.rxfreq? ' RX ' + Utils.printFreq(msg.rxfreq) : '')
+    + (msg.txfreq? ' TX ' + Utils.printFreq(msg.txfreq) : '')
     + symbols
     ).trim();
 

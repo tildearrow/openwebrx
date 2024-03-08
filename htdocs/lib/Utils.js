@@ -29,10 +29,23 @@ Utils.setIcaoUrl = function(url) {
     this.icao_url = url;
 };
 
-// Escape HTML code.
+// Escape HTML code
 Utils.htmlEscape = function(input) {
     return $('<div/>').text(input).html()
 };
+
+// Print frequency (in Hz) in a nice way
+Utils.printFreq = function(freq) {
+    if (isNaN(parseInt(freq))) {
+        return freq;
+    } else if (freq >= 30000000) {
+        return '' + (freq / 1000000.0) + 'MHz';
+    } else if (freq >= 10000) {
+        return '' + (freq / 1000.0) + 'kHz';
+    } else {
+        return '' + freq + 'Hz';
+    }
+}
 
 // Change frequency as required by given modulation
 Utils.offsetFreq = function(freq, mod) {
@@ -98,17 +111,8 @@ Utils.linkifyIcao = function(icao, content = null) {
 
 // Create link to tune OWRX to the given frequency and modulation.
 Utils.linkifyFreq = function(freq, mod) {
-    var text;
-    if (freq >= 30000000) {
-        text = '' + (freq / 1000000.0) + 'MHz';
-    } else if (freq >= 10000) {
-        text = '' + (freq / 1000.0) + 'kHz';
-    } else {
-        text = '' + freq + 'Hz';
-    }
-
     return '<a target="openwebrx-rx" href="/#freq='
-        + freq + ',mod=' + mod + '">' + text + '</a>';
+        + freq + ',mod=' + mod + '">' + Utils.printFreq(freq) + '</a>';
 };
 
 // Linkify given content so that clicking them opens the map with
