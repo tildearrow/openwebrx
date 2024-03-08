@@ -719,6 +719,7 @@ class FeatureDetector(object):
         """
         OpenWebRX uses [SatDump](https://github.com/SatDump/SatDump) software
         suite to receive weather satellite transmissions. The `satdump`
-        package is available in some Linux distributions.
+        packages are available from its
+        [homepage](https://github.com/SatDump/SatDump).
         """
         return self.command_is_runnable("satdump --help")
