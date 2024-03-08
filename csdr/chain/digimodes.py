@@ -265,7 +265,7 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequency
         self.invert     = invert
         self.parser     = DscParser(service=service)
         # this is an assumption, we will adjust in setSampleRate
-        self.sampleRate = bandWidth * 16 #12000
+        self.sampleRate = bandWidth * 10 #12000
         secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
         cutoff = self.baudRate / self.sampleRate
         loop_gain = self.sampleRate / self.getBandwidth() / 5
@@ -283,10 +283,6 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequency
     def getBandwidth(self) -> float:
         return self.bandWidth
 
-    # Making it look like ServiceDemodulator to background services
-    def getFixedAudioRate(self):
-        return self.sampleRate
-
     def setSampleRate(self, sampleRate: int) -> None:
         if sampleRate == self.sampleRate:
             return
@@ -297,5 +293,10 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequency
         self.replace(2, Lowpass(Format.FLOAT, cutoff))
         self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
 
+    # DialFrequencyReceiver
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+
+    # ServiceDemodulator
+    def getFixedAudioRate(self):
+        return self.sampleRate
