@@ -215,12 +215,18 @@ class RdsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class NoaaAptDemodulator(ServiceDemodulator):
     def __init__(self, satellite: int = 19, service: bool = False):
+        d = datetime.utcnow()
+        self.outFolder  = "/tmp/satdump/NOAA{0}-{1}".format(satellite, d.strftime('%y%m%d-%H%M%S'))
         self.sampleRate = 50000
         workers = [
-            SatDumpModule(mode = "noaa_apt", sampleRate = self.sampleRate, options = {
-                "satellite_number" : satellite,
-                "start_timestamp"  : int(datetime.utcnow().timestamp())
-            })
+            SatDumpModule(mode = "noaa_apt",
+                sampleRate = self.sampleRate,
+                outFolder  = self.outFolder,
+                options    = {
+                    "satellite_number" : satellite,
+                    "start_timestamp"  : int(d.timestamp())
+                }
+            )
         ]
         # Connect all the workers
         super().__init__(workers)
@@ -234,11 +240,15 @@ class NoaaAptDemodulator(ServiceDemodulator):
 
 class MeteorLrptDemodulator(ServiceDemodulator):
     def __init__(self, service: bool = False):
+        d = datetime.utcnow()
+        self.outFolder  = "/tmp/satdump/METEOR-{0}".format(d.strftime('%y%m%d-%H%M%S'))
         self.sampleRate = 150000
         workers = [
-            SatDumpModule(mode = "meteor_m2-x_lrpt", sampleRate = self.sampleRate, options = {
-                "start_timestamp" : int(datetime.utcnow().timestamp())
-            })
+            SatDumpModule(mode = "meteor_m2-x_lrpt",
+                sampleRate = self.sampleRate,
+                outFolder  = self.outFolder,
+                options    = { "start_timestamp" : int(d.timestamp()) }
+            )
         ]
         # Connect all the workers
         super().__init__(workers)
