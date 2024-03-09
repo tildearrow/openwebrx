@@ -11,11 +11,12 @@ class Bandpass(object):
 
 
 class Mode:
-    def __init__(self, modulation: str, name: str, bandpass: Bandpass = None, ifRate=None, requirements=None, service=False, squelch=True):
+    def __init__(self, modulation: str, name: str, bandpass: Bandpass = None, ifRate=None, requirements=None, service=False, client=True, squelch=True):
         self.modulation = modulation
         self.name = name
         self.requirements = requirements if requirements is not None else []
         self.service = service
+        self.client = client
         self.bandpass = bandpass
         self.ifRate = ifRate
         self.squelch = squelch
@@ -269,7 +270,6 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
-# Work in progress
         DigitalMode(
             "noaa-apt-15",
             "NOAA-15 APT",
@@ -278,6 +278,7 @@ class Modes(object):
             requirements=["wxsat"],
             service=True,
             squelch=False,
+            client=False,
             secondaryFft=False
         ),
         DigitalMode(
@@ -288,6 +289,7 @@ class Modes(object):
             requirements=["wxsat"],
             service=True,
             squelch=False,
+            client=False,
             secondaryFft=False
         ),
         DigitalMode(
@@ -298,6 +300,7 @@ class Modes(object):
             requirements=["wxsat"],
             service=True,
             squelch=False,
+            client=False,
             secondaryFft=False
         ),
         DigitalMode(
@@ -308,6 +311,7 @@ class Modes(object):
             requirements=["wxsat"],
             service=True,
             squelch=False,
+            client=False,
             secondaryFft=False
         ),
     ]

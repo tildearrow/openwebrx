@@ -1,3 +1,10 @@
+**1.2.51**
+- Background DSC decoding now works.
+- Added DSC display of timestamps and frequencies.
+- Added preliminary SatDump support (experts only!)
+- Removed 'apt install' lines from feature instructions.
+- Allowed dash in modulation names.
+
 **1.2.50**
 - Added DSC decoder and bookmarks.
 - Rolled wide-band ISM back to 250kHz with bandpass.
