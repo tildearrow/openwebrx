@@ -347,9 +347,15 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator(service=True)
-        elif mod == "noaa-apt":
+        elif mod == "noaa-apt-15":
             from csdr.chain.toolbox import NoaaAptDemodulator
-            return NoaaAptDemodulator(service=True)
+            return NoaaAptDemodulator(satellite=15, service=True)
+        elif mod == "noaa-apt-18":
+            from csdr.chain.toolbox import NoaaAptDemodulator
+            return NoaaAptDemodulator(satellite=18, service=True)
+        elif mod == "noaa-apt-19":
+            from csdr.chain.toolbox import NoaaAptDemodulator
+            return NoaaAptDemodulator(satellite=19, service=True)
         elif mod == "meteor-lrpt":
             from csdr.chain.toolbox import MeteorLrptDemodulator
             return MeteorLrptDemodulator(service=True)

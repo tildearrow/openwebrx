@@ -422,6 +422,12 @@
     }
   },
   {
+    "name": "VHF Satellite",
+    "lower_bound": 137000000,
+    "upper_bound": 138000000,
+    "tags": ["service"]
+  },
+  {
     "name": "VHF Marine",
     "lower_bound": 156000000,
     "upper_bound": 174000000,

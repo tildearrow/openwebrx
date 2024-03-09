@@ -177,7 +177,7 @@ class DablinModule(ExecModule):
 
 
 class SatDumpModule(ExecModule):
-    def __init__(self, mode: str = "noaa_apt", sampleRate: int = 50000, frequency: int = 137000000, options = None):
+    def __init__(self, mode: str = "noaa_apt", sampleRate: int = 50000, frequency: int = 137100000, options = None):
         # Make sure we have output folder
         self.outFolder = "/tmp/satdump"
         try:

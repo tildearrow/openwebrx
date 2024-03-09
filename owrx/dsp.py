@@ -728,6 +728,18 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator()
+        elif mod == "noaa-apt-15":
+            from csdr.chain.toolbox import NoaaAptDemodulator
+            return NoaaAptDemodulator(satellite=15)
+        elif mod == "noaa-apt-18":
+            from csdr.chain.toolbox import NoaaAptDemodulator
+            return NoaaAptDemodulator(satellite=18)
+        elif mod == "noaa-apt-19":
+            from csdr.chain.toolbox import NoaaAptDemodulator
+            return NoaaAptDemodulator(satellite=19)
+        elif mod == "meteor-lrpt":
+            from csdr.chain.toolbox import MeteorLrptDemodulator
+            return MeteorLrptDemodulator()
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)

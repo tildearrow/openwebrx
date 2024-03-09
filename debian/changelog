@@ -1,3 +1,13 @@
+openwebrx (1.2.51) bullseye jammy; urgency=low
+
+  * Background DSC decoding now works.
+  * Added DSC display of timestamps and frequencies.
+  * Added preliminary SatDump support (experts only!)
+  * Removed 'apt install' lines from feature instructions.
+  * Allowed dash in modulation names.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 11 Mar 2024 16:12:00 +0000
+
 openwebrx (1.2.50) bullseye jammy; urgency=low
 
   * Added DSC decoder and bookmarks.
