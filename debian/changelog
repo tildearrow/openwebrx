@@ -5,6 +5,7 @@ openwebrx (1.2.51) bullseye jammy; urgency=low
   * Added preliminary SatDump support (experts only!)
   * Removed 'apt install' lines from feature instructions.
   * Slightly optimized ExecModule operation.
+  * Improved DSC reception quality.
   * Allowed dash in modulation names.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 11 Mar 2024 16:12:00 +0000

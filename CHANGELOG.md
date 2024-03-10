@@ -4,6 +4,7 @@
 - Added preliminary SatDump support (experts only!)
 - Removed 'apt install' lines from feature instructions.
 - Slightly optimized ExecModule operation.
+- Improved DSC reception quality.
 - Allowed dash in modulation names.
 
 **1.2.50**
