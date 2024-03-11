@@ -20,6 +20,7 @@ class DscParser(TextParser):
         self.frequency = frequency
 
     def parse(self, msg: bytes):
+        logger.debug(msg.decode("utf-8"))
         # Do not parse in service mode
         if self.service:
             return None
@@ -31,5 +32,4 @@ class DscParser(TextParser):
             out["frequency"] = self.frequency
         if "src" in out:
             out["color"] = self.colors.getColor(out["src"])
-        logger.debug("{0}".format(out))
         return out
