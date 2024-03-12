@@ -227,10 +227,10 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate=100, bandWidth=170, invert=False):
         self.baudRate = baudRate
-        self.bandWidth = bandWidth
+        self.bandWidth = bandWidth + 40
         self.invert = invert
         # this is an assumption, we will adjust in setSampleRate
-        self.sampleRate = 12000
+        self.sampleRate = self.bandWidth * 10 #12000
         secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
         cutoff = self.baudRate / self.sampleRate
         loop_gain = self.sampleRate / self.getBandwidth() / 5
@@ -239,7 +239,7 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
             FmDemod(),
             Lowpass(Format.FLOAT, cutoff),
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
-            SitorBDecoder(jitter=1, allowErrors=16, invert=invert),
+            SitorBDecoder(invert=invert),
             Ccir476Decoder(),
         ]
         super().__init__(workers)
@@ -261,11 +261,11 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequencyReceiver):
     def __init__(self, baudRate=100, bandWidth=170, invert=False, service=False):
         self.baudRate   = baudRate
-        self.bandWidth  = bandWidth
+        self.bandWidth  = bandWidth + 40
         self.invert     = invert
         self.parser     = DscParser(service=service)
         # this is an assumption, we will adjust in setSampleRate
-        self.sampleRate = bandWidth * 10 #12000
+        self.sampleRate = self.bandWidth * 10 #12000
         secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
         cutoff = self.baudRate / self.sampleRate
         loop_gain = self.sampleRate / self.getBandwidth() / 5

@@ -566,6 +566,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
       (msg.category? ' ' + msg.category : '')
     + (msg.format?   ' ' + msg.format : '')
     + (msg.eos?      ' ' + msg.eos : '')
+    + (!msg.ecc && !msg.data? ' ?' : '')
     ).trim().toUpperCase();
 
     // Format timestamp
