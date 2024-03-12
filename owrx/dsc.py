@@ -20,10 +20,9 @@ class DscParser(TextParser):
         self.frequency = frequency
 
     def parse(self, msg: bytes):
-        logger.debug(msg.decode("utf-8", "replace"))
         # Do not parse in service mode
-        if self.service:
-            return None
+        #if self.service:
+        #    return None
         # Expect JSON data in text form
         out = json.loads(msg)
         # Add mode name, time stamp, frequency, and color to identify sender
@@ -32,4 +31,7 @@ class DscParser(TextParser):
             out["frequency"] = self.frequency
         if "src" in out:
             out["color"] = self.colors.getColor(out["src"])
+        # Log received messages
+        logger.debug("{0}".format(out))
+        # Done
         return out

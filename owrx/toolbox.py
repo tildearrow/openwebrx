@@ -13,7 +13,6 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-
 class TextParser(LineBasedModule):
     def __init__(self, filePrefix: str = None, service: bool = False):
         self.service   = service
@@ -89,7 +88,7 @@ class TextParser(LineBasedModule):
 
     # Get current UTC time in a standardized format
     def getUtcTime(self) -> str:
-        return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+        return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
 
     # By default, do not parse
     def parse(self, msg: bytes):
@@ -200,9 +199,9 @@ class PageParser(TextParser):
         if self.service:
             return None
         elif msg.startswith(b"POCSAG"):
-            return self.parsePocsag(msg.decode("utf-8", "replace"))
+            return self.parsePocsag(msg.decode('utf-8', 'replace'))
         elif msg.startswith(b"FLEX"):
-            return self.parseFlex(msg.decode("utf-8", "replace"))
+            return self.parseFlex(msg.decode('utf-8', 'replace'))
         else:
             return None
 
@@ -326,7 +325,7 @@ class SelCallParser(TextParser):
         if self.service:
             return None
         # Parse SELCALL messages
-        msg = msg.decode("utf-8", "replace")
+        msg = msg.decode('utf-8', 'replace')
         dec = None
         out = ""
         r = self.reSplit.split(msg)
