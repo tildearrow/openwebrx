@@ -639,11 +639,10 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 self.wireOutput(self.audioOutput, buffer)
 
             # recreate secondary demodulator, if present
-            mod2 = self.props["secondary_mod"] if "secondary_mod" in self.props else False
-            if mod2:
-                underlying = Modes.findByModulation(mod2).underlying
-                if mod in underlying or "empty" in underlying:
-                    self.setSecondaryDemodulator(mod2)
+            mod2 = self.props["secondary_mod"] if "secondary_mod" in self.props else ""
+            desc = Modes.findByModulation(mod2)
+            if hasattr(desc, "underlying") and mod in desc.underlying:
+                self.setSecondaryDemodulator(mod2)
 
         except DemodulatorError as de:
             self.handler.write_demodulator_error(str(de))
