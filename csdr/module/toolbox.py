@@ -199,4 +199,4 @@ class SatDumpModule(ExecModule):
                 cmd.append("--" + key)
                 cmd.append(str(options[key]))
         # Create parent object
-        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd)
+        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd, doNotKill=True)
