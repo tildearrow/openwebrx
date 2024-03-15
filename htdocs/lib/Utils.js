@@ -204,6 +204,11 @@ Utils.mmsi2country = function(mmsi) {
     return mid in this.MID2COUNTRY? this.MID2COUNTRY[mid] : '';
 };
 
+// Check if a MID corresponds to a ground station.
+Utils.mmsiIsGround = function(mmsi) {
+    return mmsi.substring(0, 2) === '00';
+};
+
 //
 // Local Storage Access
 //
@@ -1015,6 +1020,12 @@ Utils.CALL2COUNTRY = {
 //
 
 Utils.MID2COUNTRY = {
+  "002" : "Ground Station (Europe)",
+  "003" : "Ground Station (North America)",
+  "004" : "Ground Station (Asia)",
+  "005" : "Ground Station (Oceania)",
+  "006" : "Ground Station (Africa)",
+  "007" : "Ground Station (South America)",
   "501" : "Adelie Land (France)",
   "401" : "Afghanistan",
   "303" : "Alaska (USA)",
