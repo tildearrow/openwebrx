@@ -256,6 +256,8 @@ class ClientDemodulatorChain(Chain):
         if isinstance(self.demodulator, DialFrequencyReceiver):
             self.demodulator.setDialFrequency(dialFrequency)
         if isinstance(self.secondaryDemodulator, DialFrequencyReceiver):
+            if self.secondaryFrequencyOffset:
+                dialFrequency += self.secondaryFrequencyOffset
             self.secondaryDemodulator.setDialFrequency(dialFrequency)
 
     def setAudioCompression(self, compression: str) -> None:
