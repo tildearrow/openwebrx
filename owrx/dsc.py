@@ -31,7 +31,10 @@ class DscParser(TextParser):
             out["frequency"] = self.frequency
         if "src" in out:
             out["color"] = self.colors.getColor(out["src"])
-        # Log received messages
-        logger.debug("{0}".format(out))
+        # Log received messages, showing errors in debug mode only
+        if "data" in out:
+            logger.debug("{0}".format(out))
+        else:
+            logger.info("{0}".format(out))
         # Done
         return out
