@@ -357,10 +357,9 @@ class ClientDemodulatorChain(Chain):
         if self.secondaryFrequencyOffset == freq:
             return
         self.secondaryFrequencyOffset = freq
-
-        if self.secondarySelector is None:
-            return
-        self.secondarySelector.setFrequencyOffset(self.secondaryFrequencyOffset)
+        if self.secondarySelector:
+            self.secondarySelector.setFrequencyOffset(self.secondaryFrequencyOffset)
+        self._updateDialFrequency()
 
     def setSecondaryFftCompression(self, compression: str) -> bool:
         if compression == self.secondaryFftCompression:
