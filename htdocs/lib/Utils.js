@@ -1020,12 +1020,12 @@ Utils.CALL2COUNTRY = {
 //
 
 Utils.MID2COUNTRY = {
-  "002" : "Ground Station (Europe)",
-  "003" : "Ground Station (North America)",
-  "004" : "Ground Station (Asia)",
-  "005" : "Ground Station (Oceania)",
-  "006" : "Ground Station (Africa)",
-  "007" : "Ground Station (South America)",
+  "002" : "Europe Coast Station",
+  "003" : "North America Coast Station",
+  "004" : "Asia Coast Station",
+  "005" : "Oceania Coast Station",
+  "006" : "Africa Coast Station",
+  "007" : "South America Coast Station",
   "501" : "Adelie Land (France)",
   "401" : "Afghanistan",
   "303" : "Alaska (USA)",
