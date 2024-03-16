@@ -1,3 +1,12 @@
+**1.2.52**
+- Added MID codes for coastal stations, by continent.
+- Added secondary selector offset to the dial frequency.
+- Fixed dial frequency updates when secondary FFT clicked.
+- Fixed repeated secondary demodulator creation.
+- Improved CCIR493 and SITORB decoders.
+- Printing valid DSC messages as INFO, errors as DEBUG.
+- Not killing SatDump, will quit on its own.
+
 **1.2.51**
 - Background DSC decoding now works.
 - Added DSC display of timestamps and frequencies.
