@@ -227,7 +227,7 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate=100, bandWidth=170, invert=False):
         self.baudRate = baudRate
-        self.bandWidth = bandWidth + 40
+        self.bandWidth = bandWidth
         self.invert = invert
         # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = self.bandWidth * 10 #12000
@@ -261,7 +261,7 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequencyReceiver):
     def __init__(self, baudRate=100, bandWidth=170, invert=False, service=False):
         self.baudRate   = baudRate
-        self.bandWidth  = bandWidth + 40
+        self.bandWidth  = bandWidth
         self.invert     = invert
         self.parser     = DscParser(service=service)
         # this is an assumption, we will adjust in setSampleRate
