@@ -328,7 +328,7 @@ class ServiceHandler(SdrSourceEventClient):
             return FaxDemodulator(service=True)
         elif mod == "dsc":
             from csdr.chain.digimodes import DscDemodulator
-            return DscDemodulator(service=True)
+            return DscDemodulator(100, 170 + 40, service=True)
         elif mod == "page":
             from csdr.chain.toolbox import PageDemodulator
             return PageDemodulator(service=True)

@@ -697,10 +697,10 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return RttyDemodulator(50, 85, invert=True)
         elif mod == "sitorb":
             from csdr.chain.digimodes import SitorBDemodulator
-            return SitorBDemodulator()
+            return SitorBDemodulator(100, 170 + 40)
         elif mod == "dsc":
             from csdr.chain.digimodes import DscDemodulator
-            return DscDemodulator()
+            return DscDemodulator(100, 170 + 40)
         elif mod == "cwdecoder":
             from csdr.chain.digimodes import CwDemodulator
             return CwDemodulator(75.0)
