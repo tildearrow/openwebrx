@@ -62,8 +62,8 @@ class TextParser(LineBasedModule):
             # Write new line into the file
             try:
                 self.file.write(data)
-            except Exception:
-                pass
+            except Exception as exptn:
+                logger.debug("Exception writing file: %s" % str(exptn))
             # No more than maxLines per file
             self.cntLines = self.cntLines + 1
             if self.cntLines >= self.maxLines:
@@ -106,18 +106,24 @@ class TextParser(LineBasedModule):
         try:
             #logger.debug("%s: %s" % (self.myName(), str(line)))
             # If running as a service with a log file...
-            if self.service and self.filePfx is not None:
-                # Write message into open log file, including end-of-line
-                self.writeFile(line)
-                self.writeFile(b"\n")
             # Let parse() function do its thing
             out = self.parse(line)
+            # If running as a service and writing to a log file...
+            if self.service and self.filePfx is not None:
+                if out and len(out) > 0:
+                    # If parser returned output, write it into log file
+                    self.writeFile(str(out).encode("utf-8"))
+                    self.writeFile(b"\n")
+                elif out is None and len(line) > 0:
+                    # Write input into log file, including end-of-line
+                    self.writeFile(line)
+                    self.writeFile(b"\n")
 
         except Exception as exptn:
             logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
 
         # Return parsed result, ignore result in service mode
-        return out if not self.service else None
+        return out if not self.service and len(out) > 0 else None
 
 
 class RdsParser(TextParser):
@@ -128,6 +134,9 @@ class RdsParser(TextParser):
         super().__init__(filePrefix="WFM", service=service)
 
     def parse(self, msg: bytes):
+        # Do not parse in service mode
+        if self.service:
+            return None
         # Expect JSON data in text form
         data = json.loads(msg)
         # Delete constantly changing group ID

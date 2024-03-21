@@ -51,6 +51,10 @@ class DecodingSettingsController(SettingsFormController):
                     "cw_showcw",
                     "Show CW codes (dits / dahs) when decoding CW",
                 ),
+                CheckboxInput(
+                    "dsc_show_errors",
+                    "Show partial messages when decoding DSC",
+                ),
             ),
             Section(
                 "Digital voice",

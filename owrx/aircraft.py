@@ -325,8 +325,8 @@ class AircraftParser(TextParser):
                     out[key] = self.reDots.sub("\\1", out[key])
             # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
-        # Done
-        return out
+        # Do not return anything when in service mode
+        return None if self.service else out
 
     # Mode-specific parse function
     def parseAircraft(self, msg: bytes):

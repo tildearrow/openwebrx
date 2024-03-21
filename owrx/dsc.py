@@ -1,5 +1,6 @@
 from owrx.toolbox import TextParser
 from owrx.color import ColorCache
+from owrx.config import Config
 import json
 
 import logging
@@ -25,16 +26,19 @@ class DscParser(TextParser):
         #    return None
         # Expect JSON data in text form
         out = json.loads(msg)
-        # Add mode name, time stamp, frequency, and color to identify sender
-        out["mode"] = "DSC"
+        # Filter out errors
+        pm = Config.get()
+        if "data" in out and not pm["dsc_show_errors"]:
+            return {}
+        # Add frequency
         if self.frequency != 0:
             out["frequency"] = self.frequency
-        if "src" in out:
-            out["color"] = self.colors.getColor(out["src"])
-        # Log received messages, showing errors in debug mode only
-        if "data" in out:
-            logger.debug("{0}".format(out))
-        else:
-            logger.info("{0}".format(out))
+        # When in interactive mode, add mode name and color to identify sender
+        if not self.service:
+            out["mode"] = "DSC"
+            if "src" in out:
+                out["color"] = self.colors.getColor(out["src"])
+        # Log received messages for debugging
+        logger.debug("{0}".format(out))
         # Done
         return out
