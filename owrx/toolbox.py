@@ -123,7 +123,7 @@ class TextParser(LineBasedModule):
             logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
 
         # Return parsed result, ignore result in service mode
-        return out if not self.service and len(out) > 0 else None
+        return out if out and not self.service else None
 
 
 class RdsParser(TextParser):
