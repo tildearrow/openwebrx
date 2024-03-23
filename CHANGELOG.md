@@ -1,3 +1,10 @@
+**1.2.53**
+- Added option to disable incomplete DSC message output.
+- Improved background service output to files.
+- Improved preamble detection in CCIR493.
+- Relaxed DSC FORMAT/EOS field requirements.
+- Fixed wxsat frequencies in bands.json.
+
 **1.2.52**
 - Added MID codes for coastal stations, by continent.
 - Added secondary selector offset to the dial frequency.

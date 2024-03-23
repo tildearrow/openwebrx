@@ -1,3 +1,13 @@
+openwebrx (1.2.53) bullseye jammy; urgency=low
+
+  * Added option to disable incomplete DSC message output.
+  * Improved background service output to files.
+  * Improved preamble detection in CCIR493.
+  * Relaxed DSC FORMAT/EOS field requirements.
+  * Fixed wxsat frequencies in bands.json.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 25 Mar 2024 16:12:00 +0000
+
 openwebrx (1.2.52) bullseye jammy; urgency=low
 
   * Added MID codes for coastal stations, by continent.
