@@ -1,8 +1,10 @@
 **1.2.53**
-- Added option to disable incomplete DSC message output.
+- Added ability to reorder profiles in the Settings.
+- Added option to ignore incomplete DSC messages.
 - Improved background service output to files.
 - Improved preamble detection in CCIR493.
 - Relaxed DSC FORMAT/EOS field requirements.
+- Fixed profile reordering when a source is reenabled.
 - Fixed wxsat frequencies in bands.json.
 
 **1.2.52**
