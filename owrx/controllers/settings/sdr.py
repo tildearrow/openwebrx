@@ -392,6 +392,15 @@ class SdrProfileController(SdrFormControllerWithModal):
             return
         return super().processFormData()
 
+    def render_buttons(self):
+        return self.render_move_buttons() + super().render_buttons()
+
+    def render_move_buttons(self):
+        return """
+            <button type="button" class="btn btn-success move-up">Move up</button>
+            <button type="button" class="btn btn-success move-down">Move down</button>
+        """
+
     def render_remove_button(self):
         return """
             <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#deleteModal">Remove profile...</button>
@@ -410,6 +419,29 @@ class SdrProfileController(SdrFormControllerWithModal):
             return self.send_response("profile not found", code=404)
         config = Config.get()
         del self.device["profiles"][self.profile_id]
+        config.store()
+        return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
+
+    def moveProfileUp(self):
+        return self.moveProfile(self.profile_id, False)
+
+    def moveProfileDown(self):
+        return self.moveProfile(self.profile_id, True)
+
+    def moveProfile(self, id: str, moveDown: bool):
+        if id is None or id not in self.device["profiles"]:
+            return self.send_response("profile not found", code=404)
+        ids = list(self.device["profiles"].keys())
+        n = ids.index(id)
+        if moveDown and n + 1 < len(ids):
+            ids = ids[:n] + [ids[n+1], ids[n]] + ids[n+2:]
+        elif not moveDown and n > 0:
+            ids = ids[:n-1] + [ids[n], ids[n-1]] + ids[n+1:]
+        config = Config.get()
+        for id in ids:
+            profile = self.device["profiles"][id]
+            del self.device["profiles"][id]
+            self.device["profiles"][id] = profile
         config.store()
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 

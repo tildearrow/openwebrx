@@ -272,3 +272,15 @@ class SdrService(object):
     def stopAllSources():
         for source in SdrService.getAllSources().values():
             source.stop()
+
+    # This function always returns sources and profiles in the same order
+    # they are stored in the corresponding property layers, as opposed to
+    # the AvailableProfiles class.
+    @staticmethod
+    def getAvailableProfileNames():
+        result = {}
+        for s_id, source in SdrService.getAllSources().items():
+            if source.isEnabled() and not source.isFailed():
+                for p_id, profile in source.getProfiles().items():
+                    result["{}|{}".format(s_id, p_id)] = "{} {}".format(source.getName(), profile["name"])
+        return result
