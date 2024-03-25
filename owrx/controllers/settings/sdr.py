@@ -443,7 +443,7 @@ class SdrProfileController(SdrFormControllerWithModal):
             del self.device["profiles"][id]
             self.device["profiles"][id] = profile
         config.store()
-        return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
+        return self.send_redirect("{}settings/sdr/{}/profile/{}".format(self.get_document_root(), quote(self.device_id), quote(self.profile_id)))
 
 
 class NewProfileController(SdrProfileController):
