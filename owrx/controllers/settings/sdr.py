@@ -16,6 +16,7 @@ from owrx.log import HistoryHandler
 from abc import ABCMeta, abstractmethod
 from uuid import uuid4
 
+import threading
 
 class SdrDeviceBreadcrumb(SettingsBreadcrumb):
     def __init__(self):
@@ -343,6 +344,9 @@ class NewSdrDeviceController(SettingsFormController):
 
 
 class SdrProfileController(SdrFormControllerWithModal):
+    # Used to prevent race conditons between profile movements / deletions
+    lock = threading.Lock()
+
     def __init__(self, handler, request, options):
         super().__init__(handler, request, options)
         self.profile_id, self.profile = self._get_profile()
@@ -417,9 +421,10 @@ class SdrProfileController(SdrFormControllerWithModal):
     def deleteProfile(self):
         if self.profile_id is None:
             return self.send_response("profile not found", code=404)
-        config = Config.get()
-        del self.device["profiles"][self.profile_id]
-        config.store()
+        # Prevent multiple requests from messing things up
+        with self.lock:
+            del self.device["profiles"][self.profile_id]
+            Config.get().store()
         return self.send_redirect("{}settings/sdr/{}".format(self.get_document_root(), quote(self.device_id)))
 
     def moveProfileUp(self):
@@ -431,18 +436,24 @@ class SdrProfileController(SdrFormControllerWithModal):
     def moveProfile(self, id: str, moveDown: bool):
         if id is None or id not in self.device["profiles"]:
             return self.send_response("profile not found", code=404)
-        ids = list(self.device["profiles"].keys())
-        n = ids.index(id)
-        if moveDown and n + 1 < len(ids):
-            ids = ids[:n] + [ids[n+1], ids[n]] + ids[n+2:]
-        elif not moveDown and n > 0:
-            ids = ids[:n-1] + [ids[n], ids[n-1]] + ids[n+1:]
-        config = Config.get()
-        for id in ids:
-            profile = self.device["profiles"][id]
-            del self.device["profiles"][id]
-            self.device["profiles"][id] = profile
-        config.store()
+        # Prevent multiple requests from messing things up
+        with self.lock:
+            ids = list(self.device["profiles"].keys())
+            n = ids.index(id)
+            # Determine new profiles order
+            if moveDown and n + 1 < len(ids):
+                ids = ids[:n] + [ids[n+1], ids[n]] + ids[n+2:]
+            elif not moveDown and n > 0:
+                ids = ids[:n-1] + [ids[n], ids[n-1]] + ids[n+1:]
+            else:
+                ids = None
+            # Reshuffle profiles in the new order
+            if ids is not None:
+                for id in ids:
+                    profile = self.device["profiles"][id]
+                    del self.device["profiles"][id]
+                    self.device["profiles"][id] = profile
+                Config.get().store()
         return self.send_redirect("{}settings/sdr/{}/profile/{}".format(self.get_document_root(), quote(self.device_id), quote(self.profile_id)))
 
 
