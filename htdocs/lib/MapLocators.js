@@ -207,6 +207,9 @@ Locator.prototype.update = function(data, map) {
     // Update color and opacity
     this.map = map;
     this.reColor();
+
+    // Age locator
+    this.age(new Date().getTime());
 };
 
 Locator.prototype.reColor = function() {

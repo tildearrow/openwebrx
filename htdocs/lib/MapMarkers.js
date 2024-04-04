@@ -205,7 +205,7 @@ FeatureMarker.prototype.update = function(update) {
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
 
-    // Age locator
+    // Age marker
     this.age(new Date().getTime() - update.lastseen);
 };
 
@@ -367,7 +367,7 @@ AprsMarker.prototype.update = function(update) {
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
 
-    // Age locator
+    // Age marker
     this.age(new Date().getTime() - update.lastseen);
 };
 
@@ -636,7 +636,7 @@ AircraftMarker.prototype.update = function(update) {
     // Implementation-dependent function call
     this.setMarkerPosition(update.callsign, update.location.lat, update.location.lon);
 
-    // Age locator
+    // Age marker
     this.age(new Date().getTime() - update.lastseen);
 };
 
