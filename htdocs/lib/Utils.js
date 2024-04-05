@@ -115,6 +115,12 @@ Utils.linkifyFreq = function(freq, mod) {
         + freq + ',mod=' + mod + '">' + Utils.printFreq(freq) + '</a>';
 };
 
+// Create link to a map locator
+Utils.linkifyLocator = function(locator) {
+    return '<a target="openwebrx-map" href="map?locator='
+        + encodeURIComponent(locator) + '">' + locator + '</a>';
+}
+
 // Linkify given content so that clicking them opens the map with
 // the info bubble.
 Utils.linkToMap = function(id, content = null, attrs = "") {
@@ -132,7 +138,11 @@ Utils.linkToMap = function(id, content = null, attrs = "") {
 // Print time in hours, minutes, and seconds.
 Utils.HHMMSS = function(t) {
     var pad = function (i) { return ('' + i).padStart(2, "0") };
-    return pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds());
+
+    // Convert timestamps into dates
+    if (!(t instanceof Date)) t = new Date(t);
+
+    return pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()) + ':' + pad(t.getUTCSeconds());
 };
 
 // Compute distance, in kilometers, between two latlons.

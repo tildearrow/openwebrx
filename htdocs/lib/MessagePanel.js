@@ -74,7 +74,7 @@ WsjtMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>UTC</th>' +
+                '<th class="time">UTC</th>' +
                 '<th class="decimal">dB</th>' +
                 '<th class="decimal">DT</th>' +
                 '<th class="decimal freq">Freq</th>' +
@@ -87,32 +87,37 @@ WsjtMessagePanel.prototype.render = function() {
 
 WsjtMessagePanel.prototype.pushMessage = function(msg) {
     var $b = $(this.el).find('tbody');
-    var t = new Date(msg['timestamp']);
     var linkedmsg = msg['msg'];
     var matches;
 
     if (this.qsoModes.indexOf(msg['mode']) >= 0) {
-        matches = linkedmsg.match(/(.*\s[A-Z0-9]+\s)([A-R]{2}[0-9]{2})$/);
-        if (matches && matches[2] !== 'RR73') {
-            linkedmsg = Utils.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>';
+        matches = linkedmsg.match(/(.*)\s([A-Z0-9]+)\s([A-R]{2}[0-9]{2})$/);
+        if (matches) {
+            var locator = matches[3]!=='RR73'?
+                Utils.linkifyLocator(matches[3]) : matches[3];
+            linkedmsg = Utils.htmlEscape(matches[1])
+                + ' ' + Utils.linkifyCallsign(matches[2])
+                + ' ' + locator;
         } else {
             linkedmsg = Utils.htmlEscape(linkedmsg);
         }
     } else if (this.beaconModes.indexOf(msg['mode']) >= 0) {
-        matches = linkedmsg.match(/([A-Z0-9]*\s)([A-R]{2}[0-9]{2})(\s[0-9]+)/);
+        matches = linkedmsg.match(/([A-Z0-9]+)\s([A-R]{2}[0-9]{2})\s([0-9]+)/);
         if (matches) {
-            linkedmsg = Utils.htmlEscape(matches[1]) + '<a href="map?locator=' + matches[2] + '" target="openwebrx-map">' + matches[2] + '</a>' + Utils.htmlEscape(matches[3]);
+            linkedmsg = Utils.linkifyCallsign(matches[1])
+                + ' ' + Utils.linkifyLocator(matches[2])
+                + ' ' + Utils.htmlEscape(matches[3]);
         } else {
             linkedmsg = Utils.htmlEscape(linkedmsg);
         }
     }
     $b.append($(
         '<tr data-timestamp="' + msg['timestamp'] + '">' +
-        '<td>' + Utils.HHMMSS(t) + '</td>' +
+        '<td class="time">' + Utils.HHMMSS(msg['timestamp']) + '</td>' +
         '<td class="decimal">' + msg['db'] + '</td>' +
         '<td class="decimal">' + msg['dt'] + '</td>' +
         '<td class="decimal freq">' + msg['freq'] + '</td>' +
-        '<td class="message">' + linkedmsg + '</td>' +
+        '<td class="message" style="font-family:monospace;">' + linkedmsg + '</td>' +
         '</tr>'
     ));
     this.scrollToBottom();
@@ -140,7 +145,7 @@ PacketMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>UTC</th>' +
+                '<th class="time">UTC</th>' +
                 '<th class="callsign">Callsign</th>' +
                 '<th class="coord">Coord</th>' +
                 '<th class="message">Comment</th>' +
@@ -171,7 +176,7 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         }
     }
 
-    var timestamp = msg.timestamp? Utils.HHMMSS(new Date(msg.timestamp)) : '';
+    var timestamp = msg.timestamp? Utils.HHMMSS(msg.timestamp) : '';
 
     var link = '';
     var classes = [];
@@ -213,7 +218,7 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
 
     $b.append($(
         '<tr>' +
-        '<td>' + timestamp + '</td>' +
+        '<td class="time">' + timestamp + '</td>' +
         '<td class="callsign">' + source + '</td>' +
         '<td class="coord">' + link + '</td>' +
         '<td class="message">' + Utils.htmlEscape(msg.comment || msg.message || '') + '</td>' +
@@ -572,7 +577,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     // Format timestamp
     var timestamp =
       msg.time?      '<b>' + msg.time + '</b>'
-    : msg.timestamp? Utils.HHMMSS(new Date(msg.timestamp * 1000))
+    : msg.timestamp? Utils.HHMMSS(msg.timestamp * 1000)
     : '';
 
     // Format debugging data

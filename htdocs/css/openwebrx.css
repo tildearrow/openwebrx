@@ -1182,6 +1182,10 @@ img.openwebrx-mirror-img
     width: 380px;
 }
 
+#openwebrx-panel-wsjt-message .time {
+    width: 70px;
+}
+
 #openwebrx-panel-wsjt-message .decimal {
     text-align: right;
     width: 35px;
@@ -1192,8 +1196,8 @@ img.openwebrx-mirror-img
 }
 
 #openwebrx-panel-js8-message .message {
-    width: 465px;
-    max-width: 465px;
+    width: 455px;
+    max-width: 455px;
 }
 
 #openwebrx-panel-js8-message td.message {
@@ -1205,6 +1209,10 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-js8-message .message div {
     flex: 1;
+}
+
+#openwebrx-panel-js8-message .time {
+    width: 70px;
 }
 
 #openwebrx-panel-js8-message .decimal {
@@ -1219,6 +1227,10 @@ img.openwebrx-mirror-img
 #openwebrx-panel-packet-message .message {
     width: 410px;
     max-width: 410px;
+}
+
+#openwebrx-panel-packet-message .time {
+    width: 70px;
 }
 
 #openwebrx-panel-packet-message .callsign {

@@ -19,9 +19,9 @@ Js8Thread.prototype.pushMessage = function(message) {
 
 Js8Thread.prototype.render = function() {
     this.el.html(
-        '<td>' + this.renderTimestamp(this.getLatestTimestamp()) + '</td>' +
+        '<td class="time">' + Utils.HHMMSS(this.getLatestTimestamp()) + '</td>' +
         '<td class="decimal freq">' + Math.round(this.getAverageFrequency()) + '</td>' +
-        '<td class="message"><div>' + this.renderMessages() + '</div></td>'
+        '<td class="message" style="font-family:monospace;"><div>' + this.renderMessages() + '</div></td>'
     );
 };
 
@@ -78,14 +78,6 @@ Js8Thread.prototype.acceptsMode = function(mode) {
     return typeof(currentMode) === 'undefined' || currentMode === mode;
 };
 
-Js8Thread.prototype.renderTimestamp = function(timestamp) {
-    var t = new Date(timestamp);
-    var pad = function (i) {
-        return ('' + i).padStart(2, "0");
-    };
-    return pad(t.getUTCHours()) + pad(t.getUTCMinutes()) + pad(t.getUTCSeconds());
-};
-
 Js8Thread.prototype.purgeOldMessages = function() {
     var now = new Date().getTime();
     this.messages = this.messages.filter(function(m) {
@@ -125,7 +117,7 @@ Js8Threader.prototype.render = function() {
     $(this.el).append($(
         '<table>' +
             '<thead><tr>' +
-                '<th>UTC</th>' +
+                '<th class="time">UTC</th>' +
                 '<th class="decimal freq">Freq</th>' +
                 '<th class="message">Message</th>' +
             '</tr></thead>' +
