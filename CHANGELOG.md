@@ -1,3 +1,10 @@
+**1.2.54**
+- Made FT8/JS8/WSPR/etc. messages show in monospace font.
+- Added ability to click on FT8/etc. callsigns.
+- Added columns to the time displays.
+- Fixed locators not aging when updated.
+- Fixed race condition between move-profile requests.
+
 **1.2.53**
 - Added ability to reorder profiles in the Settings.
 - Added option to ignore incomplete DSC messages.
