@@ -348,8 +348,8 @@ class ExponentialInput(Input):
         append = """
             <div class="input-group-append">
                 <select class="input-group-text exponent" name="{id}-exponent" tabindex="-1" {disabled}>
-                    <option value="0" selected>{unit}</option>
-                    <option value="3">k{unit}</option>
+                    <option value="0">{unit}</option>
+                    <option value="3" selected>k{unit}</option>
                     <option value="6">M{unit}</option>
                     <option value="9">G{unit}</option>
                     <option value="12">T{unit}</option>

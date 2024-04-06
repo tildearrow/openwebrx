@@ -4,6 +4,7 @@
 - Added columns to the time displays.
 - Fixed locators not aging when updated.
 - Fixed race condition between move-profile requests.
+- Now defaulting all fields to kHz in new profiles.
 
 **1.2.53**
 - Added ability to reorder profiles in the Settings.
