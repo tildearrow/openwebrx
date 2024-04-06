@@ -326,6 +326,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "fax":
             from csdr.chain.digimodes import FaxDemodulator
             return FaxDemodulator(service=True)
+        elif mod == "navtex":
+            from csdr.chain.digimodes import NavtexDemodulator
+            return NavtexDemodulator(100, 170 + 40, service=True)
         elif mod == "dsc":
             from csdr.chain.digimodes import DscDemodulator
             return DscDemodulator(100, 170 + 40, service=True)
