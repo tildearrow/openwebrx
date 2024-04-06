@@ -44,7 +44,8 @@ Js8Thread.prototype.renderMessages = function() {
         } else if (i === 0 || msg.timestamp - this.messages[i - 1].timestamp > this.getMessageDuration()) {
             res.push(' ... ');
         }
-        res.push(msg.msg);
+        var matches = msg.msg.match(/^([A-Z0-9]+)(:.*)$/);
+        res.push(matches? Utils.linkifyCallsign(matches[1]) + matches[2] : msg.msg);
         if (msg.thread_type & 2) {
             res.push(' ]');
         } else if (i === this.messages.length -1) {
