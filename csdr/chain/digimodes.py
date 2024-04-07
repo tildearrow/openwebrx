@@ -317,6 +317,7 @@ class NavtexDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFreque
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
             SitorBDecoder(invert=invert),
             Ccir476Decoder(),
+            NavtexDecoder(),
             self.parser
         ]
         super().__init__(workers)
