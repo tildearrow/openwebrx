@@ -372,6 +372,15 @@
     "tags": ["broadcast"]
   },
   {
+    "name": "AM Broadcast",
+    "lower_bound": 200000,
+    "upper_bound": 1700000,
+    "frequencies": {
+      "navtex": [ 490000, 518000 ]
+    },
+    "tags": ["broadcast"]
+  },
+  {
     "name": "FM Broadcast",
     "lower_bound": 87500000,
     "upper_bound": 108000000,
