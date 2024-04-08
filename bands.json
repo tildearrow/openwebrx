@@ -288,6 +288,15 @@
     "tags": ["hamradio"]
   },
   {
+    "name": "AM Broadcast",
+    "lower_bound": 200000,
+    "upper_bound": 1700000,
+    "frequencies": {
+      "navtex": [ 490000, 518000 ]
+    },
+    "tags": ["broadcast"]
+  },
+  {
     "name": "120m Broadcast",
     "lower_bound": 2300000,
     "upper_bound": 2495000,
@@ -369,15 +378,6 @@
     "name": "11m Broadcast",
     "lower_bound": 25670000,
     "upper_bound": 26100000,
-    "tags": ["broadcast"]
-  },
-  {
-    "name": "AM Broadcast",
-    "lower_bound": 200000,
-    "upper_bound": 1700000,
-    "frequencies": {
-      "navtex": [ 490000, 518000 ]
-    },
     "tags": ["broadcast"]
   },
   {
