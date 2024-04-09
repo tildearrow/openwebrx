@@ -3,12 +3,12 @@ from csdr.module.msk144 import Msk144Module, ParserAdapter
 from owrx.audio.chopper import AudioChopper, AudioChopperParser
 from owrx.aprs.kiss import KissDeframer
 from owrx.aprs import Ax25Parser, AprsParser
-from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, SitorBDecoder, Ccir476Decoder, DscDecoder, Ccir493Decoder, Shift
+from pycsdr.modules import Convert, FmDemod, Agc, TimingRecovery, DBPskDecoder, VaricodeDecoder, RttyDecoder, BaudotDecoder, Lowpass, MFRttyDecoder, CwDecoder, SstvDecoder, FaxDecoder, SitorBDecoder, Ccir476Decoder, DscDecoder, Ccir493Decoder, NavtexDecoder, Shift
 from pycsdr.types import Format
 from owrx.aprs.direwolf import DirewolfModule
 from owrx.sstv import SstvParser
 from owrx.fax import FaxParser
-from owrx.dsc import DscParser
+from owrx.marine import DscParser, NavtexParser
 from owrx.config import Config
 
 
@@ -226,9 +226,8 @@ class FaxDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
     def __init__(self, baudRate=100, bandWidth=170, invert=False):
-        self.baudRate = baudRate
+        self.baudRate  = baudRate
         self.bandWidth = bandWidth
-        self.invert = invert
         # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = self.bandWidth * 10 #12000
         secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
@@ -260,10 +259,9 @@ class SitorBDemodulator(SecondaryDemodulator, SecondarySelectorChain):
 
 class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequencyReceiver):
     def __init__(self, baudRate=100, bandWidth=170, invert=False, service=False):
-        self.baudRate   = baudRate
-        self.bandWidth  = bandWidth
-        self.invert     = invert
-        self.parser     = DscParser(service=service)
+        self.baudRate  = baudRate
+        self.bandWidth = bandWidth
+        self.parser    = DscParser(service=service)
         # this is an assumption, we will adjust in setSampleRate
         self.sampleRate = self.bandWidth * 10 #12000
         secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
@@ -276,6 +274,50 @@ class DscDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequency
             TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
             Ccir493Decoder(invert=invert),
             DscDecoder(),
+            self.parser
+        ]
+        super().__init__(workers)
+
+    def getBandwidth(self) -> float:
+        return self.bandWidth
+
+    def setSampleRate(self, sampleRate: int) -> None:
+        if sampleRate == self.sampleRate:
+            return
+        self.sampleRate = sampleRate
+        secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
+        cutoff = self.baudRate / self.sampleRate
+        loop_gain = self.sampleRate / self.getBandwidth() / 5
+        self.replace(2, Lowpass(Format.FLOAT, cutoff))
+        self.replace(3, TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10))
+
+    # DialFrequencyReceiver
+    def setDialFrequency(self, frequency: int) -> None:
+        self.parser.setDialFrequency(frequency)
+
+    # ServiceDemodulator
+    def getFixedAudioRate(self):
+        return self.sampleRate
+
+
+class NavtexDemodulator(SecondaryDemodulator, SecondarySelectorChain, DialFrequencyReceiver):
+    def __init__(self, baudRate=100, bandWidth=170, invert=False, service=False):
+        self.baudRate  = baudRate
+        self.bandWidth = bandWidth
+        self.parser    = NavtexParser(service=service)
+        # this is an assumption, we will adjust in setSampleRate
+        self.sampleRate = self.bandWidth * 10 #12000
+        secondary_samples_per_bit = int(round(self.sampleRate / self.baudRate))
+        cutoff = self.baudRate / self.sampleRate
+        loop_gain = self.sampleRate / self.getBandwidth() / 5
+        workers = [
+            Agc(Format.COMPLEX_FLOAT),
+            FmDemod(),
+            Lowpass(Format.FLOAT, cutoff),
+            TimingRecovery(Format.FLOAT, secondary_samples_per_bit, loop_gain, 10),
+            SitorBDecoder(invert=invert),
+            Ccir476Decoder(),
+            NavtexDecoder(),
             self.parser
         ]
         super().__init__(workers)

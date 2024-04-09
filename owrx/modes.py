@@ -142,6 +142,7 @@ class Modes(object):
         DigitalMode("rtty450", "RTTY-450 (50N)", underlying=["usb", "lsb"]),
         DigitalMode("rtty85", "RTTY-85 (50N)", underlying=["usb", "lsb"]),
         DigitalMode("sitorb", "SITOR-B", underlying=["usb"]),
+        DigitalMode("navtex", "NAVTEX", underlying=["usb"], service=True),
         DigitalMode("dsc", "DSC", underlying=["usb"], service=True),
         WsjtMode("ft8", "FT8"),
         WsjtMode("ft4", "FT4"),
