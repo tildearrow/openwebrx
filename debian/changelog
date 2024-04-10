@@ -1,3 +1,9 @@
+openwebrx (1.2.55) bullseye jammy; urgency=low
+
+  * Added NAVTEX decoder and background service.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 15 Apr 2024 16:12:00 +0000
+
 openwebrx (1.2.54) bullseye jammy; urgency=low
 
   * Made FT8/JS8/WSPR/etc. messages show in monospace font.
