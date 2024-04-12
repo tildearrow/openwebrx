@@ -3,7 +3,8 @@ openwebrx (1.2.55) bullseye jammy; urgency=low
   * Refactored and greatly improved CW decoder.
   * Added NAVTEX decoder and background service.
   * Added LW/MW band and NAVTEX frequencies to the bandplan.
-  * Added MQTT reports for APRS, AIS, HFDL, VDL2, ACARS, DSC.
+  * Added MQTT reports for APRS, AIS, PAGE, ISM modes.
+  * Added MQTT reports for HFDL, VDL2, ACARS, DSC modes.
   * [jketterl] Added MQTT reporting.
   * [jketterl] Improved PlutoSDR source.
 

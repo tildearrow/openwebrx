@@ -1,6 +1,7 @@
 from owrx.storage import Storage
 from owrx.config import Config
 from owrx.color import ColorCache
+from owrx.reporting import ReportingEngine
 from csdr.module import LineBasedModule
 from pycsdr.types import Format
 from datetime import datetime
@@ -168,15 +169,19 @@ class IsmParser(TextParser):
         super().__init__(filePrefix="ISM", service=service)
 
     def parse(self, msg: bytes):
-        # Do not parse in service mode
-        if self.service:
-            return None
         # Expect JSON data in text form
         out = json.loads(msg)
-        # Add mode name and a color to identify the sender
-        out["mode"]  = "ISM"
-        out["color"] = self.colors.getColor(out["id"])
-        return out
+        # Add mode name
+        out["mode"] = "ISM"
+        # Report message
+        ReportingEngine.getSharedInstance().spot(out)
+        # Return nothing if running as a service
+        if self.service:
+            return None
+        else:
+            # Color messages based on sender IDs
+            out["color"] = self.colors.getColor(out["id"])
+            return out
 
 
 class PageParser(TextParser):
@@ -204,15 +209,22 @@ class PageParser(TextParser):
         super().__init__(filePrefix="PAGE", service=service)
 
     def parse(self, msg: bytes):
-        # Steer message to POCSAG or FLEX parser, do not parse if service
-        if self.service:
-            return None
-        elif msg.startswith(b"POCSAG"):
-            return self.parsePocsag(msg.decode('utf-8', 'replace'))
+        # Steer message to POCSAG or FLEX parser
+        if msg.startswith(b"POCSAG"):
+            out = self.parsePocsag(msg.decode('utf-8', 'replace'))
         elif msg.startswith(b"FLEX"):
-            return self.parseFlex(msg.decode('utf-8', 'replace'))
+            out = self.parseFlex(msg.decode('utf-8', 'replace'))
         else:
             return None
+        # Report message
+        ReportingEngine.getSharedInstance().spot(out)
+        # Return nothing if running as a service
+        if self.service:
+            return None
+        else:
+            # Color messages based on addresses
+            out["color"] = self.colors.getColor(out["address"])
+            return out
 
     def collapseSpaces(self, msg: str) -> str:
         # Collapse white space
@@ -251,7 +263,6 @@ class PageParser(TextParser):
                     "address":   capcode,
                     "function":  function,
                     "certainty": certainty,
-                    "color":     self.colors.getColor(capcode),
                     "type":      msgtype,
                     "message":   msg
                 }
@@ -310,7 +321,6 @@ class PageParser(TextParser):
                         "state":     state,
                         "frame":     frame,
                         "address":   capcode,
-                        "color":     self.colors.getColor(capcode),
                         "type":      msgtype
                     }
                     # Output message
