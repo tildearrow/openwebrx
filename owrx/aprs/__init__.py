@@ -1,6 +1,7 @@
 from owrx.map import Map, LatLngLocation
 from owrx.metrics import Metrics, CounterMetric
 from owrx.bands import Bandplan
+from owrx.reporting import ReportingEngine
 from datetime import datetime, timezone
 from csdr.module import PickleModule
 import re
@@ -211,6 +212,7 @@ class AprsParser(PickleModule):
             if self.isDirect(aprsData):
                 self.getMetric("direct").inc()
 
+            ReportingEngine.getSharedInstance().spot(aprsData)
             return aprsData
 
         except Exception:
