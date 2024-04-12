@@ -1,6 +1,10 @@
 openwebrx (1.2.55) bullseye jammy; urgency=low
 
+  * Refactored and greatly improved CW decoder.
   * Added NAVTEX decoder and background service.
+  * Added LW/MW band and NAVTEX frequencies to the bandplan.
+  * [jketterl] Added MQTT reporting.
+  * [jketterl] Improved PlutoSDR source.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 15 Apr 2024 16:12:00 +0000
 

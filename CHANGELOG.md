@@ -1,3 +1,10 @@
+**1.2.55**
+- Refactored and greatly improved CW decoder.
+- Added NAVTEX decoder and background service.
+- Added LW/MW band and NAVTEX frequencies to the bandplan.
+- [jketterl] Added MQTT reporting.
+- [jketterl] Improved PlutoSDR source.
+
 **1.2.54**
 - Made FT8/JS8/WSPR/etc. messages show in monospace font.
 - Added ability to click on FT8/JS8/etc. callsigns.
