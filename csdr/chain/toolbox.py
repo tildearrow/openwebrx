@@ -15,7 +15,7 @@ class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         workers = [
             Agc(Format.COMPLEX_FLOAT),
             Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
-            Rtl433Module(self.sampleRate, jsonOutput = not service),
+            Rtl433Module(self.sampleRate, jsonOutput = True),
             self.parser,
         ]
         # Connect all the workers
