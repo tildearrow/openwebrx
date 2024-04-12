@@ -2,6 +2,7 @@
 - Refactored and greatly improved CW decoder.
 - Added NAVTEX decoder and background service.
 - Added LW/MW band and NAVTEX frequencies to the bandplan.
+- Added MQTT reports for APRS, AIS, HFDL, VDL2, ACARS, DSC.
 - [jketterl] Added MQTT reporting.
 - [jketterl] Improved PlutoSDR source.
 

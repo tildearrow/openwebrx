@@ -3,6 +3,7 @@ from owrx.color import ColorCache
 from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
 from owrx.config import Config
+from owrx.reporting import ReportingEngine
 from datetime import datetime, timedelta
 import threading
 import pickle
@@ -323,6 +324,8 @@ class AircraftParser(TextParser):
             for key in ["aircraft", "origin", "destination"]:
                 if key in out:
                     out[key] = self.reDots.sub("\\1", out[key])
+            # Report message
+            ReportingEngine.getSharedInstance().spot(out)
             # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
         # Do not return anything when in service mode
