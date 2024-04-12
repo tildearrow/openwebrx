@@ -63,4 +63,5 @@ class MqttReporter(Reporter):
             self.subscriptions.pop().cancel()
 
     def spot(self, spot):
-        self.client.publish(self.topic, payload=json.dumps(spot))
+        topic = self.topic + "/" + spot["mode"] if "mode" in spot else self.topic
+        self.client.publish(topic, payload=json.dumps(spot))
