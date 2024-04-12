@@ -17,7 +17,7 @@ class ReportingController(SettingsFormController):
     def getSections(self):
         return [
             Section(
-                "APRS-IS reporting",
+                "APRS-IS settings",
                 CheckboxInput(
                     "aprs_igate_enabled",
                     "Send received APRS data to APRS-IS",
@@ -62,7 +62,7 @@ class ReportingController(SettingsFormController):
                 DropdownInput("aprs_igate_dir", "Antenna direction", AprsAntennaDirections),
             ),
             Section(
-                "pskreporter settings",
+                "PSKReporter settings",
                 CheckboxInput(
                     "pskreporter_enabled",
                     "Enable sending spots to pskreporter.info",
