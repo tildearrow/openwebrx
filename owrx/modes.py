@@ -302,8 +302,18 @@ class Modes(object):
 #            secondaryFft=False
 #        ),
 #        DigitalMode(
-#            "meteor-lrpt",
-#            "Meteor-M2 LRPT",
+#            "meteor-m23-lrpt",
+#            "Meteor-M2-3 LRPT",
+#            underlying=["empty"],
+#            bandpass=Bandpass(-75000, 75000),
+#            requirements=["wxsat"],
+#            service=True,
+#            squelch=False,
+#            secondaryFft=False
+#        ),
+#        DigitalMode(
+#            "meteor-m24-lrpt",
+#            "Meteor-M2-4 LRPT",
 #            underlying=["empty"],
 #            bandpass=Bandpass(-75000, 75000),
 #            requirements=["wxsat"],

@@ -239,12 +239,13 @@ class NoaaAptDemodulator(ServiceDemodulator):
 
 
 class MeteorLrptDemodulator(ServiceDemodulator):
-    def __init__(self, service: bool = False):
+    def __init__(self, symbolrate: int = 72, service: bool = False):
         d = datetime.utcnow()
         self.outFolder  = "/tmp/satdump/METEOR-{0}".format(d.strftime('%y%m%d-%H%M%S'))
         self.sampleRate = 150000
+        mode = "meteor_m2-x_lrpt_80k" if symbolrate == 80 else "meteor_m2-x_lrpt"
         workers = [
-            SatDumpModule(mode = "meteor_m2-x_lrpt",
+            SatDumpModule(mode = mode,
                 sampleRate = self.sampleRate,
                 outFolder  = self.outFolder,
                 options    = { "start_timestamp" : int(d.timestamp()) }
