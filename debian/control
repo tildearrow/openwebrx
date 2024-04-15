@@ -45,6 +45,7 @@ Recommends: python3-digiham (>= 0.6),
             codec2,
             redsea,
             python3-csdr-eti,
+            python3-paho-mqtt,
             dablin,
             multimon-ng,
             imagemagick

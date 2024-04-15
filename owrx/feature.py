@@ -198,7 +198,8 @@ class FeatureDetector(object):
         [CSDR](https://github.com/jketterl/csdr) project. In addition, the
         [PyCSDR](https://github.com/jketterl/pycsdr) must be installed to
         provide CSDR Python bindings. The `python3-csdr` package, found in
-        the OpenWebRX repositories, should be all you need.
+        the OpenWebRX repositories, should be all you need. Do not forget
+        to restart OpenWebRX after installing this package.
         """
         required_version = LooseVersion("0.18.0")
 
@@ -248,7 +249,8 @@ class FeatureDetector(object):
         [PyDigiHAM](https://github.com/jketterl/pydigiham) must
         be installed to provide DigiHAM Python bindings. The
         `python3-digiham` package, found in the OpenWebRX
-        repositories, should be all you need.
+        repositories, should be all you need. Do not forget to
+        restart OpenWebRX after installing this package.
         """
         required_version = LooseVersion("0.6")
 
@@ -515,7 +517,8 @@ class FeatureDetector(object):
         OpenWebRX uses the [JS8Py](https://github.com/jketterl/js8py)
         library to decode binary JS8 messages into readable text. You
         can install the `python3-js8py` package from the OpenWebRX
-        repositories.
+        repositories. Do not forget to restart OpenWebRX after
+        installing this package.
         """
         required_version = StrictVersion("0.1")
         try:
@@ -668,7 +671,8 @@ class FeatureDetector(object):
         [`csdr-eti`](https://github.com/jketterl/csdr-eti) project, together with
         the associated Python bindings from [`pycsdr-eti`](https://github.com/jketterl/pycsdr-eti).
         The `python3-csdr-eti` package, found in the OpenWebRX repositories,
-        should be all you need.
+        should be all you need. Do not forget to restart OpenWebRX after
+        installing this package.
         """
         required_version = LooseVersion("0.0.11")
 
@@ -696,7 +700,8 @@ class FeatureDetector(object):
         OpenWebRX uses the [paho-mqtt](https://pypi.org/project/paho-mqtt/)
         library to send decoded signal data to an MQTT broker for further
         processing by third-party applications. The `python3-paho-mqtt`
-        package is available in most Linux distributions.
+        package is available in most Linux distributions. Do not forget
+        to restart OpenWebRX after installing this package.
         """
         try:
             from paho.mqtt import __version__
