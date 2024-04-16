@@ -425,8 +425,8 @@ class FeatureDetector(object):
         """
         The [SoapyBladeRF](https://github.com/pothosware/SoapyBladeRF)
         module allows to use BladeRF devices with SoapySDR. The
-        `soapysdr-module-bladerf` is available in most Linux
-        distributions.
+        `soapysdr-module-bladerf` package is available in most
+        Linux distributions.
         """
         return self._has_soapy_driver("bladerf")
 
