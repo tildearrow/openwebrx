@@ -225,9 +225,9 @@ class FeatureDetector(object):
 
     def has_perseustest(self):
         """
-        To use a Microtelecom Perseus HF receiver,
+        To use the Microtelecom Perseus HF receiver,
         [download](https://github.com/Microtelecom/libperseus-sdr/releases/download/v0.8.2/libperseus_sdr-0.8.2.tar.gz),
-        compile and install the libperseus-sdr:
+        compile and install the `libperseus-sdr` library and tools:
         ```
          sudo apt install libusb-1.0-0-dev
          tar -zxvf libperseus_sdr-0.8.2.tar.gz
@@ -321,107 +321,112 @@ class FeatureDetector(object):
 
     def has_soapy_rtl_sdr(self):
         """
-        The SoapySDR module for rtl-sdr devices can be used as an alternative to the rtl_connector. It provides
-        additional support for the direct sampling mod.
-
-        You can get it [here](https://github.com/pothosware/SoapyRTLSDR/wiki).
+        The [SoapySDR module for RTL-SDR](https://github.com/pothosware/SoapyRTLSDR/wiki)
+        devices can be used as an alternative to the rtl_connector. It
+        provides additional support for the direct sampling mode. The
+        `soapysdr-module-rtlsdr` package is available in most Linux
+        distributions.
         """
         return self._has_soapy_driver("rtlsdr")
 
     def has_soapy_sdrplay(self):
         """
-        The SoapySDR module for sdrplay devices is required for interfacing with SDRPlay devices (RSP1*, RSP2*, RSPDuo)
-
-        You can get it [here](https://github.com/SDRplay/SoapySDRPlay).
+        The [SoapySDR module for SDRPlay](https://github.com/SDRplay/SoapySDRPlay)
+        devices is required for interfacing with SDRPlay devices (RSP1*, RSP2*,
+        RSPdx, RSPDuo, etc). You can install the `soapysdr-module-sdrplay3`
+        package from the OpenWebRX+ repositories. You will also need to
+        manually install the latest
+        [SDRPlay APIv3 library](https://www.sdrplay.com/api/)
+        from the manufacturer.
         """
         return self._has_soapy_driver("sdrplay")
 
     def has_soapy_airspy(self):
         """
-        The SoapySDR module for airspy devices is required for interfacing with Airspy devices (Airspy R2, Airspy Mini).
-
-        You can get it [here](https://github.com/pothosware/SoapyAirspy/wiki).
+        The [SoapySDR module for Airspy](https://github.com/pothosware/SoapyAirspy/wiki)
+        devices is required for interfacing with Airspy devices (Airspy
+        R2, Airspy Mini, etc). The `soapysdr-module-airspy` package is
+        available in most Linux distributions.
         """
         return self._has_soapy_driver("airspy")
 
     def has_soapy_airspyhf(self):
         """
-        The SoapySDR module for airspyhf devices is required for interfacing with Airspy HF devices (Airspy HF+,
-        Airspy HF discovery).
-
-        You can get it [here](https://github.com/pothosware/SoapyAirspyHF/wiki).
+        The [SoapySDR module for AirspyHF](https://github.com/pothosware/SoapyAirspyHF/wiki)
+        devices is required for interfacing with Airspy HF devices
+        (Airspy HF+, Airspy HF Discovery, etc).
         """
         return self._has_soapy_driver("airspyhf")
 
     def has_soapy_afedri(self):
         """
-        The SoapyAfedri module allows using Afedri SDR-Net devices with SoapySDR.
-
-        You can get it [here](https://github.com/alexander-sholohov/SoapyAfedri).
+        The [SoapyAfedri](https://github.com/alexander-sholohov/SoapyAfedri)
+        module allows using Afedri SDR-Net devices with SoapySDR.
         """
         return self._has_soapy_driver("afedri")
 
     def has_soapy_lime_sdr(self):
         """
-        The Lime Suite installs - amongst others - a Soapy driver for the LimeSDR device series.
-
-        You can get it [here](https://github.com/myriadrf/LimeSuite).
+        The [Lime Suite](https://github.com/myriadrf/LimeSuite)
+        installs, among other things, a SoapySDR driver for the
+        LimeSDR device series.
         """
         return self._has_soapy_driver("lime")
 
     def has_soapy_pluto_sdr(self):
         """
-        The SoapySDR module for PlutoSDR devices is required for interfacing with PlutoSDR devices.
-
-        You can get it [here](https://github.com/pothosware/SoapyPlutoSDR).
+        The [SoapySDR module for PlutoSDR](https://github.com/pothosware/SoapyPlutoSDR)
+        devices is required for interfacing with PlutoSDR devices.
         """
         return self._has_soapy_driver("plutosdr")
 
     def has_soapy_remote(self):
         """
-        The SoapyRemote allows the usage of remote SDR devices using the SoapySDRServer.
-
-        You can get the code and find additional information [here](https://github.com/pothosware/SoapyRemote/wiki).
+        The [SoapyRemote](https://github.com/pothosware/SoapyRemote/wiki)
+        allows the usage of remote SDR devices using the SoapySDRServer.
         """
         return self._has_soapy_driver("remote")
 
     def has_soapy_uhd(self):
         """
-        The SoapyUHD module allows using UHD / USRP devices with SoapySDR.
-
-        You can get it [here](https://github.com/pothosware/SoapyUHD/wiki).
+        The [SoapyUHD](https://github.com/pothosware/SoapyUHD/wiki)
+        module allows using UHD / USRP devices with SoapySDR. The
+        `soapysdr-module-uhd` package is available in most Linux
+        distributions.
         """
         return self._has_soapy_driver("uhd")
 
     def has_soapy_radioberry(self):
         """
-        The Radioberry is a SDR hat for the Raspberry Pi.
-
-        You can find more information, along with its SoapySDR module [here](https://github.com/pa3gsb/Radioberry-2.x).
+        The Radioberry is an SDR extension board for the Raspberry Pi.
+        More information, along with a SoapySDR module, is available
+        at the
+        [Radioberry GitHub page](https://github.com/pa3gsb/Radioberry-2.x).
         """
         return self._has_soapy_driver("radioberry")
 
     def has_soapy_hackrf(self):
         """
-        The SoapyHackRF allows HackRF to be used with SoapySDR.
-
-        You can get it [here](https://github.com/pothosware/SoapyHackRF/wiki).
+        The [SoapyHackRF](https://github.com/pothosware/SoapyHackRF/wiki)
+        module allows HackRF to be used with SoapySDR. The
+        `soapysdr-module-hackrf` package is available in most
+        Linux distributions.
         """
         return self._has_soapy_driver("hackrf")
 
     def has_soapy_fcdpp(self):
         """
-        The SoapyFCDPP module allows the use of the Funcube Dongle Pro+.
-
-        You can get it [here](https://github.com/pothosware/SoapyFCDPP).
+        The [SoapyFCDPP](https://github.com/pothosware/SoapyFCDPP)
+        module allows to use Funcube Dongle Pro+ with SoapySDR.
         """
         return self._has_soapy_driver("fcdpp")
 
     def has_soapy_bladerf(self):
         """
-        The SoapyBladeRF module allows the use of Blade RF devices.
-
-        You can get it [here](https://github.com/pothosware/SoapyBladeRF).
+        The [SoapyBladeRF](https://github.com/pothosware/SoapyBladeRF)
+        module allows to use BladeRF devices with SoapySDR. The
+        `soapysdr-module-bladerf` is available in most Linux
+        distributions.
         """
         return self._has_soapy_driver("bladerf")
 
@@ -545,12 +550,12 @@ class FeatureDetector(object):
 
     def has_freedv_rx(self):
         """
-        The `freedv\\_rx` executable is required to demodulate FreeDV digital
+        The `freedv\_rx` executable is required to demodulate FreeDV digital
         transmissions. It comes as part of the `codec2` library build, but is
         not installed by default or contained inside the `codec2` packages.
 
         To obtain it, you will have to compile 'codec2' from the sources and
-        then manually install `freedv\\_rx`. The detailed installation
+        then manually install `freedv\_rx`. The detailed installation
         instructions are available from the
         [OpenWebRX Wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
         """
@@ -569,9 +574,9 @@ class FeatureDetector(object):
 
     def has_sddc_connector(self):
         """
-        The sddc_connector allows connectivity with SDR devices powered by libsddc, e.g. RX666, RX888, HF103.
-
-        You can find more information [here](https://github.com/jketterl/sddc_connector).
+        The [SDCC Connector](https://github.com/jketterl/sddc_connector)
+        allows connectivity with SDR devices powered by the `libsddc`
+        library, such as RX666, RX888, HF103, etc.
         """
         return self._check_connector("sddc_connector", LooseVersion("0.1"))
 
@@ -586,9 +591,8 @@ class FeatureDetector(object):
 
     def has_runds_connector(self):
         """
-        To use radios supporting R&S radios via EB200 or Ammos, you need to install the runds_connector.
-
-        You can find more information [here](https://github.com/jketterl/runds_connector).
+        The [RunDS Connector](https://github.com/jketterl/runds_connector)
+        allows using R&S radios via EB200 or Ammos.
         """
         return self._check_connector("runds_connector", LooseVersion("0.2"))
 
