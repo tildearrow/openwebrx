@@ -12,15 +12,14 @@ $(function(){
         $.each(data, function(name, details) {
             var requirements = $.map(details.requirements, function(r, name){
                 return '<tr>' +
-                           '<td></td>' +
-                           '<td>' + name + '</td>' +
+                           '<td style="padding-left:3em;">' + name + '</td>' +
                            '<td>' + converter.makeHtml(r.description) + '</td>' +
                            yes_no(r.available) +
                        '</tr>';
             });
             $table.append(
                 '<tr>' +
-                    '<td colspan=3>' + name + '</td>' +
+                    '<td colspan=2><b>' + name + '</b></td>' +
                     yes_no(details.available) +
                 '</tr>' +
                 requirements.join("")

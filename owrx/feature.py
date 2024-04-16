@@ -225,12 +225,11 @@ class FeatureDetector(object):
 
     def has_perseustest(self):
         """
-        To use a Microtelecom Perseus HF receiver, compile and
-        install the libperseus-sdr:
+        To use a Microtelecom Perseus HF receiver,
+        [download](https://github.com/Microtelecom/libperseus-sdr/releases/download/v0.8.2/libperseus_sdr-0.8.2.tar.gz),
+        compile and install the libperseus-sdr:
         ```
          sudo apt install libusb-1.0-0-dev
-         cd /tmp
-         wget https://github.com/Microtelecom/libperseus-sdr/releases/download/v0.8.2/libperseus_sdr-0.8.2.tar.gz
          tar -zxvf libperseus_sdr-0.8.2.tar.gz
          cd libperseus_sdr-0.8.2/
          ./configure
