@@ -203,6 +203,7 @@ defaultConfig = PropertyLayer(
     mqtt_host="localhost",
     mqtt_use_ssl=False,
     paging_filter=True,
+    paging_charset="US",
     eibi_bookmarks_range=0,
     repeater_range=0,
     adsb_ttl=900,

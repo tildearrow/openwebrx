@@ -44,10 +44,6 @@ class DecodingSettingsController(SettingsFormController):
                     "Decode USA-specific RBDS information from WFM broadcasts",
                 ),
                 CheckboxInput(
-                    "paging_filter",
-                    "Filter out empty, numeric, or unreadable pager messages",
-                ),
-                CheckboxInput(
                     "cw_showcw",
                     "Show CW codes (dits / dahs) when decoding CW",
                 ),
@@ -101,6 +97,24 @@ class DecodingSettingsController(SettingsFormController):
                     "ACARS reports expiration time",
                     validator=RangeValidator(30, 100000),
                     append="s",
+                ),
+            ),
+            Section(
+                "Paging messages",
+                DropdownInput(
+                    "paging_charset",
+                    "Message character set",
+                    options=[
+                        Option("US", "English (USA)"),
+                        Option("FR", "French"),
+                        Option("DE", "German"),
+                        Option("SE", "Swedish"),
+                        Option("SI", "Slovenian"),
+                    ],
+                ),
+                CheckboxInput(
+                    "paging_filter",
+                    "Filter out empty, numeric, or unreadable pager messages",
                 ),
             ),
             Section(
