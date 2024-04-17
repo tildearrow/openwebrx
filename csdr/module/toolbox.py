@@ -6,80 +6,47 @@ import os
 
 class Rtl433Module(ExecModule):
     def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
-        self.sampleRate = sampleRate
-        self.jsonOutput = jsonOutput
         cmd = [
-            "rtl_433", "-r", "cs16:-", "-s", str(self.sampleRate),
-            "-M", "time:utc", "-F", "json" if self.jsonOutput else "kv",
+            "rtl_433", "-r", "cs16:-", "-s", str(sampleRate),
+            "-M", "time:utc", "-F", "json" if jsonOutput else "kv",
             "-A",
         ]
         super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
 
 
-class MultimonModule(PopenModule):
+class MultimonModule(ExecModule):
     def __init__(self, decoders: list[str]):
-        self.decoders = decoders
-        super().__init__()
-
-    def getCommand(self):
         pm  = Config.get()
         cmd = ["multimon-ng", "-", "-v0", "-c", "-C", pm["paging_charset"]]
-        for x in self.decoders:
+        for x in decoders:
             cmd += ["-a", x]
-        return cmd
-
-    def getInputFormat(self) -> Format:
-        return Format.SHORT
-
-    def getOutputFormat(self) -> Format:
-        return Format.CHAR
+        super().__init__(Format.SHORT, Format.CHAR, cmd)
 
 
-class DumpHfdlModule(PopenModule):
+class DumpHfdlModule(ExecModule):
     def __init__(self, sampleRate: int = 12000, jsonOutput: bool = False):
-        self.sampleRate = sampleRate
-        self.jsonOutput = jsonOutput
-        super().__init__()
-
-    def getCommand(self):
-        return [
+        cmd = [
             "dumphfdl", "--iq-file", "-", "--sample-format", "CF32",
-            "--sample-rate", str(self.sampleRate), "--output",
-            "decoded:%s:file:path=-" % ("json" if self.jsonOutput else "text"),
+            "--sample-rate", str(sampleRate), "--output",
+            "decoded:%s:file:path=-" % ("json" if jsonOutput else "text"),
             "--utc", "--centerfreq", "0", "0"
         ]
-
-    def getInputFormat(self) -> Format:
-        return Format.COMPLEX_FLOAT
-
-    def getOutputFormat(self) -> Format:
-        return Format.CHAR
+        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd)
 
 
-class DumpVdl2Module(PopenModule):
+class DumpVdl2Module(ExecModule):
     def __init__(self, sampleRate: int = 105000, jsonOutput: bool = False):
-        self.sampleRate = sampleRate
-        self.jsonOutput = jsonOutput
-        super().__init__()
-
-    def getCommand(self):
-        return [
+        cmd = [
             "dumpvdl2", "--iq-file", "-", "--sample-format", "S16_LE",
-            "--oversample", str(self.sampleRate // 105000), "--output",
-            "decoded:%s:file:path=-" % ("json" if self.jsonOutput else "text"),
+            "--oversample", str(sampleRate // 105000), "--output",
+            "decoded:%s:file:path=-" % ("json" if jsonOutput else "text"),
             "--decode-fragments", "--utc"
         ]
-
-    def getInputFormat(self) -> Format:
-        return Format.COMPLEX_SHORT
-
-    def getOutputFormat(self) -> Format:
-        return Format.CHAR
+        super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
 
 
 class Dump1090Module(ExecModule):
     def __init__(self, rawOutput: bool = False, jsonFolder: str = None):
-        self.jsonFolder = jsonFolder
         pm  = Config.get()
         lat = pm["receiver_gps"]["lat"]
         lon = pm["receiver_gps"]["lon"]
@@ -89,15 +56,15 @@ class Dump1090Module(ExecModule):
             "--modeac", "--metric"
         ]
         # If JSON files folder supplied, use that, disable STDOUT output
-        if self.jsonFolder is not None:
+        if jsonFolder is not None:
             try:
-                os.makedirs(self.jsonFolder, exist_ok = True)
-                cmd += [ "--quiet", "--write-json", self.jsonFolder ]
+                os.makedirs(jsonFolder, exist_ok = True)
+                cmd += [ "--quiet", "--write-json", jsonFolder ]
             except:
                 self.jsonFolder = None
                 pass
         # RAW STDOUT output only makes sense if we are not using JSON
-        if rawOutput and self.jsonFolder is None:
+        if rawOutput and jsonFolder is None:
             cmd += [ "--raw" ]
         super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
 
