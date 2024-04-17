@@ -22,7 +22,8 @@ class MultimonModule(PopenModule):
         super().__init__()
 
     def getCommand(self):
-        cmd = ["multimon-ng", "-", "-v0", "-c"]
+        pm  = Config.get()
+        cmd = ["multimon-ng", "-", "-v0", "-c", "-C", pm["paging_charset"]]
         for x in self.decoders:
             cmd += ["-a", x]
         return cmd
