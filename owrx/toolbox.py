@@ -215,6 +215,9 @@ class PageParser(TextParser):
         elif msg.startswith(b"FLEX"):
             out = self.parseFlex(msg.decode('utf-8', 'replace'))
         else:
+            out = None
+        # Ignore filtered messages
+        if out is None:
             return None
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
