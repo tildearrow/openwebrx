@@ -58,18 +58,18 @@ function MapManager() {
 //
 MapManager.prototype.process = function(e) {
     if (typeof e.data != 'string') {
-        console.error("unsupported binary data on websocket; ignoring");
+        console.error('unsupported binary data on websocket; ignoring');
         return
     }
 
-    if (e.data.substr(0, 16) == "CLIENT DE SERVER") {
+    if (e.data.substr(0, 16) == 'CLIENT DE SERVER') {
         return
     }
 
     try {
         var json = JSON.parse(e.data);
         switch (json.type) {
-            case "update":
+            case 'update':
                 this.processUpdates(json.value);
                 break;
 
@@ -79,9 +79,11 @@ MapManager.prototype.process = function(e) {
                 });
                 break;
 
-            case "config":
+            case 'config':
                 Object.assign(this.config, json.value);
                 if ('receiver_gps' in this.config) {
+                    // Save receiver location
+                    Utils.setReceiverPos(this.config.receiver_gps);
                     // Passing API key even if this particular map
                     // engine does not need it (Google Maps do)
                     this.initializeMap(

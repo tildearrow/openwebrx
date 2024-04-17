@@ -430,17 +430,12 @@ $.fn.hfdlMessagePanel = function() {
 AdsbMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.clearButton.css('display', 'none');
-    this.receiver_pos = null;
 }
 
 AdsbMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 AdsbMessagePanel.prototype.supportsMessage = function(message) {
     return message['mode'] === 'ADSB-LIST';
-};
-
-AdsbMessagePanel.prototype.setReceiverPos = function(pos) {
-    if (pos.lat && pos.lon) this.receiver_pos = pos;
 };
 
 AdsbMessagePanel.prototype.render = function() {
@@ -504,13 +499,14 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
 
         // Compute distance to the receiver
         var distance = '';
-        if (this.receiver_pos && entry.lat && entry.lon) {
+        var receiver_pos = Utils.getReceiverPos();
+        if (receiver_pos && entry.lat && entry.lon) {
             var id = entry.icao?     entry.icao
                    : entry.aircraft? entry.aircraft
                    : entry.flight?   entry.flight
                    : null;
 
-            distance = Utils.distanceKm(entry, this.receiver_pos) + '&nbsp;km';
+            distance = Utils.distanceKm(entry, receiver_pos) + '&nbsp;km';
             if (id) distance = Utils.linkToMap(id, distance);
         }
 

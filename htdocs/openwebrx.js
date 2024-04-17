@@ -1069,19 +1069,14 @@ function on_ws_recv(evt) {
                         }
 
                         if ('receiver_gps' in config) {
-                            var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
-                            adsb_panel.setReceiverPos(config['receiver_gps']);
+                            Utils.setReceiverPos(config['receiver_gps']);
                         }
 
                         if ('flight_url' in config) {
-                            var hfdl_panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
-                            var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
                             Utils.setFlightUrl(config['flight_url']);
                         }
 
                         if ('modes_url' in config) {
-                            var hfdl_panel = $('#openwebrx-panel-hfdl-message').hfdlMessagePanel();
-                            var adsb_panel = $('#openwebrx-panel-adsb-message').adsbMessagePanel();
                             Utils.setIcaoUrl(config['modes_url']);
                         }
 

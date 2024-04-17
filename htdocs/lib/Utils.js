@@ -8,6 +8,17 @@ Utils.callsign_url = null;
 Utils.vessel_url = null;
 Utils.flight_url = null;
 Utils.icao_url = null;
+Utils.receiver_pos = null;
+
+// Set receiver position
+Utils.setReceiverPos = function(pos) {
+    if (pos.lat && pos.lon) this.receiver_pos = pos;
+};
+
+// Get receiver position
+Utils.getReceiverPos = function() {
+    return this.receiver_pos;
+};
 
 // Set URL for linkifying callsigns
 Utils.setCallsignUrl = function(url) {
@@ -145,8 +156,11 @@ Utils.HHMMSS = function(t) {
     return pad(t.getUTCHours()) + ':' + pad(t.getUTCMinutes()) + ':' + pad(t.getUTCSeconds());
 };
 
-// Compute distance, in kilometers, between two latlons.
+// Compute distance, in kilometers, between two latlons. Use receiver
+// location if the second latlon is not provided.
 Utils.distanceKm = function(p1, p2) {
+    // Use receiver location if second latlon not given
+    if (p2 == null) p2 = this.receiver_pos;
     // Convert from map objects to latlons
     if ("lng" in p1) p1 = { lat : p1.lat(), lon : p1.lng() };
     if ("lng" in p2) p2 = { lat : p2.lat(), lon : p2.lng() };
