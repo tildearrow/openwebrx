@@ -1,3 +1,12 @@
+**1.2.56**
+- Added character set setting for the pager messages.
+- Fixed formatting issue in the Feature Report.
+- Fixed exception trying to report filtered pager messages.
+- Moved Multimon, DumpHFDL, DumpVDL2 decoders to ExecModule.
+- Made receiver location available to plugins via Utils.js.
+- Updated remaining Feature Report instructions.
+- Swapped opacity and theme chooser icons.
+
 **1.2.55**
 - Refactored and greatly improved CW decoder.
 - Added NAVTEX decoder and background service.

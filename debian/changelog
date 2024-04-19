@@ -1,3 +1,15 @@
+openwebrx (1.2.56) bullseye jammy; urgency=low
+
+  * Added character set setting for the pager messages.
+  * Fixed formatting issue in the Feature Report.
+  * Fixed exception trying to report filtered pager messages.
+  * Moved Multimon, DumpHFDL, DumpVDL2 decoders to ExecModule.
+  * Made receiver location available to plugins via Utils.js.
+  * Updated remaining Feature Report instructions.
+  * Swapped opacity and theme chooser icons.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 22 Apr 2024 16:12:00 +0000
+
 openwebrx (1.2.55) bullseye jammy; urgency=low
 
   * Refactored and greatly improved CW decoder.
