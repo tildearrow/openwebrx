@@ -1,6 +1,7 @@
 **1.2.56**
 - Added character set setting for the pager messages.
-- Fixed formatting issue in the Feature Report.
+- Added bookmarks for MURS frequencies.
+- Fixed HTML formatting issue in the Feature Report.
 - Fixed exception trying to report filtered pager messages.
 - Moved Multimon, DumpHFDL, DumpVDL2 decoders to ExecModule.
 - Made receiver location available to plugins via Utils.js.
