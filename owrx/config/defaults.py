@@ -272,6 +272,22 @@ defaultConfig = PropertyLayer(
                         start_mod="am",
                         tuning_step="5000",
                     ),
+                    "ism433": PropertyLayer(
+                        name="433MHz ISM",
+                        center_freq=433000000,
+                        samp_rate=2000000,
+                        start_freq=433000000,
+                        start_mod="nfm",
+                        tuning_step="25000",
+                    ),
+                    "adsb1090": PropertyLayer(
+                        name="1090MHz ADSB",
+                        center_freq=1090000000,
+                        samp_rate=4000000,
+                        start_freq=1090000000,
+                        start_mod="nfm",
+                        tuning_step="25000",
+                    ),
                 }
             ),
         ),

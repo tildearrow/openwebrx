@@ -1,5 +1,6 @@
 **1.2.56**
 - Added character set setting for the pager messages.
+- Added more default profiles to a new SDRPlay device.
 - Added bookmarks for MURS frequencies.
 - Fixed HTML formatting issue in the Feature Report.
 - Fixed exception trying to report filtered pager messages.
