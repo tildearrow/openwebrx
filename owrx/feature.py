@@ -333,7 +333,7 @@ class FeatureDetector(object):
         """
         The [SoapySDR module for SDRPlay](https://github.com/SDRplay/SoapySDRPlay)
         devices is required for interfacing with SDRPlay devices (RSP1*, RSP2*,
-        RSPdx, RSPDuo, etc). You can install the `soapysdr-module-sdrplay3`
+        RSPdx, RSPduo, etc). You can install the `soapysdr-module-sdrplay3`
         package from the OpenWebRX+ repositories. You will also need to
         manually install the latest
         [SDRPlay APIv3 library](https://www.sdrplay.com/api/)

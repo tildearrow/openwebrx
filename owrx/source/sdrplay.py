@@ -38,7 +38,7 @@ class IfModeOptions(DropdownEnum):
 
 class SdrplayDeviceDescription(SoapyConnectorDeviceDescription):
     def getName(self):
-        return "SDRPlay device (RSP1, RSP2, RSPDuo, RSPDx)"
+        return "SDRPlay device (RSP1, RSP2, RSPduo, RSPdx)"
 
     def getInputs(self) -> List[Input]:
         return super().getInputs() + [

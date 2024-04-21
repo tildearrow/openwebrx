@@ -23,7 +23,7 @@ defaultConfig = PropertyLayer(
     digital_voice_nxdn_id_lookup=True,
     sdrs=PropertyLayer(
         rtlsdr=PropertyLayer(
-            name="RTL-SDR USB Stick",
+            name="RTL-SDR",
             type="rtl_sdr",
             profiles=PropertyLayer(
                 **{
@@ -98,7 +98,7 @@ defaultConfig = PropertyLayer(
             ),
         ),
         sdrplay=PropertyLayer(
-            name="SDRPlay device",
+            name="SDRPlay",
             type="sdrplay",
             antenna="Antenna A",
             rf_gain="auto",
