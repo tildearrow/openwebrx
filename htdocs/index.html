@@ -297,6 +297,18 @@
                             <input title="Opacity" id="openwebrx-opacity-slider" class="openwebrx-panel-slider" type="range" min="20" max="100" value="100" step="1" oninput="UI.setOpacity(this.value);">
                         </div>
                         <div class="openwebrx-panel-line">
+                            <div title="Reset waterfall theme" class="openwebrx-button openwebrx-slider-button" onclick="UI.setWfTheme('default');">
+                                <svg viewBox="56 -900 835 835" style="overflow: visible"><use xlink:href="static/gfx/svg-defs.svg#wf-theme-chooser"></use></svg>
+                            </div>
+                            <select title="Waterfall theme" id="openwebrx-wf-themes-listbox" class="openwebrx-panel-listbox" onchange="UI.setWfTheme(this.value);">
+                                <option value="default">Default</option>
+                                <option value="turbo">Turbo</option>
+                                <option value="ha7ilm">Legacy</option>
+                                <option value="teejeez">Teejeez</option>
+                                <option value="zoran">Zoran</option>
+                            </select>
+                        </div>
+                        <div class="openwebrx-panel-line">
                             <label class="openwebrx-checkbox">
                                 <input id="openwebrx-frame-checkbox" type="checkbox" onchange="UI.toggleFrame(this.checked);" />
                                 Draw white frame around panels

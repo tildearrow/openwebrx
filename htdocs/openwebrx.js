@@ -123,15 +123,11 @@ var waterfall_min_level;
 var waterfall_max_level;
 var waterfall_min_level_default;
 var waterfall_max_level_default;
-var waterfall_colors = buildWaterfallColors(['#000', '#FFF']);
+var waterfall_colors;
 var waterfall_auto_levels;
 var waterfall_auto_min_range;
 var waterfall_measure_minmax_now = false;
 var waterfall_measure_minmax_continuous = false;
-
-function buildWaterfallColors(input) {
-    return chroma.scale(input).colors(256, 'rgb')
-}
 
 function updateWaterfallColors(which) {
     var $wfmax = $("#openwebrx-waterfall-color-max");
@@ -981,7 +977,7 @@ function on_ws_recv(evt) {
                     case "config":
                         var config = json['value'];
                         if ('waterfall_colors' in config)
-                            waterfall_colors = buildWaterfallColors(config['waterfall_colors']);
+                            UI.setDefaultWfTheme(config['waterfall_colors']);
                         if ('waterfall_levels' in config) {
                             waterfall_min_level_default = config['waterfall_levels']['min'];
                             waterfall_max_level_default = config['waterfall_levels']['max'];
@@ -1576,6 +1572,9 @@ function openwebrx_init() {
     bookmarks = new BookmarkBar();
     scanner = new Scanner(bookmarks, 1000);
     initSliders();
+
+    // Initialize waterfall colors
+    UI.setWfTheme('default');
 
     // Create and run clock
     clock = new Clock($('#openwebrx-clock-utc'));
