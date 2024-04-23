@@ -91,12 +91,14 @@ WsjtMessagePanel.prototype.pushMessage = function(msg) {
     var matches;
 
     if (this.qsoModes.indexOf(msg['mode']) >= 0) {
-        matches = linkedmsg.match(/(.*)\s([A-Z0-9]+)\s([A-R]{2}[0-9]{2})$/);
+        matches = linkedmsg.match(/^(.*?)([A-Z0-9]+)\s([A-Z0-9]+)\s(([A-R]{2}[0-9]{2})|(R?[+\-]?[0-9]{2})|(RRR))$/);
         if (matches) {
-            var locator = matches[3]!=='RR73'?
-                Utils.linkifyLocator(matches[3]) : matches[3];
-            linkedmsg = Utils.htmlEscape(matches[1])
-                + ' ' + Utils.linkifyCallsign(matches[2])
+            var destination = matches[2]!=='CQ' && matches[2]!=='DX'?
+                Utils.linkifyCallsign(matches[2]) : matches[2];
+            var locator = matches[5] && matches[5]!=='RR73'?
+                Utils.linkifyLocator(matches[5]) : matches[4];
+            linkedmsg = Utils.htmlEscape(matches[1]) + destination
+                + ' ' + Utils.linkifyCallsign(matches[3])
                 + ' ' + locator;
         } else {
             linkedmsg = Utils.htmlEscape(linkedmsg);
