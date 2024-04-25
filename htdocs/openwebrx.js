@@ -119,84 +119,6 @@ function jumpBySteps(steps) {
     }
 }
 
-var waterfall_min_level;
-var waterfall_max_level;
-var waterfall_min_level_default;
-var waterfall_max_level_default;
-var waterfall_colors = buildWaterfallColors(['#000', '#FFF']);
-var waterfall_auto_levels;
-var waterfall_auto_min_range;
-var waterfall_measure_minmax_now = false;
-var waterfall_measure_minmax_continuous = false;
-
-function buildWaterfallColors(input) {
-    return chroma.scale(input).colors(256, 'rgb')
-}
-
-function updateWaterfallColors(which) {
-    var $wfmax = $("#openwebrx-waterfall-color-max");
-    var $wfmin = $("#openwebrx-waterfall-color-min");
-    waterfall_max_level = parseInt($wfmax.val());
-    waterfall_min_level = parseInt($wfmin.val());
-    if (waterfall_min_level >= waterfall_max_level) {
-        if (!which) {
-            waterfall_min_level = waterfall_max_level -1;
-        } else {
-            waterfall_max_level = waterfall_min_level + 1;
-        }
-    }
-    updateWaterfallSliders();
-}
-
-function updateWaterfallSliders() {
-    $('#openwebrx-waterfall-color-max')
-        .val(waterfall_max_level)
-        .attr('title', 'Waterfall maximum level (' + Math.round(waterfall_max_level) + ' dB)');
-    $('#openwebrx-waterfall-color-min')
-        .val(waterfall_min_level)
-        .attr('title', 'Waterfall minimum level (' + Math.round(waterfall_min_level) + ' dB)');
-}
-
-function waterfallColorsDefault() {
-    waterfall_min_level = waterfall_min_level_default;
-    waterfall_max_level = waterfall_max_level_default;
-    updateWaterfallSliders();
-    waterfallColorsContinuousReset();
-}
-
-function waterfallColorsAuto(levels) {
-    var min_level = levels.min - waterfall_auto_levels.min;
-    var max_level = levels.max + waterfall_auto_levels.max;
-    max_level = Math.max(min_level + (waterfall_auto_min_range || 0), max_level);
-    waterfall_min_level = min_level;
-    waterfall_max_level = max_level;
-    updateWaterfallSliders();
-}
-
-var waterfall_continuous = {
-    min: -150,
-    max: 0
-};
-
-function waterfallColorsContinuousReset() {
-    waterfall_continuous.min = waterfall_min_level;
-    waterfall_continuous.max = waterfall_max_level;
-}
-
-function waterfallColorsContinuous(levels) {
-    if (levels.max > waterfall_continuous.max + 1) {
-        waterfall_continuous.max += 1;
-    } else if (levels.max < waterfall_continuous.max - 1) {
-        waterfall_continuous.max -= .1;
-    }
-    if (levels.min < waterfall_continuous.min - 1) {
-        waterfall_continuous.min -= 1;
-    } else if (levels.min > waterfall_continuous.min + 1) {
-        waterfall_continuous.min += .1;
-    }
-    waterfallColorsAuto(waterfall_continuous);
-}
-
 function setSmeterRelativeValue(value) {
     if (value < 0) value = 0;
     if (value > 1.0) value = 1.0;
@@ -235,10 +157,9 @@ function getLogSmeterValue(value) {
 function setSmeterAbsoluteValue(value) //the value that comes from `csdr squelch_and_smeter_cc`
 {
     var logValue = getLogSmeterValue(value);
+    var levels = Waterfall.getRange();
+    var percent = (logValue - (levels.min - 20)) / ((levels.max + 20) - (levels.min - 20));
     setSquelchSliderBackground(logValue);
-    var lowLevel = waterfall_min_level - 20;
-    var highLevel = waterfall_max_level + 20;
-    var percent = (logValue - lowLevel) / (highLevel - lowLevel);
     setSmeterRelativeValue(percent);
     $("#openwebrx-smeter-db").html(logValue.toFixed(1) + " dB");
 }
@@ -980,22 +901,12 @@ function on_ws_recv(evt) {
                 switch (json.type) {
                     case "config":
                         var config = json['value'];
-                        if ('waterfall_colors' in config)
-                            waterfall_colors = buildWaterfallColors(config['waterfall_colors']);
-                        if ('waterfall_levels' in config) {
-                            waterfall_min_level_default = config['waterfall_levels']['min'];
-                            waterfall_max_level_default = config['waterfall_levels']['max'];
-                        }
-                        if ('waterfall_auto_levels' in config)
-                            waterfall_auto_levels = config['waterfall_auto_levels'];
-                        if ('waterfall_auto_min_range' in config)
-                            waterfall_auto_min_range = config['waterfall_auto_min_range'];
-                        if ('waterfall_auto_level_default_mode' in config)
-                            waterfall_measure_minmax_continuous = config['waterfall_auto_level_default_mode'];
 
-                        var waterfallAutoButton = $('#openwebrx-waterfall-colors-auto');
-                        waterfallAutoButton[waterfall_measure_minmax_continuous ? 'addClass' : 'removeClass']('highlighted');
-                        $('#openwebrx-waterfall-color-min, #openwebrx-waterfall-color-max').prop('disabled', waterfall_measure_minmax_continuous);
+                        // Configure waterfall min/max levels, etc
+                        Waterfall.configure(config);
+
+                        if ('waterfall_colors' in config)
+                            UI.setDefaultWfTheme(config['waterfall_colors']);
 
                         var initial_demodulator_params = {};
                         if ('start_mod' in config)
@@ -1046,7 +957,7 @@ function on_ws_recv(evt) {
                         }
 
                         if ('sdr_id' in config || 'profile_id' in config || 'waterfall_levels' in config) {
-                            waterfallColorsDefault();
+                            Waterfall.setDefaultRange();
                         }
 
                         if ('tuning_precision' in config)
@@ -1256,28 +1167,6 @@ function on_ws_recv(evt) {
     }
 }
 
-function waterfall_measure_minmax_do(what) {
-    // Get visible range
-    var range = get_visible_freq_range();
-    var start = center_freq - bandwidth / 2;
-
-    // This is based on an oversampling factor of about 1,25
-    range.start = Math.max(0.1, (range.start - start) / bandwidth);
-    range.end   = Math.min(0.9, (range.end - start) / bandwidth);
-
-    // Align to the range edges, do not let things flip over
-    if (range.start >= 0.9)
-        range.start = range.end - range.bw / bandwidth;
-    else if (range.end <= 0.1)
-        range.end = range.start + range.bw / bandwidth;
-
-    var data = what.slice(range.start * what.length, range.end * what.length);
-    return {
-        min: Math.min.apply(Math, data),
-        max: Math.max.apply(Math, data)
-    };
-}
-
 function on_ws_opened() {
     $('#openwebrx-error-overlay').hide();
     ws.send("SERVER DE CLIENT client=openwebrx.js type=receiver");
@@ -1393,26 +1282,6 @@ function open_websocket() {
     ws.onerror = on_ws_error;
 }
 
-function waterfall_mkcolor(db_value, waterfall_colors_arg) {
-    waterfall_colors_arg = waterfall_colors_arg || waterfall_colors;
-    var value_percent = (db_value - waterfall_min_level) / (waterfall_max_level - waterfall_min_level);
-    value_percent = Math.max(0, Math.min(1, value_percent));
-
-    var scaled = value_percent * (waterfall_colors_arg.length - 1);
-    var index = Math.floor(scaled);
-    var remain = scaled - index;
-    if (remain === 0) return waterfall_colors_arg[index];
-    return color_between(waterfall_colors_arg[index], waterfall_colors_arg[index + 1], remain);}
-
-function color_between(first, second, percent) {
-    return [
-        first[0] + percent * (second[0] - first[0]),
-        first[1] + percent * (second[1] - first[1]),
-        first[2] + percent * (second[2] - first[2])
-    ];
-}
-
-
 var canvas_context;
 var canvases = [];
 var canvas_default_height = 200;
@@ -1482,30 +1351,17 @@ function waterfall_add(data) {
     if (!waterfall_setup_done) return;
     var w = fft_size;
 
-    if (waterfall_measure_minmax_now) {
-        var levels = waterfall_measure_minmax_do(data);
-        waterfall_measure_minmax_now = false;
-        waterfallColorsAuto(levels);
-        waterfallColorsContinuousReset();
-    }
-
-    if (waterfall_measure_minmax_continuous) {
-        var level = waterfall_measure_minmax_do(data);
-        waterfallColorsContinuous(level);
-    }
+    // measure waterfall min/max levels, if necessary
+    Waterfall.measureRange(data);
 
     // create new canvas if the current one is full (or there isn't one)
     if (canvas_actual_line <= 0) add_canvas();
 
-    //Add line to waterfall image
+    // add line to waterfall image
     var oneline_image = canvas_context.createImageData(w, 1);
-    for (var x = 0; x < w; x++) {
-        var color = waterfall_mkcolor(data[x]);
-        for (i = 0; i < 3; i++) oneline_image.data[x * 4 + i] = color[i];
-        oneline_image.data[x * 4 + 3] = 255;
-    }
+    Waterfall.drawLine(oneline_image.data, data);
 
-    //Draw image
+    // draw image
     canvas_context.putImageData(oneline_image, 0, --canvas_actual_line);
     shift_canvases();
 }
@@ -1577,6 +1433,9 @@ function openwebrx_init() {
     scanner = new Scanner(bookmarks, 1000);
     initSliders();
 
+    // Initialize waterfall colors
+    UI.setWfTheme('default');
+
     // Create and run clock
     clock = new Clock($('#openwebrx-clock-utc'));
 }
@@ -1594,15 +1453,10 @@ function initSliders() {
         $slider.trigger('change');
     });
 
-    var waterfallAutoButton = $('#openwebrx-waterfall-colors-auto');
-    waterfallAutoButton.on('click', function() {
-        waterfall_measure_minmax_now=true;
-    }).on('contextmenu', function(){
-        waterfall_measure_minmax_continuous = !waterfall_measure_minmax_continuous;
-        waterfallColorsContinuousReset();
-        waterfallAutoButton[waterfall_measure_minmax_continuous ? 'addClass' : 'removeClass']('highlighted');
-        $('#openwebrx-waterfall-color-min, #openwebrx-waterfall-color-max').prop('disabled', waterfall_measure_minmax_continuous);
-
+    // Enable continuous waterfall color adjustment by pressing the
+    // right mouse button on AUTO
+    $('#openwebrx-waterfall-colors-auto').on('contextmenu', function() {
+        Waterfall.toggleContinuousRange();
         return false;
     });
 
@@ -1868,20 +1722,14 @@ function secondary_demod_push_data(x) {
 function secondary_demod_waterfall_add(data) {
     var w = secondary_fft_size;
 
-    //Add line to waterfall image
+    // add line to waterfall image
     var oneline_image = secondary_demod_current_canvas_context.createImageData(w, 1);
-    for (var x = 0; x < w; x++) {
-        var color = waterfall_mkcolor(data[x] + secondary_demod_fft_offset_db);
-        for (var i = 0; i < 3; i++) oneline_image.data[x * 4 + i] = color[i];
-        oneline_image.data[x * 4 + 3] = 255;
-    }
+    Waterfall.drawLine(oneline_image.data, data, secondary_demod_fft_offset_db);
 
-    //Draw image
+    // draw image
     secondary_demod_current_canvas_context.putImageData(oneline_image, 0, secondary_demod_current_canvas_actual_line--);
-    secondary_demod_canvases.map(function (x) {
-        x.openwebrx_top += 1;
-    })
-    ;
+    secondary_demod_canvases.map(function (x) { x.openwebrx_top += 1; });
+
     secondary_demod_canvases_update_top();
     if (secondary_demod_current_canvas_actual_line < 0) secondary_demod_swap_canvases();
 }

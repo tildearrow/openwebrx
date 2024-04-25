@@ -919,6 +919,10 @@ img.openwebrx-mirror-img
     font-size: 10pt;
 }
 
+#openwebrx-wf-themes-listbox {
+    font-size: 10pt;
+}
+
 #openwebrx-cursor-blink
 {
 	animation: cursor-blink 1s infinite;
