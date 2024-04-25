@@ -263,20 +263,23 @@ UI.setWfTheme = function(theme) {
     // Set selector
     $('#openwebrx-wf-themes-listbox').val(theme);
 
-    // Generate new colors
-    waterfall_colors = chroma.scale(this.wfThemes[theme]).colors(256, 'rgb');
+    // Set new colors in the waterfall
+    Waterfall.setTheme(this.wfThemes[theme]);
 };
 
 // Set default waterfall color theme.
 UI.setDefaultWfTheme = function(colors) {
+    // Update default waterfall theme with new colors
     this.wfThemes['default'] = colors;
+
+    // If default theme currently used, update waterfall
     if (this.wfTheme === 'default') {
         this.wfTheme = null;
         this.setWfTheme('default');
     }
 };
 
-// Waterfall color schemes
+// Waterfall color themes
 UI.wfThemes = {
     'default' : [0x000000, 0xFFFFFF],
     'teejeez' : [0x000000, 0x0000FF, 0x00FFFF, 0x00FF00, 0xFFFF00, 0xFF0000, 0xFF00FF, 0xFFFFFF],
