@@ -740,7 +740,7 @@ SstvMessagePanel.prototype.pushMessage = function(msg) {
         var f = msg.frequency>0? ' at ' + Math.floor(msg.frequency/1000) + 'kHz' : '';
         var h = '<div>' + msg.timestamp + ' ' + msg.width + 'x' + msg.height +
             ' ' + msg.sstvMode + f + '</div>';
-        var c = '<div onclick="saveCanvas(\'' + msg.filename + '\');">' +
+        var c = '<div onclick="Utils.saveCanvas(\'' + msg.filename + '\');">' +
             '<canvas class="frame" id="' + msg.filename +
             '" width="' + msg.width + '" height="' + msg.height +
             '"></canvas></div>';
@@ -809,7 +809,7 @@ FaxMessagePanel.prototype.pushMessage = function(msg) {
         var f = msg.frequency>0? ' at ' + Math.floor(msg.frequency/1000) + 'kHz' : '';
         var h = '<div>' + msg.timestamp + ' ' + msg.width + 'x' + msg.height +
             ' ' + msg.faxMode + f + '</div>';
-        var c = '<div onclick="saveCanvas(\'' + msg.filename + '\');">' +
+        var c = '<div onclick="Utils.saveCanvas(\'' + msg.filename + '\');">' +
             '<canvas class="frame" id="' + msg.filename +
             '" width="' + msg.width + '" height="' + msg.height +
             '"></canvas></div>';

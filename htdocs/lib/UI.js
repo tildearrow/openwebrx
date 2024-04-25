@@ -140,6 +140,25 @@ UI.updateNR = function() {
 }
 
 //
+// Audio Recording Controls
+//
+
+UI.toggleRecording = function(on) {
+    // If no argument given, toggle audio recording
+    var toggle = typeof(on) === 'undefined';
+
+    var $recButton = $('.openwebrx-record-button');
+
+    if (audioEngine.recording && (toggle || !on)) {
+        audioEngine.stopRecording();
+        $recButton.css('animation-name', '');
+    } else if (toggle || on) {
+        audioEngine.startRecording();
+        $recButton.css('animation-name', 'openwebrx-record-animation');
+    }
+};
+
+//
 // Look & Feel Controls
 //
 

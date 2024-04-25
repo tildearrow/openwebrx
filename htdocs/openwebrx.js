@@ -35,54 +35,6 @@ var secondary_fft_size;
 var tuning_step_default = 1;
 var tuning_step = 1;
 
-function toggleSection(el) {
-    var next_el = el.nextElementSibling;
-    if (next_el) {
-        if (next_el.style.display === "none") {
-            el.innerHTML = el.innerHTML.replace("\u25B4", "\u25BE");
-            next_el.style.display = "block";
-        } else {
-            el.innerHTML = el.innerHTML.replace("\u25BE", "\u25B4");
-            next_el.style.display = "none";
-        }
-    }
-}
-
-function toggleRecording() {
-    var $recButton = $('.openwebrx-record-button');
-
-    if (audioEngine.recording) {
-        audioEngine.stopRecording();
-        $recButton.css('animation-name', '');
-    } else {
-        audioEngine.startRecording();
-        $recButton.css('animation-name', 'openwebrx-record-animation');
-    }
-}
-
-function saveCanvas(canvas) {
-    // Get canvas by its ID
-    var c = document.getElementById(canvas);
-    if (c == null) return;
-
-    // Convert canvas to a data blob
-    c.toBlob(function(blob) {
-        // Create and click a link to the canvas data URL
-        var a = document.createElement('a');
-        a.href = window.URL.createObjectURL(blob);
-        a.style = 'display: none';
-        a.download = canvas + ".png";
-        document.body.appendChild(a);
-        a.click();
-
-        // Get rid of the canvas data URL
-        setTimeout(function() {
-            document.body.removeChild(a);
-            window.URL.revokeObjectURL(a.href);
-        }, 0);
-    }, 'image/png');
-}
-
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
 }

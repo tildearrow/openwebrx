@@ -233,6 +233,30 @@ Utils.mmsiIsGround = function(mmsi) {
     return mmsi.substring(0, 2) === '00';
 };
 
+// Save given canvas into a PNG file.
+Utils.saveCanvas = function(canvas) {
+    // Get canvas by its ID
+    var c = document.getElementById(canvas);
+    if (c == null) return;
+
+    // Convert canvas to a data blob
+    c.toBlob(function(blob) {
+        // Create and click a link to the canvas data URL
+        var a = document.createElement('a');
+        a.href = window.URL.createObjectURL(blob);
+        a.style = 'display: none';
+        a.download = canvas + ".png";
+        document.body.appendChild(a);
+        a.click();
+
+        // Get rid of the canvas data URL
+        setTimeout(function() {
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(a.href);
+        }, 0);
+    }, 'image/png');
+};
+
 //
 // Local Storage Access
 //
