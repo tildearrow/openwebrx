@@ -114,49 +114,17 @@ Waterfall.updateContinuousColors = function(levels) {
     if (levels.max > this.cont_levels.max + 1) {
         this.cont_levels.max += 1;
     } else if (levels.max < this.cont_levels.max - 1) {
-        this.cont_levels.max -= .1;
+        this.cont_levels.max -= 0.1;
     }
 
     if (levels.min < this.cont_levels.min - 1) {
         this.cont_levels.min -= 1;
     } else if (levels.min > this.cont_levels.min + 1) {
-        this.cont_levels.min += .1;
+        this.cont_levels.min += 0.1;
     }
 
     this.updateAutoColors(this.cont_levels);
 };
-
-// Create a color based on the dB value and current color theme.
-Waterfall.makeColor = function(db) {
-    var v = (db - this.levels.min) / (this.levels.max - this.levels.min);
-    v = Math.max(0, Math.min(1, v)) * (this.colors.length - 1);
-    var i = Math.floor(v);
-    v = v - i;
-
-    if (v == 0) {
-        return this.colors[i];
-    } else {
-        var c0 = this.colors[i];
-        var c1 = this.colors[i+1];
-        return [
-            c0[0] + v * (c1[0] - c0[0]),
-            c0[1] + v * (c1[1] - c0[1]),
-            c0[2] + v * (c1[2] - c0[2])
-        ];
-    }
-};
-
-// Draw a single line of waterfall pixels based on the input data.
-Waterfall.drawLine = function(out, data, offset = 0) {
-    var y = 0;
-    for (var x = 0; x < data.length; x++) {
-        var color = this.makeColor(data[x] + offset);
-        out[y++] = color[0];
-        out[y++] = color[1];
-        out[y++] = color[2];
-        out[y++] = 255;
-    }
-}
 
 // Measure min/max levels from the incoming data, if necessary.
 Waterfall.measureRange = function(data) {
@@ -194,3 +162,35 @@ Waterfall.measureRange = function(data) {
         this.updateContinuousColors(levels);
     }
 };
+
+// Create a color based on the dB value and current color theme.
+Waterfall.makeColor = function(db) {
+    var v = (db - this.levels.min) / (this.levels.max - this.levels.min);
+    v = Math.max(0, Math.min(1, v)) * (this.colors.length - 1);
+    var i = Math.floor(v);
+    v = v - i;
+
+    if (v == 0) {
+        return this.colors[i];
+    } else {
+        var c0 = this.colors[i];
+        var c1 = this.colors[i+1];
+        return [
+            c0[0] + v * (c1[0] - c0[0]),
+            c0[1] + v * (c1[1] - c0[1]),
+            c0[2] + v * (c1[2] - c0[2])
+        ];
+    }
+};
+
+// Draw a single line of waterfall pixels based on the input data.
+Waterfall.drawLine = function(out, data, offset = 0) {
+    var y = 0;
+    for (var x = 0; x < data.length; x++) {
+        var color = this.makeColor(data[x] + offset);
+        out[y++] = color[0];
+        out[y++] = color[1];
+        out[y++] = color[2];
+        out[y++] = 255;
+    }
+}
