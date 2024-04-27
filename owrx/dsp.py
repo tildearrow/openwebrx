@@ -256,7 +256,7 @@ class ClientDemodulatorChain(Chain):
         if isinstance(self.demodulator, DialFrequencyReceiver):
             self.demodulator.setDialFrequency(dialFrequency)
         if isinstance(self.secondaryDemodulator, DialFrequencyReceiver):
-            if self.secondaryFrequencyOffset:
+            if self.secondarySelector and self.secondaryFrequencyOffset:
                 dialFrequency += self.secondaryFrequencyOffset
             self.secondaryDemodulator.setDialFrequency(dialFrequency)
 
