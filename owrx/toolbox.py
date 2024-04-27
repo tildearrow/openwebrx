@@ -173,6 +173,9 @@ class IsmParser(TextParser):
         out = json.loads(msg)
         # Add mode name
         out["mode"] = "ISM"
+        # Add frequency, if known
+        if self.frequency:
+            out["freq"] = frequency
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
         # Return nothing if running as a service
@@ -219,6 +222,9 @@ class PageParser(TextParser):
         # Ignore filtered messages
         if out is None:
             return None
+        # Add frequency, if known
+        if self.frequency:
+            out["freq"] = frequency
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
         # Return nothing if running as a service
