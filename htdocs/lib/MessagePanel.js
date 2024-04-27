@@ -378,8 +378,8 @@ HfdlMessagePanel.prototype.pushMessage = function(msg) {
     : '';
 
     var tstamp =
-      msg.msgtime? '<b>' + msg.msgtime + '</b>'
-    : msg.time?    msg.time
+      msg.msgtime?   '<b>' + msg.msgtime + '</b>'
+    : msg.timestamp? Utils.HHMMSS(msg.timestamp)
     : '';
 
     // Add location, altitude, speed, etc
@@ -575,7 +575,7 @@ DscMessagePanel.prototype.pushMessage = function(msg) {
     // Format timestamp
     var timestamp =
       msg.time?      '<b>' + msg.time + '</b>'
-    : msg.timestamp? Utils.HHMMSS(msg.timestamp * 1000)
+    : msg.timestamp? Utils.HHMMSS(msg.timestamp)
     : '';
 
     // Format debugging data

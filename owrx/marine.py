@@ -32,7 +32,10 @@ class DscParser(TextParser):
         # Add mode and frequency
         out["mode"] = "DSC"
         if self.frequency != 0:
-            out["frequency"] = self.frequency
+            out["freq"] = self.frequency
+        # Convert timestamp to milliseconds
+        if "timestamp" in out:
+            out["timestamp"] = out["timestamp"] * 1000
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
         # Log received messages for debugging

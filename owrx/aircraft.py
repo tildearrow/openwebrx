@@ -94,11 +94,9 @@ class AircraftLocation(LatLngLocation):
 
     def __dict__(self):
         res = super(AircraftLocation, self).__dict__()
-        # JavaScript timestamps are in milliseconds
-        res["ttl"]    = self.data["ttl"] * 1000
         res["symbol"] = self.getSymbol()
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog"]:
+        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog", "ttl"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Return APRS-like dictionary object
@@ -174,11 +172,11 @@ class AircraftManager(object):
             return updated
 
         # Add time-to-live, if missing, assume HFDL longevity
-        if "ts" not in data:
+        if "timestamp" not in data:
             pm = Config.get()
-            ts = datetime.now().timestamp()
-            data["ts"]  = ts
-            data["ttl"] = ts + pm["hfdl_ttl"]
+            ts = round(datetime.now().timestamp() * 1000)
+            data["timestamp"] = ts
+            data["ttl"] = ts + pm["hfdl_ttl"] * 1000
 
         # Now operating on the database...
         with self.lock:
@@ -201,7 +199,7 @@ class AircraftManager(object):
                 # Use existing record
                 item = self.aircraft[id]
                 # If we have got newer data...
-                if data["ts"] > item["ts"]:
+                if data["timestamp"] > item["timestamp"]:
                     # Get previous and current positions
                     pos0 = (item["lat"], item["lon"]) if "lat" in item and "lon" in item else None
                     pos1 = (data["lat"], data["lon"]) if "lat" in data and "lon" in data else None
@@ -244,7 +242,7 @@ class AircraftManager(object):
 
     # Remove all database entries older than given time.
     def cleanup(self):
-        now = datetime.now().timestamp()
+        now = datetime.now().timestamp() * 1000
         # Now operating on the database...
         with self.lock:
             too_old = [x for x in self.aircraft.keys() if self.aircraft[x]["ttl"] < now]
@@ -280,7 +278,7 @@ class AircraftManager(object):
             item2 = self.aircraft[id2]
             if item1 is not item2:
                 # Make sure ID1 is always newer than ID2
-                if item1["ts"] < item2["ts"]:
+                if item1["timestamp"] < item2["timestamp"]:
                     item1, item2 = item2, item1
                     id1,   id2   = id2,   id1
                 # Update older data with newer data
@@ -324,6 +322,9 @@ class AircraftParser(TextParser):
             for key in ["aircraft", "origin", "destination"]:
                 if key in out:
                     out[key] = self.reDots.sub("\\1", out[key])
+            # Add communications frequency, if known
+            if self.frequency != 0:
+                out["freq"] = self.frequency
             # Report message
             ReportingEngine.getSharedInstance().spot(out)
             # Update aircraft database with the new data
@@ -345,7 +346,7 @@ class AircraftParser(TextParser):
         if len(aircraft)>0:
             out["aircraft"] = aircraft
         if len(message)>0:
-            out["message"] = [ message ]
+            out["message"] = message
         if len(flight)>0:
             out["flight"] = flight
         # Done
@@ -363,16 +364,15 @@ class HfdlParser(AircraftParser):
         # Expect JSON data in text form
         data = json.loads(msg)
         pm   = Config.get()
-        ts   = data["hfdl"]["t"]["sec"] + data["hfdl"]["t"]["usec"] / 1000000
+        ts   = round(data["hfdl"]["t"]["sec"] * 1000 + data["hfdl"]["t"]["usec"] / 1000)
         # @@@ Only parse messages that have LDPU frames for now !!!
         if "lpdu" not in data["hfdl"]:
             return {}
         # Collect basic data first
         out = {
-            "mode" : "HFDL",
-            "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
-            "ts"   : ts,
-            "ttl"  : ts + pm["hfdl_ttl"]
+            "mode"      : "HFDL",
+            "timestamp" : ts,
+            "ttl"       : ts + pm["hfdl_ttl"] * 1000
         }
         # Parse LPDU if present
         if "lpdu" in data["hfdl"]:
@@ -450,13 +450,12 @@ class Vdl2Parser(AircraftParser):
         # Expect JSON data in text form
         data = json.loads(msg)
         pm   = Config.get()
-        ts   = data["vdl2"]["t"]["sec"] + data["vdl2"]["t"]["usec"] / 1000000
+        ts   = round(data["vdl2"]["t"]["sec"] * 1000 + data["vdl2"]["t"]["usec"] / 1000)
         # Collect basic data first
         out = {
-            "mode" : "VDL2",
-            "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
-            "ts"   : ts,
-            "ttl"  : ts + pm["vdl2_ttl"]
+            "mode"      : "VDL2",
+            "timestamp" : ts,
+            "ttl"       : ts + pm["vdl2_ttl"] * 1000
         }
         # Parse AVLC if present
         if "avlc" in data["vdl2"]:
@@ -584,12 +583,12 @@ class AdsbParser(AircraftParser):
 
             # Always present ADSB data
             out = {
-                "mode" : "ADSB",
-                "icao" : entry["hex"].upper(),
-                "ts"   : ts,
-                "ttl"  : ttl - entry["seen"],
-                "msgs" : entry["messages"],
-                "rssi" : entry["rssi"],
+                "mode"      : "ADSB",
+                "icao"      : entry["hex"].upper(),
+                "timestamp" : round(ts * 1000),
+                "ttl"       : round((ttl - entry["seen"]) * 1000),
+                "msgs"      : entry["messages"],
+                "rssi"      : entry["rssi"],
             }
 
             # Position
@@ -670,15 +669,14 @@ class AcarsParser(AircraftParser):
         # Expect JSON data in text form
         data = json.loads(msg)
         pm   = Config.get()
-        ts   = data["timestamp"]
+        ts   = round(data["timestamp"] * 1000)
         #logger.debug("@@@ ACARS: {0}".format(data))
         # Collect basic data first
         out = {
-            "mode" : "ACARS",
-            "type" : "ACARS frame",
-            "time" : datetime.utcfromtimestamp(ts).strftime("%H:%M:%S"),
-            "ts"   : ts,
-            "ttl"  : ts + pm["acars_ttl"]
+            "mode"      : "ACARS",
+            "type"      : "ACARS frame",
+            "timestamp" : ts,
+            "ttl"       : ts + pm["acars_ttl"] * 1000
         }
         # Fetch other data
         for key in self.attrMap:
