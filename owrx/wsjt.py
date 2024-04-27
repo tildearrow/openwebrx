@@ -287,11 +287,11 @@ class WsjtParser(AudioChopperParser):
             out["interval"] = profile.getInterval()
 
             self.pushDecode(mode, band)
+            ReportingEngine.getSharedInstance().spot(out)
             if "callsign" in out and "locator" in out:
                 Map.getSharedInstance().updateLocation(
                     out["callsign"], LocatorLocation(out["locator"]), mode, band
                 )
-                ReportingEngine.getSharedInstance().spot(out)
 
             return out
         except Exception:
