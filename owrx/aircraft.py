@@ -178,11 +178,11 @@ class AircraftManager(object):
         # Add time-to-live
         pm = Config.get()
         mode = data["mode"]
-        if mode is "ACARS":
+        if mode == "ACARS":
             data["ttl"] = data["timestamp"] + pm["acars_ttl"] * 1000
-        elif mode is "VDL2":
+        elif mode == "VDL2":
             data["ttl"] = data["timestamp"] + pm["vdl2_ttl"] * 1000
-        elif mode is "HFDL":
+        elif mode == "HFDL":
             data["ttl"] = data["timestamp"] + pm["hfdl_ttl"] * 1000
         else:
             # Assume ADSB time-to-live
