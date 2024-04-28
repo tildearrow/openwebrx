@@ -171,12 +171,22 @@ class AircraftManager(object):
         if not id:
             return updated
 
-        # Add time-to-live, if missing, assume HFDL longevity
+        # Add timestamp, if missing
         if "timestamp" not in data:
-            pm = Config.get()
-            ts = round(datetime.now().timestamp() * 1000)
-            data["timestamp"] = ts
-            data["ttl"] = ts + pm["hfdl_ttl"] * 1000
+            data["timestamp"] = round(datetime.now().timestamp() * 1000)
+
+        # Add time-to-live
+        pm = Config.get()
+        mode = data["mode"]
+        if mode is "ACARS":
+            data["ttl"] = data["timestamp"] + pm["acars_ttl"] * 1000
+        elif mode is "VDL2":
+            data["ttl"] = data["timestamp"] + pm["vdl2_ttl"] * 1000
+        elif mode is "HFDL":
+            data["ttl"] = data["timestamp"] + pm["hfdl_ttl"] * 1000
+        else:
+            # Assume ADSB time-to-live
+            data["ttl"] = data["timestamp"] + pm["adsb_ttl"] * 1000
 
         # Now operating on the database...
         with self.lock:
@@ -325,8 +335,14 @@ class AircraftParser(TextParser):
             # Add communications frequency, if known
             if self.frequency != 0:
                 out["freq"] = self.frequency
+            # Add timestamp, if missing
+            if "timestamp" not in out:
+                out["timestamp"] = round(datetime.now().timestamp() * 1000)
             # Report message
             ReportingEngine.getSharedInstance().spot(out)
+            # Remove original data from the message
+            if "data" in out:
+                del out["data"]
             # Update aircraft database with the new data
             AircraftManager.getSharedInstance().update(out)
         # Do not return anything when in service mode
@@ -363,16 +379,14 @@ class HfdlParser(AircraftParser):
     def parseAircraft(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
-        pm   = Config.get()
-        ts   = round(data["hfdl"]["t"]["sec"] * 1000 + data["hfdl"]["t"]["usec"] / 1000)
         # @@@ Only parse messages that have LDPU frames for now !!!
         if "lpdu" not in data["hfdl"]:
             return {}
         # Collect basic data first
         out = {
             "mode"      : "HFDL",
-            "timestamp" : ts,
-            "ttl"       : ts + pm["hfdl_ttl"] * 1000
+            "timestamp" : round(data["hfdl"]["t"]["sec"] * 1000 + data["hfdl"]["t"]["usec"] / 1000),
+            "data"      : data
         }
         # Parse LPDU if present
         if "lpdu" in data["hfdl"]:
@@ -449,13 +463,11 @@ class Vdl2Parser(AircraftParser):
     def parseAircraft(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
-        pm   = Config.get()
-        ts   = round(data["vdl2"]["t"]["sec"] * 1000 + data["vdl2"]["t"]["usec"] / 1000)
         # Collect basic data first
         out = {
             "mode"      : "VDL2",
-            "timestamp" : ts,
-            "ttl"       : ts + pm["vdl2_ttl"] * 1000
+            "timestamp" : round(data["vdl2"]["t"]["sec"] * 1000 + data["vdl2"]["t"]["usec"] / 1000),
+            "data"      : data
         }
         # Parse AVLC if present
         if "avlc" in data["vdl2"]:
@@ -569,10 +581,8 @@ class AdsbParser(AircraftParser):
         if "aircraft" not in data or "now" not in data:
             return 0
 
-        # Going to add timestamps and TTLs
-        pm   = Config.get()
-        now  = data["now"]
-        ttl  = now + pm["adsb_ttl"]
+        # This is our current timestamp
+        now = data["now"]
 
         # Iterate over aircraft
         for entry in data["aircraft"]:
@@ -586,9 +596,8 @@ class AdsbParser(AircraftParser):
                 "mode"      : "ADSB",
                 "icao"      : entry["hex"].upper(),
                 "timestamp" : round(ts * 1000),
-                "ttl"       : round((ttl - entry["seen"]) * 1000),
                 "msgs"      : entry["messages"],
-                "rssi"      : entry["rssi"],
+                "rssi"      : entry["rssi"]
             }
 
             # Position
@@ -668,15 +677,13 @@ class AcarsParser(AircraftParser):
     def parseAircraft(self, msg: bytes):
         # Expect JSON data in text form
         data = json.loads(msg)
-        pm   = Config.get()
-        ts   = round(data["timestamp"] * 1000)
         #logger.debug("@@@ ACARS: {0}".format(data))
         # Collect basic data first
         out = {
             "mode"      : "ACARS",
             "type"      : "ACARS frame",
-            "timestamp" : ts,
-            "ttl"       : ts + pm["acars_ttl"] * 1000
+            "timestamp" : round(data["timestamp"] * 1000),
+            "data"      : data
         }
         # Fetch other data
         for key in self.attrMap:
