@@ -1,3 +1,16 @@
+openwebrx (1.2.57) bullseye jammy; urgency=low
+
+  * Added user-selectable waterfall color themes.
+  * Added initial data to all aircraft MQTT reports.
+  * Added current frequency to all reported JSON data.
+  * Stopped adding secondary offset if there is no selector.
+  * Switched all JSON timestamps to milliseconds.
+  * Moved waterfall functions outside openwebrx.js.
+  * Moved UI and utility functions outside openwebrx.js.
+  * Refactored aircraft mode parsers.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 29 Apr 2024 16:12:00 +0000
+
 openwebrx (1.2.56) bullseye jammy; urgency=low
 
   * Added character set setting for the pager messages.

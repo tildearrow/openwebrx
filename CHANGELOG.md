@@ -1,3 +1,13 @@
+**1.2.57**
+- Added user-selectable waterfall color themes.
+- Added initial data to all aircraft MQTT reports.
+- Added current frequency to all reported JSON data.
+- Stopped adding secondary offset if there is no selector.
+- Switched all JSON timestamps to milliseconds.
+- Moved waterfall functions outside openwebrx.js.
+- Moved UI and utility functions outside openwebrx.js.
+- Refactored aircraft mode parsers.
+
 **1.2.56**
 - Added character set setting for the pager messages.
 - Added more default profiles to a new SDRPlay device.
