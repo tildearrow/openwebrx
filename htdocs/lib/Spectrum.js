@@ -37,8 +37,9 @@ Spectrum.prototype.update = function(data) {
 
 //    this.min = Math.min(...data);
 //    this.max = Math.max(...data);
-    this.min = waterfall_min_level - 5;
-    this.max = waterfall_max_level + 5;
+    var wf_range = Waterfall.getRange();
+    this.min = wf_range.min - 5;
+    this.max = wf_range.max + 5;
 };
 
 Spectrum.prototype.draw = function() {
