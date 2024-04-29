@@ -175,7 +175,7 @@ class IsmParser(TextParser):
         out["mode"] = "ISM"
         # Add frequency, if known
         if self.frequency:
-            out["freq"] = frequency
+            out["freq"] = self.frequency
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
         # Return nothing if running as a service
@@ -224,7 +224,7 @@ class PageParser(TextParser):
             return None
         # Add frequency, if known
         if self.frequency:
-            out["freq"] = frequency
+            out["freq"] = self.frequency
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
         # Return nothing if running as a service
