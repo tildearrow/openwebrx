@@ -4,7 +4,7 @@ from owrx.color import ColorCache
 from owrx.reporting import ReportingEngine
 from csdr.module import LineBasedModule
 from pycsdr.types import Format
-from datetime import datetime
+from datetime import datetime, timezone
 import pickle
 import os
 import re
@@ -268,7 +268,7 @@ class PageParser(TextParser):
                 out = {
                     "mode":      "POCSAG",
                     "baud":      baud,
-                    "timestamp": self.getUtcTime(),
+                    "timestamp": round(datetime.now().timestamp() * 1000),
                     "address":   capcode,
                     "function":  function,
                     "certainty": certainty,
@@ -292,7 +292,8 @@ class PageParser(TextParser):
         r = self.reFlex1.match(msg)
         r = self.reFlex2.match(msg) if not r else r
         if r is not None:
-            tstamp  = r.group(1)
+            time    = datetime.strptime(r.group(1), "%Y-%m-%d %H:%M:%S")
+            time    = time.replace(tzinfo=timezone.utc)
             state   = r.group(2)
             frame   = r.group(3)
             capcode = r.group(4)
@@ -326,7 +327,7 @@ class PageParser(TextParser):
                     out = {
                         "mode":      "FLEX",
                         "baud":      baud,
-                        "timestamp": tstamp,
+                        "timestamp": round(time.timestamp() * 1000),
                         "state":     state,
                         "frame":     frame,
                         "address":   capcode,

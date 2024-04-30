@@ -311,7 +311,7 @@ PageMessagePanel.prototype.pushMessage = function(msg) {
         '<tr>' +
             '<td class="address">' + msg.address + '</td>' +
             '<td class="mode">' + msg.mode + msg.baud + '</td>' +
-            '<td class="timestamp" style="text-align:right;">' + msg.timestamp + '</td>' +
+            '<td class="timestamp" style="text-align:right;">' + Utils.HHMMSS(msg.timestamp) + '</td>' +
         '</tr>'
     ).css('background-color', color).css('color', '#000'));
 
