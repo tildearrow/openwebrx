@@ -12,7 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 class MqttReporter(Reporter):
-    DEFAULT_TOPIC = "openwebrx/decodes"
+    DEFAULT_TOPIC = "openwebrx"
 
     def __init__(self):
         pm = Config.get()

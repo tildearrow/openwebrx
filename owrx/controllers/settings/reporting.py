@@ -95,12 +95,12 @@ class ReportingController(SettingsFormController):
                 "MQTT settings",
                 CheckboxInput(
                     "mqtt_enabled",
-                    "Enable publishing decodes to MQTT",
+                    "Enable publishing reports to MQTT",
                 ),
                 TextInput(
                     "mqtt_host",
                     "Broker address",
-                    infotext="Addresss of the MQTT broker to send decodes to (address[:port])",
+                    infotext="Addresss of the MQTT broker to send reports to (address[:port])",
                     validator=AddressAndOptionalPortValidator(),
                 ),
                 TextInput(
@@ -125,7 +125,7 @@ class ReportingController(SettingsFormController):
                 TextInput(
                     "mqtt_topic",
                     "MQTT topic",
-                    infotext="MQTT topic to publish decodes to (default: openwebrx/decodes)",
+                    infotext="MQTT topic to publish reports to (default: openwebrx)",
                     converter=OptionalConverter(),
                 ),
             )

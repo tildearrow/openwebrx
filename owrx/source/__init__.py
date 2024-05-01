@@ -17,8 +17,10 @@ from owrx.form.input.converter import Converter, OptionalConverter, IntConverter
 from owrx.form.input.device import GainInput, SchedulerInput, WaterfallLevelsInput
 from owrx.form.input.validator import RequiredValidator, Range, RangeValidator, RangeListValidator
 from owrx.form.section import OptionalSection
+from owrx.reporting import ReportingEngine
 from owrx.feature import FeatureDetector
 from owrx.log import LogPipe, HistoryHandler
+from datetime import datetime
 from typing import List
 from enum import Enum
 
@@ -274,6 +276,17 @@ class SdrSource(ABC):
             profile_name = self.getProfiles()[profile_id]["name"]
             self.logger.debug("activating profile \"%s\" for \"%s\"", profile_name, self.getName())
             self.profileCarousel.switch(profile_id)
+            # Report profile changes
+            ReportingEngine.getSharedInstance().spot({
+                "mode"       : "RX",
+                "timestamp"  : round(datetime.now().timestamp() * 1000),
+                "source_id"  : self.id,
+                "source"     : self.getName(),
+                "profile_id" : profile_id,
+                "profile"    : profile_name,
+                "freq"       : self.props["center_freq"],
+                "samplerate" : self.props["samp_rate"]
+            })
         except KeyError:
             self.logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
 
@@ -566,8 +579,18 @@ class SdrSource(ABC):
         return self.state
 
     def setState(self, state: SdrSourceState):
+        # Drop out if state has not changed
         if state == self.state:
             return
+        # Report state changes
+        ReportingEngine.getSharedInstance().spot({
+            "mode"      : "RX",
+            "timestamp" : round(datetime.now().timestamp() * 1000),
+            "source_id" : self.id,
+            "source"    : self.getName(),
+            "state"     : str(state)
+        })
+        # Update state and broadcast to clients
         self.state = state
         for c in self.clients.copy():
             c.onStateChange(state)
