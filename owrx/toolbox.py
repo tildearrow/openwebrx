@@ -110,11 +110,11 @@ class TextParser(LineBasedModule):
             out = self.parse(line)
             # If running as a service and writing to a log file...
             if self.service and self.filePfx is not None:
-                if out and len(out) > 0:
+                if out:
                     # If parser returned output, write it into log file
                     self.writeFile(str(out).encode("utf-8"))
                     self.writeFile(b"\n")
-                elif out is None and len(line) > 0:
+                elif out is None and len(line)>0:
                     # Write input into log file, including end-of-line
                     self.writeFile(line)
                     self.writeFile(b"\n")
@@ -213,15 +213,15 @@ class PageParser(TextParser):
         super().__init__(filePrefix="PAGE", service=service)
 
     def parse(self, msg: bytes):
+        # No result yet
+        out = None
         # Steer message to POCSAG or FLEX parser
         if msg.startswith(b"POCSAG"):
             out = self.parsePocsag(msg.decode('utf-8', 'replace'))
         elif msg.startswith(b"FLEX"):
             out = self.parseFlex(msg.decode('utf-8', 'replace'))
-        else:
-            out = None
         # Ignore filtered messages
-        if out is None:
+        if not out:
             return {}
         # Add frequency, if known
         if self.frequency:
