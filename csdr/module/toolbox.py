@@ -8,7 +8,8 @@ class Rtl433Module(ExecModule):
     def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
         cmd = [
             "rtl_433", "-r", "cs16:-", "-s", str(sampleRate),
-            "-M", "time:utc", "-F", "json" if jsonOutput else "kv",
+            "-M", "time:unix" if jsonOutput else "time:utc",
+            "-F", "json" if jsonOutput else "kv",
             "-A",
         ]
         super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)

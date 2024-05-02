@@ -630,7 +630,7 @@ IsmMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
     // These are basic message attributes
-    this.basicInfo = ['mode', 'id', 'model', 'time', 'color'];
+    this.basicInfo = ['mode', 'id', 'model', 'timestamp', 'freq', 'color'];
 }
 
 IsmMessagePanel.prototype = Object.create(MessagePanel.prototype);
@@ -665,7 +665,7 @@ IsmMessagePanel.prototype.pushMessage = function(msg) {
     // Get basic information, assume white color if missing
     var address = msg.hasOwnProperty('id')? msg.id : '???';
     var device  = msg.hasOwnProperty('model')? msg.model : '';
-    var tstamp  = msg.hasOwnProperty('time')? msg.time : '';
+    var tstamp  = msg.hasOwnProperty('timestamp')? Utils.HHMMSS(msg.timestamp) : '';
     var color   = msg.hasOwnProperty('color')? msg.color : '#FFF';
 
     // Append message header (address, time, etc)

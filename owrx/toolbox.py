@@ -106,7 +106,6 @@ class TextParser(LineBasedModule):
 
         try:
             #logger.debug("%s: %s" % (self.myName(), str(line)))
-            # If running as a service with a log file...
             # Let parse() function do its thing
             out = self.parse(line)
             # If running as a service and writing to a log file...
@@ -173,6 +172,10 @@ class IsmParser(TextParser):
         out = json.loads(msg)
         # Add mode name
         out["mode"] = "ISM"
+        # Convert Unix timestamps to milliseconds
+        if "time" in out:
+            out["timestamp"] = int(out["time"]) * 1000
+            del out["time"]
         # Add frequency, if known
         if self.frequency:
             out["freq"] = self.frequency
@@ -191,7 +194,7 @@ class PageParser(TextParser):
         pm = Config.get()
         self.filtering = "paging_filter" in pm and pm["paging_filter"]
         # POCSAG<baud>: Address: <num> Function: <hex> (Certainty: <num> )?(Numeric|Alpha|Skyper): <message>
-        self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(\S+)(\s+Certainty:.*(\d+))?(\s+(\S+):\s*(.*))?")
+        self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(-?\d+)(\s+Certainty:\s*(-?\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>
         self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
@@ -266,16 +269,17 @@ class PageParser(TextParser):
                     "baud":      baud,
                     "timestamp": round(datetime.now().timestamp() * 1000),
                     "address":   capcode,
-                    "function":  function,
-                    "certainty": certainty,
+                    "function":  int(function),
                     "type":      msgtype,
                     "message":   msg
                 }
-                # Output type and message
+                # Output type, message, and certainty
                 if len(msgtype)>0:
                     out["type"] = msgtype
                 if len(msg)>0:
                     out["message"] = msg
+                if certainty is not None:
+                    out["certainty"] = int(certainty)
 
         # Done
         return out
