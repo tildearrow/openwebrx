@@ -276,17 +276,7 @@ class SdrSource(ABC):
             profile_name = self.getProfiles()[profile_id]["name"]
             self.logger.debug("activating profile \"%s\" for \"%s\"", profile_name, self.getName())
             self.profileCarousel.switch(profile_id)
-            # Report profile changes
-            ReportingEngine.getSharedInstance().spot({
-                "mode"       : "RX",
-                "timestamp"  : round(datetime.now().timestamp() * 1000),
-                "source_id"  : self.id,
-                "source"     : self.getName(),
-                "profile_id" : profile_id,
-                "profile"    : profile_name,
-                "freq"       : self.props["center_freq"],
-                "samplerate" : self.props["samp_rate"]
-            })
+            self.reportProfileChange()
         except KeyError:
             self.logger.warning("invalid profile %s for sdr %s. ignoring", profile_id, self.getId())
 
@@ -582,16 +572,9 @@ class SdrSource(ABC):
         # Drop out if state has not changed
         if state == self.state:
             return
-        # Report state changes
-        ReportingEngine.getSharedInstance().spot({
-            "mode"      : "RX",
-            "timestamp" : round(datetime.now().timestamp() * 1000),
-            "source_id" : self.id,
-            "source"    : self.getName(),
-            "state"     : str(state)
-        })
         # Update state and broadcast to clients
         self.state = state
+        self.reportStateChange()
         for c in self.clients.copy():
             c.onStateChange(state)
 
@@ -601,6 +584,27 @@ class SdrSource(ABC):
         self.busyState = state
         for c in self.clients.copy():
             c.onBusyStateChange(state)
+
+    def reportStateChange(self):
+      ReportingEngine.getSharedInstance().spot({
+          "mode"      : "RX",
+          "timestamp" : round(datetime.now().timestamp() * 1000),
+          "source_id" : self.id,
+          "source"    : self.getName(),
+          "state"     : str(self.state)
+      })
+
+    def reportProfileChange(self):
+        ReportingEngine.getSharedInstance().spot({
+            "mode"       : "RX",
+            "timestamp"  : round(datetime.now().timestamp() * 1000),
+            "source_id"  : self.id,
+            "source"     : self.getName(),
+            "profile_id" : self.getProfileId(),
+            "profile"    : self.getProfileName(),
+            "freq"       : self.props["center_freq"],
+            "samplerate" : self.props["samp_rate"]
+        })
 
 
 class SdrDeviceDescriptionMissing(Exception):
