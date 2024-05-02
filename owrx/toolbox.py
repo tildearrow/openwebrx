@@ -178,13 +178,11 @@ class IsmParser(TextParser):
             out["freq"] = self.frequency
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
-        # Return nothing if running as a service
-        if self.service:
-            return None
-        else:
-            # Color messages based on sender IDs
+        # In interactive mode, color messages based on sender IDs
+        if not self.service:
             out["color"] = self.colors.getColor(out["id"])
-            return out
+        # Always return JSON data
+        return out
 
 
 class PageParser(TextParser):
@@ -221,19 +219,17 @@ class PageParser(TextParser):
             out = None
         # Ignore filtered messages
         if out is None:
-            return None
+            return {}
         # Add frequency, if known
         if self.frequency:
             out["freq"] = self.frequency
         # Report message
         ReportingEngine.getSharedInstance().spot(out)
-        # Return nothing if running as a service
-        if self.service:
-            return None
-        else:
-            # Color messages based on addresses
+        # In interactive mode, color messages based on addresses
+        if not self.service:
             out["color"] = self.colors.getColor(out["address"])
-            return out
+        # Always return JSON data
+        return out
 
     def collapseSpaces(self, msg: str) -> str:
         # Collapse white space
