@@ -1,3 +1,11 @@
+**1.2.58**
+- Added MQTT reporting of SDR profile and status changes.
+- SDR changes reported via "openwebrx/RX" MQTT topic.
+- Decodes reported via "openwebrx/<mode>" MQTT topics.
+- Switched PAGE decoders to millisecond timestamps.
+- Switched PAGE and ISM file recording to JSON.
+- Cleaned up TextParser, PAGE, and ISM decoders.
+
 **1.2.57**
 - Added user-selectable waterfall color themes.
 - Added initial data to all aircraft MQTT reports.

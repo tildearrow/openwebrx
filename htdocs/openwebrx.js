@@ -1272,13 +1272,10 @@ function init_canvas_container() {
     frequency_container.on("wheel", canvas_mousewheel, false);
 }
 
-canvas_maxshift = 0;
-
 function shift_canvases() {
     canvases.forEach(function (p) {
         p.style.transform = 'translate(0, ' + (p.openwebrx_top++).toString() + 'px)';
     });
-    canvas_maxshift++;
 }
 
 function resize_canvases(zoom) {

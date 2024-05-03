@@ -1,3 +1,14 @@
+openwebrx (1.2.58) bullseye jammy; urgency=low
+
+  * Added MQTT reporting of SDR profile and status changes.
+  * SDR changes reported via "openwebrx/RX" MQTT topic.
+  * Decodes reported via "openwebrx/<mode>" MQTT topics.  
+  * Switched PAGE decoders to millisecond timestamps.
+  * Switched PAGE and ISM file recording to JSON.
+  * Cleaned up TextParser, PAGE, and ISM decoders.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 6 May 2024 16:12:00 +0000
+
 openwebrx (1.2.57) bullseye jammy; urgency=low
 
   * Added user-selectable waterfall color themes.
