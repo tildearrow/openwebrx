@@ -185,7 +185,7 @@ class Modes(object):
         DigitalMode(
             "page",
             "Page",
-            underlying=["empty"],
+            underlying=["empty"], #["nfm"],
             bandpass=Bandpass(-6000, 6000),
             requirements=["page"],
             service=True,

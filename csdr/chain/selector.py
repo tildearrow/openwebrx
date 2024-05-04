@@ -93,12 +93,14 @@ class Selector(Chain):
 
         workers = [self.shift, self.decimation]
 
+        self.readings_per_second = 4
         if withSquelch:
-            self.readings_per_second = 4
             # s-meter readings are available every 1024 samples
             # the reporting interval is measured in those 1024-sample blocks
             self.squelch = Squelch(5, int(outputRate / (self.readings_per_second * 1024)))
             workers += [self.squelch]
+        else:
+            self.squelch = None
 
         super().__init__(workers)
 
@@ -120,7 +122,8 @@ class Selector(Chain):
         return float(math.pow(10, db / 10))
 
     def setSquelchLevel(self, level: float) -> None:
-        self.squelch.setSquelchLevel(self._convertToLinear(level))
+        if self.squelch is not None:
+            self.squelch.setSquelchLevel(self._convertToLinear(level))
 
     def _enableBandpass(self):
         index = self.indexOf(lambda x: isinstance(x, Bandpass))
@@ -150,7 +153,8 @@ class Selector(Chain):
         self.setBandpass(*self.bandpassCutoffs)
 
     def setPowerWriter(self, writer: Writer) -> None:
-        self.squelch.setPowerWriter(writer)
+        if self.squelch is not None:
+            self.squelch.setPowerWriter(writer)
 
     def setOutputRate(self, outputRate: int) -> None:
         if outputRate == self.outputRate:
@@ -158,7 +162,8 @@ class Selector(Chain):
         self.outputRate = outputRate
 
         self.decimation.setOutputRate(outputRate)
-        self.squelch.setReportInterval(int(outputRate / (self.readings_per_second * 1024)))
+        if self.squelch is not None:
+            self.squelch.setReportInterval(int(outputRate / (self.readings_per_second * 1024)))
         index = self.indexOf(lambda x: isinstance(x, Bandpass))
         self.bandpass = self._buildBandpass()
         self.setBandpass(*self.bandpassCutoffs)
