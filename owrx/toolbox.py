@@ -313,12 +313,10 @@ class PageParser(TextParser):
                     self.flexBuf[capcode] += msg
                 else:
                     self.flexBuf[capcode] = msg
-            # Only output message once it completes
-            if frag == "F":
-                msg = ""
-            elif frag == "C":
-                msg = self.flexBuf[capcode]
-                del self.flexBuf[capcode]
+                # Output message once it completes
+                if frag == "C":
+                    msg = self.flexBuf[capcode]
+                    del self.flexBuf[capcode]
             # Do not report fragments of messages
             if frag != "F":
                 # Collapse white space
