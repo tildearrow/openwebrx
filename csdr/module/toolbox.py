@@ -18,7 +18,7 @@ class Rtl433Module(ExecModule):
 class MultimonModule(ExecModule):
     def __init__(self, decoders: list[str]):
         pm  = Config.get()
-        cmd = ["multimon-ng", "-", "-v0", "-c", "-C", pm["paging_charset"]]
+        cmd = ["multimon-ng", "-", "-v0", "-C", pm["paging_charset"], "-c"]
         for x in decoders:
             cmd += ["-a", x]
         super().__init__(Format.SHORT, Format.CHAR, cmd)

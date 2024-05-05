@@ -197,11 +197,11 @@ class PageParser(TextParser):
         self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(-?\d+)(\s+Certainty:\s*(-?\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>
-        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+/\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
+        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+)/(\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
         # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
-        self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+/\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
+        self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+)/(\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
         # FLEX message status
-        self.reFlex3 = re.compile(r"(\d+/\d+)(/\S)?/\S")
+        self.reFlex3 = re.compile(r"(\d+)(/\S)?/\S")
         # Message filtering patterns
         self.reControl = re.compile(r"<[\w\d]{2,3}>")
         self.reSpaces = re.compile(r"[\000-\037\s]+")
@@ -266,7 +266,7 @@ class PageParser(TextParser):
             if not self.filtering or (msgtype=="Alpha" and len(msg)>0):
                 out = {
                     "mode":      "POCSAG",
-                    "baud":      baud,
+                    "baud":      int(baud),
                     "timestamp": round(datetime.now().timestamp() * 1000),
                     "address":   capcode,
                     "function":  int(function),
@@ -294,13 +294,14 @@ class PageParser(TextParser):
         if r is not None:
             time    = datetime.strptime(r.group(1), "%Y-%m-%d %H:%M:%S")
             time    = time.replace(tzinfo=timezone.utc)
-            state   = r.group(2)
-            frame   = r.group(3)
-            capcode = r.group(4)
-            msgtype = r.group(5)
-            msg     = r.group(6)
+            baud    = r.group(2)
+            state   = r.group(3)
+            frame   = r.group(4)
+            capcode = r.group(5)
+            msgtype = r.group(6)
+            msg     = r.group(7)
             rm      = self.reFlex3.match(state)
-            baud    = "" if not rm else rm.group(1)
+            channel = "" if not rm else rm.group(1)
             frag    = "" if not rm or not rm.group(2) else rm.group(2)[1]
             # Assemble fragmented messages in flexBuf
             if frag == "F" or frag == "C":
@@ -326,13 +327,16 @@ class PageParser(TextParser):
                 if not self.filtering or (msgtype=="ALN" and self.isReadable(msg)):
                     out = {
                         "mode":      "FLEX",
-                        "baud":      baud,
+                        "baud":      int(baud),
                         "timestamp": round(time.timestamp() * 1000),
                         "state":     state,
                         "frame":     frame,
                         "address":   capcode,
                         "type":      msgtype
                     }
+                    # Output channel
+                    if len(channel)>0:
+                        out["channel"] = int(channel)
                     # Output message
                     if len(msg)>0:
                         out["message"] = msg

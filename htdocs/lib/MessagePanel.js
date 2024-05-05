@@ -303,14 +303,18 @@ PageMessagePanel.prototype.render = function() {
 
 PageMessagePanel.prototype.pushMessage = function(msg) {
     // Get color from the message, default to white
-    var color = msg.hasOwnProperty('color')? msg.color : "#FFF";
+    var color = msg.hasOwnProperty('color')? msg.color : '#FFF';
+
+    // Get channel from the message (FLEX only)
+    var channel = msg.hasOwnProperty('channel')? '/' + msg.channel : '';
+
 
     // Append message header (address, time, etc)
     var $b = $(this.el).find('tbody');
     $b.append($(
         '<tr>' +
             '<td class="address">' + msg.address + '</td>' +
-            '<td class="mode">' + msg.mode + msg.baud + '</td>' +
+            '<td class="mode">' + msg.mode + msg.baud + channel + '</td>' +
             '<td class="timestamp" style="text-align:right;">' + Utils.HHMMSS(msg.timestamp) + '</td>' +
         '</tr>'
     ).css('background-color', color).css('color', '#000'));
