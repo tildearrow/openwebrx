@@ -2,12 +2,14 @@
 - Added MQTT reporting of SDR profile and status changes.
 - SDR changes reported via "openwebrx/RX" MQTT topic.
 - Decodes reported via "openwebrx/<mode>" MQTT topics.
+- Fixed background PAGE decoding with a workaround.
+- Fixed Selector API errors when withSquelch=False.
 - Switched PAGE decoders to millisecond timestamps.
 - Switched PAGE and ISM file recording to JSON.
 - Separated FLEX baud rate from channel number.
 - Made relevant PAGE JSON fields integer.
 - Cleaned up TextParser, PAGE, and ISM decoders.
-- Fixed Selector API errors when withSquelch=False.
+- Added debug code to print module chains.
 
 **1.2.57**
 - Added user-selectable waterfall color themes.

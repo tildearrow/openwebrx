@@ -74,7 +74,13 @@ class PageDemodulator(MultimonDemodulator):
     def __init__(self, service: bool = False):
         super().__init__(
             ["FLEX", "POCSAG512", "POCSAG1200", "POCSAG2400"],
-            PageParser(service=service)
+            PageParser(service=service),
+            # Enabling squelch in background mode just to make sure
+            # multimon-ng is fed data in large chunks (>=512 samples).
+            # POCSAG mode will not work otherwise, due to some issue
+            # in multimon-ng. In the interactive mode, similar effect
+            # is achieved by the Squelch() module in the main chain.
+            withSquelch = service
         )
 
 
