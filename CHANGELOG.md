@@ -4,7 +4,10 @@
 - Decodes reported via "openwebrx/<mode>" MQTT topics.
 - Switched PAGE decoders to millisecond timestamps.
 - Switched PAGE and ISM file recording to JSON.
+- Separated FLEX baud rate from channel number.
+- Made relevant PAGE JSON fields integer.
 - Cleaned up TextParser, PAGE, and ISM decoders.
+- Fixed Selector API errors when withSquelch=False.
 
 **1.2.57**
 - Added user-selectable waterfall color themes.

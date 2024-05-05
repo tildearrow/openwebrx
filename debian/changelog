@@ -5,7 +5,10 @@ openwebrx (1.2.58) bullseye jammy; urgency=low
   * Decodes reported via "openwebrx/<mode>" MQTT topics.  
   * Switched PAGE decoders to millisecond timestamps.
   * Switched PAGE and ISM file recording to JSON.
+  * Separated FLEX baud rate from channel number.
+  * Made relevant PAGE JSON fields integer.
   * Cleaned up TextParser, PAGE, and ISM decoders.
+  * Fixed Selector API errors when withSquelch=False.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 6 May 2024 16:12:00 +0000
 
