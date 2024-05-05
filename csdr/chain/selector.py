@@ -77,6 +77,14 @@ class Decimator(Chain):
         self.inputRate = inputRate
         self._reconfigure()
 
+    def __str__(self):
+        decimation, fraction = self._getDecimation(self.outputRate)
+        transition = 0.15 * (self.outputRate / float(self.inputRate))
+        cutoff = 0.5 * decimation / (self.inputRate / self.outputRate)
+        return "{0}(decimation {1} * {2}, transition {3}, cutoff {4})".format(
+            type(self).__name__, decimation, fraction, transition, cutoff
+        )
+
 
 class Selector(Chain):
     def __init__(self, inputRate: int, outputRate: int, withSquelch: bool = True):
@@ -177,10 +185,21 @@ class Selector(Chain):
         self.decimation.setInputRate(inputRate)
         self._updateShift()
 
+    def __str__(self):
+        return "{0}({1} => offset {2} => bandpass {3}..{4} => {5})".format(
+            type(self).__name__,
+            self.inputRate,
+            self.frequencyOffset,
+            self.bandpassCutoffs[0],
+            self.bandpassCutoffs[1],
+            self.outputRate
+        )
+
 
 class SecondarySelector(Chain):
     def __init__(self, sampleRate: int, bandwidth: float):
         self.sampleRate = sampleRate
+        self.bandwidth = bandwidth
         self.frequencyOffset = 0
         self.shift = Shift(0.0)
         cutoffRate = bandwidth / sampleRate
@@ -195,6 +214,16 @@ class SecondarySelector(Chain):
         if self.frequencyOffset is None:
             return
         self.shift.setRate(-offset / self.sampleRate)
+
+    def __str__(self):
+        return "{0}({1} => offset {2} => bandpass {3}..{4} => {5})".format(
+            type(self).__name__,
+            self.sampleRate,
+            self.frequencyOffset,
+            -self.bandwidth,
+            self.bandwidth,
+            self.sampleRate
+        )
 
 
 class SelectorError(Exception):

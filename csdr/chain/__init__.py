@@ -3,6 +3,10 @@ from pycsdr.modules import Buffer
 from pycsdr.types import Format
 from typing import Union, Callable, Optional
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class Chain(Module):
     def __init__(self, workers):
@@ -145,3 +149,14 @@ class Chain(Module):
             return self.workers[-1].getOutputFormat()
         else:
             raise BufferError("getOutputFormat on empty chain")
+
+    def printWorkers(self, prefix: str = ""):
+        logger.debug("{0}{1}".format(prefix, self))
+        for w in self.workers:
+            if isinstance(w, Chain):
+                w.printWorkers(prefix + "  ")
+            else:
+                logger.debug("{0}  {1}".format(prefix, w))
+
+    def __str__(self):
+        return "{0}({1} workers)".format(type(self).__name__, len(self.workers))
