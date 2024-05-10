@@ -1,5 +1,10 @@
 [
     {
+        "name" : "Emergency",
+        "frequency" : 121500000,
+        "modulation" : "nfm"
+    },
+    {
         "name" : "ACARS - USA & Canada 3",
         "frequency" : 129125000,
         "modulation" : "acars"

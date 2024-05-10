@@ -80,6 +80,11 @@ NOAA-6|||162525|NFM
 NOAA-7|||162550|NFM
 
 #
+# Aircraft frequencies
+#
+Emergency|||121500|NFM
+
+#
 # ACARS frequencies
 #
 ACARS|USA & Canada 3||129125|ACARS
