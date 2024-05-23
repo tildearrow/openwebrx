@@ -36,7 +36,7 @@ UI.loadSettings = function() {
     this.toggleNR(LS.has('nr_enabled')? LS.loadBool('nr_enabled') : false);
 
     // Get volume and mute
-    var volume = LS.has('volume')? LS.loadInt('volume') : 50;
+    var volume = LS.has('volume')? LS.loadInt('volume') : 100;
     var muted  = LS.has('volumeMuted')? LS.loadInt('volumeMuted') : -1;
     if (muted >= 0) {
         if (this.volumeMuted >= 0) {
