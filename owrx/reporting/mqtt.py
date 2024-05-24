@@ -44,7 +44,7 @@ class MqttReporter(Reporter):
         try:
             client.connect(host=host, port=port)
         except Exception as e:
-            logger.debug("Exception connecting: " + str(e))
+            logger.error("Exception connecting: " + str(e))
 
         threading.Thread(target=client.loop_forever).start()
 
