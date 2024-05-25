@@ -5,6 +5,7 @@ from pycsdr.types import Format
 
 import logging
 import threading
+import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -46,12 +47,14 @@ class HdRadioModule(ThreadModule):
         logger.debug("Starting NRSC5 decoder...")
         self.radio.open_pipe()
         self.radio.start()
+        self.ts  = time.time()
+        self.cnt = 0
 
         # Main loop
         logger.debug("Running the loop...")
         while self.doRun:
             data = self.reader.read()
-            if data is None:
+            if data is None or len(data) == 0:
                 self.doRun = False
                 break
             try:
@@ -66,17 +69,21 @@ class HdRadioModule(ThreadModule):
         logger.debug("DONE.")
 
     def callback(self, evt_type, evt):
-        if evt_type == EventType.AUDIO:
+        if evt_type == EventType.LOST_DEVICE:
+            logger.info("Lost device")
+            self.doRun = False
+        elif evt_type == EventType.AUDIO:
             if evt.program == self.program:
                 #logger.info("Audio data for program %d", evt.program)
+                sz = len(evt.data) / 2 / 2
+                self.cnt += sz
+                ts = self.ts + self.cnt / 44100
+                #logger.info("DIFF: {0}, SIZE: {1}".format(time.time() - ts, sz))
                 self.writer.write(evt.data)
         elif evt_type == EventType.HDC:
             if evt.program == self.program:
                 #logger.info("HDC data for program %d", evt.program)
                 pass
-        elif evt_type == EventType.LOST_DEVICE:
-            logger.info("Lost device")
-            self.doRun = False
         elif evt_type == EventType.IQ:
             logger.info("IQ data")
         elif evt_type == EventType.SYNC:
