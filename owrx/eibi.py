@@ -34,14 +34,6 @@ class EIBI(object):
         return EIBI.sharedInstance
 
     @staticmethod
-    def start():
-        EIBI.getSharedInstance().startThread()
-
-    @staticmethod
-    def stop():
-        EIBI.getSharedInstance().stopThread()
-
-    @staticmethod
     def _getCachedScheduleFile():
         coreConfig = CoreConfig()
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())

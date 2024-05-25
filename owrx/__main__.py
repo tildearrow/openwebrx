@@ -21,6 +21,7 @@ from owrx.version import openwebrx_version
 from owrx.audio.queue import DecoderQueue
 from owrx.admin import add_admin_parser, run_admin_action
 from owrx.markers import Markers
+from owrx.gps import GpsUpdater
 from pathlib import Path
 import signal
 import argparse
@@ -136,6 +137,9 @@ Support and info:       https://groups.io/g/openwebrx
 
     Services.start()
 
+    # Instantiate and start GPS location updater
+    GpsUpdater.init()
+
     # Instantiate and refresh marker database
     Markers.start()
 
@@ -163,6 +167,7 @@ Support and info:       https://groups.io/g/openwebrx
 
     WebSocketConnection.closeAll()
     Markers.stop()
+    GpsUpdater.stop()
     Services.stop()
     SdrService.stopAllSources()
     ReportingEngine.stopAll()

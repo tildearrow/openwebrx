@@ -49,6 +49,10 @@ class GeneralSettingsController(SettingsFormController):
                 ),
                 TextInput("receiver_admin", "Receiver admin"),
                 LocationInput("receiver_gps", "Receiver coordinates"),
+                CheckboxInput(
+                    "gps_updates",
+                    "Update receiver coordinates via GPS (if device present)",
+                ),
                 TextInput("photo_title", "Photo title"),
                 TextAreaInput("photo_desc", "Photo description", infotext="HTML supported "),
             ),
