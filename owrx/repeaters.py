@@ -31,14 +31,6 @@ class Repeaters(object):
         return Repeaters.sharedInstance
 
     @staticmethod
-    def start():
-        Repeaters.getSharedInstance().startThread()
-
-    @staticmethod
-    def stop():
-        Repeaters.getSharedInstance().stopThread()
-
-    @staticmethod
     def _getCachedDatabaseFile():
         coreConfig = CoreConfig()
         return "{data_directory}/repeaters.json".format(data_directory=coreConfig.get_data_directory())

@@ -1,4 +1,4 @@
-class ColorCache:
+class ColorCache(object):
     def __init__(self):
         # Use these colors for labels
         self.colors = [

@@ -1,4 +1,5 @@
 **1.2.59**
+- Added optional receiver location updates via GPSD.
 - Added copyright-free Mirics driver for SDRPlay and clones.
 - Fixed OpenWebRX startup failure if MQTT connection fails.
 - Volume control is now logarithmic, in -55db to +5db range.
