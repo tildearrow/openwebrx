@@ -1,3 +1,12 @@
+openwebrx (1.2.59) bullseye jammy; urgency=low
+
+  * Added copyright-free Mirics driver for SDRPlay and clones.
+  * Fixed OpenWebRX startup failure if MQTT connection fails.
+  * Volume control is now logarithmic, in -55db to +5db range.
+  * Added Aircraft Emergency Frequency bookmark.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 27 May 2024 16:12:00 +0000
+
 openwebrx (1.2.58) bullseye jammy; urgency=low
 
   * Added MQTT reporting of SDR profile and status changes.
