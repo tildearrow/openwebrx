@@ -22,7 +22,7 @@ from owrx.form.input.device import BiasTeeInput
 from typing import List
 
 
-class SoapymiriSource(SoapyConnectorSource):
+class MiricsSource(SoapyConnectorSource):
     def getSoapySettingsMappings(self):
         mappings = super().getSoapySettingsMappings()
         mappings.update(
@@ -37,7 +37,7 @@ class SoapymiriSource(SoapyConnectorSource):
         return mappings
 
     def getDriver(self):
-        return "soapyMiri"
+        return "mirics"
 
 class BuffLenOptions(DropdownEnum):
     BUFFLEN_15872 = "15872"
@@ -63,9 +63,9 @@ class AsyncBuffsOptions(DropdownEnum):
     def __str__(self):
         return self.value
 
-class SoapymiriDeviceDescription(SoapyConnectorDeviceDescription):
+class MiricsDeviceDescription(SoapyConnectorDeviceDescription):
     def getName(self):
-        return "Miric-based device (via SoapySDR)"
+        return "Mirics-based device with the MSi2500 chip (via SoapySDR)"
 
     def getInputs(self) -> List[Input]:
         return super().getInputs() + [
