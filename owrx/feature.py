@@ -345,8 +345,10 @@ class FeatureDetector(object):
     def has_soapy_mirics(self):
         """
         The [SoapySDR module for Mirics](https://github.com/ericek111/SoapyMiri)
-        devices is required for interfacing with Mirics-based hardware (MSi2500 etc).
-        You will also need to install the [libmirisdr-5](https://github.com/ericek111/libmirisdr-5) library.
+        devices is required for interfacing with Mirics-based hardware
+        (MSi001 + MSi2500). You will also need to install the
+        [libmirisdr-5](https://github.com/ericek111/libmirisdr-5)
+        library.
         """
         return self._has_soapy_driver("soapyMiri")
 
