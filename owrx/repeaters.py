@@ -74,6 +74,24 @@ class Repeaters(object):
         self.refreshPeriod = 60*60*24
         self.lock = threading.Lock()
         self.repeaters = []
+        # Update repeater list when receiver location changes
+        pm = Config.get()
+        self.location = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
+        pm.wireProperty("receiver_gps", self._updateLocation)
+
+    # Delete current repeater list when receiver location changes.
+    def _updateLocation(self, location):
+        location = (location["lat"], location["lon"])
+        file = self._getCachedDatabaseFile()
+        dist = self.distKm(location, self.location)
+        if not os.path.exists(file):
+            # If there are no repeaters loaded, just keep new location
+            self.location = location
+        elif dist > 10:
+            # Do not delete repeater list unless receiver moved a lot
+            logger.debug("Receiver moved by {0}km, deleting '{1}'...".format(dist, file))
+            self.location = location
+            os.remove(file)
 
     #
     # Load cached database or refresh it from the web.

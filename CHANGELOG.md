@@ -3,6 +3,7 @@
 - Added copyright-free Mirics driver for SDRPlay and clones.
 - Fixed OpenWebRX startup failure if MQTT connection fails.
 - Volume control is now logarithmic, in -55db to +5db range.
+- Removing repeaters.json when receiver moves by >10km.
 - Added Aircraft Emergency Frequency bookmark.
 
 **1.2.58**

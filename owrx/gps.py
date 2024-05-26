@@ -56,8 +56,7 @@ class GpsUpdater(object):
         self.event  = threading.Event()
         self.thread = None
         # Start/stop main thread when setting changes
-        pm = Config.get()
-        pm.wireProperty("gps_updates", self._toggleUpdates)
+        Config.get().wireProperty("gps_updates", self._toggleUpdates)
 
     # Toggle GPS updates when setting changes
     def _toggleUpdates(self, enable):
