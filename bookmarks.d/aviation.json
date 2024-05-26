@@ -2,7 +2,12 @@
     {
         "name" : "Emergency",
         "frequency" : 121500000,
-        "modulation" : "nfm"
+        "modulation" : "am"
+    },
+    {
+        "name" : "Emergency",
+        "frequency" : 243000000,
+        "modulation" : "am"
     },
     {
         "name" : "ACARS - USA & Canada 3",

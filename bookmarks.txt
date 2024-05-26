@@ -82,7 +82,8 @@ NOAA-7|||162550|NFM
 #
 # Aircraft frequencies
 #
-Emergency|||121500|NFM
+Emergency|||121500|AM
+Emergency|||243000|AM
 
 #
 # ACARS frequencies
