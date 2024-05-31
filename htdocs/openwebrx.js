@@ -34,6 +34,7 @@ var waterfall_setup_done = 0;
 var secondary_fft_size;
 var tuning_step_default = 1;
 var tuning_step = 1;
+var bands = [];
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -388,6 +389,52 @@ function get_scale_mark_spacing(range) {
 
 var range;
 
+function drawBands() {
+    var range = get_visible_freq_range();
+    if (!range || !bands.length) return;
+
+    //console.log("Drawing range of " + range.start + " - " + range.end);
+
+    var canvas = $('#openwebrx-bookmarks-canvas')[0];
+    var ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = 30;
+
+    ctx.lineWidth = 20;
+    ctx.fillStyle = '#fff';
+    ctx.textAlign = 'center';
+    ctx.font = 'bold 11px sans-serif';
+    ctx.textBaseline = 'middle';
+
+    bands.forEach((x) => {
+        if (x.low_bound < range.end && x.high_bound > range.start) {
+            var start = Math.max(scale_px_from_freq(x.low_bound, range), 0);
+            var end = Math.min(scale_px_from_freq(x.high_bound, range), window.innerWidth);
+            var tag = x.tags.length > 0? x.tags[0] : '';
+
+            //console.log("Drawing " + x.name + "(" + tag + ", " + x.low_bound
+            //    + ", " + x.high_bound + ") => " + start + " - " + end);
+
+            ctx.strokeStyle =
+                tag === 'hamradio' ? '#070'
+              : tag === 'broadcast'? '#007'
+              : tag === 'public'   ? '#520'
+              : tag === 'service'  ? '#700'
+              : '#000';
+
+            ctx.beginPath();
+            ctx.moveTo(start, 10);
+            ctx.lineTo(end, 10);
+            ctx.stroke();
+
+            var w = ctx.measureText(x.name).width;
+            if (w <= (end - start) / 2) {
+                ctx.fillText(x.name, (start + end) / 2, 10);
+            }
+        }
+    });
+}
+
 function mkscale() {
     //clear the lower part of the canvas (where frequency scale resides; the upper part is used by filter envelopes):
     range = get_visible_freq_range();
@@ -408,6 +455,7 @@ function mkscale() {
     };
     var last_large;
     var x;
+    drawBands();
     while ((x = scale_px_from_freq(marker_hz, range)) <= window.innerWidth) {
         scale_ctx.beginPath();
         scale_ctx.moveTo(x, 22);
@@ -974,6 +1022,9 @@ function on_ws_recv(evt) {
                         break;
                     case "clients":
                         $('#openwebrx-bar-clients').progressbar().setClients(json['value']);
+                        break;
+                    case "bands":
+                        bands = json['value'];
                         break;
                     case "profiles":
                         var listbox = $("#openwebrx-sdr-profiles-listbox");
