@@ -15,6 +15,7 @@ UI.nrThreshold = 0;
 UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
+UI.bandplan = false;
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -31,6 +32,7 @@ UI.loadSettings = function() {
     this.toggleFrame(LS.has('ui_frame')? LS.loadBool('ui_frame') : false);
     this.toggleWheelSwap(LS.has('ui_wheel')? LS.loadBool('ui_wheel') : false);
     this.toggleSpectrum(LS.has('ui_spectrum')? LS.loadBool('ui_spectrum') : false);
+    this.toggleBandplan(LS.has('ui_bandplan')? LS.loadBool('ui_bandplan') : false);
     this.setWfTheme(LS.has('wf_theme')? LS.loadStr('wf_theme') : 'default');
     this.setNR(LS.has('nr_threshold')? LS.loadInt('nr_threshold') : false);
     this.toggleNR(LS.has('nr_enabled')? LS.loadBool('nr_enabled') : false);
@@ -192,6 +194,19 @@ UI.toggleSpectrum = function(on) {
     this.spectrum = on;
     LS.save('ui_spectrum', on);
     if (spectrum) spectrum.toggle(on);
+};
+
+// Show or hide bandplan display
+UI.toggleBandplan = function(on) {
+    // If no argument given, toggle bandplan
+    if (typeof(on) === 'undefined') on = !this.bandplan;
+
+    if (this.bandplan != on) {
+        this.bandplan = on;
+        LS.save('ui_bandplan', on);
+        $('#openwebrx-bandplan-checkbox').attr('checked', on);
+        if (bandplan) bandplan.toggle(on);
+    }
 };
 
 // Show or hide frame around receiver and other panels.

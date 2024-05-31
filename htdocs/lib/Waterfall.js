@@ -193,4 +193,4 @@ Waterfall.drawLine = function(out, data, offset = 0) {
         out[y++] = color[2];
         out[y++] = 255;
     }
-}
+};

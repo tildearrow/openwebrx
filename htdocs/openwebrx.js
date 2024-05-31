@@ -34,7 +34,9 @@ var waterfall_setup_done = 0;
 var secondary_fft_size;
 var tuning_step_default = 1;
 var tuning_step = 1;
-var bands = [];
+var spectrum = null;
+var bandplan = null;
+var scanner = null;
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -389,52 +391,6 @@ function get_scale_mark_spacing(range) {
 
 var range;
 
-function drawBands() {
-    var range = get_visible_freq_range();
-    if (!range || !bands.length) return;
-
-    //console.log("Drawing range of " + range.start + " - " + range.end);
-
-    var canvas = $('#openwebrx-bookmarks-canvas')[0];
-    var ctx = canvas.getContext('2d');
-    canvas.width = window.innerWidth;
-    canvas.height = 30;
-
-    ctx.lineWidth = 20;
-    ctx.fillStyle = '#fff';
-    ctx.textAlign = 'center';
-    ctx.font = 'bold 11px sans-serif';
-    ctx.textBaseline = 'middle';
-
-    bands.forEach((x) => {
-        if (x.low_bound < range.end && x.high_bound > range.start) {
-            var start = Math.max(scale_px_from_freq(x.low_bound, range), 0);
-            var end = Math.min(scale_px_from_freq(x.high_bound, range), window.innerWidth);
-            var tag = x.tags.length > 0? x.tags[0] : '';
-
-            //console.log("Drawing " + x.name + "(" + tag + ", " + x.low_bound
-            //    + ", " + x.high_bound + ") => " + start + " - " + end);
-
-            ctx.strokeStyle =
-                tag === 'hamradio' ? '#070'
-              : tag === 'broadcast'? '#007'
-              : tag === 'public'   ? '#520'
-              : tag === 'service'  ? '#700'
-              : '#000';
-
-            ctx.beginPath();
-            ctx.moveTo(start, 10);
-            ctx.lineTo(end, 10);
-            ctx.stroke();
-
-            var w = ctx.measureText(x.name).width;
-            if (w <= (end - start) / 2) {
-                ctx.fillText(x.name, (start + end) / 2, 10);
-            }
-        }
-    });
-}
-
 function mkscale() {
     //clear the lower part of the canvas (where frequency scale resides; the upper part is used by filter envelopes):
     range = get_visible_freq_range();
@@ -455,7 +411,6 @@ function mkscale() {
     };
     var last_large;
     var x;
-    drawBands();
     while ((x = scale_px_from_freq(marker_hz, range)) <= window.innerWidth) {
         scale_ctx.beginPath();
         scale_ctx.moveTo(x, 22);
@@ -518,6 +473,7 @@ function resize_scale() {
     scale_canvas.height = h;
     scale_ctx.scale(ratio, ratio);
     mkscale();
+    bandplan.draw();
     bookmarks.position();
 }
 
@@ -730,6 +686,7 @@ function canvas_mousemove(evt) {
             }
             resize_canvases(false);
             mkscale();
+            bandplan.draw();
             bookmarks.position();
 
             canvas_drag_last_x = evt.pageX;
@@ -844,6 +801,7 @@ function zoom_step(out, where, onscreen) {
     //console.log(zoom_center_where, zoom_center_rel, where);
     resize_canvases(true);
     mkscale();
+    bandplan.draw();
     bookmarks.position();
 }
 
@@ -857,6 +815,7 @@ function zoom_set(level) {
     zoom_center_where = 0.5 + (zoom_center_rel / bandwidth); //this is a kind of hack
     resize_canvases(true);
     mkscale();
+    bandplan.draw();
     bookmarks.position();
 }
 
@@ -1024,7 +983,8 @@ function on_ws_recv(evt) {
                         $('#openwebrx-bar-clients').progressbar().setClients(json['value']);
                         break;
                     case "bands":
-                        bands = json['value'];
+                        // Feed bandplan display with data
+                        bandplan.update(json['value']);
                         break;
                     case "profiles":
                         var listbox = $("#openwebrx-sdr-profiles-listbox");
@@ -1139,9 +1099,9 @@ function on_ws_recv(evt) {
                 // Feed waterfall display with data
                 waterfall_add(waterfall_f32);
                 // Feed spectrum display with data
-                if (spectrum) spectrum.update(waterfall_f32);
+                spectrum.update(waterfall_f32);
                 // Feed scanner with data
-                if (scanner) scanner.update(waterfall_f32);
+                scanner.update(waterfall_f32);
                 break;
             case 2:
                 // audio data
@@ -1430,11 +1390,16 @@ function openwebrx_init() {
     $('#openwebrx-panel-receiver').demodulatorPanel();
     window.addEventListener('resize', openwebrx_resize);
     bookmarks = new BookmarkBar();
-    scanner = new Scanner(bookmarks, 1000);
     initSliders();
 
     // Initialize waterfall colors
     UI.setWfTheme('default');
+
+    // Create bookmark scanner
+    scanner = new Scanner(bookmarks, 1000);
+
+    // Create bandplan ribbon display
+    bandplan = new Bandplan(document.getElementById('openwebrx-bandplan-canvas'));
 
     // Create and run clock
     clock = new Clock($('#openwebrx-clock-utc'));

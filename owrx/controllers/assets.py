@@ -138,6 +138,7 @@ class CompiledAssetsController(GzipMixin, ModificationAwareController):
             "lib/Modes.js",
             "lib/MetaPanel.js",
             "lib/Waterfall.js",
+            "lib/Bandplan.js",
             "lib/Spectrum.js",
             "lib/Scanner.js",
             "lib/Utils.js",
