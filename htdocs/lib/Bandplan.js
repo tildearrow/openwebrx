@@ -7,12 +7,18 @@ function Bandplan(el) {
     el.style.width  = '100%';
     el.style.height = '100%';
 
+    // Redraw bandplan once it fully shows up
+    var me = this;
+    el.parentElement.addEventListener("transitionend", function(ev) {
+        me.draw();
+    });
+
     // Colors used for band types
     this.colors = {
-        'hamradio' : '#005500',
-        'broadcast': '#000066',
-        'public'   : '#330033',
-        'service'  : '#550000'
+        'hamradio' : 'rgba(0, 255, 0, 0.5)',
+        'broadcast': 'rgba(0, 0, 255, 0.5)',
+        'public'   : 'rgba(191, 64, 0, 0.5)',
+        'service'  : 'rgba(255, 0, 0, 0.5)'
     };
 };
 
@@ -82,25 +88,14 @@ Bandplan.prototype.draw = function() {
     });
 };
 
-Bandplan.prototype.close = function() {
-    // Hide container
-    this.el.parentElement.classList.remove('expanded');
-};
-
-Bandplan.prototype.open = function() {
-    // Show container
-    this.el.parentElement.classList.add('expanded');
-    this.draw();
-};
-
 Bandplan.prototype.toggle = function(on) {
     // If no argument given, toggle spectrum
     if (typeof(on) === 'undefined') on = !this.el.offsetHeight;
 
     // Toggle based on the current redraw timer state
     if (this.el.offsetHeight && !on) {
-        this.close();
+        this.el.parentElement.classList.remove('expanded');
     } else if (!this.el.offsetHeight && on) {
-        this.open();
+        this.el.parentElement.classList.add('expanded');
     }
 };
