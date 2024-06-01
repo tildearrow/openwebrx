@@ -231,6 +231,18 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
             self.write_dial_frequencies(dial_frequencies)
             self.write_bookmarks(bookmarks)
 
+        def sendBands(*args):
+            if "center_freq" in configProps and "samp_rate" in configProps:
+                cf = configProps["center_freq"]
+                srh = configProps["samp_rate"] / 2
+                bands = Bandplan.getSharedInstance().findBandsInRange(cf - srh, cf + srh)
+                self.write_bands([{
+                    "name"       : x.getName(),
+                    "low_bound"  : x.getBounds()[0],
+                    "high_bound" : x.getBounds()[1],
+                    "tags"       : x.getTags()
+                } for x in bands])
+
         def updateBookmarkSubscription(*args):
             if self.bookmarkSub is not None:
                 self.bookmarkSub.cancel()
@@ -244,6 +256,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
 
         self.configSubs.append(configProps.wire(sendConfig))
         self.configSubs.append(stack.filter("center_freq", "samp_rate").wire(updateBookmarkSubscription))
+        self.configSubs.append(stack.filter("center_freq", "samp_rate").wire(sendBands))
 
         # send initial config
         sendConfig()
@@ -478,6 +491,9 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
 
     def write_bookmarks(self, bookmarks):
         self.send({"type": "bookmarks", "value": bookmarks})
+
+    def write_bands(self, bands):
+        self.send({"type": "bands", "value": bands})
 
     def write_log_message(self, message):
         self.send({"type": "log_message", "value": message})

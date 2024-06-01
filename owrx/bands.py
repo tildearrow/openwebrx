@@ -13,6 +13,7 @@ class Band(object):
         self.name = b_dict["name"]
         self.lower_bound = b_dict["lower_bound"]
         self.upper_bound = b_dict["upper_bound"]
+        self.tags = b_dict["tags"] if "tags" in b_dict else []
         self.frequencies = []
         if "frequencies" in b_dict:
             availableModes = [mode.modulation for mode in Modes.getAvailableModes()]
@@ -55,8 +56,17 @@ class Band(object):
     def inBand(self, freq):
         return self.lower_bound <= freq <= self.upper_bound
 
+    def inRange(self, low_freq, high_freq):
+        return low_freq < self.upper_bound and high_freq > self.lower_bound
+
     def getName(self):
         return self.name
+
+    def getBounds(self):
+        return (self.lower_bound, self.upper_bound)
+
+    def getTags(self):
+        return self.tags
 
     def getDialFrequencies(self, range):
         (low, hi) = range
@@ -110,6 +120,10 @@ class Bandplan(object):
                 logger.exception("error while processing bandplan from %s", file)
                 return []
         return []
+
+    def findBandsInRange(self, low_freq, high_freq):
+        self._refresh()
+        return [band for band in self.bands if band.inRange(low_freq, high_freq)]
 
     def findBands(self, freq):
         self._refresh()

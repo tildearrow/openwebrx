@@ -1853,6 +1853,21 @@ img.openwebrx-mirror-img
     border-bottom: 1px solid white;
 }
 
+.openwebrx-bandplan-container {
+    transition-property: height, opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+    opacity: 0;
+    height: 0;
+    max-height: 16px;
+    overflow: hidden;
+}
+
+.openwebrx-bandplan-container.expanded {
+    opacity: 1;
+    height: 16px;
+}
+
 .openwebrx-section-divider {
     border-bottom: 2px dotted;
     margin-bottom: 5px;

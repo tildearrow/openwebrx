@@ -62,7 +62,7 @@ Spectrum.prototype.draw = function() {
     if (!this.ctx || spec_width!=this.el.width || spec_height!=this.el.height) {
         this.el.width  = spec_width;
         this.el.height = spec_height;
-        this.ctx       = this.el.getContext("2d");
+        this.ctx = this.el.getContext("2d");
         this.ctx.fillStyle = "rgba(255, 255, 255, 0.4)";
         this.ctx.strokeStyle = "rgba(255, 255, 0, 1.0)";
         this.ctx.lineWidth = 1;
@@ -105,7 +105,7 @@ Spectrum.prototype.draw = function() {
 
 Spectrum.prototype.close = function() {
     // Hide container
-    $('.openwebrx-spectrum-container').removeClass('expanded');
+    this.el.parentElement.classList.remove('expanded');
 
     // Stop redraw timer
     if (this.timer) {
@@ -119,7 +119,7 @@ Spectrum.prototype.close = function() {
 
 Spectrum.prototype.open = function() {
     // Show container
-    $('.openwebrx-spectrum-container').addClass('expanded');
+    this.el.parentElement.classList.add('expanded');
 
     // Start redraw timer
     if (!this.timer) {

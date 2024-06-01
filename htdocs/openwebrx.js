@@ -34,6 +34,9 @@ var waterfall_setup_done = 0;
 var secondary_fft_size;
 var tuning_step_default = 1;
 var tuning_step = 1;
+var spectrum = null;
+var bandplan = null;
+var scanner = null;
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -470,6 +473,7 @@ function resize_scale() {
     scale_canvas.height = h;
     scale_ctx.scale(ratio, ratio);
     mkscale();
+    bandplan.draw();
     bookmarks.position();
 }
 
@@ -682,6 +686,7 @@ function canvas_mousemove(evt) {
             }
             resize_canvases(false);
             mkscale();
+            bandplan.draw();
             bookmarks.position();
 
             canvas_drag_last_x = evt.pageX;
@@ -796,6 +801,7 @@ function zoom_step(out, where, onscreen) {
     //console.log(zoom_center_where, zoom_center_rel, where);
     resize_canvases(true);
     mkscale();
+    bandplan.draw();
     bookmarks.position();
 }
 
@@ -809,6 +815,7 @@ function zoom_set(level) {
     zoom_center_where = 0.5 + (zoom_center_rel / bandwidth); //this is a kind of hack
     resize_canvases(true);
     mkscale();
+    bandplan.draw();
     bookmarks.position();
 }
 
@@ -975,6 +982,10 @@ function on_ws_recv(evt) {
                     case "clients":
                         $('#openwebrx-bar-clients').progressbar().setClients(json['value']);
                         break;
+                    case "bands":
+                        // Feed bandplan display with data
+                        bandplan.update(json['value']);
+                        break;
                     case "profiles":
                         var listbox = $("#openwebrx-sdr-profiles-listbox");
                         listbox.html(json['value'].map(function (profile) {
@@ -1088,9 +1099,9 @@ function on_ws_recv(evt) {
                 // Feed waterfall display with data
                 waterfall_add(waterfall_f32);
                 // Feed spectrum display with data
-                if (spectrum) spectrum.update(waterfall_f32);
+                spectrum.update(waterfall_f32);
                 // Feed scanner with data
-                if (scanner) scanner.update(waterfall_f32);
+                scanner.update(waterfall_f32);
                 break;
             case 2:
                 // audio data
@@ -1379,11 +1390,16 @@ function openwebrx_init() {
     $('#openwebrx-panel-receiver').demodulatorPanel();
     window.addEventListener('resize', openwebrx_resize);
     bookmarks = new BookmarkBar();
-    scanner = new Scanner(bookmarks, 1000);
     initSliders();
 
     // Initialize waterfall colors
     UI.setWfTheme('default');
+
+    // Create bookmark scanner
+    scanner = new Scanner(bookmarks, 1000);
+
+    // Create bandplan ribbon display
+    bandplan = new Bandplan(document.getElementById('openwebrx-bandplan-canvas'));
 
     // Create and run clock
     clock = new Clock($('#openwebrx-clock-utc'));
