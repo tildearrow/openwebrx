@@ -24,8 +24,8 @@ function Bandplan(el) {
 };
 
 Bandplan.prototype.getColor = function(type) {
-    // Default color is black
-    return type in this.colors? this.colors[type] : '#000000';
+    // Default color is gray
+    return type in this.colors? this.colors[type] : '#808080';
 };
 
 Bandplan.prototype.update = function(bands) {
@@ -91,9 +91,19 @@ Bandplan.prototype.draw = function() {
             this.ctx.lineTo(end, height);
             this.ctx.stroke();
 
-            var w = this.ctx.measureText(x.name).width;
-            if (w <= (end - start) * 3 / 4) {
-                this.ctx.fillText(x.name, (start + end) / 2, height);
+            var label = x.name;
+            for (var j = 0 ; j >= 0 ; )
+            {
+                var w = this.ctx.measureText(label).width;
+                if (w <= (end - start) * 3 / 4) {
+                    this.ctx.fillText(label, (start + end) / 2, height);
+                    break;
+                }
+
+                j = label.lastIndexOf(' ');
+                if (j >= 0) {
+                    label = label.substring(0, j);
+                }
             }
         }
     });
