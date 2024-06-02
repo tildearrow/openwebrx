@@ -1,6 +1,6 @@
 [
   {
-    "name": "2190m Amateur",
+    "name": "2190m",
     "lower_bound": 135700,
     "upper_bound": 137800,
     "frequencies": {
@@ -10,7 +10,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "630m Amateur",
+    "name": "630m",
     "lower_bound": 472000,
     "upper_bound": 479000,
     "frequencies": {
@@ -20,7 +20,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "160m Amateur",
+    "name": "160m",
     "lower_bound": 1810000,
     "upper_bound": 2000000,
     "frequencies": {
@@ -37,7 +37,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "80m Amateur",
+    "name": "80m",
     "lower_bound": 3500000,
     "upper_bound": 3900000,
     "frequencies": {
@@ -56,7 +56,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "60m Amateur",
+    "name": "60m",
     "lower_bound": 5250000,
     "upper_bound": 5450000,
     "frequencies": {
@@ -66,7 +66,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "40m Amateur",
+    "name": "40m",
     "lower_bound": 7000000,
     "upper_bound": 7200000,
     "frequencies": {
@@ -85,7 +85,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "30m Amateur",
+    "name": "30m",
     "lower_bound": 10099000,
     "upper_bound": 10150000,
     "frequencies": {
@@ -102,7 +102,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "20m Amateur",
+    "name": "20m",
     "lower_bound": 14000000,
     "upper_bound": 14350000,
     "frequencies": {
@@ -118,7 +118,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "17m Amateur",
+    "name": "17m",
     "lower_bound": 18068000,
     "upper_bound": 18168000,
     "frequencies": {
@@ -133,7 +133,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "15m Amateur",
+    "name": "15m",
     "lower_bound": 21000000,
     "upper_bound": 21450000,
     "frequencies": {
@@ -149,7 +149,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "12m Amateur",
+    "name": "12m",
     "lower_bound": 24890000,
     "upper_bound": 24990000,
     "frequencies": {
@@ -165,7 +165,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "10m Amateur",
+    "name": "10m",
     "lower_bound": 28000000,
     "upper_bound": 29700000,
     "frequencies": {
@@ -181,7 +181,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "8m Amateur",
+    "name": "8m",
     "lower_bound": 40660000,
     "upper_bound": 40700000,
     "frequencies": {
@@ -190,7 +190,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "6m Amateur",
+    "name": "6m",
     "lower_bound": 50030000,
     "upper_bound": 51000000,
     "frequencies": {
@@ -207,7 +207,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "4m Amateur",
+    "name": "4m",
     "lower_bound": 69900000,
     "upper_bound": 70500000,
     "frequencies": {
@@ -217,7 +217,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "2m Amateur",
+    "name": "2m",
     "lower_bound": 144000000,
     "upper_bound": 148000000,
     "frequencies": {
@@ -232,7 +232,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "70cm Amateur",
+    "name": "70cm",
     "lower_bound": 420000000,
     "upper_bound": 450000000,
     "frequencies": {
@@ -243,7 +243,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "23cm Amateur",
+    "name": "23cm",
     "lower_bound": 1240000000,
     "upper_bound": 1300000000,
     "frequencies": {
@@ -252,7 +252,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "13cm Amateur",
+    "name": "13cm",
     "lower_bound": 2300000000,
     "upper_bound": 2450000000,
     "frequencies": {
@@ -261,7 +261,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "9cm Amateur",
+    "name": "9cm",
     "lower_bound": 3400000000,
     "upper_bound": 3475000000,
     "frequencies": {
@@ -270,7 +270,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "6cm Amateur",
+    "name": "6cm",
     "lower_bound": 5650000000,
     "upper_bound": 5850000000,
     "frequencies": {
@@ -279,7 +279,7 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "3cm Amateur",
+    "name": "3cm",
     "lower_bound": 10000000000,
     "upper_bound": 10500000000,
     "frequencies": {
