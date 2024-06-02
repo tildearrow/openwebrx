@@ -3,6 +3,7 @@
 - Fixed reference to soapyMiri driver.
 - Switched aviation emergency frequencies to AM.
 - Added one more aviation emergency frequency.
+- Updated band names.
 
 **1.2.59**
 - Added optional receiver location updates via GPSD.

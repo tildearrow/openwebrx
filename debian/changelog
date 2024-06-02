@@ -4,6 +4,7 @@ openwebrx (1.2.60) bullseye jammy; urgency=low
   * Fixed reference to soapyMiri driver.
   * Switched aviation emergency frequencies to AM.
   * Added one more aviation emergency frequency.
+  * Updated band names.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 3 Jun 2024 16:12:00 +0000
 
