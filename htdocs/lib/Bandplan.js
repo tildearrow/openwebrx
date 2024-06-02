@@ -29,7 +29,12 @@ Bandplan.prototype.getColor = function(type) {
 };
 
 Bandplan.prototype.update = function(bands) {
-    this.bands = bands;
+    // Sort by low_bound for accurate rendering of overlapping bands
+    this.bands = bands.sort(function (a, b) {
+        return a.low_bound - b.low_bound;
+    });
+
+    // Draw new bands
     this.draw();
 };
 
