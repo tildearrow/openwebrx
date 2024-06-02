@@ -1,3 +1,12 @@
+openwebrx (1.2.60) bullseye jammy; urgency=low
+
+  * Added optional band plan display above bookmarks.
+  * Fixed reference to soapyMiri driver.
+  * Switched aviation emergency frequencies to AM.
+  * Added one more aviation emergency frequency.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 3 Jun 2024 16:12:00 +0000
+
 openwebrx (1.2.59) bullseye jammy; urgency=low
 
   * Added optional receiver location updates via GPSD.

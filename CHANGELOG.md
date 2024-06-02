@@ -1,3 +1,9 @@
+**1.2.60**
+- Added optional band plan display above bookmarks.
+- Fixed reference to soapyMiri driver.
+- Switched aviation emergency frequencies to AM.
+- Added one more aviation emergency frequency.
+
 **1.2.59**
 - Added optional receiver location updates via GPSD.
 - Added copyright-free Mirics driver for SDRPlay and clones.
