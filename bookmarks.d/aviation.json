@@ -10,6 +10,41 @@
         "modulation" : "am"
     },
     {
+        "name" : "HFGCS - USAF",
+        "frequency" : 4724000,
+        "modulation" : "usb"
+    },
+    {
+        "name" : "HFGCS - USAF",
+        "frequency" : 8992000,
+        "modulation" : "usb"
+    },
+    {
+        "name" : "HFGCS - USAF",
+        "frequency" : 11175000,
+        "modulation" : "usb"
+    },
+    {
+        "name" : "HFGCS - USAF",
+        "frequency" : 15016000,
+        "modulation" : "usb"
+    },
+    {
+        "name" : "MARS - USAF",
+        "frequency" : 13927000,
+        "modulation" : "usb"
+    },
+    {
+        "name" : "MARS - USN",
+        "frequency" : 14441000,
+        "modulation" : "usb"
+    },
+    {
+        "name" : "CAF - Canada",
+        "frequency" : 11232000,
+        "modulation" : "usb"
+    },
+    {
         "name" : "ACARS - USA & Canada 3",
         "frequency" : 129125000,
         "modulation" : "acars"
