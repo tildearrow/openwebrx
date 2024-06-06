@@ -389,9 +389,15 @@
     "tags": ["public"]
   },
   {
-    "name": "PMR446",
-    "lower_bound": 446000000,
-    "upper_bound": 446200000,
+    "name": "GMRS462",
+    "lower_bound": 462500000,
+    "upper_bound": 462730000,
+    "tags": ["public"]
+  },
+  {
+    "name": "GMRS467",
+    "lower_bound": 467500000,
+    "upper_bound": 467730000,
     "tags": ["public"]
   },
   {
