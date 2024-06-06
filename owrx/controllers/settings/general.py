@@ -53,9 +53,9 @@ class GeneralSettingsController(SettingsFormController):
                     "Receiver band plan",
                     options=[
                         Option("0", "Default (generalized for all regions)"),
-                        Option("1", "IARU Region 1 (Africa, Europe, Middle East, North Asia)"),
-                        Option("2", "IARU Region 2 (North America, South America)"),
-                        Option("3", "IARU Region 3 (South Asia, Pacific)"),
+                        Option("1", "ITU Region 1 (Africa, Europe, Middle East, North Asia)"),
+                        Option("2", "ITU Region 2 (North America, South America)"),
+                        Option("3", "ITU Region 3 (South Asia, Pacific)"),
                     ],
                     converter=IntConverter(),
                 ),
