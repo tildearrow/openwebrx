@@ -37,6 +37,9 @@ var tuning_step = 1;
 var spectrum = null;
 var bandplan = null;
 var scanner = null;
+var bookmarks = null;
+var audioEngine = null;
+
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -1362,9 +1365,6 @@ function audioReporter(stats) {
         $('#openwebrx-bar-audio-output').progressbar().setAudioRate(stats.audioRate);
     }
 }
-
-var bookmarks;
-var audioEngine;
 
 function openwebrx_init() {
     // Name used by map links to tune receiver

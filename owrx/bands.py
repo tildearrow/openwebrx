@@ -1,5 +1,6 @@
 from owrx.modes import Modes, DigitalMode
 from datetime import datetime, timezone
+from owrx.config import Config
 import json
 import os
 
@@ -85,7 +86,12 @@ class Bandplan(object):
     def __init__(self):
         self.bands = []
         self.file_modified = None
-        self.fileList = ["/etc/openwebrx/bands.json", "bands.json"]
+        self.fileList = ["/etc/openwebrx/bands{0}.json", "bands{0}.json"]
+        Config().get().wireProperty("bandplan_region", self._updateRegion)
+
+    def _updateRegion(self, region):
+        # Make sure band plan is refreshed the next time it is queried
+        self.file_modified = None
 
     def _refresh(self):
         modified = self._getFileModifiedTimestamp()
@@ -94,11 +100,16 @@ class Bandplan(object):
             self.bands = self._loadBands()
             self.file_modified = modified
 
+    def _getRegionFile(self, file):
+        region = Config.get()["bandplan_region"];
+        return file.format("-r" + str(region) if region > 0 else "")
+
     def _getFileModifiedTimestamp(self):
         timestamp = 0
         for file in self.fileList:
+            region_file = self._getRegionFile(file)
             try:
-                timestamp = os.path.getmtime(file)
+                timestamp = os.path.getmtime(region_file)
                 break
             except FileNotFoundError:
                 pass
@@ -106,18 +117,19 @@ class Bandplan(object):
 
     def _loadBands(self):
         for file in self.fileList:
+            region_file = self._getRegionFile(file)
             try:
-                f = open(file, "r")
+                f = open(region_file, "r")
                 bands_json = json.load(f)
                 f.close()
                 return [Band(d) for d in bands_json]
             except FileNotFoundError:
                 pass
             except json.JSONDecodeError:
-                logger.exception("error while parsing bandplan file %s", file)
+                logger.exception("error while parsing bandplan file %s", region_file)
                 return []
             except Exception:
-                logger.exception("error while processing bandplan from %s", file)
+                logger.exception("error while processing bandplan from %s", region_file)
                 return []
         return []
 
