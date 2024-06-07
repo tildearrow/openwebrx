@@ -23,7 +23,7 @@
   },
   {
     "name": "160m",
-    "lower_bound": 1810000,
+    "lower_bound": 1800000,
     "upper_bound": 2000000,
     "frequencies": {
       "bpsk31": 1838000,
@@ -41,7 +41,7 @@
   {
     "name": "80m",
     "lower_bound": 3500000,
-    "upper_bound": 3900000,
+    "upper_bound": 4000000,
     "frequencies": {
       "bpsk31": 3580000,
       "ft8": 3573000,
@@ -70,7 +70,7 @@
   {
     "name": "40m",
     "lower_bound": 7000000,
-    "upper_bound": 7200000,
+    "upper_bound": 7300000,
     "frequencies": {
       "bpsk31": 7040000,
       "ft8": 7074000,
@@ -193,8 +193,8 @@
   },
   {
     "name": "6m",
-    "lower_bound": 50030000,
-    "upper_bound": 51000000,
+    "lower_bound": 50000000,
+    "upper_bound": 54000000,
     "frequencies": {
       "bpsk31": 50305000,
       "ft8": 50313000,
@@ -273,8 +273,8 @@
   },
   {
     "name": "9cm",
-    "lower_bound": 3400000000,
-    "upper_bound": 3475000000,
+    "lower_bound": 3300000000,
+    "upper_bound": 3500000000,
     "frequencies": {
       "q65": 3400065000
     },
@@ -283,7 +283,7 @@
   {
     "name": "6cm",
     "lower_bound": 5650000000,
-    "upper_bound": 5850000000,
+    "upper_bound": 5925000000,
     "frequencies": {
       "q65": 5760200000
     },
@@ -411,6 +411,18 @@
     "name": "PMR446",
     "lower_bound": 446000000,
     "upper_bound": 446200000,
+    "tags": ["public"]
+  },
+  {
+    "name": "GMRS462",
+    "lower_bound": 462500000,
+    "upper_bound": 462730000,
+    "tags": ["public"]
+  },
+  {
+    "name": "GMRS467",
+    "lower_bound": 467500000,
+    "upper_bound": 467730000,
     "tags": ["public"]
   },
   {
