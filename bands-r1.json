@@ -23,7 +23,7 @@
   },
   {
     "name": "160m",
-    "lower_bound": 1800000,
+    "lower_bound": 1810000,
     "upper_bound": 2000000,
     "frequencies": {
       "bpsk31": 1838000,
@@ -41,7 +41,7 @@
   {
     "name": "80m",
     "lower_bound": 3500000,
-    "upper_bound": 4000000,
+    "upper_bound": 3800000,
     "frequencies": {
       "bpsk31": 3580000,
       "ft8": 3573000,
@@ -59,8 +59,8 @@
   },
   {
     "name": "60m",
-    "lower_bound": 5250000,
-    "upper_bound": 5450000,
+    "lower_bound": 5351500,
+    "upper_bound": 5366500,
     "frequencies": {
       "ft8": 5357000,
       "wspr": [5287200, 5364700]
@@ -70,7 +70,7 @@
   {
     "name": "40m",
     "lower_bound": 7000000,
-    "upper_bound": 7300000,
+    "upper_bound": 7200000,
     "frequencies": {
       "bpsk31": 7040000,
       "ft8": 7074000,
@@ -88,7 +88,7 @@
   },
   {
     "name": "30m",
-    "lower_bound": 10099000,
+    "lower_bound": 10100000,
     "upper_bound": 10150000,
     "frequencies": {
       "bpsk31": 10141000,
@@ -183,15 +183,6 @@
     "tags": ["hamradio"]
   },
   {
-    "name": "8m",
-    "lower_bound": 40660000,
-    "upper_bound": 40700000,
-    "frequencies": {
-      "ft8": 40680000
-    },
-    "tags": ["hamradio"]
-  },
-  {
     "name": "6m",
     "lower_bound": 50000000,
     "upper_bound": 54000000,
@@ -210,7 +201,7 @@
   },
   {
     "name": "4m",
-    "lower_bound": 69900000,
+    "lower_bound": 70000000,
     "upper_bound": 70500000,
     "frequencies": {
       "wspr": 70091000,
@@ -221,7 +212,7 @@
   {
     "name": "2m",
     "lower_bound": 144000000,
-    "upper_bound": 148000000,
+    "upper_bound": 146000000,
     "frequencies": {
       "wspr": 144489000,
       "ft8": 144174000,
@@ -229,23 +220,16 @@
       "jt65": 144120000,
       "packet": [144800000, 145825000],
       "q65": 144116000,
-      "msk144": 144360000
-    },
-    "tags": ["hamradio"]
-  },
-  {
-    "name": "1.25m",
-    "lower_bound": 220000000,
-    "upper_bound": 225000000,
-    "frequencies": {
-     
+      "msk144": 144360000,
+      "sstv": [144500000, 144887500],
+      "page": 144862500
     },
     "tags": ["hamradio"]
   },
   {
     "name": "70cm",
-    "lower_bound": 420000000,
-    "upper_bound": 450000000,
+    "lower_bound": 430000000,
+    "upper_bound": 440000000,
     "frequencies": {
       "page": 439987500,
       "q65": 432065000,
@@ -273,8 +257,8 @@
   },
   {
     "name": "9cm",
-    "lower_bound": 3300000000,
-    "upper_bound": 3500000000,
+    "lower_bound": 3400000000,
+    "upper_bound": 3475000000,
     "frequencies": {
       "q65": 3400065000
     },
@@ -283,7 +267,7 @@
   {
     "name": "6cm",
     "lower_bound": 5650000000,
-    "upper_bound": 5925000000,
+    "upper_bound": 5850000000,
     "frequencies": {
       "q65": 5760200000
     },
@@ -400,10 +384,9 @@
   {
     "name": "11m CB",
     "lower_bound": 26965000,
-    "upper_bound": 28000000,
+    "upper_bound": 27405000,
     "frequencies": {
-      "js8": 27245000,
-      "sstv": 27700000
+      "js8": 27245000
     },
     "tags": ["public"]
   },
@@ -411,18 +394,6 @@
     "name": "PMR446",
     "lower_bound": 446000000,
     "upper_bound": 446200000,
-    "tags": ["public"]
-  },
-  {
-    "name": "GMRS462",
-    "lower_bound": 462500000,
-    "upper_bound": 462730000,
-    "tags": ["public"]
-  },
-  {
-    "name": "GMRS467",
-    "lower_bound": 467500000,
-    "upper_bound": 467730000,
     "tags": ["public"]
   },
   {

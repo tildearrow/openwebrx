@@ -15,7 +15,7 @@
         "modulation" : "am"
     },
     {
-        "name" : "CB4 - Offroading",
+        "name" : "CB4",
         "frequency" : 27005000,
         "modulation" : "am"
     },
@@ -40,12 +40,12 @@
         "modulation" : "am"
     },
     {
-        "name" : "CB9 - Emergencies",
+        "name" : "CB9",
         "frequency" : 27065000,
         "modulation" : "am"
     },
     {
-        "name" : "CB10 - Truckers",
+        "name" : "CB10",
         "frequency" : 27075000,
         "modulation" : "am"
     },
@@ -60,12 +60,12 @@
         "modulation" : "am"
     },
     {
-        "name" : "CB13 - Marine/RV",
+        "name" : "CB13",
         "frequency" : 27115000,
         "modulation" : "am"
     },
     {
-        "name" : "CB14 - Walkie-Talkies",
+        "name" : "CB14",
         "frequency" : 27125000,
         "modulation" : "am"
     },
@@ -80,7 +80,7 @@
         "modulation" : "lsb"
     },
     {
-        "name" : "CB17 - Truckers",
+        "name" : "CB17",
         "frequency" : 27165000,
         "modulation" : "am"
     },
@@ -90,7 +90,7 @@
         "modulation" : "am"
     },
     {
-        "name" : "CB19 - Truckers",
+        "name" : "CB19",
         "frequency" : 27185000,
         "modulation" : "am"
     },
@@ -100,7 +100,7 @@
         "modulation" : "am"
     },
     {
-        "name" : "CB21 - Truckers",
+        "name" : "CB21",
         "frequency" : 27215000,
         "modulation" : "am"
     },

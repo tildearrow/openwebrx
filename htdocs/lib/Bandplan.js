@@ -76,7 +76,7 @@ Bandplan.prototype.draw = function() {
     if (!range || !this.bands.length) return;
 
     // Center of the ribbon
-    height = (height - 2) / 2;
+    var center = (height - 2) / 2;
 
     //console.log("Drawing range of " + range.start + " - " + range.end);
 
@@ -92,16 +92,16 @@ Bandplan.prototype.draw = function() {
             this.ctx.strokeStyle = this.getColor(tag);
 
             this.ctx.beginPath();
-            this.ctx.moveTo(start, height);
-            this.ctx.lineTo(end, height);
+            this.ctx.moveTo(start, center);
+            this.ctx.lineTo(end, center);
             this.ctx.stroke();
 
             var label = x.name;
             for (var j = 0 ; j >= 0 ; )
             {
                 var w = this.ctx.measureText(label).width;
-                if (w <= (end - start) * 3 / 4) {
-                    this.ctx.fillText(label, (start + end) / 2, height);
+                if (w + height * 2 <= end - start) {
+                    this.ctx.fillText(label, (start + end) / 2, center);
                     break;
                 }
 

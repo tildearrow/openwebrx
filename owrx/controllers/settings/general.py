@@ -48,6 +48,17 @@ class GeneralSettingsController(SettingsFormController):
                     append="meters above mean sea level",
                 ),
                 TextInput("receiver_admin", "Receiver admin"),
+                DropdownInput(
+                    "bandplan_region",
+                    "Receiver band plan",
+                    options=[
+                        Option("0", "Default (generalized for all regions)"),
+                        Option("1", "ITU Region 1 (Africa, Europe, Middle East, North Asia)"),
+                        Option("2", "ITU Region 2 (North America, South America)"),
+                        Option("3", "ITU Region 3 (South Asia, Pacific)"),
+                    ],
+                    converter=IntConverter(),
+                ),
                 LocationInput("receiver_gps", "Receiver coordinates"),
                 CheckboxInput(
                     "gps_updates",
