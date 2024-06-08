@@ -1,3 +1,8 @@
+**1.2.61**
+- Added separate, selectable bandplans for ITU regions.
+- Added HFGCS, MARS, and CAF aviation bookmarks.
+- Sorting bands by low_band for in-order rendering.
+
 **1.2.60**
 - Added optional band plan display above bookmarks.
 - Fixed reference to soapyMiri driver.
