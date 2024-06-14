@@ -286,8 +286,15 @@ class Ha7ilmWaterfall(Waterfall):
 
 class ZoranWaterfall(Waterfall):
     def __init__(self):
-#        super().__init__([0x000000, 0x000965, 0x00E0FF, 0x00FFE0, 0x2EFF00, 0xECFF00, 0xFFEC00, 0xFF6500, 0xFF0000])
         super().__init__([0x000000, 0x000965, 0x00E0FF, 0x2EFF00, 0xFFEC00, 0xFF0000])
+
+
+class EclipseWaterfall(Waterfall):
+    def __init__(self):
+        super().__init__([
+            0x000020, 0x000030, 0x000050, 0x000091, 0x1E90FF, 0xFFFFFF, 0xFFFF00, 0xFE6D16,
+            0xFF0000, 0xC60000, 0x9F0000, 0x750000, 0x4A0000
+        ])
 
 
 class CustomWaterfall(Waterfall):
@@ -306,6 +313,7 @@ class WaterfallOptions(DropdownEnum):
     TEEJEEZ = ("Original theme by teejeez (default in OpenWebRX < 0.20)", TeejeezWaterfall)
     HA7ILM = ("Old theme by HA7ILM", Ha7ilmWaterfall)
     ZORAN = ("Theme by Zoran (9A6NDZ)", ZoranWaterfall)
+    ECLIPSE = ("Eclipse by LZ2DMV and LZ4ZD", EclipseWaterfall)
     CUSTOM = ("Custom", CustomWaterfall)
 
     def __new__(cls, *args, **kwargs):
