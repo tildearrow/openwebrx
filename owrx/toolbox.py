@@ -396,15 +396,21 @@ class EasParser(TextParser):
                 out += [s, d["msg"], ""]
                 spot = {
                     "mode":      "EAS",
-                    "freq":      self.frequency,
                     "timestamp": round(time.timestamp() * 1000),
                     "message":   d["msg"],
                     "raw":       s,
                     **d
                 }
+                # Remove stuff we do not need
+                del spot["msg"]
+                # Convert start and end times to UTC
                 spot["start_time"] = spot["start_time"].astimezone(timezone.utc).isoformat()
                 spot["end_time"] = spot["end_time"].astimezone(timezone.utc).isoformat()
-                del spot["msg"]
+                # Add frequency, if known
+                if self.frequency:
+                    spot["freq"] = self.frequency
+                # Report received message
                 ReportingEngine.getSharedInstance().spot(spot)
 
+        # Return received message as text
         return "\n".join(out)
