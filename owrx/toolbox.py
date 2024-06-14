@@ -382,17 +382,17 @@ class EasParser(TextParser):
 
     def parse(self, msg: bytes):
         # Parse EAS SAME messages
-        from dsame3.dsame import same_decode_string
+        from owrx.dsame3.dsame import same_decode_string
         msg = msg.decode("utf-8", "replace")
         out = []
 
         for s in self.reSplit.split(msg):
             if not s.startswith("EAS: "):
                 continue
-            dec = same_decode_string(s)
-            if not dec:
+            decoded = same_decode_string(s)
+            if not decoded:
                 continue
-            for d in dec:
+            for d in decoded:
                 out += [s, d["msg"], ""]
                 spot = {
                     "mode":      "EAS",
