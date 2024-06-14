@@ -1,4 +1,5 @@
 **1.2.61**
+- Added Multimon-based EAS decoder by Matthew McDougal.
 - Added separate, selectable bandplans for ITU regions.
 - Added HFGCS, MARS, and CAF aviation bookmarks.
 - Sorting bands by low_band for in-order rendering.
