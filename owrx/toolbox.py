@@ -18,7 +18,7 @@ class TextParser(LineBasedModule):
     def __init__(self, filePrefix: str = None, service: bool = False):
         self.service   = service
         self.frequency = 0
-        self.data      = bytearray(b'')
+        self.data      = bytearray(b"")
         self.filePfx   = filePrefix
         self.file      = None
         self.maxLines  = 10000
@@ -89,7 +89,7 @@ class TextParser(LineBasedModule):
 
     # Get current UTC time in a standardized format
     def getUtcTime(self) -> str:
-        return datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')
+        return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
     # By default, do not parse
     def parse(self, msg: bytes):
@@ -217,9 +217,9 @@ class PageParser(TextParser):
         out = None
         # Steer message to POCSAG or FLEX parser
         if msg.startswith(b"POCSAG"):
-            out = self.parsePocsag(msg.decode('utf-8', 'replace'))
+            out = self.parsePocsag(msg.decode("utf-8", "replace"))
         elif msg.startswith(b"FLEX"):
-            out = self.parseFlex(msg.decode('utf-8', 'replace'))
+            out = self.parseFlex(msg.decode("utf-8", "replace"))
         # Ignore filtered messages
         if not out:
             return {}
@@ -356,7 +356,7 @@ class SelCallParser(TextParser):
         if self.service:
             return None
         # Parse SELCALL messages
-        msg = msg.decode('utf-8', 'replace')
+        msg = msg.decode("utf-8", "replace")
         dec = None
         out = ""
         r = self.reSplit.split(msg)
@@ -372,3 +372,39 @@ class SelCallParser(TextParser):
                 dec = None
         # Done
         return out
+
+
+class EasParser(TextParser):
+    def __init__(self, service: bool = False):
+        self.reSplit = re.compile(r"(EAS: \S+)")
+        # Construct parent object
+        super().__init__(filePrefix="EAS", service=service)
+
+    def parse(self, msg: bytes):
+        # Parse EAS SAME messages
+        from dsame3.dsame import same_decode_string
+        msg = msg.decode("utf-8", "replace")
+        out = []
+
+        for s in self.reSplit.split(msg):
+            if not s.startswith("EAS: "):
+                continue
+            dec = same_decode_string(s)
+            if not dec:
+                continue
+            for d in dec:
+                out += [s, d["msg"], ""]
+                spot = {
+                    "mode":      "EAS",
+                    "freq":      self.frequency,
+                    "timestamp": round(time.timestamp() * 1000),
+                    "message":   d["msg"],
+                    "raw":       s,
+                    **d
+                }
+                spot["start_time"] = spot["start_time"].astimezone(timezone.utc).isoformat()
+                spot["end_time"] = spot["end_time"].astimezone(timezone.utc).isoformat()
+                del spot["msg"]
+                ReportingEngine.getSharedInstance().spot(spot)
+
+        return "\n".join(out)

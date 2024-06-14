@@ -93,6 +93,7 @@ class FeatureDetector(object):
         "acars": ["acarsdec"],
         "page": ["multimon"],
         "selcall": ["multimon"],
+        "eas": ["multimon"],
         "wxsat": ["satdump"],
         "png": ["imagemagick"],
         "rds": ["redsea"],
