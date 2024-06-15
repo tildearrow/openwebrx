@@ -138,7 +138,7 @@ class GeneralSettingsController(SettingsFormController):
                 "Waterfall settings",
                 DropdownInput(
                     "waterfall_scheme",
-                    "Waterfall color scheme",
+                    "Waterfall color theme",
                     options=WaterfallOptions,
                 ),
                 TextAreaInput(
