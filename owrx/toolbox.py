@@ -4,6 +4,7 @@ from owrx.color import ColorCache
 from owrx.reporting import ReportingEngine
 from csdr.module import LineBasedModule
 from pycsdr.types import Format
+from owrx.dsame3.dsame import same_decode_string
 from datetime import datetime, timezone
 import pickle
 import os
@@ -382,7 +383,6 @@ class EasParser(TextParser):
 
     def parse(self, msg: bytes):
         # Parse EAS SAME messages
-        from owrx.dsame3.dsame import same_decode_string
         msg = msg.decode("utf-8", "replace")
         out = []
 

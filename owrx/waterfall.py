@@ -310,10 +310,10 @@ class CustomWaterfall(Waterfall):
 
 class WaterfallOptions(DropdownEnum):
     DEFAULT = ("Google Turbo (OpenWebRX default)", GoogleTurboWaterfall)
-    TEEJEEZ = ("Original theme by teejeez (default in OpenWebRX < 0.20)", TeejeezWaterfall)
-    HA7ILM = ("Old theme by HA7ILM", Ha7ilmWaterfall)
+    TEEJEEZ = ("Theme by Teejeez (default in OpenWebRX < 0.20)", TeejeezWaterfall)
+    HA7ILM = ("Theme by Andras (HA7ILM)", Ha7ilmWaterfall)
     ZORAN = ("Theme by Zoran (9A6NDZ)", ZoranWaterfall)
-    ECLIPSE = ("Eclipse by LZ2DMV and LZ4ZD", EclipseWaterfall)
+    ECLIPSE = ("Eclipse by Dimitar (LZ2DMV) and LZ4ZD", EclipseWaterfall)
     CUSTOM = ("Custom", CustomWaterfall)
 
     def __new__(cls, *args, **kwargs):
