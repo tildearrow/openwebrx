@@ -51,8 +51,8 @@ class GpsUpdater(object):
         GpsUpdater.getSharedInstance()
 
     def __init__(self):
-        # Refresh every 1 hour for now
-        self.refreshPeriod = 60*60
+        # Refresh every 5 minutes for now
+        self.refreshPeriod = 5*60
         self.event  = threading.Event()
         self.thread = None
         # Start/stop main thread when setting changes
@@ -91,6 +91,7 @@ class GpsUpdater(object):
                 pos = gps.getPosition()
                 pos = pos.position() if pos else None
                 if pos:
+                    logger.debug("New position is {0}, {1}".format(pos[0], pos[1]))
                     pm["receiver_gps"] = { "lat": pos[0], "lon": pos[1] }
             except Exception as e:
                 logger.error("Failed to get GPS position: " + str(e))
