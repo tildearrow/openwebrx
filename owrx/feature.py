@@ -323,7 +323,7 @@ class FeatureDetector(object):
     def has_soapy_sdrplay(self):
         """
         The [SoapySDRPlay3](https://github.com/pothosware/SoapySDRPlay3) module is required for interfacing with
-        SDRPlay devices (RSP1\*, RSP2\*, RSPDuo)
+        SDRPlay devices (RSP1\\*, RSP2\\*, RSPDuo)
         """
         return self._has_soapy_driver("sdrplay")
 
@@ -539,7 +539,7 @@ class FeatureDetector(object):
         """
         The `freedv_rx` executable is required to demodulate FreeDV digital transmissions. It comes together with the
         codec2 library, but it's only a supplemental part and not installed by default or contained in its packages.
-        To install it, you will need to compile codec2 from source and manually install freedv\_rx.
+        To install it, you will need to compile codec2 from source and manually install freedv\\_rx.
 
         Detailed installation instructions are available on the
         [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
