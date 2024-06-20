@@ -353,6 +353,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator(service=True)
+        elif mod == "horus":
+            from csdr.chain.toolbox import HorusDemodulator
+            return HorusDemodulator(service=True)
         elif mod == "noaa-apt-15":
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=15, service=True)

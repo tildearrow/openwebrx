@@ -99,6 +99,7 @@ class FeatureDetector(object):
         "rds": ["redsea"],
         "dab": ["csdreti", "dablin"],
         "mqtt": ["paho_mqtt"],
+        "horus": ["horus_demod"],
     }
 
     def feature_availability(self):
@@ -748,6 +749,14 @@ class FeatureDetector(object):
         distributions.
         """
         return self.command_is_runnable("multimon-ng --help")
+
+    def has_horus_demod(self):
+        """
+        OpenWebRX supports decoding Project Horus balloon telemetry data by using
+        the [HorusDemodLib](https://github.com/projecthorus/horusdemodlib).
+        It needs to be built from sources.
+        """
+        return self.command_is_runnable("horus_demod")
 
     def has_satdump(self):
         """

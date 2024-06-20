@@ -278,6 +278,12 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
+        DigitalMode(
+            "horus",
+            "Horus",
+            underlying=["nfm"],
+            requirements=["horus"]
+        ),
 # SatDump stuff is work in progress!
 #        DigitalMode(
 #            "noaa-apt-15",
