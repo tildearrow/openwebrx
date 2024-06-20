@@ -201,7 +201,7 @@ class AircraftManager(object):
 
             # If no such ID yet...
             if id not in self.aircraft:
-                logger.debug("Adding %s" % id)
+                logger.info("Adding %s" % id)
                 # Create a new record
                 item = self.aircraft[id] = data.copy()
                 updated = True
@@ -257,7 +257,7 @@ class AircraftManager(object):
         with self.lock:
             too_old = [x for x in self.aircraft.keys() if self.aircraft[x]["ttl"] < now]
             if too_old:
-                logger.debug("Following aircraft have become stale: {0}".format(too_old))
+                logger.info("Following aircraft have become stale: {0}".format(too_old))
                 for id in too_old:
                     self._removeFromMap(id)
                     del self.aircraft[id]
@@ -278,10 +278,10 @@ class AircraftManager(object):
     def _merge(self, id1, id2):
         if id1 not in self.aircraft:
             if id2 in self.aircraft:
-                logger.debug("Linking %s to %s" % (id1, id2))
+                logger.info("Linking %s to %s" % (id1, id2))
                 self.aircraft[id1] = self.aircraft[id2]
         elif id2 not in self.aircraft:
-            logger.debug("Linking %s to %s" % (id2, id1))
+            logger.info("Linking %s to %s" % (id2, id1))
             self.aircraft[id2] = self.aircraft[id1]
         else:
             item1 = self.aircraft[id1]
@@ -292,7 +292,7 @@ class AircraftManager(object):
                     item1, item2 = item2, item1
                     id1,   id2   = id2,   id1
                 # Update older data with newer data
-                logger.debug("Merging %s into %s" % (id2, id1))
+                logger.info("Merging %s into %s" % (id2, id1))
                 item2.update(item1)
                 self.aircraft[id1] = item2
                 # Change ID2 color to ID1
@@ -308,7 +308,7 @@ class AircraftManager(object):
             if "lat" in item and "lon" in item:
                 Map.getSharedInstance().removeLocation(id)
         except Exception as exptn:
-            logger.debug("Exception removing aircraft %s: %s" % (id, str(exptn)))
+            logger.error("Exception removing aircraft %s: %s" % (id, str(exptn)))
 
 
 #

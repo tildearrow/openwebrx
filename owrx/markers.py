@@ -17,7 +17,6 @@ import os
 import time
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 
 class MyJSONEncoder(JSONEncoder):
@@ -99,13 +98,13 @@ class Markers(object):
     # Stop the main thread
     def stopThread(self):
         if self.thread is not None:
-            logger.debug("Stopping marker database thread.")
+            logger.info("Stopping marker database thread.")
             self.event.set()
             self.thread.join()
 
     # This is the actual thread function
     def _refreshThread(self):
-        logger.debug("Starting marker database thread...")
+        logger.info("Starting marker database thread...")
 
         # No markers yet
         self.markers   = {}
@@ -138,7 +137,7 @@ class Markers(object):
         self.remarkers = self.loadRepeaters()
 
         # Update map with markers
-        logger.debug("Updating map...")
+        logger.info("Updating map...")
         self.updateMap(self.markers)
         self.updateMap(self.rxmarkers)
         self.updateMap(self.txmarkers)
@@ -155,7 +154,7 @@ class Markers(object):
                 break
 
             # Load new transmitters schedule from the EIBI
-            logger.debug("Refreshing transmitters schedule..")
+            logger.info("Refreshing transmitters schedule..")
             tx = self.loadCurrentTransmitters()
 
             # Check if we need to exit
@@ -188,7 +187,7 @@ class Markers(object):
 
             # Update cached receivers data
             if time.time() - ts >= self.refreshPeriod:
-                logger.debug("Refreshing receivers database...")
+                logger.info("Refreshing receivers database...")
                 rx = self.updateCache()
                 ts = os.path.getmtime(file)
                 if rx:
@@ -207,29 +206,29 @@ class Markers(object):
                     rx   = None
 
         # Done with the thread
-        logger.debug("Stopped marker database thread.")
+        logger.info("Stopped marker database thread.")
         self.thread = None
 
     # Save markers to a given file
     def saveMarkers(self, file: str, markers):
-        logger.debug("Saving {0} markers to '{1}'...".format(len(markers), file))
+        logger.info("Saving {0} markers to '{1}'...".format(len(markers), file))
         try:
             with open(file, "w") as f:
                 json.dump(markers, f, cls=MyJSONEncoder, indent=2)
                 f.close()
         except Exception as e:
-            logger.debug("saveMarkers() exception: {0}".format(e))
+            logger.error("saveMarkers() exception: {0}".format(e))
 
     # Load markers from a given file
     def loadMarkers(self, file: str):
-        logger.debug("Loading markers from '{0}'...".format(file))
+        logger.info("Loading markers from '{0}'...".format(file))
         # Load markers list from JSON file
         try:
             with open(file, "r") as f:
                 db = json.load(f)
                 f.close()
         except Exception as e:
-            logger.debug("loadMarkers() exception: {0}".format(e))
+            logger.error("loadMarkers() exception: {0}".format(e))
             return
 
         # Process markers list
@@ -239,7 +238,7 @@ class Markers(object):
             result[key] = MarkerLocation(attrs)
 
         # Done
-        logger.debug("Loaded {0} markers from '{1}'.".format(len(result), file))
+        logger.info("Loaded {0} markers from '{1}'.".format(len(result), file))
         return result
 
     # Update given markers on the map
@@ -254,11 +253,11 @@ class Markers(object):
         # Scrape websites for data
         file  = self._getCachedMarkersFile()
         cache = {}
-        logger.debug("Scraping KiwiSDR website...")
+        logger.info("Scraping KiwiSDR website...")
         cache.update(self.scrapeKiwiSDR())
-        logger.debug("Scraping WebSDR website...")
+        logger.info("Scraping WebSDR website...")
         cache.update(self.scrapeWebSDR())
-        logger.debug("Scraping OpenWebRX website...")
+        logger.info("Scraping OpenWebRX website...")
         cache.update(self.scrapeOWRX())
 
         # Save parsed data into a file, if there is anything to save
@@ -339,7 +338,7 @@ class Markers(object):
             result[rl.getId()] = rl
 
         # Done
-        logger.debug("Loaded {0} transmitters from EIBI.".format(len(result)))
+        logger.info("Loaded {0} transmitters from EIBI.".format(len(result)))
         return result
 
     def scrapeOWRX(self, url: str = "https://www.receiverbook.de/map"):
@@ -379,7 +378,7 @@ class Markers(object):
                         lon = lon + 0.0005
 
         except Exception as e:
-            logger.debug("scrapeOWRX() exception: {0}".format(e))
+            logger.error("scrapeOWRX() exception: {0}".format(e))
 
         # Done
         return result
@@ -409,7 +408,7 @@ class Markers(object):
                     result[rl.getId()] = rl
 
         except Exception as e:
-            logger.debug("scrapeWebSDR() exception: {0}".format(e))
+            logger.error("scrapeWebSDR() exception: {0}".format(e))
 
         # Done
         return result
@@ -463,7 +462,7 @@ class Markers(object):
                         entry[m.group(1).lower()] = m.group(2)
 
         except Exception as e:
-            logger.debug("scrapeKiwiSDR() exception: {0}".format(e))
+            logger.error("scrapeKiwiSDR() exception: {0}".format(e))
 
         # Done
         return result

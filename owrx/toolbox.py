@@ -33,26 +33,26 @@ class TextParser(LineBasedModule):
     def closeFile(self):
         if self.file is not None:
             try:
-                logger.debug("Closing log file '%s'." % self.file.name)
+                logger.info("Closing log file '%s'." % self.file.name)
                 self.file.close()
                 self.file = None
                 # Delete excessive files from storage
-                logger.debug("Performing storage cleanup...")
+                logger.info("Performing storage cleanup...")
                 Storage.getSharedInstance().cleanStoredFiles()
 
             except Exception as exptn:
-                logger.debug("Exception closing file: %s" % str(exptn))
+                logger.error("Exception closing file: %s" % str(exptn))
                 self.file = None
 
     def newFile(self, fileName):
         self.closeFile()
         try:
-            logger.debug("Opening log file '%s'..." % fileName)
+            logger.info("Opening log file '%s'..." % fileName)
             self.file = Storage.getSharedInstance().newFile(fileName, buffering = 0)
             self.cntLines = 0
 
         except Exception as exptn:
-            logger.debug("Exception opening file: %s" % str(exptn))
+            logger.error("Exception opening file: %s" % str(exptn))
             self.file = None
 
     def writeFile(self, data):
@@ -65,7 +65,7 @@ class TextParser(LineBasedModule):
             try:
                 self.file.write(data)
             except Exception as exptn:
-                logger.debug("Exception writing file: %s" % str(exptn))
+                logger.error("Exception writing file: %s" % str(exptn))
             # No more than maxLines per file
             self.cntLines = self.cntLines + 1
             if self.cntLines >= self.maxLines:
@@ -97,9 +97,9 @@ class TextParser(LineBasedModule):
         return None
 
     def run(self):
-        logger.debug("%s starting..." % self.myName())
+        logger.info("%s starting..." % self.myName())
         super().run()
-        logger.debug("%s exiting..." % self.myName())
+        logger.info("%s exiting..." % self.myName())
 
     def process(self, line: bytes) -> any:
         # No result yet
@@ -121,7 +121,7 @@ class TextParser(LineBasedModule):
                     self.writeFile(b"\n")
 
         except Exception as exptn:
-            logger.debug("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
+            logger.error("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
 
         # Return parsed result, ignore result in service mode
         return out if out and not self.service else None

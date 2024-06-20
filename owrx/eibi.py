@@ -14,7 +14,6 @@ import time
 import math
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 #
 # Maximal distance on Earth surface (kilometers)
@@ -99,26 +98,26 @@ class EIBI(object):
 
     # Save schedule to a given JSON file
     def saveSchedule(self, file: str, schedule):
-        logger.debug("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
+        logger.info("Saving {0} schedule entries to '{1}'...".format(len(schedule), file))
         try:
             with open(file, "w") as f:
                 json.dump(schedule, f, indent=2)
                 f.close()
         except Exception as e:
-            logger.debug("saveSchedule() exception: {0}".format(e))
+            logger.error("saveSchedule() exception: {0}".format(e))
 
     # Load schedule from a given JSON file
     def loadSchedule(self, file: str):
-        logger.debug("Loading schedule from '{0}'...".format(file))
+        logger.info("Loading schedule from '{0}'...".format(file))
         try:
             with open(file, "r") as f:
                 result = json.load(f)
                 f.close()
         except Exception as e:
-            logger.debug("loadSchedule() exception: {0}".format(e))
+            logger.error("loadSchedule() exception: {0}".format(e))
             result = []
         # Done
-        logger.debug("Loaded {0} entries from '{1}'...".format(len(result), file))
+        logger.info("Loaded {0} entries from '{1}'...".format(len(result), file))
         return result
 
     # Find all current broadcasts for a given source
@@ -210,7 +209,7 @@ class EIBI(object):
                                     result[name]["ttl"] = max(ttl, result[name]["ttl"]);
 
                 except Exception as e:
-                    logger.debug("currentTransmitters() exception: {0}".format(e))
+                    logger.error("currentTransmitters() exception: {0}".format(e))
 
         # Done
         return result
@@ -238,7 +237,7 @@ class EIBI(object):
         # No result yet
         result = {}
 
-        logger.debug("Creating bookmarks for {0}-{1}kHz within {2}km...".format(f1//1000, f2//1000, rangeKm))
+        logger.info("Creating bookmarks for {0}-{1}kHz within {2}km...".format(f1//1000, f2//1000, rangeKm))
 
         # Search for current entries
         with self.lock:
@@ -291,9 +290,9 @@ class EIBI(object):
                         result[f] = ( entry, dist, duration )
 
                 except Exception as e:
-                    logger.debug("currentBookmarks() exception: {0}".format(e))
+                    logger.error("currentBookmarks() exception: {0}".format(e))
 
-        logger.debug("Created {0} bookmarks for {1}-{2}kHz within {3}km.".format(len(result), f1//1000, f2//1000, rangeKm))
+        logger.info("Created {0} bookmarks for {1}-{2}kHz within {3}km.".format(len(result), f1//1000, f2//1000, rangeKm))
 
         # Return bookmarks for all found entries
         return [ Bookmark({
@@ -361,7 +360,7 @@ class EIBI(object):
         # Fetch and parse CSV file
         result = []
         try:
-            logger.debug("Scraping '{0}'...".format(url))
+            logger.info("Scraping '{0}'...".format(url))
             for line in urllib.request.urlopen(url).readlines():
                 # Convert read bytes to a string
                 line = line.decode('cp1252').rstrip()
@@ -437,7 +436,7 @@ class EIBI(object):
                     })
 
         except Exception as e:
-            logger.debug("loadFromWeb() exception: {0}".format(e))
+            logger.error("loadFromWeb() exception: {0}".format(e))
 
         # Done
         return result

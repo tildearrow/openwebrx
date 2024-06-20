@@ -12,7 +12,6 @@ import time
 import math
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
 
 #
 # Maximal distance a repeater can reach (kilometers)
@@ -89,7 +88,7 @@ class Repeaters(object):
             self.location = location
         elif dist > 10:
             # Do not delete repeater list unless receiver moved a lot
-            logger.debug("Receiver moved by {0}km, deleting '{1}'...".format(dist, file))
+            logger.info("Receiver moved by {0}km, deleting '{1}'...".format(dist, file))
             self.location = location
             os.remove(file)
 
@@ -122,19 +121,19 @@ class Repeaters(object):
     # Save database to a given JSON file.
     #
     def saveRepeaters(self, file: str, repeaters):
-        logger.debug("Saving {0} repeaters to '{1}'...".format(len(repeaters), file))
+        logger.info("Saving {0} repeaters to '{1}'...".format(len(repeaters), file))
         try:
             with open(file, "w") as f:
                 json.dump(repeaters, f, indent=2)
                 f.close()
         except Exception as e:
-            logger.debug("saveRepeaters() exception: {0}".format(e))
+            logger.error("saveRepeaters() exception: {0}".format(e))
 
     #
     # Load database from a given JSON file.
     #
     def loadRepeaters(self, file: str):
-        logger.debug("Loading repeaters from '{0}'...".format(file))
+        logger.info("Loading repeaters from '{0}'...".format(file))
         if not os.path.isfile(file):
             result = []
         else:
@@ -143,10 +142,10 @@ class Repeaters(object):
                     result = json.load(f)
                     f.close()
             except Exception as e:
-                logger.debug("loadRepeaters() exception: {0}".format(e))
+                logger.error("loadRepeaters() exception: {0}".format(e))
                 result = []
         # Done
-        logger.debug("Loaded {0} repeaters from '{1}'...".format(len(result), file))
+        logger.info("Loaded {0} repeaters from '{1}'...".format(len(result), file))
         return result
 
     #
@@ -169,7 +168,7 @@ class Repeaters(object):
                 url1 = url.format(script = s, lat = lat, lon = lon, range = rangeKm)
                 req  = urllib.request.Request(url1, headers = hdrs)
                 data = urllib.request.urlopen(req).read().decode("utf-8")
-                logger.debug("Trying {0} ... got {1} bytes".format(url1, len(data)))
+                logger.info("Trying {0} ... got {1} bytes".format(url1, len(data)))
                 data = json.loads(data)
                 # ...until we get the result
                 if "results" in data and len(data["results"]) > 0:
@@ -191,7 +190,7 @@ class Repeaters(object):
                 }]
 
         except Exception as e:
-            logger.debug("loadFromWeb() exception: {0}".format(e))
+            logger.error("loadFromWeb() exception: {0}".format(e))
 
         # Done
         return result
@@ -213,7 +212,7 @@ class Repeaters(object):
         rxPos = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
 
         # No result yet
-        logger.debug("Creating bookmarks for {0}-{1}kHz within {2}km...".format(f1//1000, f2//1000, rangeKm))
+        logger.info("Creating bookmarks for {0}-{1}kHz within {2}km...".format(f1//1000, f2//1000, rangeKm))
         result = {}
 
         # Search for repeaters within frequency and distance ranges
@@ -227,10 +226,10 @@ class Repeaters(object):
                             result[f] = (entry, d)
 
                 except Exception as e:
-                    logger.debug("getBookmarks() exception: {0}".format(e))
+                    logger.error("getBookmarks() exception: {0}".format(e))
 
         # Return bookmarks for all found entries
-        logger.debug("Created {0} bookmarks for {1}-{2}kHz within {3}km.".format(len(result), f1//1000, f2//1000, rangeKm))
+        logger.info("Created {0} bookmarks for {1}-{2}kHz within {3}km.".format(len(result), f1//1000, f2//1000, rangeKm))
         return [ Bookmark({
             "name"       : result[f][0]["name"],
             "modulation" : result[f][0]["mode"],
@@ -247,7 +246,7 @@ class Repeaters(object):
         rxPos = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
 
         # No result yet
-        logger.debug("Looking for repeaters within {0}km...".format(rangeKm))
+        logger.info("Looking for repeaters within {0}km...".format(rangeKm))
         result = []
 
         # Search for repeaters within given distance range
@@ -258,9 +257,9 @@ class Repeaters(object):
                         result += [entry]
 
                 except Exception as e:
-                    logger.debug("getAllInRange() exception: {0}".format(e))
+                    logger.error("getAllInRange() exception: {0}".format(e))
 
         # Done
-        logger.debug("Found {0} repeaters within {1}km.".format(len(result), rangeKm))
+        logger.info("Found {0} repeaters within {1}km.".format(len(result), rangeKm))
         return result
 
