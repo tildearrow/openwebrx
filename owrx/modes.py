@@ -281,7 +281,7 @@ class Modes(object):
         DigitalMode(
             "horus",
             "Horus",
-            underlying=["nfm"],
+            underlying=["usb"],
             requirements=["horus"]
         ),
 # SatDump stuff is work in progress!
