@@ -619,6 +619,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif demod == "empty":
             from csdr.chain.analog import Empty
             return Empty()
+        elif demod in ["usbd", "lsbd"]:
+            from csdr.chain.analog import SsbDigital
+            return SsbDigital()
 
     def setDemodulator(self, mod):
         # this kills both primary and secondary demodulators

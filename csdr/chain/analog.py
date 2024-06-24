@@ -142,3 +142,11 @@ class SAm(BaseDemodulatorChain):
         ]
         super().__init__(workers)
 
+
+class SsbDigital(BaseDemodulatorChain, HdAudio):
+    def __init__(self):
+        workers = [
+            RealPart(),
+            Agc(Format.FLOAT),
+        ]
+        super().__init__(workers)
