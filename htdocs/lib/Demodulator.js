@@ -9,6 +9,8 @@ Filter.prototype.getLimits = function() {
         max_bw = 12500;
     } else if (['dmr', 'dstar', 'nxdn', 'ysf', 'm17'].indexOf(this.demodulator.get_modulation()) >= 0) {
         max_bw = 6250;
+    } else if (['lsbd', 'usbd'].indexOf(this.demodulator.get_modulation()) >= 0) {
+        max_bw = 24000;
     } else if (this.demodulator.get_modulation() === 'wfm') {
         max_bw = 100000;
     } else if (this.demodulator.get_modulation() === 'drm') {
@@ -249,8 +251,8 @@ function Demodulator(offset_frequency, modulation) {
     this.state = {};
     this.secondary_demod = false;
     var mode = Modes.findByModulation(modulation);
-    this.low_cut = mode && mode.bandpass && mode.bandpass.low_cut || null;
-    this.high_cut = mode && mode.bandpass && mode.bandpass.high_cut || null;
+    this.low_cut = mode && mode.bandpass? mode.bandpass.low_cut : null;
+    this.high_cut = mode && mode.bandpass? mode.bandpass.high_cut : null;
     this.ifRate = mode && mode.ifRate;
     this.listeners = {
         "frequencychange": [],
