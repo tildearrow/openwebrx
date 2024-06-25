@@ -1,5 +1,5 @@
 from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, HdAudio, \
-    DeemphasisTauChain, MetaProvider, RdsChain
+    FixedAudioRateChain, DeemphasisTauChain, MetaProvider, RdsChain
 from pycsdr.modules import AmDemod, DcBlock, FmDemod, Limit, NfmDeemphasis, Agc, Afc, \
     WfmDeemphasis, FractionalDecimator, RealPart, Writer, Buffer
 from pycsdr.types import Format, AgcProfile
@@ -143,10 +143,14 @@ class SAm(BaseDemodulatorChain):
         super().__init__(workers)
 
 
-class SsbDigital(BaseDemodulatorChain, HdAudio):
-    def __init__(self):
+class SsbDigital(BaseDemodulatorChain, FixedAudioRateChain, HdAudio):
+    def __init__(self, sampleRate: int = 48000):
+        self.sampleRate = sampleRate
         workers = [
             RealPart(),
             Agc(Format.FLOAT),
         ]
         super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
