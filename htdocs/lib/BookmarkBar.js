@@ -17,6 +17,15 @@ function BookmarkBar() {
         stopScanner();
     });
 
+    me.$container.on('contextmenu', '.bookmark', function(e){
+        e.stopPropagation();
+        var $bookmark = $(e.target).closest('.bookmark');
+        var b = $bookmark.data();
+        if (!b || !b.description) return false;
+        divlog(b.description, false);
+        return false;
+    });
+
     me.$container.on('click', '.action[data-action=edit]', function(e){
         e.stopPropagation();
         var $bookmark = $(e.target).closest('.bookmark');

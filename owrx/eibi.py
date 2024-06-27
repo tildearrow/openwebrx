@@ -66,6 +66,26 @@ class EIBI(object):
             math.cos(rlat1) * math.cos(rlat2) * math.sin(difflon/2) * math.sin(difflon/2)
         )))
 
+    @staticmethod
+    def getDescription(b):
+        description = ""
+        # Describe target region
+        if "tgt" in b:
+            description += "Targeting " + b["tgt"] + "."
+        # Describe transmitter locations
+        if "src" in b and b["src"] in EIBI_Locations:
+            description += (
+                (" " if len(description) > 0 else "") +
+                "Transmitting from " +
+                ", ".join([x["name"] for x in EIBI_Locations[b["src"]]])
+            )
+            # Add country name if ITU code present
+            if "itu" in b and b["itu"] in EIBI_Countries:
+                description += ", " + EIBI_Countries[b["itu"]]
+            description += "."
+        # Done
+        return description
+
     def __init__(self):
         self.patternCSV = re.compile(r"^([\d\.]+);(\d\d\d\d)-(\d\d\d\d);(\S*);(\S+);(.*);(.*);(.*);(.*);(\d+);(.*);(.*)$")
         self.patternDays = re.compile(r"^(.*)(Mo|Tu|We|Th|Fr|Sa|Su)-(Mo|Tu|We|Th|Fr|Sa|Su)(.*)$")
@@ -296,9 +316,10 @@ class EIBI(object):
 
         # Return bookmarks for all found entries
         return [ Bookmark({
-            "name"       : result[f][0]["name"],
-            "modulation" : result[f][0]["mode"],
-            "frequency"  : EIBI.correctFreq(f, result[f][0]["mode"])
+            "name"        : result[f][0]["name"],
+            "modulation"  : result[f][0]["mode"],
+            "frequency"   : EIBI.correctFreq(f, result[f][0]["mode"]),
+            "description" : EIBI.getDescription(result[f][0])
         }, srcFile = "EIBI") for f in result.keys() ]
 
     def convertDate(self, date: str):
@@ -486,7 +507,7 @@ EIBI_Dirs = {
 EIBI_Countries = {
   # Regions
   "Af" : "Africa",
-  "Am" : "Americas",
+  "Am" : "America",
   "AO" : "Atlantic Ocean",
   "As" : "Asia",
   "C..": "Central ..",
@@ -557,6 +578,7 @@ EIBI_Countries = {
   "BOL": "Bolivia",
   "BOT": "Botswana",
   "BRB": "Barbados",
+  "BRM": "Burma (Myanmar)",
   "BRU": "Brunei Darussalam",
   "BTN": "Bhutan",
   "BUL": "Bulgaria",
@@ -630,7 +652,7 @@ EIBI_Countries = {
   "HMD": "Heard & McDonald Islands",
   "HND": "Honduras",
   "HNG": "Hungary",
-  "HOL": "The Netherlands",
+  "HOL": "Netherlands",
   "HRV": "Croatia",
   "HTI": "Haiti",
   "HWA": "Hawaii",
@@ -655,7 +677,7 @@ EIBI_Countries = {
   "JOR": "Jordan",
   "JUF": "Juan Fernandez Island",
   "KAL": "Kaliningrad",
-  "KAZ": "Kazakstan / Kazakhstan",
+  "KAZ": "Kazakhstan",
   "KEN": "Kenya",
   "KER": "Kerguelen",
   "KGZ": "Kyrgyzstan",
@@ -701,7 +723,7 @@ EIBI_Countries = {
   "MSR": "Montserrat",
   "MTN": "Mauritania",
   "MWI": "Malawi",
-  "MYA": "Myanmar (Burma) (also BRM)",
+  "MYA": "Myanmar (Burma)",
   "MYT": "Mayotte",
   "NCG": "Nicaragua",
   "NCL": "New Caledonia",
