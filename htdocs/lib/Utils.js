@@ -42,7 +42,7 @@ Utils.setIcaoUrl = function(url) {
 
 // Escape HTML code
 Utils.htmlEscape = function(input) {
-    return $('<div/>').text(input).html()
+    return $('<div/>').text(input).html();
 };
 
 // Print frequency (in Hz) in a nice way

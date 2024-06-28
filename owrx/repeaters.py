@@ -69,6 +69,20 @@ class Repeaters(object):
         else:
             return "nfm"
 
+    # Compose textual description of an entry
+    @staticmethod
+    def getDescription(entry):
+        description = []
+        # Add information from the entry to the description
+        if "status" in entry:
+            description += [entry["status"] + "."]
+        if "updated" in entry:
+            description += ["Last updated " + entry["updated"] + "."]
+        if "comment" in entry:
+            description += [entry["comment"]]
+        # Done
+        return " ".join(description)
+
     def __init__(self):
         self.refreshPeriod = 60*60*24
         self.lock = threading.Lock()
@@ -231,9 +245,10 @@ class Repeaters(object):
         # Return bookmarks for all found entries
         logger.info("Created {0} bookmarks for {1}-{2}kHz within {3}km.".format(len(result), f1//1000, f2//1000, rangeKm))
         return [ Bookmark({
-            "name"       : result[f][0]["name"],
-            "modulation" : result[f][0]["mode"],
-            "frequency"  : result[f][0]["freq"]
+            "name"        : result[f][0]["name"],
+            "modulation"  : result[f][0]["mode"],
+            "frequency"   : result[f][0]["freq"],
+            "description" : Repeaters.getDescription(result[f][0])
         }, srcFile = "RepeaterBook") for f in result.keys() ]
 
     #

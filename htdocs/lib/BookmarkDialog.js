@@ -11,7 +11,7 @@ $.fn.bookmarkDialog = function() {
         },
         setValues: function(bookmark) {
             var $form = $el.find('form');
-            ['name', 'frequency', 'modulation'].forEach(function(key){
+            ['name', 'frequency', 'modulation', 'description'].forEach(function(key){
                 $form.find('#' + key).val(bookmark[key]);
             });
             $el.data('id', bookmark.id || false);
@@ -20,7 +20,7 @@ $.fn.bookmarkDialog = function() {
         getValues: function() {
             var bookmark = {};
             var valid = true;
-            ['name', 'frequency', 'modulation'].forEach(function(key){
+            ['name', 'frequency', 'modulation', 'description'].forEach(function(key){
                 var $input = $el.find('#' + key);
                 valid = valid && $input[0].checkValidity();
                 bookmark[key] = $input.val();

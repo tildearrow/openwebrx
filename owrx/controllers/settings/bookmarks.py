@@ -35,6 +35,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                     <th>Name</th>
                     <th class="frequency">Frequency</th>
                     <th>Modulation</th>
+                    <th>Description</th>
                     <th>Actions</th>
                 </tr>
                 {bookmarks}
@@ -69,6 +70,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                 <td data-editor="name" data-value="{name}">{name}</td>
                 <td data-editor="frequency" data-value="{frequency}" class="frequency">{rendered_frequency}</td>
                 <td data-editor="modulation" data-value="{modulation}">{modulation_name}</td>
+                <td data-editor="description" data-value="{description}">{description}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger bookmark-delete">delete</button>
                 </td>
@@ -81,6 +83,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             rendered_frequency=render_frequency(bookmark.getFrequency()),
             modulation=bookmark.getModulation() if mode is None else mode.modulation,
             modulation_name=bookmark.getModulation() if mode is None else mode.name,
+            description=bookmark.getDescription(),
         )
 
     def _findBookmark(self, bookmark_id):
@@ -98,7 +101,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             return
         try:
             data = json.loads(self.get_body().decode("utf-8"))
-            for key in ["name", "frequency", "modulation"]:
+            for key in ["name", "frequency", "modulation", "description"]:
                 if key in data:
                     value = data[key]
                     if key == "frequency":
@@ -120,6 +123,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                 "name": bookmark_data["name"],
                 "frequency": int(bookmark_data["frequency"]),
                 "modulation": bookmark_data["modulation"],
+                "description": bookmark_data["description"],
             }
             bookmark = Bookmark(data)
             bookmarks.addBookmark(bookmark)

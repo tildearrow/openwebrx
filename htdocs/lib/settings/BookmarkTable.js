@@ -4,7 +4,7 @@ function Editor(table) {
 
 Editor.prototype.getInputHtml = function() {
     return '<input>';
-}
+};
 
 Editor.prototype.render = function(el) {
     this.input = $(this.getInputHtml());
@@ -62,7 +62,7 @@ NameEditor.prototype = new Editor();
 
 NameEditor.prototype.getInputHtml = function() {
     return '<input class="form-control form-control-sm" type="text">';
-}
+};
 
 function FrequencyEditor(table) {
     Editor.call(this, table);
@@ -122,7 +122,7 @@ FrequencyEditor.prototype.setupEvents = function() {
             me.expInput.val(FrequencyEditor.suffixes[c]);
         }
     });
-}
+};
 
 FrequencyEditor.prototype.getValue = function() {
     var frequency = parseFloat(this.freqInput.val());
@@ -160,7 +160,7 @@ var renderFrequency = function(freq) {
     suffix = suffix[0] == 'K' ? 'k' : suffix[0];
     var expString = suffix[0] + 'Hz';
     return frequency + ' ' + expString;
-}
+};
 
 FrequencyEditor.prototype.getHtml = function() {
     return renderFrequency(this.getValue());
@@ -186,11 +186,22 @@ ModulationEditor.prototype.getHtml = function() {
     return $option.html();
 };
 
+function DescriptionEditor(table) {
+    Editor.call(this, table);
+}
+
+DescriptionEditor.prototype = new Editor();
+
+DescriptionEditor.prototype.getInputHtml = function() {
+    return '<input class="form-control form-control-sm" type="text">';
+};
+
 $.fn.bookmarktable = function() {
     var editors = {
         name: NameEditor,
         frequency: FrequencyEditor,
-        modulation: ModulationEditor
+        modulation: ModulationEditor,
+        description: DescriptionEditor
     };
 
     $.each(this, function(){
@@ -386,6 +397,7 @@ $.fn.bookmarktable = function() {
                                         '<td data-editor="name" data-value="' + bookmark.name + '">' + bookmark.name + '</td>' +
                                         '<td data-editor="frequency" data-value="' + bookmark.frequency + '" class="frequency">' + renderFrequency(bookmark.frequency) +'</td>' +
                                         '<td data-editor="modulation" data-value="' + bookmark.modulation + '">' + modulation_name + '</td>' +
+                                        '<td data-editor="description" data-value="' + bookmark.description + '">' + bookmark.description + '</td>' +
                                         '<td>' +
                                             '<button type="button" class="btn btn-sm btn-danger bookmark-delete">delete</button>' +
                                         '</td>' +

@@ -14,6 +14,7 @@ class Bookmark(object):
         self.name = j["name"]
         self.frequency = j["frequency"]
         self.modulation = j["modulation"]
+        self.description = j["description"] if "description" in j else ""
         self.srcFile = srcFile
 
     def getName(self):
@@ -25,6 +26,9 @@ class Bookmark(object):
     def getModulation(self):
         return self.modulation
 
+    def getDescription(self):
+        return self.description
+
     def getSrcFile(self):
         return self.srcFile
 
@@ -33,6 +37,7 @@ class Bookmark(object):
             "name": self.getName(),
             "frequency": self.getFrequency(),
             "modulation": self.getModulation(),
+            "description": self.getDescription(),
         }
 
 
