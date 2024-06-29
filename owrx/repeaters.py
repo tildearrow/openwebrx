@@ -75,7 +75,12 @@ class Repeaters(object):
         description = []
         # Add information from the entry to the description
         if "status" in entry:
-            description += [entry["status"] + "."]
+            pm = Config.get()
+            rxPos = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
+            description += ["{0}, {1}km away.".format(
+                entry["status"],
+                Repeaters.distKm(rxPos, (entry["lat"], entry["lon"]))
+            )]
         if "updated" in entry:
             description += ["Last updated " + entry["updated"] + "."]
         if "comment" in entry:
