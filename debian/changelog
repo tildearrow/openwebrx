@@ -1,3 +1,14 @@
+openwebrx (1.2.62) bullseye jammy; urgency=low
+
+  * Added optional descriptions to bookmarks.
+  * Added descriptions to EIBI and Repeaters bookmarks.
+  * Added 24kHz DATA mode for the starving masses.
+  * Changed some messages from DEBUG to INFO and ERROR.
+  * Renamed Zoran's theme to Blue Ocean.
+  * Polling GPS every 5 minutes now.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 1 Jul 2024 16:12:00 +0000
+
 openwebrx (1.2.61) bullseye jammy; urgency=low
 
   * Added Multimon-based EAS decoder by Matthew McDougal.
