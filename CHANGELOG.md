@@ -1,7 +1,8 @@
 **1.2.62**
-- Added optional descriptions to bookmarks.
-- Added descriptions to EIBI and Repeaters bookmarks.
 - Added 24kHz DATA mode for the starving masses.
+- Added optional descriptions to bookmarks.
+- Added station descriptions to EIBI bookmarks.
+- Added repeater descriptions to RepeaterBook bookmarks.
 - Changed some messages from DEBUG to INFO and ERROR.
 - Renamed Zoran's theme to Blue Ocean.
 - Polling GPS every 5 minutes now.
