@@ -1,5 +1,5 @@
 from distutils.version import LooseVersion
 
-_versionstring = "1.2.61"
+_versionstring = "1.2.62"
 looseversion = LooseVersion(_versionstring)
 openwebrx_version = "v{0}".format(looseversion)

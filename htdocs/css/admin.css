@@ -80,12 +80,38 @@ h1 {
     padding-right: 15px;
 }
 
-.bookmarks table .frequency, .bookmark-list table .frequency {
-    text-align: right;
+/* col-1 */
+.bookmarks table [data-editor="name"] {
+    width: 35%;
 }
 
+/* col-2 */
+.bookmarks table .frequency, .bookmark-list table .frequency {
+    white-space: nowrap;
+    text-align: right;
+    min-width: 190px;
+    width: 10%;
+}
+
+/* col-3 */
+.bookmarks table [data-editor="modulation"] {
+    white-space: nowrap;
+    min-width: 160px;
+    width: 10%;
+}
+
+/* col-4 */
+.bookmarks table [data-editor="description"] {
+    width: 35%;
+}
+
+/* col-5 */
+.bookmarks table tr td:last-child, .bookmarks table tr th:last-child {
+    text-align: right;
+    width: 10%;
+ }
+
 .bookmarks table input, .bookmarks table select {
-    width: initial;
     text-align: inherit;
     display: initial;
 }
