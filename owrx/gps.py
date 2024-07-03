@@ -83,16 +83,17 @@ class GpsUpdater(object):
     # This is the actual thread function
     def _refreshThread(self):
         logger.info("Starting GPS updater thread...")
-        pm  = Config.get()
         gps = GpsdClient()
+        pm  = Config.get()
         # Main loop
         while not self.event.is_set():
             try:
                 pos = gps.getPosition()
                 pos = pos.position() if pos else None
-                if pos:
-                    logger.info("New position is {0}, {1}".format(pos[0], pos[1]))
-                    pm["receiver_gps"] = { "lat": pos[0], "lon": pos[1] }
+                pos = { "lat": pos[0], "lon": pos[1] } if pos else None
+                if pos and pos != pm["receiver_gps"]:
+                    logger.info("New position is {0}, {1}".format(pos["lat"], pos["lon"]))
+                    pm["receiver_gps"] = pos
             except Exception as e:
                 logger.error("Failed to get GPS position: " + str(e))
             # Wait until the next refresh
@@ -159,7 +160,7 @@ class GpsdClient(object):
     # Get current GPS position
     def getPosition(self):
         if self.stream:
-            logger.info("Polling GPSD for position...")
+            logger.debug("Polling GPSD for position...")
             try:
                 # Poll GPSD
                 self.stream.write("?POLL;\n")
