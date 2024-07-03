@@ -327,7 +327,7 @@ class PageParser(TextParser):
                     out = {
                         "mode":      "FLEX",
                         "baud":      int(baud),
-                        "timestamp": round(time.timestamp() * 1000),
+                        "timestamp": round(datetime.now().timestamp() * 1000),
                         "state":     state,
                         "frame":     frame,
                         "address":   capcode,
@@ -396,7 +396,7 @@ class EasParser(TextParser):
                 out += [s, d["msg"], ""]
                 spot = {
                     "mode":      "EAS",
-                    "timestamp": round(time.timestamp() * 1000),
+                    "timestamp": round(datetime.now().timestamp() * 1000),
                     "message":   d["msg"],
                     "raw":       s,
                     **d
