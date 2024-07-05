@@ -158,7 +158,7 @@ var renderFrequency = function(freq) {
     }
     // fix lowercase 'kHz'
     suffix = suffix[0] == 'K' ? 'k' : suffix[0];
-    var expString = suffix[0] + 'Hz';
+    var expString = suffix + 'Hz';
     return frequency + ' ' + expString;
 };
 
