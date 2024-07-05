@@ -1,3 +1,10 @@
+**1.2.63**
+- Fixed crash in the FLEX decoder.
+- Fixed crash in the EAS decoder.
+- Fixed rounding error when editing bookmarks.
+- Fixed suffix when entering bookmark in Hz.
+- Reduced number of GPS updates and logging.
+
 **1.2.62**
 - Added 24kHz DATA mode for the starving masses.
 - Added optional descriptions to bookmarks.

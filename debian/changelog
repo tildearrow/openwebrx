@@ -1,3 +1,13 @@
+openwebrx (1.2.63) bullseye jammy; urgency=low
+
+  * Fixed crash in the FLEX decoder.
+  * Fixed crash in the EAS decoder.
+  * Fixed rounding error when editing bookmarks.
+  * Fixed suffix when entering bookmark in Hz.
+  * Reduced number of GPS updates and logging.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 8 Jul 2024 16:12:00 +0000
+
 openwebrx (1.2.62) bullseye jammy; urgency=low
 
   * Added 24kHz DATA mode for the starving masses.
