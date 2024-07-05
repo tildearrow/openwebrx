@@ -127,7 +127,7 @@ FrequencyEditor.prototype.setupEvents = function() {
 FrequencyEditor.prototype.getValue = function() {
     var frequency = parseFloat(this.freqInput.val());
     var exp = parseInt(this.expInput.val());
-    return Math.floor(frequency * 10 ** exp);
+    return Math.round(frequency * 10 ** exp);
 };
 
 FrequencyEditor.prototype.setValue = function(value) {
