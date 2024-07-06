@@ -86,7 +86,9 @@ FrequencyEditor.prototype.getInputHtml = function() {
                 $.map(FrequencyEditor.suffixes, function(v, k) {
                     // fix lowercase "kHz"
                     if (k === "K") k = "k";
-                    return '<option value="' + v + '">' + k + 'Hz</option>';
+                    // select kHz by default
+                    var s = k === "k"? " selected" : "";
+                    return '<option value="' + v + '"' + s + '>' + k + 'Hz</option>';
                 }).join('') +
             '</select>' +
         '</div>' +

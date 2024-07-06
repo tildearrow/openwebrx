@@ -3,6 +3,7 @@
 - Fixed crash in the EAS decoder.
 - Fixed rounding error when editing bookmarks.
 - Fixed suffix when entering bookmark in Hz.
+- Now defaulting new bookmarks to kHz.
 - Reduced number of GPS updates and logging.
 
 **1.2.62**

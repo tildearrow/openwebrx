@@ -4,6 +4,7 @@ openwebrx (1.2.63) bullseye jammy; urgency=low
   * Fixed crash in the EAS decoder.
   * Fixed rounding error when editing bookmarks.
   * Fixed suffix when entering bookmark in Hz.
+  * Now defaulting new bookmarks to kHz.
   * Reduced number of GPS updates and logging.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 8 Jul 2024 16:12:00 +0000
