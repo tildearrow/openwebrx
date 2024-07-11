@@ -253,12 +253,12 @@ GS-16|Agana|Guam|11306|HFDL
 GS-16|Agana|Guam|13312|HFDL
 GS-16|Agana|Guam|17919|HFDL
 GS-16|Agana|Guam|21928|HFDL
-GS-17|Gran Cararias|Spain|6529|HFDL
-GS-17|Gran Cararias|Spain|8948|HFDL
-GS-17|Gran Cararias|Spain|11348|HFDL
-GS-17|Gran Cararias|Spain|13303|HFDL
-GS-17|Gran Cararias|Spain|17928|HFDL
-GS-17|Gran Cararias|Spain|21955|HFDL
+GS-17|Gran Canarias|Spain|6529|HFDL
+GS-17|Gran Canarias|Spain|8948|HFDL
+GS-17|Gran Canarias|Spain|11348|HFDL
+GS-17|Gran Canarias|Spain|13303|HFDL
+GS-17|Gran Canarias|Spain|17928|HFDL
+GS-17|Gran Canarias|Spain|21955|HFDL
 
 #
 # Weather fax stations
