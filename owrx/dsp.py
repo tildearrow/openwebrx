@@ -604,7 +604,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif demod == "nxdn":
             from csdr.chain.digiham import Nxdn
             return Nxdn(self.props["digital_voice_codecserver"])
-        elif demod == "hdr1":
+        elif demod == "hdr":
             from csdr.chain.hdradio import HdRadio
             return HdRadio(program = 0)
         elif demod == "hdr2":

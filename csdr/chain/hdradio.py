@@ -1,4 +1,4 @@
-from csdr.chain.demodulator import FixedIfSampleRateChain, BaseDemodulatorChain, FixedAudioRateChain, DialFrequencyReceiver, HdAudio
+from csdr.chain.demodulator import FixedIfSampleRateChain, BaseDemodulatorChain, FixedAudioRateChain, DialFrequencyReceiver, HdAudio, MetaProvider
 from csdr.module.hdradio import HdRadioModule
 from pycsdr.modules import Convert, Agc, Downmix, Writer, Buffer, Throttle
 from pycsdr.types import Format
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class HdRadio(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, DialFrequencyReceiver):
+class HdRadio(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, MetaProvider, DialFrequencyReceiver):
     def __init__(self, program: int = 0):
         self.hdradio = HdRadioModule(program = program)
         workers = [

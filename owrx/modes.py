@@ -137,7 +137,7 @@ class Modes(object):
         ),
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
         AnalogMode("dab", "DAB", bandpass=None, ifRate=2048000, requirements=["dab"], squelch=False),
-        AnalogMode("hdr1", "HDR1", bandpass=None, ifRate=744188, requirements=["hdradio"], squelch=False),
+        AnalogMode("hdr", "HDR", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
         AnalogMode("hdr2", "HDR2", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
         AnalogMode("hdr3", "HDR3", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
         AnalogMode("hdr4", "HDR4", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),

@@ -5,6 +5,7 @@ from pycsdr.types import Format
 
 import logging
 import threading
+import pickle
 import time
 
 logger = logging.getLogger(__name__)
@@ -40,7 +41,7 @@ class HdRadioModule(ThreadModule):
     # Write metadata
     def _writeMeta(self, data) -> None:
         if data and self.metaWriter:
-            self.metaWriter.write(data)
+            self.metaWriter.write(pickle.dumps(data))
 
     def run(self):
         # Start NRSC5 decoder
@@ -97,7 +98,7 @@ class HdRadioModule(ThreadModule):
         elif evt_type == EventType.ID3:
             if evt.program == self.program:
                 # Collect metadata
-                meta = {}
+                meta = { "mode": "HDR" }
                 if evt.title:
                     meta["title"] = evt.title
                 if evt.artist:
@@ -138,7 +139,7 @@ class HdRadioModule(ThreadModule):
                          evt.port, evt.lot, evt.name, len(evt.data), evt.mime, time_str)
         elif evt_type == EventType.SIS:
             # Collect metadata
-            meta = {}
+            meta = { "mode": "HDR" }
             if evt.country_code:
                 meta["country"] = evt.country_code
                 meta["fcc_id"]  = evt.fcc_facility_id

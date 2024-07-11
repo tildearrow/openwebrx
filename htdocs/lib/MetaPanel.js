@@ -557,6 +557,86 @@ WfmMetaPanel.prototype.clear = function() {
     this.radiotext_plus = false;
 };
 
+function HdrMetaPanel(el) {
+    MetaPanel.call(this, el);
+    this.modes = ['HDR'];
+    this.enabled = false;
+    this.timeout = false;
+    this.clear();
+}
+
+HdrMetaPanel.prototype = new MetaPanel();
+
+HdrMetaPanel.prototype.update = function(data) {
+    if (!this.isSupported(data)) return;
+    var me = this;
+
+    // automatically clear panel when no metadata is received for more
+    // than ten seconds
+    if (this.timeout) clearTimeout(this.timeout);
+    this.timeout = setTimeout(function(){
+        me.clear();
+    }, 10000);
+
+    if ('title' in data)   this.title   = data.title;
+    if ('artist' in data)  this.artist  = data.artist;
+    if ('country' in data) this.country = data.country;
+    if ('station' in data) this.station = data.station;
+    if ('fcc_id' in data)  this.fcc_id  = data.fcc_id;
+    if ('message' in data) this.message = data.message;
+    if ('lat' in data)     this.lat     = data.lat;
+    if ('lon' in data)     this.lon     = data.lon;
+    if ('alt' in data)     this.alt     = data.alt;
+
+    var $el = $(this.el);
+
+    $el.find('.hdr-country').text(this.country || '');
+    $el.find('.hdr-identifier').text('ID:' + (this.fcc_id || ''));
+    $el.find('.hdr-station').text(this.station || '');
+    $el.find('.hdr-message').text(this.message || '');
+    $el.find('.hdr-title').text(this.title || '');
+    $el.find('.hdr-artist').text(this.artist || '');
+};
+
+HdrMetaPanel.prototype.isSupported = function(data) {
+    return this.modes.includes(data.mode);
+};
+
+HdrMetaPanel.prototype.setEnabled = function(enabled) {
+    if (enabled === this.enabled) return;
+    this.enabled = enabled;
+    if (enabled) {
+        $(this.el).removeClass('disabled').html(
+            '<div class="rds-container">' +
+                '<div class="rds-top-line">' +
+                    '<span class="hdr-country rds-autoclear"></span>' +
+                    '<span class="hdr-identifier rds-autoclear"></span>' +
+                '</div>' +
+                '<div class="hdr-station rds-autoclear"></div>' +
+                '<div class="hdr-message rds-autoclear"></div>' +
+                '<div class="hdr-title rds-autoclear"></div>' +
+                '<div class="hdr-artist rds-autoclear"></div>' +
+            '</div>'
+        );
+    } else {
+        $(this.el).addClass('disabled').emtpy()
+    }
+};
+
+HdrMetaPanel.prototype.clear = function() {
+    $(this.el).find('.rds-autoclear').empty();
+
+    this.title   =  '';
+    this.artist  =  '';
+    this.country =  '';
+    this.station =  '';
+    this.fcc_id  =  '';
+    this.message =  '';
+    this.lat     =  '';
+    this.lon     =  '';
+    this.alt     =  '';
+};
+
 function DabMetaPanel(el) {
     MetaPanel.call(this, el);
     var me = this;
@@ -639,6 +719,7 @@ MetaPanel.types = {
     m17: M17MetaPanel,
     wfm: WfmMetaPanel,
     dab: DabMetaPanel,
+    hdr: HdrMetaPanel,
 };
 
 $.fn.metaPanel = function() {

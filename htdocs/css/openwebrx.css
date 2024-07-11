@@ -1769,6 +1769,12 @@ img.openwebrx-mirror-img
 	content: "\1F517  ";
 }
 
+#openwebrx-panel-metadata-hdr {
+	width: 350px;
+	max-height: 300px;
+	padding: 10px 10px 10px 10px;
+}
+
 #openwebrx-panel-metadata-dab {
 	width: 350px;
 }
