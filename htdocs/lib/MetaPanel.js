@@ -563,6 +563,38 @@ function HdrMetaPanel(el) {
     this.enabled = false;
     this.timeout = false;
     this.clear();
+
+    // Create info panel
+    var $container = $(
+        '<div class="hdr-container">' +
+            '<div class="hdr-top-line">' +
+                '<span class="hdr-selector"></span>' +
+                '<span class="hdr-identifier hdr-autoclear"></span>' +
+            '</div>' +
+            '<div class="hdr-station hdr-autoclear"></div>' +
+            '<div class="hdr-message hdr-autoclear"></div>' +
+            '<div class="hdr-title hdr-autoclear"></div>' +
+            '<div class="hdr-artist hdr-autoclear"></div>' +
+        '</div>'
+    );
+
+    $(this.el).append($container);
+
+    // Create program selector
+    this.$select = $(
+        '<select id="hdr-program-id">' +
+            '<option value="0">P1</option>' +
+            '<option value="1">P2</option>' +
+            '<option value="2">P3</option>' +
+            '<option value="3">P4</option>' +
+        '</select>'
+    );
+    this.$select.on("change", function() {
+        var program_id = parseInt($(this).val());
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setHdrProgramId(program_id);
+    });
+
+    $('.hdr-selector').append(this.$select);
 }
 
 HdrMetaPanel.prototype = new MetaPanel();
@@ -571,60 +603,50 @@ HdrMetaPanel.prototype.update = function(data) {
     if (!this.isSupported(data)) return;
     var me = this;
 
-    // automatically clear panel when no metadata is received for more
-    // than ten seconds
+    // Automatically clear panel when no metadata
+    // is received for more than ten seconds
     if (this.timeout) clearTimeout(this.timeout);
-    this.timeout = setTimeout(function(){
-        me.clear();
-    }, 10000);
+    this.timeout = setTimeout(function() { me.clear(); }, 10000);
 
-    if ('title' in data)   this.title   = data.title;
-    if ('artist' in data)  this.artist  = data.artist;
-    if ('country' in data) this.country = data.country;
-    if ('station' in data) this.station = data.station;
-    if ('fcc_id' in data)  this.fcc_id  = data.fcc_id;
-    if ('message' in data) this.message = data.message;
-    if ('lat' in data)     this.lat     = data.lat;
-    if ('lon' in data)     this.lon     = data.lon;
-    if ('alt' in data)     this.alt     = data.alt;
+    // Update data
+    if ('title' in data)    this.title    = data.title;
+    if ('artist' in data)   this.artist   = data.artist;
+    if ('country' in data)  this.country  = data.country;
+    if ('station' in data)  this.station  = data.station;
+    if ('fcc_id' in data)   this.fcc_id   = data.fcc_id.toString(16).toUpperCase();
+    if ('message' in data)  this.message  = data.message;
+    if ('lat' in data)      this.lat      = data.lat;
+    if ('lon' in data)      this.lon      = data.lon;
+    if ('altitude' in data) this.altitude = data.altitude;
+    if ('slogan' in data)   this.slogan   = data.slogan;
+    if ('alert' in data)    this.alert    = data.alert;
 
+    // Update panel
     var $el = $(this.el);
-
-    $el.find('.hdr-country').text(this.country || '');
-    $el.find('.hdr-identifier').text('ID:' + (this.fcc_id || ''));
+    $el.find('.hdr-identifier').text(this.fcc_id? 'ID:0x' + this.fcc_id : '');
     $el.find('.hdr-station').text(this.station || '');
-    $el.find('.hdr-message').text(this.message || '');
+    $el.find('.hdr-message').text(this.alert || this.message || this.slogan || '');
     $el.find('.hdr-title').text(this.title || '');
     $el.find('.hdr-artist').text(this.artist || '');
+
+    // Update program selector
+    if ('audio_services' in data) {
+        this.$select.html(data.audio_services.map(function(pgm) {
+            return '<option value="' + pgm.id + '">P' + (pgm.id + 1) +
+                ' - ' + pgm.name + '</option>';
+        }).join());
+    }
+
+    // Update current selection
+    if ('program' in data) this.$select.val(data.program);
 };
 
 HdrMetaPanel.prototype.isSupported = function(data) {
     return this.modes.includes(data.mode);
 };
 
-HdrMetaPanel.prototype.setEnabled = function(enabled) {
-    if (enabled === this.enabled) return;
-    this.enabled = enabled;
-    if (enabled) {
-        $(this.el).removeClass('disabled').html(
-            '<div class="rds-container">' +
-                '<div class="rds-top-line">' +
-                    '<span class="hdr-country rds-autoclear"></span>' +
-                    '<span class="hdr-identifier rds-autoclear"></span>' +
-                '</div>' +
-                '<div class="hdr-station rds-autoclear"></div>' +
-                '<div class="hdr-message rds-autoclear"></div>' +
-                '<div class="hdr-title rds-autoclear"></div>' +
-                '<div class="hdr-artist rds-autoclear"></div>' +
-            '</div>'
-        );
-    } else {
-        $(this.el).addClass('disabled').emtpy()
-    }
-};
-
 HdrMetaPanel.prototype.clear = function() {
-    $(this.el).find('.rds-autoclear').empty();
+    $(this.el).find('.hdr-autoclear').empty();
 
     this.title   =  '';
     this.artist  =  '';

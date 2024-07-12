@@ -2,14 +2,34 @@ from csdr.module.nrsc5 import NRSC5, Mode, EventType, ComponentType, Access
 from csdr.module import ThreadModule
 from pycsdr.modules import Writer
 from pycsdr.types import Format
+from owrx.map import Map, LatLngLocation
 
 import logging
 import threading
 import pickle
 import time
 
+feetToMeters = 0.3048
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
+
+
+class StationLocation(LatLngLocation):
+    def __init__(self, data):
+        super().__init__(data["lat"], data["lon"])
+        # Complete station data
+        self.data = data
+
+    def getSymbolData(self, symbol, table):
+        return {"symbol": symbol, "table": table, "index": ord(symbol) - 33, "tableindex": ord(table) - 33}
+
+    def __dict__(self):
+        # Return APRS-like dictionary object with "antenna tower" symbol
+        res = super(StationLocation, self).__dict__()
+        res["symbol"] = self.getSymbolData('r', '/')
+        res.update(self.data)
+        return res
 
 
 class HdRadioModule(ThreadModule):
@@ -32,6 +52,7 @@ class HdRadioModule(ThreadModule):
 
     # Change program
     def setProgram(self, program: int) -> None:
+        logger.info("Now playing program #{0}".format(program))
         self.program = program
 
     # Set metadata consumer
@@ -41,7 +62,14 @@ class HdRadioModule(ThreadModule):
     # Write metadata
     def _writeMeta(self, data) -> None:
         if data and self.metaWriter:
+            logger.debug("Metadata: {0}".format(data))
             self.metaWriter.write(pickle.dumps(data))
+
+    # Update station location
+    def _updateLocation(self, data):
+        if "station" in data and "lat" in data and "lon" in data:
+            loc = StationLocation(data)
+            Map.getSharedInstance().updateLocation(data["station"], loc, "HDR")
 
     def run(self):
         # Start NRSC5 decoder
@@ -106,7 +134,7 @@ class HdRadioModule(ThreadModule):
                 if evt.album:
                     meta["album"] = evt.album
                 if evt.genre:
-                    meta["genre"] = evt.album
+                    meta["genre"] = evt.genre
                 if evt.ufid:
                     logger.info("Unique file identifier: %s %s", evt.ufid.owner, evt.ufid.id)
                 if evt.xhdr:
@@ -139,7 +167,12 @@ class HdRadioModule(ThreadModule):
                          evt.port, evt.lot, evt.name, len(evt.data), evt.mime, time_str)
         elif evt_type == EventType.SIS:
             # Collect metadata
-            meta = { "mode": "HDR" }
+            meta = {
+                "mode"    : "HDR",
+                "program" : self.program,
+                "audio_services" : [],
+                "data_services"  : []
+            }
             if evt.country_code:
                 meta["country"] = evt.country_code
                 meta["fcc_id"]  = evt.fcc_facility_id
@@ -154,17 +187,32 @@ class HdRadioModule(ThreadModule):
             if evt.latitude:
                 meta["lat"] = evt.latitude
                 meta["lon"] = evt.longitude
-                meta["alt"] = evt.altitude
+                meta["altitude"] = round(evt.altitude * feetToMeters)
             for audio_service in evt.audio_services:
                 logger.info("Audio program %s: %s, type: %s, sound experience %s",
                     audio_service.program,
                     "public" if audio_service.access == Access.PUBLIC else "restricted",
                     self.radio.program_type_name(audio_service.type),
                     audio_service.sound_exp)
+                meta["audio_services"] += [{
+                    "id"   : audio_service.program,
+                    "type" : audio_service.type.value,
+                    "name" : self.radio.program_type_name(audio_service.type),
+                    "public" : audio_service.access == Access.PUBLIC,
+                    "experience" : audio_service.sound_exp
+                }]
             for data_service in evt.data_services:
                 logger.info("Data service: %s, type: %s, MIME type %03x",
                     "public" if data_service.access == Access.PUBLIC else "restricted",
                     self.radio.service_data_type_name(data_service.type),
                     data_service.mime_type)
+                meta["data_services"] += [{
+                    "mime" : data_service.mime_type,
+                    "type" : data_service.type.value,
+                    "name" : self.radio.service_data_type_name(data_service.type),
+                    "public" : data_service.access == Access.PUBLIC
+                }]
+            # Update station location on the map
+            self._updateLocation(meta)
             # Output collected metadata
             self._writeMeta(meta)

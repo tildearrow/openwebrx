@@ -61,6 +61,12 @@ class DabServiceSelector(ABC):
         pass
 
 
+class HdrProgramSelector(ABC):
+    @abstractmethod
+    def setHdrProgramId(self, programId: int) -> None:
+        pass
+
+
 class BaseDemodulatorChain(Chain):
     def supportsSquelch(self) -> bool:
         return True

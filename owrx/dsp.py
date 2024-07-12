@@ -5,7 +5,7 @@ from owrx.modes import Modes, DigitalMode
 from csdr.chain import Chain
 from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, \
     SecondaryDemodulator, DialFrequencyReceiver, MetaProvider, SlotFilterChain, SecondarySelectorChain, \
-    DeemphasisTauChain, DemodulatorError, RdsChain, DabServiceSelector
+    DeemphasisTauChain, DemodulatorError, RdsChain, DabServiceSelector, HdrProgramSelector
 from csdr.chain.selector import Selector, SecondarySelector
 from csdr.chain.clientaudio import ClientAudioChain
 from csdr.chain.fft import FftChain
@@ -345,6 +345,11 @@ class ClientDemodulatorChain(Chain):
             return
         self.demodulator.setDabServiceId(serviceId)
 
+    def setHdrProgramId(self, programId: int) -> None:
+        if not isinstance(self.demodulator, HdrProgramSelector):
+            return
+        self.demodulator.setHdrProgramId(programId)
+
     def setSecondaryFftSize(self, size: int) -> None:
         if size == self.secondaryFftSize:
             return
@@ -450,6 +455,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             "secondary_offset_freq": "int",
             "dmr_filter": "int",
             "dab_service_id": "int",
+            "hdr_program_id": "int",
             "nr_enabled": "bool",
             "nr_threshold": "int",
         }
@@ -537,6 +543,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props.wireProperty("mod", self.setDemodulator),
             self.props.wireProperty("dmr_filter", self.chain.setSlotFilter),
             self.props.wireProperty("dab_service_id", self.chain.setDabServiceId),
+            self.props.wireProperty("hdr_program_id", self.chain.setHdrProgramId),
             self.props.wireProperty("wfm_deemphasis_tau", self.chain.setWfmDeemphasisTau),
             self.props.wireProperty("wfm_rds_rbds", self.chain.setRdsRbds),
             self.props.wireProperty("secondary_mod", self.setSecondaryDemodulator),
@@ -606,16 +613,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return Nxdn(self.props["digital_voice_codecserver"])
         elif demod == "hdr":
             from csdr.chain.hdradio import HdRadio
-            return HdRadio(program = 0)
-        elif demod == "hdr2":
-            from csdr.chain.hdradio import HdRadio
-            return HdRadio(program = 1)
-        elif demod == "hdr3":
-            from csdr.chain.hdradio import HdRadio
-            return HdRadio(program = 2)
-        elif demod == "hdr4":
-            from csdr.chain.hdradio import HdRadio
-            return HdRadio(program = 3)
+            return HdRadio()
         elif demod == "m17":
             from csdr.chain.m17 import M17
             return M17()

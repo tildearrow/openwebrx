@@ -1,4 +1,4 @@
-from csdr.chain.demodulator import FixedIfSampleRateChain, BaseDemodulatorChain, FixedAudioRateChain, DialFrequencyReceiver, HdAudio, MetaProvider
+from csdr.chain.demodulator import FixedIfSampleRateChain, BaseDemodulatorChain, FixedAudioRateChain, DialFrequencyReceiver, HdAudio, MetaProvider, HdrProgramSelector
 from csdr.module.hdradio import HdRadioModule
 from pycsdr.modules import Convert, Agc, Downmix, Writer, Buffer, Throttle
 from pycsdr.types import Format
@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 
-class HdRadio(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, MetaProvider, DialFrequencyReceiver):
+class HdRadio(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, MetaProvider, DialFrequencyReceiver, HdrProgramSelector):
     def __init__(self, program: int = 0):
         self.hdradio = HdRadioModule(program = program)
         workers = [
@@ -36,11 +36,14 @@ class HdRadio(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain,
         self.hdradio.setMetaWriter(writer)
 
     # Change program
-    def setProgram(self, program: int) -> None:
-        self.hdradio.setProgram(program)
+    def setHdrProgramId(self, programId: int) -> None:
+        self.hdradio.setProgram(programId)
 
     def setDialFrequency(self, frequency: int) -> None:
         # Clear station metadata when changing frequency
+        # TODO!!!
+        # Switch to program #1
+        self.hdradio.setProgram(0)
         pass
 
     def _connect(self, w1, w2, buffer: Optional[Buffer] = None) -> None:
