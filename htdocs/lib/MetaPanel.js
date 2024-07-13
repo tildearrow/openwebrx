@@ -560,9 +560,6 @@ WfmMetaPanel.prototype.clear = function() {
 function HdrMetaPanel(el) {
     MetaPanel.call(this, el);
     this.modes = ['HDR'];
-    this.enabled = false;
-    this.timeout = false;
-    this.clear();
 
     // Create info panel
     var $container = $(
@@ -590,8 +587,8 @@ function HdrMetaPanel(el) {
         '</select>'
     );
     this.$select.on("change", function() {
-        var program_id = parseInt($(this).val());
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setHdrProgramId(program_id);
+        var id = parseInt($(this).val());
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setAudioServiceId(id);
     });
 
     $('.hdr-selector').append(this.$select);
@@ -601,33 +598,22 @@ HdrMetaPanel.prototype = new MetaPanel();
 
 HdrMetaPanel.prototype.update = function(data) {
     if (!this.isSupported(data)) return;
-    var me = this;
 
-    // Automatically clear panel when no metadata
-    // is received for more than ten seconds
-    if (this.timeout) clearTimeout(this.timeout);
-    this.timeout = setTimeout(function() { me.clear(); }, 10000);
-
-    // Update data
-    if ('title' in data)    this.title    = data.title;
-    if ('artist' in data)   this.artist   = data.artist;
-    if ('country' in data)  this.country  = data.country;
-    if ('station' in data)  this.station  = data.station;
-    if ('fcc_id' in data)   this.fcc_id   = data.fcc_id.toString(16).toUpperCase();
-    if ('message' in data)  this.message  = data.message;
-    if ('lat' in data)      this.lat      = data.lat;
-    if ('lon' in data)      this.lon      = data.lon;
-    if ('altitude' in data) this.altitude = data.altitude;
-    if ('slogan' in data)   this.slogan   = data.slogan;
-    if ('alert' in data)    this.alert    = data.alert;
+    // Convert FCC ID to hexadecimal
+    var fcc_id = '';
+    if ('fcc_id' in data) {
+        fcc_id = data.fcc_id.toString(16).toUpperCase();
+        fcc_id = '0x' + ('0000' + fcc_id).slice(-4);
+        fcc_id = ('country' in data?  data.country + '-' : '') + fcc_id;
+    }
 
     // Update panel
     var $el = $(this.el);
-    $el.find('.hdr-identifier').text(this.fcc_id? 'ID:0x' + this.fcc_id : '');
-    $el.find('.hdr-station').text(this.station || '');
-    $el.find('.hdr-message').text(this.alert || this.message || this.slogan || '');
-    $el.find('.hdr-title').text(this.title || '');
-    $el.find('.hdr-artist').text(this.artist || '');
+    $el.find('.hdr-identifier').text(fcc_id);
+    $el.find('.hdr-station').text(data.station || '');
+    $el.find('.hdr-message').text(data.alert || data.message || data.slogan || '');
+    $el.find('.hdr-title').text(data.title || '');
+    $el.find('.hdr-artist').text(data.artist || '');
 
     // Update program selector
     if ('audio_services' in data) {
@@ -637,26 +623,12 @@ HdrMetaPanel.prototype.update = function(data) {
         }).join());
     }
 
-    // Update current selection
+    // Update program
     if ('program' in data) this.$select.val(data.program);
 };
 
 HdrMetaPanel.prototype.isSupported = function(data) {
     return this.modes.includes(data.mode);
-};
-
-HdrMetaPanel.prototype.clear = function() {
-    $(this.el).find('.hdr-autoclear').empty();
-
-    this.title   =  '';
-    this.artist  =  '';
-    this.country =  '';
-    this.station =  '';
-    this.fcc_id  =  '';
-    this.message =  '';
-    this.lat     =  '';
-    this.lon     =  '';
-    this.alt     =  '';
 };
 
 function DabMetaPanel(el) {
@@ -667,7 +639,7 @@ function DabMetaPanel(el) {
     this.$select = $('<select id="dab-service-id"></select>');
     this.$select.on("change", function() {
         me.service_id = parseInt($(this).val());
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setDabServiceId(me.service_id);
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setAudioServiceId(me.service_id);
     });
     var $container = $(
         '<div class="dab-container">' +

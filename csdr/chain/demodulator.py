@@ -55,15 +55,9 @@ class RdsChain(ABC):
         pass
 
 
-class DabServiceSelector(ABC):
+class AudioServiceSelector(ABC):
     @abstractmethod
-    def setDabServiceId(self, serviceId: int) -> None:
-        pass
-
-
-class HdrProgramSelector(ABC):
-    @abstractmethod
-    def setHdrProgramId(self, programId: int) -> None:
+    def setAudioServiceId(self, serviceId: int) -> None:
         pass
 
 

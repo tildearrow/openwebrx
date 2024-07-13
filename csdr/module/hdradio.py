@@ -9,8 +9,6 @@ import threading
 import pickle
 import time
 
-feetToMeters = 0.3048
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -35,8 +33,11 @@ class StationLocation(LatLngLocation):
 class HdRadioModule(ThreadModule):
     def __init__(self, program: int = 0, amMode: bool = False):
         self.metaWriter = None
-        self.program = program
-        self.radio   = NRSC5(lambda evt_type, evt: self.callback(evt_type, evt))
+        self.meta = {}
+        self.program = 0
+        self.frequency = -1
+        self.radio = NRSC5(lambda evt_type, evt: self.callback(evt_type, evt))
+        self.setFrequency(0)
 # Crashes things?
 #        self.radio.set_mode(Mode.AM if amMode else Mode.FM)
         super().__init__()
@@ -52,24 +53,59 @@ class HdRadioModule(ThreadModule):
 
     # Change program
     def setProgram(self, program: int) -> None:
-        logger.info("Now playing program #{0}".format(program))
-        self.program = program
+        if program != self.program:
+            logger.info("Now playing program #{0}".format(program))
+            self.program = program
+            # Clear program metadata
+            if "title" in self.meta:
+                del self.meta["title"]
+            if "artist" in self.meta:
+                del self.meta["artist"]
+            if "album" in self.meta:
+                del self.meta["album"]
+            if "genre" in self.meta:
+                del self.meta["genre"]
+            self.meta["program"] = self.program
+            self._writeMeta()
+
+    # Change frequency
+    def setFrequency(self, frequency: int) -> None:
+        if frequency != self.frequency:
+            logger.info("Now decoding at {0}MHz".format(frequency / 1000000))
+            self.frequency = frequency
+            # Clear all metadata
+            self.meta = {
+                "mode"      : "HDR",
+                "frequency" : self.frequency,
+                "program"   : self.program
+            }
+            self._writeMeta()
 
     # Set metadata consumer
     def setMetaWriter(self, writer: Writer) -> None:
         self.metaWriter = writer
 
     # Write metadata
-    def _writeMeta(self, data) -> None:
-        if data and self.metaWriter:
-            logger.debug("Metadata: {0}".format(data))
-            self.metaWriter.write(pickle.dumps(data))
+    def _writeMeta(self) -> None:
+        if self.meta and self.metaWriter:
+            logger.debug("Metadata: {0}".format(self.meta))
+            self.metaWriter.write(pickle.dumps(self.meta))
 
-    # Update station location
-    def _updateLocation(self, data):
+    # Update existing metadata
+    def _updateMeta(self, data) -> None:
+        # Update station location on the map
         if "station" in data and "lat" in data and "lon" in data:
             loc = StationLocation(data)
             Map.getSharedInstance().updateLocation(data["station"], loc, "HDR")
+        # Update any new or different values
+        changes = 0
+        for key in data.keys():
+            if key not in self.meta or self.meta[key] != data[key]:
+                self.meta[key] = data[key]
+                changes = changes + 1
+        # If anything changed, write metadata to the buffer
+        if changes > 0:
+            self._writeMeta()
 
     def run(self):
         # Start NRSC5 decoder
@@ -125,8 +161,8 @@ class HdRadioModule(ThreadModule):
             logger.info("BER: %.6f", evt.cber)
         elif evt_type == EventType.ID3:
             if evt.program == self.program:
-                # Collect metadata
-                meta = { "mode": "HDR" }
+                # Collect new metadata
+                meta = {}
                 if evt.title:
                     meta["title"] = evt.title
                 if evt.artist:
@@ -139,8 +175,8 @@ class HdRadioModule(ThreadModule):
                     logger.info("Unique file identifier: %s %s", evt.ufid.owner, evt.ufid.id)
                 if evt.xhdr:
                     logger.info("XHDR: param=%s mime=%s lot=%s", evt.xhdr.param, evt.xhdr.mime, evt.xhdr.lot)
-                # Output collected metadata
-                self._writeMeta(meta)
+                # Update existing metadata
+                self._updateMeta(meta)
         elif evt_type == EventType.SIG:
             for service in evt:
                 logger.info("SIG Service: type=%s number=%s name=%s",
@@ -166,10 +202,8 @@ class HdRadioModule(ThreadModule):
             logger.info("LOT file: port=%04X lot=%s name=%s size=%s mime=%s expiry=%s",
                          evt.port, evt.lot, evt.name, len(evt.data), evt.mime, time_str)
         elif evt_type == EventType.SIS:
-            # Collect metadata
+            # Collect new metadata
             meta = {
-                "mode"    : "HDR",
-                "program" : self.program,
                 "audio_services" : [],
                 "data_services"  : []
             }
@@ -187,7 +221,7 @@ class HdRadioModule(ThreadModule):
             if evt.latitude:
                 meta["lat"] = evt.latitude
                 meta["lon"] = evt.longitude
-                meta["altitude"] = round(evt.altitude * feetToMeters)
+                meta["altitude"] = round(evt.altitude)
             for audio_service in evt.audio_services:
                 logger.info("Audio program %s: %s, type: %s, sound experience %s",
                     audio_service.program,
@@ -212,7 +246,5 @@ class HdRadioModule(ThreadModule):
                     "name" : self.radio.service_data_type_name(data_service.type),
                     "public" : data_service.access == Access.PUBLIC
                 }]
-            # Update station location on the map
-            self._updateLocation(meta)
-            # Output collected metadata
-            self._writeMeta(meta)
+            # Update existing metadata
+            self._updateMeta(meta)

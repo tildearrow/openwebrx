@@ -5,7 +5,7 @@ from owrx.modes import Modes, DigitalMode
 from csdr.chain import Chain
 from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, \
     SecondaryDemodulator, DialFrequencyReceiver, MetaProvider, SlotFilterChain, SecondarySelectorChain, \
-    DeemphasisTauChain, DemodulatorError, RdsChain, DabServiceSelector, HdrProgramSelector
+    DeemphasisTauChain, DemodulatorError, RdsChain, AudioServiceSelector
 from csdr.chain.selector import Selector, SecondarySelector
 from csdr.chain.clientaudio import ClientAudioChain
 from csdr.chain.fft import FftChain
@@ -340,15 +340,10 @@ class ClientDemodulatorChain(Chain):
             return
         self.demodulator.setSlotFilter(filter)
 
-    def setDabServiceId(self, serviceId: int) -> None:
-        if not isinstance(self.demodulator, DabServiceSelector):
+    def setAudioServiceId(self, serviceId: int) -> None:
+        if not isinstance(self.demodulator, AudioServiceSelector):
             return
-        self.demodulator.setDabServiceId(serviceId)
-
-    def setHdrProgramId(self, programId: int) -> None:
-        if not isinstance(self.demodulator, HdrProgramSelector):
-            return
-        self.demodulator.setHdrProgramId(programId)
+        self.demodulator.setAudioServiceId(serviceId)
 
     def setSecondaryFftSize(self, size: int) -> None:
         if size == self.secondaryFftSize:
@@ -454,8 +449,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             "mod": ModulationValidator(),
             "secondary_offset_freq": "int",
             "dmr_filter": "int",
-            "dab_service_id": "int",
-            "hdr_program_id": "int",
+            "audio_service_id": "int",
             "nr_enabled": "bool",
             "nr_threshold": "int",
         }
@@ -542,8 +536,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props.wireProperty("high_cut", self.setHighCut),
             self.props.wireProperty("mod", self.setDemodulator),
             self.props.wireProperty("dmr_filter", self.chain.setSlotFilter),
-            self.props.wireProperty("dab_service_id", self.chain.setDabServiceId),
-            self.props.wireProperty("hdr_program_id", self.chain.setHdrProgramId),
+            self.props.wireProperty("audio_service_id", self.chain.setAudioServiceId),
             self.props.wireProperty("wfm_deemphasis_tau", self.chain.setWfmDeemphasisTau),
             self.props.wireProperty("wfm_rds_rbds", self.chain.setRdsRbds),
             self.props.wireProperty("secondary_mod", self.setSecondaryDemodulator),
