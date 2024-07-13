@@ -4,6 +4,7 @@
 
 function Utils() {}
 
+Utils.fm_url = 'https://www.google.com/search?q={}+FM';
 Utils.callsign_url = null;
 Utils.vessel_url = null;
 Utils.flight_url = null;
@@ -94,6 +95,11 @@ Utils.linkify = function(id, url = null, content = null, tip = null) {
         return '<a target="callsign_info"' + tipText + ' href="' +
             url.replaceAll('{}', id) + '">' + content + '</a>';
     }
+};
+
+// Create link to an FM station
+Utils.linkifyFM = function(name) {
+    return this.linkify(name, this.fm_url);
 };
 
 // Create link to a callsign, with country tooltip, etc.

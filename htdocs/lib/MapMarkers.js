@@ -569,10 +569,6 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         }
     }
 
-    // Linkify title based on what it is (vessel or HAM callsign)
-    var title = this.mode === 'AIS'?
-      Utils.linkifyVessel(name) : Utils.linkifyCallsign(name);
-
     if (detailsString.length > 0) {
         detailsString = '<div>' + Utils.makeListTitle('Details') + detailsString + '</div>';
     }
@@ -591,9 +587,11 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
             + hops.join(', ') + '&nbsp;</i></div>';
     }
 
-    // Linkify title based on what it is (vessel or HAM callsign)
-    var title = this.mode === 'AIS'?
-      Utils.linkifyVessel(name) : Utils.linkifyCallsign(name);
+    // Linkify title based on what it is (station, vessel, or HAM callsign)
+    var title =
+      this.mode === 'HDR'? Utils.linkifyFM(name)
+    : this.mode === 'AIS'? Utils.linkifyVessel(name)
+    : Utils.linkifyCallsign(name);
 
     // Combine everything into info box contents
     return '<h3>' + title + distance + '</h3>'

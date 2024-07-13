@@ -565,33 +565,28 @@ function HdrMetaPanel(el) {
     var $container = $(
         '<div class="hdr-container">' +
             '<div class="hdr-top-line">' +
-                '<span class="hdr-selector"></span>' +
-                '<span class="hdr-identifier hdr-autoclear"></span>' +
+                '<select id="hdr-program-id" class="hdr-selector"></select>' +
+                '<span class="hdr-identifier"></span>' +
             '</div>' +
-            '<div class="hdr-station hdr-autoclear"></div>' +
-            '<div class="hdr-message hdr-autoclear"></div>' +
-            '<div class="hdr-title hdr-autoclear"></div>' +
-            '<div class="hdr-artist hdr-autoclear"></div>' +
+            '<div class="hdr-station"></div>' +
+            '<div class="hdr-message"></div>' +
+            '<div class="hdr-title"></div>' +
+            '<div class="hdr-artist"></div>' +
+            '<div class="hdr-album"></div>' +
+            '<div class="hdr-bottom-line">' +
+                '<span class="hdr-genre"></span>' +
+            '</div>' +
         '</div>'
     );
 
     $(this.el).append($container);
 
-    // Create program selector
-    this.$select = $(
-        '<select id="hdr-program-id">' +
-            '<option value="0">P1</option>' +
-            '<option value="1">P2</option>' +
-            '<option value="2">P3</option>' +
-            '<option value="3">P4</option>' +
-        '</select>'
-    );
-    this.$select.on("change", function() {
+    var $select = $('#hdr-program-id');
+    $select.hide();
+    $select.on("change", function() {
         var id = parseInt($(this).val());
         $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setAudioServiceId(id);
     });
-
-    $('.hdr-selector').append(this.$select);
 }
 
 HdrMetaPanel.prototype = new MetaPanel();
@@ -604,7 +599,7 @@ HdrMetaPanel.prototype.update = function(data) {
     if ('fcc_id' in data) {
         fcc_id = data.fcc_id.toString(16).toUpperCase();
         fcc_id = '0x' + ('0000' + fcc_id).slice(-4);
-        fcc_id = ('country' in data?  data.country + '-' : '') + fcc_id;
+        fcc_id = ('country' in data?  data.country + ':' : '') + fcc_id;
     }
 
     // Update panel
@@ -614,17 +609,22 @@ HdrMetaPanel.prototype.update = function(data) {
     $el.find('.hdr-message').text(data.alert || data.message || data.slogan || '');
     $el.find('.hdr-title').text(data.title || '');
     $el.find('.hdr-artist').text(data.artist || '');
+    $el.find('.hdr-genre').text(data.genre || '');
+    $el.find('.hdr-album').text(data.album || '');
 
     // Update program selector
-    if ('audio_services' in data) {
-        this.$select.html(data.audio_services.map(function(pgm) {
-            return '<option value="' + pgm.id + '">P' + (pgm.id + 1) +
-                ' - ' + pgm.name + '</option>';
+    var $select = $('#hdr-program-id');
+    if (!data.audio_services) {
+        $select.hide();
+        $select.html('');
+    } else {
+        $select.html(data.audio_services.map(function(pgm) {
+            var selected = data.program == pgm.id? ' selected' : '';
+            return '<option value="' + pgm.id + '"' + selected + '>P' +
+                (pgm.id + 1) + ' - ' + pgm.name + '</option>';
         }).join());
+        $select.show();
     }
-
-    // Update program
-    if ('program' in data) this.$select.val(data.program);
 };
 
 HdrMetaPanel.prototype.isSupported = function(data) {

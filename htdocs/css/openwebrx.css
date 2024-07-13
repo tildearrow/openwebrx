@@ -1806,7 +1806,8 @@ img.openwebrx-mirror-img
 	padding: 5px 0 5px 0;
 }
 
-.hdr-container .hdr-selector {
+.hdr-container .hdr-selector,
+.hdr-container .hdr-genre {
 	float: left;
 }
 
