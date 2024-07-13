@@ -1,3 +1,11 @@
+openwebrx (1.2.64) bullseye jammy; urgency=low
+
+  * Added support for HDRadio (NRSC5) digital FM radio.
+  * Now requiring CSDR version 0.18.24.
+  * Fixed some HFDL bookmarks.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 15 Jul 2024 16:12:00 +0000
+
 openwebrx (1.2.63) bullseye jammy; urgency=low
 
   * Fixed crash in the FLEX decoder.

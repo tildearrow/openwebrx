@@ -1,3 +1,8 @@
+**1.2.64**
+- Added support for HDRadio (NRSC5) digital FM radio.
+- Now requiring CSDR version 0.18.24.
+- Fixed some HFDL bookmarks.
+
 **1.2.63**
 - Fixed crash in the FLEX decoder.
 - Fixed crash in the EAS decoder.
