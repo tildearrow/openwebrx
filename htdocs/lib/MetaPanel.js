@@ -614,16 +614,16 @@ HdrMetaPanel.prototype.update = function(data) {
 
     // Update program selector
     var $select = $('#hdr-program-id');
-    if (!data.audio_services) {
-        $select.hide();
-        $select.html('');
-    } else {
+    if (data.audio_services && data.audio_services.length) {
         $select.html(data.audio_services.map(function(pgm) {
             var selected = data.program == pgm.id? ' selected' : '';
             return '<option value="' + pgm.id + '"' + selected + '>P' +
                 (pgm.id + 1) + ' - ' + pgm.name + '</option>';
         }).join());
         $select.show();
+    } else {
+        $select.html('');
+        $select.hide();
     }
 };
 
