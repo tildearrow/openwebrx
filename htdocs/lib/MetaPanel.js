@@ -557,6 +557,80 @@ WfmMetaPanel.prototype.clear = function() {
     this.radiotext_plus = false;
 };
 
+function HdrMetaPanel(el) {
+    MetaPanel.call(this, el);
+    this.modes = ['HDR'];
+
+    // Create info panel
+    var $container = $(
+        '<div class="hdr-container">' +
+            '<div class="hdr-top-line">' +
+                '<span class="hdr-selector"></span>' +
+                '<span class="hdr-identifier hdr-autoclear"></span>' +
+            '</div>' +
+            '<div class="hdr-station hdr-autoclear"></div>' +
+            '<div class="hdr-message hdr-autoclear"></div>' +
+            '<div class="hdr-title hdr-autoclear"></div>' +
+            '<div class="hdr-artist hdr-autoclear"></div>' +
+        '</div>'
+    );
+
+    $(this.el).append($container);
+
+    // Create program selector
+    this.$select = $(
+        '<select id="hdr-program-id">' +
+            '<option value="0">P1</option>' +
+            '<option value="1">P2</option>' +
+            '<option value="2">P3</option>' +
+            '<option value="3">P4</option>' +
+        '</select>'
+    );
+    this.$select.on("change", function() {
+        var id = parseInt($(this).val());
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setAudioServiceId(id);
+    });
+
+    $('.hdr-selector').append(this.$select);
+}
+
+HdrMetaPanel.prototype = new MetaPanel();
+
+HdrMetaPanel.prototype.update = function(data) {
+    if (!this.isSupported(data)) return;
+
+    // Convert FCC ID to hexadecimal
+    var fcc_id = '';
+    if ('fcc_id' in data) {
+        fcc_id = data.fcc_id.toString(16).toUpperCase();
+        fcc_id = '0x' + ('0000' + fcc_id).slice(-4);
+        fcc_id = ('country' in data?  data.country + '-' : '') + fcc_id;
+    }
+
+    // Update panel
+    var $el = $(this.el);
+    $el.find('.hdr-identifier').text(fcc_id);
+    $el.find('.hdr-station').text(data.station || '');
+    $el.find('.hdr-message').text(data.alert || data.message || data.slogan || '');
+    $el.find('.hdr-title').text(data.title || '');
+    $el.find('.hdr-artist').text(data.artist || '');
+
+    // Update program selector
+    if ('audio_services' in data) {
+        this.$select.html(data.audio_services.map(function(pgm) {
+            return '<option value="' + pgm.id + '">P' + (pgm.id + 1) +
+                ' - ' + pgm.name + '</option>';
+        }).join());
+    }
+
+    // Update program
+    if ('program' in data) this.$select.val(data.program);
+};
+
+HdrMetaPanel.prototype.isSupported = function(data) {
+    return this.modes.includes(data.mode);
+};
+
 function DabMetaPanel(el) {
     MetaPanel.call(this, el);
     var me = this;
@@ -565,7 +639,7 @@ function DabMetaPanel(el) {
     this.$select = $('<select id="dab-service-id"></select>');
     this.$select.on("change", function() {
         me.service_id = parseInt($(this).val());
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setDabServiceId(me.service_id);
+        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setAudioServiceId(me.service_id);
     });
     var $container = $(
         '<div class="dab-container">' +
@@ -639,6 +713,7 @@ MetaPanel.types = {
     m17: M17MetaPanel,
     wfm: WfmMetaPanel,
     dab: DabMetaPanel,
+    hdr: HdrMetaPanel,
 };
 
 $.fn.metaPanel = function() {

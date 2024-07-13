@@ -443,7 +443,7 @@ MapManager.prototype.processUpdates = function(updates) {
                         case 'HFDL': case 'VDL2': case 'ADSB': case 'ACARS':
                             marker = new LAircraftMarker();
                             break;
-                        case 'APRS': case 'AIS':
+                        case 'APRS': case 'AIS': case 'HDR':
                             marker = new LAprsMarker();
                             break;
                         case 'KiwiSDR': case 'WebSDR': case 'OpenWebRX':

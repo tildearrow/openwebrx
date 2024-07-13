@@ -32,7 +32,8 @@ function MarkerManager() {
         'HFDL'      : '&#9992;',
         'VDL2'      : '&#9992;',
         'ADSB'      : '&#9992;',
-        'ACARS'     : '&#9992;'
+        'ACARS'     : '&#9992;',
+        'HDR'       : '&#9836;'
     };
 
     // Marker type shown/hidden status

@@ -515,7 +515,6 @@ class Vdl2Parser(AircraftParser):
                     # Ignore dummy altitude value
                     alt = p["value"]["alt"]
                     if alt < 192000:
-                        # Convert altitude from feet into meters
                         out["altitude"] = round(alt)
                 elif p["name"] == "dst_airport":
                     # Parse destination airport
