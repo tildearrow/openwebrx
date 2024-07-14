@@ -48,6 +48,7 @@ Recommends: python3-digiham (>= 0.6),
             python3-paho-mqtt,
             dablin,
             multimon-ng,
-            imagemagick
+            imagemagick,
+            nrsc5
 Description: multi-user web sdr
  Open source, multi-user SDR receiver with a web interface
