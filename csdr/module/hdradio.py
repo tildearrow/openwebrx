@@ -7,7 +7,6 @@ from owrx.map import Map, LatLngLocation
 import logging
 import threading
 import pickle
-import time
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -32,16 +31,26 @@ class StationLocation(LatLngLocation):
 
 class HdRadioModule(ThreadModule):
     def __init__(self, program: int = 0, amMode: bool = False):
-        self.metaLock = threading.Lock()
+        self.program    = program
+        self.frequency  = 0
+        self.metaLock   = threading.Lock()
         self.metaWriter = None
-        self.meta = {}
-        self.program = 0
-        self.frequency = 0
-        self.radio = NRSC5(lambda evt_type, evt: self.callback(evt_type, evt))
+        self.meta       = {}
         self._clearMeta()
+        # Initialize and start NRSC5 decoder
+        self.radio = NRSC5(lambda evt_type, evt: self.callback(evt_type, evt))
+        self.radio.open_pipe()
+        self.radio.start()
 # Crashes things?
 #        self.radio.set_mode(Mode.AM if amMode else Mode.FM)
         super().__init__()
+
+    def __del__(self):
+        # Make sure NRSC5 object is truly destroyed
+        if self.radio is not None:
+            self.radio.stop()
+            self.radio.close()
+            self.radio = None
 
     def getInputFormat(self) -> Format:
         return Format.COMPLEX_SHORT
@@ -118,10 +127,6 @@ class HdRadioModule(ThreadModule):
     def run(self):
         # Start NRSC5 decoder
         logger.debug("Starting NRSC5 decoder...")
-        self.radio.open_pipe()
-        self.radio.start()
-        self.ts  = time.time()
-        self.cnt = 0
 
         # Main loop
         logger.debug("Running the loop...")
@@ -129,16 +134,17 @@ class HdRadioModule(ThreadModule):
             data = self.reader.read()
             if data is None or len(data) == 0:
                 self.doRun = False
-                break
-            try:
-                self.radio.pipe_samples_cs16(data.tobytes())
-            except Exception as exptn:
-                logger.debug("Exception: %s" % str(exptn))
+            else:
+                try:
+                    self.radio.pipe_samples_cs16(data.tobytes())
+                except Exception as exptn:
+                    logger.debug("Exception: %s" % str(exptn))
 
         # Stop NRSC5 decoder
         logger.debug("Stopping NRSC5 decoder...")
         self.radio.stop()
         self.radio.close()
+        self.radio = None
         logger.debug("DONE.")
 
     def callback(self, evt_type, evt):
@@ -147,11 +153,6 @@ class HdRadioModule(ThreadModule):
             self.doRun = False
         elif evt_type == EventType.AUDIO:
             if evt.program == self.program:
-                #logger.info("Audio data for program %d", evt.program)
-                sz = len(evt.data) / 2 / 2
-                self.cnt += sz
-                ts = self.ts + self.cnt / 44100
-                #logger.info("DIFF: {0}, SIZE: {1}".format(time.time() - ts, sz))
                 self.writer.write(evt.data)
         elif evt_type == EventType.HDC:
             if evt.program == self.program:
