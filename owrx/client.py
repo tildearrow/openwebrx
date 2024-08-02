@@ -53,6 +53,7 @@ class ClientRegistry(object):
             raise TooManyClientsException()
         self.clients.append(client)
         self.broadcast()
+        self.reportClient(client, True)
 
     def clientCount(self):
         return len(self.clients)
@@ -65,11 +66,32 @@ class ClientRegistry(object):
         except ValueError:
             pass
         self.broadcast()
+        self.reportClient(client, False)
 
     def _checkClientCount(self, new_count):
         for client in self.clients[new_count:]:
             logger.debug("closing one connection...")
             client.close()
+
+    # Report client coming or leaving
+    def reportClient(self, client, connected: bool):
+        ReportingEngine.getSharedInstance().spot({
+            "mode"      : "CLIENT",
+            "timestamp" : round(datetime.now().timestamp() * 1000),
+            "ip"        : self.getIp(client.conn.handler),
+            "state"     : "CONNECTED" if connected else "DISCONNECTED"
+        })
+
+    # Report chat message from a client
+    def reportChatMessage(self, client, text: str):
+        name = self.chat[client]["name"] if client in self.chat else "???"
+        ReportingEngine.getSharedInstance().spot({
+            "mode"      : "CHAT",
+            "timestamp" : round(datetime.now().timestamp() * 1000),
+            "ip"        : self.getIp(client.conn.handler),
+            "name"      : name,
+            "message"   : text
+        })
 
     # Broadcast chat message to all connected clients.
     def broadcastChatMessage(self, client, text: str, name: str = None):
@@ -105,17 +127,12 @@ class ClientRegistry(object):
                 self.chat[client] = { "name": name, "color": color }
                 self.chatCount = self.chatCount + 1
 
-        # Report message
-        ReportingEngine.getSharedInstance().spot({
-            "mode"      : "CHAT",
-            "timestamp" : round(datetime.now().timestamp() * 1000),
-            "name"      : name,
-            "message"   : text
-        })
-
         # Broadcast message to all clients
         for c in self.clients:
             c.write_chat_message(name, text, color)
+
+        # Report message
+        self.reportChatMessage(client, text)
 
     # Broadcast administrative message to all connected clients.
     def broadcastAdminMessage(self, text: str):
