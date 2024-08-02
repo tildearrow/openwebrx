@@ -1,5 +1,6 @@
 from owrx.config import Config
 from owrx.color import ColorCache
+from owrx.reporting import ReportingEngine
 from datetime import datetime, timedelta
 from ipaddress import ip_address
 import threading
@@ -103,6 +104,14 @@ class ClientRegistry(object):
                 color = self.chatColors.getColor(name)
                 self.chat[client] = { "name": name, "color": color }
                 self.chatCount = self.chatCount + 1
+
+        # Report message
+        ReportingEngine.getSharedInstance().spot({
+            "mode"      : "CHAT",
+            "timestamp" : round(datetime.now().timestamp() * 1000),
+            "name"      : name,
+            "message"   : text
+        })
 
         # Broadcast message to all clients
         for c in self.clients:
