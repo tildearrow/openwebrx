@@ -20,14 +20,17 @@ from owrx.reporting import ReportingEngine
 from owrx.version import openwebrx_version
 from owrx.audio.queue import DecoderQueue
 from owrx.admin import add_admin_parser, run_admin_action
+from owrx.reporting import ReportingEngine
 from owrx.markers import Markers
 from owrx.gps import GpsUpdater
+from datetime import datetime
 from pathlib import Path
 import signal
 import argparse
 import socket
 import ssl
 import os.path
+
 
 class ThreadedHttpServer(ThreadingMixIn, HTTPServer):
     def __init__(self, web_port, RequestHandlerClass, use_ipv6, bind_address=None):
@@ -143,6 +146,14 @@ Support and info:       https://groups.io/g/openwebrx
     # Instantiate and refresh marker database
     Markers.start()
 
+    # Report receiver started
+    ReportingEngine.getSharedInstance().spot({
+        "mode"      : "RX",
+        "timestamp" : round(datetime.now().timestamp() * 1000),
+        "version"   : openwebrx_version,
+        "state"     : "ReceiverStarted"
+    })
+
     try:
         # This is our HTTP server
         server = ThreadedHttpServer(coreConfig.get_web_port(), RequestHandler, coreConfig.get_web_ipv6(), coreConfig.get_web_bind_address())
@@ -170,7 +181,17 @@ Support and info:       https://groups.io/g/openwebrx
     GpsUpdater.stop()
     Services.stop()
     SdrService.stopAllSources()
-    ReportingEngine.stopAll()
     DecoderQueue.stopAll()
+
+    # Report receiver stopped
+    ReportingEngine.getSharedInstance().spot({
+        "mode"      : "RX",
+        "timestamp" : round(datetime.now().timestamp() * 1000),
+        "version"   : openwebrx_version,
+        "state"     : "ReceiverStopped"
+    })
+
+    # Done with reporting now
+    ReportingEngine.stopAll()
 
     return 0
