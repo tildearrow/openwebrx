@@ -288,6 +288,9 @@ class AprsParser(PickleModule):
             "path": data["path"]
         }
 
+        if "raw" in data:
+            aprsData["raw"] = data["raw"]
+
         if information[0] == 0x1C or information[0] == ord("`") or information[0] == ord("'"):
             aprsData.update(MicEParser().parse(data))
             return aprsData
@@ -526,7 +529,7 @@ class AprsParser(PickleModule):
             out += bytes([buf])
 
         # For now, just print data in hex
-        result["message"] = " ".join(["%02X" % x for x in out])
+        result["message"] = "".join('{:02X}'.format(x) for x in out)
         return result
 
 
