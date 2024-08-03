@@ -1,3 +1,11 @@
+**1.2.65**
+- Added MQTT reporting of server startup / shutdown.
+- Added MQTT reporting of client connections.
+- Added MQTT reporting of chat messages.
+- Added reporting for raw AX25 data [rassware].
+- Stated max panorama / avatar image sizes [jordank195].
+- Made "Files" page compatible with reverse proxy [413137366].
+
 **1.2.64**
 - Added support for HDRadio (NRSC5) digital FM radio.
 - Now requiring CSDR version 0.18.24.

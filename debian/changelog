@@ -1,3 +1,14 @@
+openwebrx (1.2.65) bullseye jammy; urgency=low
+
+  * Added MQTT reporting of server startup / shutdown.
+  * Added MQTT reporting of client connections.
+  * Added MQTT reporting of chat messages.
+  * Added reporting for raw AX25 data [rassware].
+  * Stated max panorama / avatar image sizes [jordank195].
+  * Made "Files" page compatible with reverse proxy [413137366].
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 5 Aug 2024 16:12:00 +0000
+
 openwebrx (1.2.64) bullseye jammy; urgency=low
 
   * Added support for HDRadio (NRSC5) digital FM radio.
