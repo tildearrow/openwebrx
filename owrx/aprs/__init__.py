@@ -63,7 +63,7 @@ class Ax25Parser(PickleModule):
                 "source": self.extractCallsign(ax25frame[7:14]),
                 "path": [self.extractCallsign(c, True) for c in chunks(ax25frame[14:control_pid], 7)],
                 "data": ax25frame[control_pid + 2 :],
-                "raw": "".join('{:02X}'.format(x) for x in ax25frame),
+                "raw": "".join('{:02X}'.format(x) for x in ax25frame)
             }
         except (ValueError, IndexError):
             logger.exception("error parsing ax25 frame")
@@ -285,8 +285,7 @@ class AprsParser(PickleModule):
         aprsData = {
             "source": data["source"],
             "destination": data["destination"],
-            "path": data["path"],
-            "raw": data["raw"]
+            "path": data["path"]
         }
 
         if information[0] == 0x1C or information[0] == ord("`") or information[0] == ord("'"):
