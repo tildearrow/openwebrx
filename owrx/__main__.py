@@ -146,12 +146,12 @@ Support and info:       https://groups.io/g/openwebrx
     # Instantiate and refresh marker database
     Markers.start()
 
-    # Report receiver started
+    # Report server started
     ReportingEngine.getSharedInstance().spot({
         "mode"      : "RX",
         "timestamp" : round(datetime.now().timestamp() * 1000),
         "version"   : openwebrx_version,
-        "state"     : "ReceiverStarted"
+        "state"     : "ServerStarted"
     })
 
     try:
@@ -183,12 +183,12 @@ Support and info:       https://groups.io/g/openwebrx
     SdrService.stopAllSources()
     DecoderQueue.stopAll()
 
-    # Report receiver stopped
+    # Report server stopped
     ReportingEngine.getSharedInstance().spot({
         "mode"      : "RX",
         "timestamp" : round(datetime.now().timestamp() * 1000),
         "version"   : openwebrx_version,
-        "state"     : "ReceiverStopped"
+        "state"     : "ServerStopped"
     })
 
     # Done with reporting now
