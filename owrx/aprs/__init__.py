@@ -63,7 +63,7 @@ class Ax25Parser(PickleModule):
                 "source": self.extractCallsign(ax25frame[7:14]),
                 "path": [self.extractCallsign(c, True) for c in chunks(ax25frame[14:control_pid], 7)],
                 "data": ax25frame[control_pid + 2 :],
-                "raw": "".join('{:02X}'.format(x) for x in ax25frame)
+                "raw": "".join("{:02X}".format(x) for x in ax25frame)
             }
         except (ValueError, IndexError):
             logger.exception("error parsing ax25 frame")
@@ -529,7 +529,7 @@ class AprsParser(PickleModule):
             out += bytes([buf])
 
         # For now, just print data in hex
-        result["message"] = "".join('{:02X}'.format(x) for x in out)
+        result["message"] = "".join("{:02X}".format(x) for x in out)
         return result
 
 
