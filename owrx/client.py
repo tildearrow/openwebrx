@@ -66,6 +66,7 @@ class ClientRegistry(object):
         except ValueError:
             pass
         self.broadcast()
+        self.reportClient(client, False)
 
     def _checkClientCount(self, new_count):
         for client in self.clients[new_count:]:
