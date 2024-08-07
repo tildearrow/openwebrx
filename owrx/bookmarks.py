@@ -15,7 +15,7 @@ class Bookmark(object):
         self.frequency = j["frequency"]
         self.modulation = j["modulation"]
         self.description = j["description"] if "description" in j else ""
-        self.scannable = j["scan"] if "scannable" in j else True
+        self.scannable = j["scannable"] if "scannable" in j else True
         self.srcFile = srcFile
 
     def getName(self):

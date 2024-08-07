@@ -36,6 +36,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                     <th class="frequency">Frequency</th>
                     <th>Modulation</th>
                     <th>Description</th>
+                    <th>Scan</th>
                     <th>Actions</th>
                 </tr>
                 {bookmarks}
@@ -65,12 +66,14 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             return "{num:g} {suffix}Hz".format(num=num, suffix=suffix)
 
         mode = Modes.findByModulation(bookmark.getModulation())
+        scan = bookmark.isScannable()
         return """
             <tr data-id="{id}">
                 <td data-editor="name" data-value="{name}">{name}</td>
                 <td data-editor="frequency" data-value="{frequency}" class="frequency">{rendered_frequency}</td>
                 <td data-editor="modulation" data-value="{modulation}">{modulation_name}</td>
                 <td data-editor="description" data-value="{description}">{description}</td>
+                <td data-editor="scannable" data-value="{scannable}">{scannable_check}</td>
                 <td>
                     <button type="button" class="btn btn-sm btn-danger bookmark-delete">delete</button>
                 </td>
@@ -84,6 +87,8 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             modulation=bookmark.getModulation() if mode is None else mode.modulation,
             modulation_name=bookmark.getModulation() if mode is None else mode.name,
             description=bookmark.getDescription(),
+            scannable="true" if scan else "false",
+            scannable_check="&check;" if scan else "",
         )
 
     def _findBookmark(self, bookmark_id):
@@ -101,7 +106,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             return
         try:
             data = json.loads(self.get_body().decode("utf-8"))
-            for key in ["name", "frequency", "modulation", "description"]:
+            for key in ["name", "frequency", "modulation", "description", "scannable"]:
                 if key in data:
                     value = data[key]
                     if key == "frequency":
@@ -124,6 +129,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                 "frequency": int(bookmark_data["frequency"]),
                 "modulation": bookmark_data["modulation"],
                 "description": bookmark_data["description"],
+                "scannable": bookmark_data["scannable"],
             }
             bookmark = Bookmark(data)
             bookmarks.addBookmark(bookmark)

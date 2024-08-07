@@ -1,5 +1,5 @@
 function Scanner(bookmarkBar, msec) {
-    this.modes     = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
+    this.modes     = ['lsb', 'usb', 'usbd', 'cw', 'am', 'sam', 'nfm'];
     this.bbar      = bookmarkBar;
     this.bookmarks = null;
     this.msec      = msec;

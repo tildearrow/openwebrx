@@ -1,5 +1,6 @@
 function BookmarkBar() {
     var me = this;
+    me.toScan = ['lsb', 'usb', 'usbd', 'cw', 'am', 'sam', 'nfm'];
     me.localBookmarks = new BookmarkLocalStorage();
     me.$container = $("#openwebrx-bookmarks-container");
     me.bookmarks = {};
@@ -107,10 +108,12 @@ BookmarkBar.prototype.render = function(){
 
 BookmarkBar.prototype.showEditDialog = function(bookmark) {
     if (!bookmark) {
+        var mode = this.getDemodulator().get_secondary_demod() || this.getDemodulator().get_modulation();
         bookmark = {
             name: "",
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),
-            modulation: this.getDemodulator().get_secondary_demod() || this.getDemodulator().get_modulation()
+            modulation: mode,
+            scannable : this.toScan.indexOf(mode) >= 0
         }
     }
     this.$dialog.bookmarkDialog().setValues(bookmark);
