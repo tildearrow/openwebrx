@@ -10,13 +10,19 @@ logger = logging.getLogger(__name__)
 
 
 class Bookmark(object):
+    SCANNABLE_MODES = ["lsb", "usb", "cw", "am", "sam", "nfm"]
+
     def __init__(self, j, srcFile: str = None):
         self.name = j["name"]
         self.frequency = j["frequency"]
         self.modulation = j["modulation"]
         self.description = j["description"] if "description" in j else ""
-        self.scannable = j["scannable"] if "scannable" in j else True
         self.srcFile = srcFile
+        # By default, only scan modulations that make sense to scan
+        if "scannable" in j:
+            self.scannable = j["scannable"]
+        else:
+            self.scannable = j["modulation"] in Bookmark.SCANNABLE_MODES
 
     def getName(self):
         return self.name

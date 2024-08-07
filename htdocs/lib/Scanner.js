@@ -1,5 +1,5 @@
 function Scanner(bookmarkBar, msec) {
-    this.modes     = ['lsb', 'usb', 'usbd', 'cw', 'am', 'sam', 'nfm'];
+    this.modes     = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
     this.bbar      = bookmarkBar;
     this.bookmarks = null;
     this.msec      = msec;
@@ -93,7 +93,7 @@ Scanner.prototype.start = function() {
         this.current = -1;
         // Get all scannable bookmarks from the bookmark bar
         this.bookmarks = this.bbar.getAllBookmarks().filter(
-          (b) => !!b.scannable && !!b.frequency && !!b.modulation && this.modes.indexOf(b.modulation)>=0
+          (b) => !!b.scannable && !!b.frequency && !!b.modulation
         );
 
         // If there are bookmarks to scan...
