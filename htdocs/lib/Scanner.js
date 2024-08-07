@@ -91,10 +91,9 @@ Scanner.prototype.start = function() {
     if (!this.timer) {
         // Nothing found yet
         this.current = -1;
-
         // Get all scannable bookmarks from the bookmark bar
         this.bookmarks = this.bbar.getAllBookmarks().filter(
-          (b) => !!b.frequency && !!b.modulation && this.modes.indexOf(b.modulation)>=0
+          (b) => !!b.scannable && !!b.frequency && !!b.modulation && this.modes.indexOf(b.modulation)>=0
         );
 
         // If there are bookmarks to scan...
