@@ -58,7 +58,6 @@ class ClientRegistry(object):
         return len(self.clients)
 
     def removeClient(self, client):
-        self.reportClient(client, { "state":"Disconnected" })
         try:
             if client in self.chat:
                 del self.chat[client]
@@ -66,7 +65,7 @@ class ClientRegistry(object):
         except ValueError:
             pass
         self.broadcast()
-        self.reportClient(client, False)
+        self.reportClient(client, { "state":"Disconnected" })
 
     def _checkClientCount(self, new_count):
         for client in self.clients[new_count:]:
