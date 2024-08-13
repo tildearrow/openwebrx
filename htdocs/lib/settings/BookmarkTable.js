@@ -198,12 +198,35 @@ DescriptionEditor.prototype.getInputHtml = function() {
     return '<input class="form-control form-control-sm" type="text">';
 };
 
+function ScannableEditor(table) {
+    Editor.call(this, table);
+}
+
+ScannableEditor.prototype = new Editor();
+
+ScannableEditor.prototype.getInputHtml = function() {
+    return '<input class="form-control form-control-sm" type="checkbox" checked>';
+};
+
+ScannableEditor.prototype.getValue = function() {
+    return this.input.prop('checked');
+};
+
+ScannableEditor.prototype.setValue = function(value) {
+    this.input.prop('checked', value);
+};
+
+ScannableEditor.prototype.getHtml = function() {
+    return this.getValue()? '&check;' : '';
+};
+
 $.fn.bookmarktable = function() {
     var editors = {
         name: NameEditor,
         frequency: FrequencyEditor,
         modulation: ModulationEditor,
-        description: DescriptionEditor
+        description: DescriptionEditor,
+        scannable: ScannableEditor
     };
 
     $.each(this, function(){
@@ -400,6 +423,7 @@ $.fn.bookmarktable = function() {
                                         '<td data-editor="frequency" data-value="' + bookmark.frequency + '" class="frequency">' + renderFrequency(bookmark.frequency) +'</td>' +
                                         '<td data-editor="modulation" data-value="' + bookmark.modulation + '">' + modulation_name + '</td>' +
                                         '<td data-editor="description" data-value="' + bookmark.description + '">' + bookmark.description + '</td>' +
+                                        '<td data-editor="scannable" data-value="' + bookmark.scannable + '">' + (bookmark.scannable? '&check;':'') + '</td>' +
                                         '<td>' +
                                             '<button type="button" class="btn btn-sm btn-danger bookmark-delete">delete</button>' +
                                         '</td>' +
