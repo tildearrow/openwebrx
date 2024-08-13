@@ -1,3 +1,8 @@
+**1.2.66**
+- Added bookmark option to enable/disable scanning.
+- SSB, CW, AM, SAM, and NFM bookmarks are scanned by default.
+- Fixed crashes when disconnecting clients.
+
 **1.2.65**
 - Added MQTT reporting of server startup / shutdown.
 - Added MQTT reporting of client connections.
