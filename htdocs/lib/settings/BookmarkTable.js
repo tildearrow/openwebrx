@@ -417,6 +417,14 @@ $.fn.bookmarktable = function() {
                                 if (modulation_name in modes) {
                                     modulation_name = modes[modulation_name];
                                 }
+                                // provide reasonable default for missing fields
+                                if (!('description' in bookmark)) {
+                                    bookmark.description = '';
+                                }
+                                if (!('scannable' in bookmark)) {
+                                    var modesToScan = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
+                                    bookmark.scannable = modesToScan.indexOf(bookmark.modulation) >= 0;
+                                }
                                 return $(
                                     '<tr data-id="' + obj.bookmark_id + '">' +
                                         '<td data-editor="name" data-value="' + bookmark.name + '">' + bookmark.name + '</td>' +

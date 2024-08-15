@@ -1,6 +1,7 @@
 **1.2.66**
 - Added bookmark option to enable/disable scanning.
 - SSB, CW, AM, SAM, and NFM bookmarks are scanned by default.
+- Fixed importing local bookmarks missing new fields.
 - Fixed crashes when disconnecting clients.
 
 **1.2.65**

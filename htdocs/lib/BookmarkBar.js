@@ -113,6 +113,7 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
             name: "",
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),
             modulation: mode,
+            description: "",
             scannable : this.modesToScan.indexOf(mode) >= 0
         }
     }

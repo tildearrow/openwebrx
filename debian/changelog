@@ -2,6 +2,7 @@ openwebrx (1.2.66) bullseye jammy; urgency=low
 
   * Added bookmark option to enable/disable scanning.
   * SSB, CW, AM, SAM, and NFM bookmarks are scanned by default.
+  * Fixed importing local bookmarks missing new fields.
   * Fixed crashes when disconnecting clients.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Wed, 14 Aug 2024 16:12:00 +0000

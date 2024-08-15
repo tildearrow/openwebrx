@@ -124,13 +124,13 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
 
         def create(bookmark_data):
             # sanitize
-            data = {
-                "name": bookmark_data["name"],
-                "frequency": int(bookmark_data["frequency"]),
-                "modulation": bookmark_data["modulation"],
-                "description": bookmark_data["description"],
-                "scannable": bookmark_data["scannable"],
-            }
+            data = {}
+            for key in ["name", "frequency", "modulation", "description", "scannable"]:
+                if key in bookmark_data:
+                    if key == "frequency":
+                        data[key] = int(bookmark_data[key])
+                    else:
+                        data[key] = bookmark_data[key]
             bookmark = Bookmark(data)
             bookmarks.addBookmark(bookmark)
             return {"bookmark_id": id(bookmark)}
