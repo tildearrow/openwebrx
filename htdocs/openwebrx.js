@@ -1800,8 +1800,7 @@ function handle_shortcuts(event) {
                 // CTRL+LEFT: Decrease squelch
                 var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
                 if (!$squelchControl.prop('disabled')) {
-                    $squelchControl.val(parseFloat($squelchControl.val()) - 5);
-                    $squelchControl.trigger('change');
+                    $squelchControl.val(parseFloat($squelchControl.val()) - 5).change();
                 }
             } else if (event.shiftKey) {
                 // SHIFT+LEFT: Shift bandpass left
@@ -1823,8 +1822,7 @@ function handle_shortcuts(event) {
                 // CTRL+RIGHT: Increase squelch
                 var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
                 if (!$squelchControl.prop('disabled')) {
-                    $squelchControl.val(parseFloat($squelchControl.val()) + 5);
-                    $squelchControl.trigger('change');
+                    $squelchControl.val(parseFloat($squelchControl.val()) + 5).change();
                 }
             } else if (event.shiftKey) {
                 // SHIFT+RIGHT: Shift bandpass right
@@ -1846,8 +1844,7 @@ function handle_shortcuts(event) {
                 // CTRL+UP: Increase volume
                 var $volumeControl = $('#openwebrx-panel-volume');
                 if (!$volumeControl.prop('disabled')) {
-                    $volumeControl.val(parseFloat($volumeControl.val()) + 10);
-                    $volumeControl.trigger('change');
+                    $volumeControl.val(parseFloat($volumeControl.val()) + 10).change();
                 }
             } else if (event.shiftKey) {
                 // SHIFT+UP: Make bandpass wider
@@ -1869,8 +1866,7 @@ function handle_shortcuts(event) {
                 // CTRL+DOWN: Decrease volume
                 var $volumeControl = $('#openwebrx-panel-volume');
                 if (!$volumeControl.prop('disabled')) {
-                    $volumeControl.val(parseFloat($volumeControl.val()) - 10);
-                    $volumeControl.trigger('change');
+                    $volumeControl.val(parseFloat($volumeControl.val()) - 10).change();
                 }
             } else if (event.shiftKey) {
                 // SHIFT+DOWN: Make bandpass narrower
@@ -1906,9 +1902,54 @@ function handle_shortcuts(event) {
             // D: Turn off squelch
             var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
             if (!$squelchControl.prop('disabled')) {
-                $squelchControl.val($squelchControl.attr('min'));
-                $squelchControl.trigger('change');
+                $squelchControl.val($squelchControl.attr('min')).change();
             }
+            break;
+
+        case 'z':
+            // Z: Set waterfall colors automatically
+            $('#openwebrx-waterfall-colors-auto').click();
+            break;
+
+        case 'x':
+            // X: Continuously auto-set waterfall colors
+            $('#openwebrx-waterfall-colors-auto').triggerHandler('contextmenu');
+            break;
+
+        case 'c':
+            // C: Set default waterfall colors
+            $('#openwebrx-waterfall-colors-default').click();
+            break;
+
+        case 'v':
+            // V: Toggle spectrum display
+            UI.toggleSpectrum();
+            break;
+
+        case 'b':
+            // B: Toggle bandplan display
+            UI.toggleBandplan();
+            break;
+
+        case 'n':
+            // N: Toggle noise reduction
+            UI.toggleNR();
+            break;
+
+        case ',':
+            // <: Decrease tuning step
+            var $stepControl = $('#openwebrx-tuning-step-listbox');
+            var max = $('#openwebrx-tuning-step-listbox option').length;
+            var n = $stepControl.prop('selectedIndex');
+            $stepControl.prop('selectedIndex', n > 0? n - 1 : max - 1);
+            break;
+
+        case '.':
+            // <: Increase tuning step
+            var $stepControl = $('#openwebrx-tuning-step-listbox');
+            var max = $('#openwebrx-tuning-step-listbox option').length;
+            var n = $stepControl.prop('selectedIndex');
+            $stepControl.prop('selectedIndex', n < max - 1? n + 1 : 0);
             break;
 
         case 'r':
