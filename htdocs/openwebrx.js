@@ -1892,9 +1892,23 @@ function handle_shortcuts(event) {
             UI.toggleMute();
             break;
 
+        case 'a':
+            // A: Set squelch automatically
+            $('.openwebrx-squelch-auto').click();
+            break;
+
         case 's':
             // S: Toggle scanner
             toggleScanner();
+            break;
+
+        case 'd':
+            // D: Turn off squelch
+            var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
+            if (!$squelchControl.prop('disabled')) {
+                $squelchControl.val($squelchControl.attr('min'));
+                $squelchControl.trigger('change');
+            }
             break;
 
         case 'r':
@@ -1905,7 +1919,7 @@ function handle_shortcuts(event) {
             break;
 
         case '1': case '2': case '3': case '4': case '5':
-        case '6': case '7': case '8': case '9': case '0';
+        case '6': case '7': case '8': case '9': case '0':
             // 0-9: Select modulation
             var $modes = $('.openwebrx-demodulator-button');
             var n = parseInt(event.key);
