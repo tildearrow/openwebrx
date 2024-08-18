@@ -1795,12 +1795,12 @@ function handle_shortcuts(event) {
     if (on_input) return;
 
     switch (event.key) {
-        case "ArrowLeft":
+        case 'ArrowLeft':
             if (event.ctrlKey) {
                 // CTRL+LEFT: Decrease squelch
                 var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
                 if (!$squelchControl.prop('disabled')) {
-                    $squelchControl.val(parseFloat($squelchControl.val()) - 10);
+                    $squelchControl.val(parseFloat($squelchControl.val()) - 5);
                     $squelchControl.trigger('change');
                 }
             } else if (event.shiftKey) {
@@ -1818,12 +1818,12 @@ function handle_shortcuts(event) {
             }
             break;
 
-        case "ArrowRight":
+        case 'ArrowRight':
             if (event.ctrlKey) {
                 // CTRL+RIGHT: Increase squelch
                 var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
                 if (!$squelchControl.prop('disabled')) {
-                    $squelchControl.val(parseFloat($squelchControl.val()) + 10);
+                    $squelchControl.val(parseFloat($squelchControl.val()) + 5);
                     $squelchControl.trigger('change');
                 }
             } else if (event.shiftKey) {
@@ -1841,7 +1841,7 @@ function handle_shortcuts(event) {
             }
             break;
 
-        case "ArrowUp":
+        case 'ArrowUp':
             if (event.ctrlKey) {
                 // CTRL+UP: Increase volume
                 var $volumeControl = $('#openwebrx-panel-volume');
@@ -1864,7 +1864,7 @@ function handle_shortcuts(event) {
             }
             break;
 
-        case "ArrowDown":
+        case 'ArrowDown':
             if (event.ctrlKey) {
                 // CTRL+DOWN: Decrease volume
                 var $volumeControl = $('#openwebrx-panel-volume');
@@ -1887,21 +1887,30 @@ function handle_shortcuts(event) {
             }
             break;
 
-        case " ":
+        case ' ':
             // SPACE: Mute/unmute sound
             UI.toggleMute();
             break;
 
-        case "s":
+        case 's':
             // S: Toggle scanner
             toggleScanner();
             break;
 
-        case "r":
+        case 'r':
             // R: Toggle recorder
             if ($('.openwebrx-record-button').is(':visible')) {
                 UI.toggleRecording();
             }
+            break;
+
+        case '1': case '2': case '3': case '4': case '5':
+        case '6': case '7': case '8': case '9': case '0';
+            // 0-9: Select modulation
+            var $modes = $('.openwebrx-demodulator-button');
+            var n = parseInt(event.key);
+            n = n > 0? n - 1 : 9;
+            if (n < $modes.length) $modes[n].click();
             break;
 
         default:
