@@ -72,7 +72,7 @@ UI.loadSettings = function() {
 
 // Set audio volume in 0..150 range.
 UI.setVolume = function(x) {
-    x = Math.round(parseFloat(x));
+    x = Math.min(150, Math.max(0, Math.round(parseFloat(x))));
     if (this.volume != x) {
         this.volume = x;
         LS.save('volume', x);

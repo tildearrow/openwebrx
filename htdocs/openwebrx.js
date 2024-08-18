@@ -1788,3 +1788,127 @@ function tuning_step_reset() {
     $('#openwebrx-tuning-step-listbox').val(tuning_step_default);
     tuning_step = tuning_step_default;
 }
+
+function handle_shortcuts(event) {
+    // Do not handle shortcuts when focused on a text or numeric input
+    var on_input = !!($('input:focus').length && ($('input:focus')[0].type === 'text' || $('input:focus')[0].type === 'number'));
+    if (on_input) return;
+
+    switch (event.key) {
+        case "ArrowLeft":
+            if (event.ctrlKey) {
+                // CTRL+LEFT: Decrease squelch
+                var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
+                if (!$squelchControl.prop('disabled')) {
+                    $squelchControl.val(parseFloat($squelchControl.val()) - 10);
+                    $squelchControl.trigger('change');
+                }
+            } else if (event.shiftKey) {
+                // SHIFT+LEFT: Shift bandpass left
+                var demodulators = getDemodulators();
+                for (var i = 0; i < demodulators.length; i++) {
+                    demodulators[i].moveBandpass(
+                        demodulators[i].low_cut - 50,
+                        demodulators[i].high_cut - 50
+                    );
+                }
+            } else {
+                // LEFT: Tune down
+                tuneBySteps(-1);
+            }
+            break;
+
+        case "ArrowRight":
+            if (event.ctrlKey) {
+                // CTRL+RIGHT: Increase squelch
+                var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
+                if (!$squelchControl.prop('disabled')) {
+                    $squelchControl.val(parseFloat($squelchControl.val()) + 10);
+                    $squelchControl.trigger('change');
+                }
+            } else if (event.shiftKey) {
+                // SHIFT+RIGHT: Shift bandpass right
+                var demodulators = getDemodulators();
+                for (var i = 0; i < demodulators.length; i++) {
+                    demodulators[i].moveBandpass(
+                        demodulators[i].low_cut + 50,
+                        demodulators[i].high_cut + 50
+                    );
+                }
+            } else {
+                // RIGHT: Tune up
+                tuneBySteps(1);
+            }
+            break;
+
+        case "ArrowUp":
+            if (event.ctrlKey) {
+                // CTRL+UP: Increase volume
+                var $volumeControl = $('#openwebrx-panel-volume');
+                if (!$volumeControl.prop('disabled')) {
+                    $volumeControl.val(parseFloat($volumeControl.val()) + 10);
+                    $volumeControl.trigger('change');
+                }
+            } else if (event.shiftKey) {
+                // SHIFT+UP: Make bandpass wider
+                var demodulators = getDemodulators();
+                for (var i = 0; i < demodulators.length; i++) {
+                    demodulators[i].moveBandpass(
+                        demodulators[i].low_cut - 50,
+                        demodulators[i].high_cut + 50
+                    );
+                }
+            } else {
+                // UP: Zoom in
+                zoomInOneStep();
+            }
+            break;
+
+        case "ArrowDown":
+            if (event.ctrlKey) {
+                // CTRL+DOWN: Decrease volume
+                var $volumeControl = $('#openwebrx-panel-volume');
+                if (!$volumeControl.prop('disabled')) {
+                    $volumeControl.val(parseFloat($volumeControl.val()) - 10);
+                    $volumeControl.trigger('change');
+                }
+            } else if (event.shiftKey) {
+                // SHIFT+DOWN: Make bandpass narrower
+                var demodulators = getDemodulators();
+                for (var i = 0; i < demodulators.length; i++) {
+                    demodulators[i].moveBandpass(
+                        demodulators[i].low_cut + 50,
+                        demodulators[i].high_cut - 50
+                    );
+                }
+            } else {
+                // DOWN: Zoom out
+                zoomOutOneStep();
+            }
+            break;
+
+        case " ":
+            // SPACE: Mute/unmute sound
+            UI.toggleMute();
+            break;
+
+        case "s":
+            // S: Toggle scanner
+            toggleScanner();
+            break;
+
+        case "r":
+            // R: Toggle recorder
+            if ($('.openwebrx-record-button').is(':visible')) {
+                UI.toggleRecording();
+            }
+            break;
+
+        default:
+            // Key not handled, pass it on
+            return;
+    }
+
+    // Key handled, prevent default operation
+    event.preventDefault();
+}
