@@ -4,6 +4,10 @@
 
 function Shortcuts() {}
 
+Shortcuts.init = function(target) {
+    target.addEventListener("keydown", this.handleKey);
+};
+
 Shortcuts.moveSlider = function(slider, delta) {
     var $control = $(slider);
     if (!$control.prop('disabled')) {
@@ -21,7 +25,7 @@ Shortcuts.moveSelector = function(selector, steps) {
     }
 };
 
-Shortcuts.handleKeyEvent = function(event) {
+Shortcuts.handleKey = function(event) {
     // Do not handle shortcuts when focused on a text or numeric input
     var on_input = !!($('input:focus').length && ($('input:focus')[0].type === 'text' || $('input:focus')[0].type === 'number'));
     if (on_input) return;
