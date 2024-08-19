@@ -13,7 +13,7 @@ Shortcuts.init = function(target) {
     this.overlay.appendTo(target);
 
     this.overlay.html(`
-    <div class="ks-title">Keyboard shortcuts</div>
+    <div class="ks-title">Keyboard Shortcuts</div>
     <div class="ks-subtitle">Hide this help with '?'.</div>
     <div class="ks-separator"></div>
     <div class="ks-content">
