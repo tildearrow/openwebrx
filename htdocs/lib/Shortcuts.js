@@ -5,7 +5,123 @@
 function Shortcuts() {}
 
 Shortcuts.init = function(target) {
-    target.addEventListener("keydown", this.handleKey);
+    target.addEventListener('keydown', this.handleKey);
+
+    this.overlay = jQuery('<div id="ks-overlay"></div>');
+    this.overlay.hide();
+    this.overlay.appendTo(target);
+
+    this.overlay.html(`
+    <div class="ks-title">Keyboard shortcuts</div>
+    <div class="ks-subtitle">Hide this help with '?'.</div>
+    <div class="ks-separator"></div>
+    <div class="ks-content">
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('ArrowLeft')}|${keycap('ArrowRight')}</div>
+        <div class="ks-item-txt">tune frequency</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('ArrowUp')}|${keycap('ArrowDown')}</div>
+        <div class="ks-item-txt">zoom waterfall</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('0')}..${keycap('9')}</div>
+        <div class="ks-item-txt">select modulation</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('[')}|${keycap(']')}</div>
+        <div class="ks-item-txt">change tuning step</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('Control')}+${keycap('ArrowUp')}|${keycap('ArrowDown')}</div>
+        <div class="ks-item-txt">change volume</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('Space')}</div>
+        <div class="ks-item-txt">mute/unumte sound</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('A')}</div>
+        <div class="ks-item-txt">auto-set squelch</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('Control')}+${keycap('ArrowLeft')}|${keycap('ArrowRight')}</div>
+        <div class="ks-item-txt">change squelch level</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('D')}</div>
+        <div class="ks-item-txt">disable squelch</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('N')}</div>
+        <div class="ks-item-txt">toggle noise reduction</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('Shift')}+${keycap('ArrowLeft')}|${keycap('ArrowRight')}</div>
+        <div class="ks-item-txt">adjust bandpass offset</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('Shift')}+${keycap('ArrowUp')}|${keycap('ArrowDown')}</div>
+        <div class="ks-item-txt">adjust bandpass width</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('S')}</div>
+        <div class="ks-item-txt">toggle scanner</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap(',')}|${keycap('.')}</div>
+        <div class="ks-item-txt">adjust waterfall max level</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('<')}|${keycap('>')}</div>
+        <div class="ks-item-txt">adjust waterfall min level</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('Z')}</div>
+        <div class="ks-item-txt">auto-set colors once</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('X')}</div>
+        <div class="ks-item-txt">auto-set colors</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('C')}</div>
+        <div class="ks-item-txt">set default colors</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('R')}</div>
+        <div class="ks-item-txt">toggle recorder</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('V')}</div>
+        <div class="ks-item-txt">toggle spectrum</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('B')}</div>
+        <div class="ks-item-txt">toggle bandplan</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('M')}</div>
+        <div class="ks-item-txt">open map</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('F')}</div>
+        <div class="ks-item-txt">open files browser</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-kbd">${keycap('H')}</div>
+        <div class="ks-item-txt">open documentation</div>
+      </div>
+    </div>
+    `);
 };
 
 Shortcuts.moveSlider = function(slider, delta) {
@@ -220,7 +336,7 @@ Shortcuts.handleKey = function(event) {
            break;
 
         case '/': case '?':
-            // TODO: Help screen goes here!!!
+            Shortcuts.overlay.slideToggle(100);
             break;
 
         default:
@@ -231,3 +347,38 @@ Shortcuts.handleKey = function(event) {
     // Key handled, prevent default operation
     event.preventDefault();
 };
+
+function keycap(key) {
+    var keymap = {
+        ',': ', <b style="font-size: 0.7rem">comma</b>',
+        '.': '. <b style="font-size: 0.7rem">dot</b>',
+        ';': '; <b style="font-size: 0.7rem">semicolon</b>',
+        '\'': '\' <b style="font-size: 0.7rem">apostrophe</b>',
+        'SHIFT': '&#8679; Shift',
+        'CONTROL': '&#8963; Ctrl',
+        'COMMAND': '&#8984; Cmd',
+        'META': '&#8984; Meta',
+        'ALT': '&#8997; Alt',
+        'OPTION': '&#8997; Opt',
+        'ENTER': '&crarr; Enter',
+        'RETURN': '&crarr; Enter',
+        'DELETE': '&#8998; Del',
+        'BACKSPACE': '&#9003; BS',
+        'ESCAPE': '&#9099; ESC',
+        'ARROWRIGHT': '&rarr;',
+        'ARROWLEFT': '&larr;',
+        'ARROWUP': '&uarr;',
+        'ARROWDOWN': '&darr;',
+        'PAGEUP': '&#8670; PgUp',
+        'PAGEDOWN': '&#8671; PgDn',
+        'HOME': '&#8598; Home',
+        'END': '&#8600; End',
+        'TAB': '&#8677; Tab',
+        'SPACE': '&#9251; Space',
+        'INTERVAL': '&#9251; Space',
+    };
+
+    var k = keymap[key.toUpperCase()] || key.toUpperCase();
+
+    return `<button class="kbc-button kbc-button-sm" title="${key}"><b>${k}</b></button>`;
+}
