@@ -200,6 +200,21 @@ Shortcuts.handleKeyEvent = function(event) {
             this.moveSlider('#openwebrx-waterfall-color-min', 1);
             break;
 
+       case 'f':
+           // F: Open file browser
+           $('a.button[target="openwebrx-files"]')[0].click();
+           break;
+
+       case 'h':
+           // H: Open documentation
+           $('a.button[target="openwebrx-help"]')[0].click();
+           break;
+
+       case 'm':
+           // M: Open map
+           $('a.button[target="openwebrx-map"]')[0].click();
+           break;
+
         case '/': case '?':
             // TODO: Help screen goes here!!!
             break;
