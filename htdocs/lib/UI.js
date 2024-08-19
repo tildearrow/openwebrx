@@ -155,12 +155,14 @@ UI.toggleRecording = function(on) {
 
     var $recButton = $('.openwebrx-record-button');
 
-    if (audioEngine.recording && (toggle || !on)) {
-        audioEngine.stopRecording();
-        $recButton.css('animation-name', '');
-    } else if (toggle || on) {
-        audioEngine.startRecording();
-        $recButton.css('animation-name', 'openwebrx-record-animation');
+    if ($recButton.is(':visible')) {
+        if (audioEngine.recording && (toggle || !on)) {
+            audioEngine.stopRecording();
+            $recButton.css('animation-name', '');
+        } else if (toggle || on) {
+            audioEngine.startRecording();
+            $recButton.css('animation-name', 'openwebrx-record-animation');
+        }
     }
 };
 
