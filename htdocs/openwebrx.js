@@ -1403,6 +1403,9 @@ function openwebrx_init() {
 
     // Create and run clock
     clock = new Clock($('#openwebrx-clock-utc'));
+
+    // Initialize keyboard shortcuts
+    Shortcuts.init(document.body);
 }
 
 function initSliders() {

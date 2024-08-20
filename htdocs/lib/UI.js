@@ -72,7 +72,7 @@ UI.loadSettings = function() {
 
 // Set audio volume in 0..150 range.
 UI.setVolume = function(x) {
-    x = Math.round(parseFloat(x));
+    x = Math.min(150, Math.max(0, Math.round(parseFloat(x))));
     if (this.volume != x) {
         this.volume = x;
         LS.save('volume', x);
@@ -155,12 +155,14 @@ UI.toggleRecording = function(on) {
 
     var $recButton = $('.openwebrx-record-button');
 
-    if (audioEngine.recording && (toggle || !on)) {
-        audioEngine.stopRecording();
-        $recButton.css('animation-name', '');
-    } else if (toggle || on) {
-        audioEngine.startRecording();
-        $recButton.css('animation-name', 'openwebrx-record-animation');
+    if ($recButton.is(':visible')) {
+        if (audioEngine.recording && (toggle || !on)) {
+            audioEngine.stopRecording();
+            $recButton.css('animation-name', '');
+        } else if (toggle || on) {
+            audioEngine.startRecording();
+            $recButton.css('animation-name', 'openwebrx-record-animation');
+        }
     }
 };
 
