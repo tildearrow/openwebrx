@@ -150,8 +150,8 @@ Shortcuts.handleKey = function(event) {
     // Leave CTRL+<LETTER> combinations to the browser
     if (event.ctrlKey && event.key.match(/^[a-z]$/i)) return;
 
-    switch (event.key) {
-        case 'ArrowLeft':
+    switch (event.key.toLowerCase()) {
+        case 'arrowleft':
             if (event.ctrlKey) {
                 // CTRL+LEFT: Decrease squelch
                 this.moveSlider('#openwebrx-panel-receiver .openwebrx-squelch-slider', -1);
@@ -170,7 +170,7 @@ Shortcuts.handleKey = function(event) {
             }
             break;
 
-        case 'ArrowRight':
+        case 'arrowright':
             if (event.ctrlKey) {
                 // CTRL+RIGHT: Increase squelch
                 this.moveSlider('#openwebrx-panel-receiver .openwebrx-squelch-slider', 1);
@@ -189,7 +189,7 @@ Shortcuts.handleKey = function(event) {
             }
             break;
 
-        case 'ArrowUp':
+        case 'arrowup':
             if (event.ctrlKey) {
                 // CTRL+UP: Increase volume
                 this.moveSlider('#openwebrx-panel-volume', 1);
@@ -208,7 +208,7 @@ Shortcuts.handleKey = function(event) {
             }
             break;
 
-        case 'ArrowDown':
+        case 'arrowdown':
             if (event.ctrlKey) {
                 // CTRL+DOWN: Decrease volume
                 this.moveSlider('#openwebrx-panel-volume', -1);
