@@ -28,7 +28,7 @@ Shortcuts.init = function(target) {
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">select modulation</div>
-        <div class="ks-item-kbd">(${this.keycap('Control')}+)${this.keycap('0')}..${this.keycap('9')}</div>
+        <div class="ks-item-kbd">(${this.keycap('Control')}+)&nbsp;${this.keycap('0')}..${this.keycap('9')}</div>
       </div>
 
       <div class="ks-item">
@@ -147,6 +147,9 @@ Shortcuts.handleKey = function(event) {
     var on_input = !!($('input:focus').length && ($('input:focus')[0].type === 'text' || $('input:focus')[0].type === 'number'));
     if (on_input) return;
 
+    // Leave CTRL+<LETTER> combinations to the browser
+    if (event.ctrlKey && event.key.match(/^[a-z]$/i)) return;
+
     switch (event.key) {
         case 'ArrowLeft':
             if (event.ctrlKey) {
@@ -226,7 +229,7 @@ Shortcuts.handleKey = function(event) {
 
         case '1': case '2': case '3': case '4': case '5':
         case '6': case '7': case '8': case '9': case '0':
-            // 0-9, ctrl+0-9: Select modulation
+            // [CTRL+]0-9: Select modulation
             var $modes = $('.openwebrx-demodulator-button');
             var n = parseInt(event.key);
             n = n > 0? n - 1 : 9;
@@ -251,13 +254,11 @@ Shortcuts.handleKey = function(event) {
 
         case 's':
             // S: Toggle scanner
-            if (event.ctrlKey) return; // leave it to the browser
             toggleScanner();
             break;
 
         case 'd':
             // D: Turn off squelch
-            if (event.ctrlKey) return; // leave it to the browser
             var $squelchControl = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
             if (!$squelchControl.prop('disabled')) {
                 $squelchControl.val($squelchControl.attr('min')).change();
@@ -296,13 +297,11 @@ Shortcuts.handleKey = function(event) {
 
         case 'n':
             // N: Toggle noise reduction
-            if (event.ctrlKey) return; // leave it to the browser
             UI.toggleNR();
             break;
 
         case 'r':
             // R: Toggle recorder
-            if (event.ctrlKey) return; // leave it to the browser
             UI.toggleRecording();
             break;
 
@@ -328,13 +327,11 @@ Shortcuts.handleKey = function(event) {
 
        case 'f':
             // F: Open file browser
-            if (event.ctrlKey) return; // leave it to the browser
             $('a.button[target="openwebrx-files"]')[0].click();
             break;
 
        case 'h':
             // H: Open documentation
-            if (event.ctrlKey) return; // leave it to the browser
             $('a.button[target="openwebrx-help"]')[0].click();
             break;
 
