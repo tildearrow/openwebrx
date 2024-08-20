@@ -14,7 +14,7 @@ Shortcuts.init = function(target) {
 
     this.overlay.html(`
     <div class="ks-title">Keyboard Shortcuts</div>
-    <div class="ks-subtitle">Hide this help with '?'.</div>
+    <div class="ks-subtitle">Hide this help panel by pressing ${this.keycap('?')}</div>
     <div class="ks-separator"></div>
     <div class="ks-content">
 
