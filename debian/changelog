@@ -1,3 +1,9 @@
+openwebrx (1.2.67) bullseye jammy; urgency=low
+
+  * Added keyboard shortcuts (press [?] for help).
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 26 Aug 2024 16:12:00 +0000
+
 openwebrx (1.2.66) bullseye jammy; urgency=low
 
   * Added bookmark option to enable/disable scanning.
