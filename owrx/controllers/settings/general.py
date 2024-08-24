@@ -161,6 +161,7 @@ class GeneralSettingsController(SettingsFormController):
                     "FFT vertical overlap factor",
                     infotext="If fft_voverlap_factor is above 0, multiple FFTs will be used for creating a line on the "
                     + "diagram.",
+                    validator=RangeValidator(0.0, 0.9),
                 ),
                 WaterfallLevelsInput("waterfall_levels", "Waterfall levels"),
                 WaterfallAutoLevelsInput(

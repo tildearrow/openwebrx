@@ -16,7 +16,7 @@ class RequiredValidator(Validator):
 
 
 class Range(object):
-    def __init__(self, start: int, end: int = None):
+    def __init__(self, start, end = None):
         self.start = start
         self.end = end if end is not None else start
 

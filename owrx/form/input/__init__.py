@@ -161,8 +161,8 @@ class NumberInput(Input):
 
 
 class FloatInput(NumberInput):
-    def __init__(self, id, label, infotext=None, converter: Converter = None):
-        super().__init__(id, label, infotext, converter=converter)
+    def __init__(self, id, label, infotext=None, converter: Converter = None, validator: Validator = None):
+        super().__init__(id, label, infotext, converter=converter, validator=validator)
         self.step = "any"
 
     def defaultConverter(self):
