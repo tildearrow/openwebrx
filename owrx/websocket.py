@@ -7,6 +7,7 @@ import select
 import threading
 from abc import ABC, abstractmethod
 from datetime import datetime
+from ssl import SSLWantReadError
 
 import logging
 
@@ -245,6 +246,8 @@ class WebSocketConnection(object):
                         else:
                             logger.warning("unsupported opcode: {0}".format(opcode))
                     except Drained:
+                        available = False
+                    except SSLWantReadError:
                         available = False
                     except IncompleteRead:
                         logger.warning("incomplete read on websocket; closing connection")
