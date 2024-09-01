@@ -65,17 +65,7 @@ class Map(object):
     def addClient(self, client):
         self.clients.append(client)
         with self.positionsLock:
-            positions = [
-                {
-                    "callsign": callsign,
-                    "location": record["location"].__dict__(),
-                    "lastseen": record["updated"].timestamp() * 1000,
-                    "mode": record["mode"],
-                    "band": record["band"].getName() if record["band"] is not None else None,
-                    "hops": record["hops"],
-                }
-                for (callsign, record) in self.positions.items()
-            ]
+            positions = [self._makeRecord(key, record) for (key, record) in self.positions.items()]
         client.write_update(positions)
 
     def removeClient(self, client):
@@ -84,42 +74,64 @@ class Map(object):
         except ValueError:
             pass
 
-    def updateLocation(self, key, loc: Location, mode: str, band: Band = None, hops: list[str] = [], timestamp: datetime = None):
+    def _makeRecord(self, callsign, record):
+        return {
+            "callsign": callsign,
+            "location": record["location"].__dict__(),
+            "lastseen": record["updated"].timestamp() * 1000,
+            "mode": record["mode"],
+            "band": record["band"].getName() if record["band"] is not None else None,
+            "hops": record["hops"],
+            "callees": list(record["callees"].keys()),
+        }
+
+    def updateLink(self, key, callee, mode: str, band: Band = None, timestamp: datetime = None):
+        logger.info("{0} call from {1} to {2}".format(mode, key, callee))
+
+        # if we get an external timestamp, make sure it's not already expired
         if timestamp is None:
             timestamp = datetime.now(timezone.utc)
-        else:
-            # if we get an external timestamp, make sure it's not already expired
-            if datetime.now(timezone.utc) - loc.getTTL() > timestamp:
-                return
+        elif datetime.now(timezone.utc) - loc.getTTL() > timestamp:
+            return
+
+        broadcast = None
+
+        # update the list of callees for existing callsigns
+        with self.positionsLock:
+            if key in self.positions:
+                self.positions[key]["callees"][callee] = timestamp
+                broadcast = self._makeRecord(key, self.positions[key])
+
+        if broadcast is not None:
+            self.broadcast([broadcast])
+
+    def updateLocation(self, key, loc: Location, mode: str, band: Band = None, hops: list[str] = [], timestamp: datetime = None):
+        # if we get an external timestamp, make sure it's not already expired
+        if timestamp is None:
+            timestamp = datetime.now(timezone.utc)
+        elif datetime.now(timezone.utc) - loc.getTTL() > timestamp:
+            return
 
         pm = Config.get()
         ignoreIndirect = pm["map_ignore_indirect_reports"]
         preferRecent = pm["map_prefer_recent_reports"]
-        needBroadcast = False
+        broadcast = None
 
-        with self.positionsLock:
-            # ignore indirect reports if ignoreIndirect set
-            if not ignoreIndirect or len(hops)==0:
-                # prefer messages with shorter hop count unless preferRecent set
-                if preferRecent or key not in self.positions or len(hops) <= len(self.positions[key]["hops"]):
-                    if isinstance(loc, IncrementalUpdate) and key in self.positions:
+        # ignore indirect reports if ignoreIndirect set
+        if not ignoreIndirect or len(hops)==0:
+            # prefer messages with shorter hop count unless preferRecent set
+            with self.positionsLock:
+                if key not in self.positions:
+                    self.positions[key] = { "location": loc, "updated": timestamp, "mode": mode, "band": band, "hops": hops, "callees": {} }
+                    broadcast = self._makeRecord(key, self.positions[key])
+                elif preferRecent or len(hops) <= len(self.positions[key]["hops"]):
+                    if isinstance(loc, IncrementalUpdate):
                         loc.update(self.positions[key]["location"])
-                    self.positions[key] = {"location": loc, "updated": timestamp, "mode": mode, "band": band, "hops": hops }
-                    needBroadcast = True
+                    self.positions[key].update({ "location": loc, "updated": timestamp, "mode": mode, "band": band, "hops": hops })
+                    broadcast = self._makeRecord(key, self.positions[key])
 
-        if needBroadcast:
-            self.broadcast(
-                [
-                    {
-                        "callsign": key,
-                        "location": loc.__dict__(),
-                        "lastseen": timestamp.timestamp() * 1000,
-                        "mode": mode,
-                        "band": band.getName() if band is not None else None,
-                        "hops": hops,
-                    }
-                ]
-            )
+        if broadcast is not None:
+            self.broadcast([broadcast])
 
     def touchLocation(self, key):
         # not implemented on the client side yet, so do not use!

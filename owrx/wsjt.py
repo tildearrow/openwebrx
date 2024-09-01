@@ -287,6 +287,10 @@ class WsjtParser(AudioChopperParser):
             out["interval"] = profile.getInterval()
 
             self.pushDecode(mode, band)
+            if "callsign" in out and "callee" in out:
+                Map.getSharedInstance().updateLink(
+                    out["callsign"], out["callee"], mode, band
+                )
             if "callsign" in out and "locator" in out:
                 Map.getSharedInstance().updateLocation(
                     out["callsign"], LocatorLocation(out["locator"]), mode, band
@@ -344,17 +348,23 @@ class MessageParser(ABC):
 
 # Used in QSO-style modes (FT8, FT4, FST4)
 class QsoMessageParser(MessageParser):
-    locator_pattern = re.compile(".*\\s([A-Z0-9/]{2,})(\\sR)?\\s([A-R]{2}[0-9]{2})$")
+    locator_pattern = re.compile("^(.*)\\s([A-Z0-9/]{2,})(\\sR)?\\s(([A-R]{2}[0-9]{2})|73|RRR)$")
+    calee_pattern   = re.compile("^([A-Z0-9/]{2,})(\\s.*)?$")
 
     def parse(self, msg):
         m = QsoMessageParser.locator_pattern.match(msg)
         if m is None:
             return {}
-        # this is a valid locator in theory, but it's somewhere in the arctic ocean, near the north pole, so it's very
+        out = {"callsign": m.group(2)}
+        # RR73 is a valid locator in theory, but it's somewhere in the arctic ocean, near the north pole, so it's very
         # likely this just means roger roger goodbye.
-        if m.group(3) == "RR73":
-            return {"callsign": m.group(1)}
-        return {"callsign": m.group(1), "locator": m.group(3)}
+        if m.group(4) not in ["RR73", "73", "RRR"]:
+            out["locator"] = m.group(4)
+        else:
+            m = QsoMessageParser.calee_pattern.match(m.group(1))
+            if m is not None:
+                out["callee"] = m.group(1)
+        return out
 
 
 # Used in propagation reporting / beacon modes (WSPR / FST4W)
