@@ -40,7 +40,11 @@ class MqttReporter(Reporter):
         host = parts[0]
         if len(parts) > 1:
             port = int(parts[1])
-        client.connect(host=host, port=port)
+
+        try:
+            client.connect(host=host, port=port)
+        except:
+            logger.exception("Exception connecting to MQTT server")
 
         threading.Thread(target=client.loop_forever).start()
 
@@ -53,6 +57,7 @@ class MqttReporter(Reporter):
             self.topic = topic
 
     def _reconnect(self, *args, **kwargs):
+        logger.debug("Reconnecting...")
         old = self.client
         self.client = self._getClient()
         old.disconnect()

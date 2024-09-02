@@ -190,11 +190,14 @@ class FeatureDetector(object):
 
     def has_csdr(self):
         """
-        OpenWebRX uses the demodulator and pipeline tools provided by the csdr project. Please check out [the project
-        page on github](https://github.com/jketterl/csdr) for further details and installation instructions.
+        OpenWebRX uses the demodulator and pipeline tools provided by the
+        [csdr project](https://github.com/jketterl/csdr).
 
-        In addition, the [pycsdr](https://github.com/jketterl/pycsdr) package must be installed to provide
-        python bindings for the csdr library.
+        In addition, [pycsdr](https://github.com/jketterl/pycsdr) must be installed to provide python bindings for the
+        csdr library.
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `python3-csdr`.
         """
         required_version = LooseVersion("0.19.0")
 
@@ -211,41 +214,32 @@ class FeatureDetector(object):
 
     def has_nmux(self):
         """
-        Nmux is another tool provided by the csdr project. It is used for internal multiplexing of the IQ data streams.
-        If you're missing nmux even though you have csdr installed, please update your csdr version.
+        Nmux is a tool provided by the csdr project. It is used for internal multiplexing of the IQ data streams.
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `nmux`.
         """
         return self.command_is_runnable("nmux --help")
 
     def has_perseustest(self):
         """
-        To use a Microtelecom Perseus HF receiver, compile and
-        install the libperseus-sdr:
-        ```
-         sudo apt install libusb-1.0-0-dev
-         cd /tmp
-         wget https://github.com/Microtelecom/libperseus-sdr/releases/download/v0.8.2/libperseus_sdr-0.8.2.tar.gz
-         tar -zxvf libperseus_sdr-0.8.2.tar.gz
-         cd libperseus_sdr-0.8.2/
-         ./configure
-         make
-         sudo make install
-         sudo ldconfig
-         perseustest
-        ```
+        To use a Microtelecom Perseus HF receiver, you need the `perseustest` utility from
+        [libperseus-sdr](https://github.com/Microtelecom/libperseus-sdr).
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `perseus-tools`.
         """
         return self.command_is_runnable("perseustest -h")
 
     def has_digiham(self):
         """
-        To use digital voice modes, the digiham package is required. You can find the package and installation
-        instructions [here](https://github.com/jketterl/digiham).
+        To use digital voice modes, [digiham](https://github.com/jketterl/digiham) is required.
 
-        In addition, the [pydigiham](https://github.com/jketterl/pydigiham) package must be installed to provide
-        python bindings for the digiham library.
+        In addition, [pydigiham](https://github.com/jketterl/pydigiham) must be installed to provide python bindings
+        for the digiham library.
 
-        Please note: there is close interaction between digiham and openwebrx, so older versions will probably not work.
-        If you have an older verison of digiham installed, please update it along with openwebrx.
-        As of now, we require version 0.6 of digiham.
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `python3-digiham`.
         """
         required_version = LooseVersion("0.6")
 
@@ -279,28 +273,31 @@ class FeatureDetector(object):
 
     def has_rtl_connector(self):
         """
-        The owrx_connector package offers direct interfacing between your hardware and openwebrx. It allows quicker
-        frequency switching, uses less CPU and can even provide more stability in some cases.
+        The [owrx_connector](https://github.com/jketterl/owrx_connector) offers direct interfacing between your
+        hardware and OpenWebRX.
 
-        You can get it [here](https://github.com/jketterl/owrx_connector).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `owrx-connector`.
         """
         return self._check_owrx_connector("rtl_connector")
 
     def has_rtl_tcp_connector(self):
         """
-        The owrx_connector package offers direct interfacing between your hardware and openwebrx. It allows quicker
-        frequency switching, uses less CPU and can even provide more stability in some cases.
+        The [owrx_connector](https://github.com/jketterl/owrx_connector) offers direct interfacing between your
+        hardware and OpenWebRX.
 
-        You can get it [here](https://github.com/jketterl/owrx_connector).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `owrx-connector`.
         """
         return self._check_owrx_connector("rtl_tcp_connector")
 
     def has_soapy_connector(self):
         """
-        The owrx_connector package offers direct interfacing between your hardware and openwebrx. It allows quicker
-        frequency switching, uses less CPU and can even provide more stability in some cases.
+        The [owrx_connector](https://github.com/jketterl/owrx_connector) offers direct interfacing between your
+        hardware and OpenWebRX.
 
-        You can get it [here](https://github.com/jketterl/owrx_connector).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `owrx-connector`.
         """
         return self._check_owrx_connector("soapy_connector")
 
@@ -317,75 +314,84 @@ class FeatureDetector(object):
 
     def has_soapy_rtl_sdr(self):
         """
-        The SoapySDR module for rtl-sdr devices can be used as an alternative to the rtl_connector. It provides
-        additional support for the direct sampling mod.
+        The [SoapyRTLSDR](https://github.com/pothosware/SoapyRTLSDR/wiki) module can be used as an alternative to
+        rtl_connector.
 
-        You can get it [here](https://github.com/pothosware/SoapyRTLSDR/wiki).
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-rtlsdr` from their distribution.
         """
         return self._has_soapy_driver("rtlsdr")
 
     def has_soapy_sdrplay(self):
         """
-        The SoapySDR module for sdrplay devices is required for interfacing with SDRPlay devices (RSP1*, RSP2*, RSPDuo)
-
-        You can get it [here](https://github.com/SDRplay/SoapySDRPlay).
+        The [SoapySDRPlay3](https://github.com/pothosware/SoapySDRPlay3) module is required for interfacing with
+        SDRPlay devices (RSP1\\*, RSP2\\*, RSPDuo)
         """
         return self._has_soapy_driver("sdrplay")
 
     def has_soapy_airspy(self):
         """
-        The SoapySDR module for airspy devices is required for interfacing with Airspy devices (Airspy R2, Airspy Mini).
+        The [SoapyAirspy](https://github.com/pothosware/SoapyAirspy/wiki) module is required for interfacing with
+        Airspy devices (Airspy R2, Airspy Mini).
 
-        You can get it [here](https://github.com/pothosware/SoapyAirspy/wiki).
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-airspy` from their distribution.
         """
         return self._has_soapy_driver("airspy")
 
     def has_soapy_airspyhf(self):
         """
-        The SoapySDR module for airspyhf devices is required for interfacing with Airspy HF devices (Airspy HF+,
-        Airspy HF discovery).
+        The [SoapyAirspyHF](https://github.com/pothosware/SoapyAirspyHF/wiki) module is required for interfacing with
+        Airspy HF devices (Airspy HF+, Airspy HF discovery).
 
-        You can get it [here](https://github.com/pothosware/SoapyAirspyHF/wiki).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `soapysdr-module-airspyhf`.
         """
         return self._has_soapy_driver("airspyhf")
 
     def has_soapy_afedri(self):
         """
-        The SoapyAfedri module allows using Afedri SDR-Net devices with SoapySDR.
+        The [SoapyAfedri](https://github.com/alexander-sholohov/SoapyAfedri) module allows using Afedri SDR-Net devices
+        with SoapySDR.
 
-        You can get it [here](https://github.com/alexander-sholohov/SoapyAfedri).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `soapysdr-module-afedri`.
         """
         return self._has_soapy_driver("afedri")
 
     def has_soapy_lime_sdr(self):
         """
-        The Lime Suite installs - amongst others - a Soapy driver for the LimeSDR device series.
+        The [LimeSuite](https://github.com/myriadrf/LimeSuite) installs - amongst other software - a Soapy driver for
+        the LimeSDR device series.
 
-        You can get it [here](https://github.com/myriadrf/LimeSuite).
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-lms7` from their distribution.
         """
         return self._has_soapy_driver("lime")
 
     def has_soapy_pluto_sdr(self):
         """
-        The SoapySDR module for PlutoSDR devices is required for interfacing with PlutoSDR devices.
+        The [SoapyPlutoSDR](https://github.com/pothosware/SoapyPlutoSDR) module is required for interfacing with
+        PlutoSDR devices.
 
-        You can get it [here](https://github.com/pothosware/SoapyPlutoSDR).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `soapysdr-module-plutosdr`.
         """
         return self._has_soapy_driver("plutosdr")
 
     def has_soapy_remote(self):
         """
-        The SoapyRemote allows the usage of remote SDR devices using the SoapySDRServer.
+        SoapyRemote allows the usage of remote SDR devices over the network using SoapySDRServer.
 
         You can get the code and find additional information [here](https://github.com/pothosware/SoapyRemote/wiki).
+
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-remote` from their distribution.
         """
         return self._has_soapy_driver("remote")
 
     def has_soapy_uhd(self):
         """
-        The SoapyUHD module allows using UHD / USRP devices with SoapySDR.
+        The [SoapyUHD](https://github.com/pothosware/SoapyUHD/wiki) module allows using UHD / USRP devices with
+        SoapySDR.
 
-        You can get it [here](https://github.com/pothosware/SoapyUHD/wiki).
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-uhd` from their distribution.
         """
         return self._has_soapy_driver("uhd")
 
@@ -394,60 +400,63 @@ class FeatureDetector(object):
         The Radioberry is a SDR hat for the Raspberry Pi.
 
         You can find more information, along with its SoapySDR module [here](https://github.com/pa3gsb/Radioberry-2.x).
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `soapysdr-module-radioberry`.
         """
         return self._has_soapy_driver("radioberry")
 
     def has_soapy_hackrf(self):
         """
-        The SoapyHackRF allows HackRF to be used with SoapySDR.
+        [SoapyHackRF](https://github.com/pothosware/SoapyHackRF/wiki) allows HackRF devices to be used with SoapySDR.
 
-        You can get it [here](https://github.com/pothosware/SoapyHackRF/wiki).
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-hackrf` from their distribution.
         """
         return self._has_soapy_driver("hackrf")
 
     def has_soapy_fcdpp(self):
         """
-        The SoapyFCDPP module allows the use of the Funcube Dongle Pro+.
+        The [SoapyFCDPP](https://github.com/pothosware/SoapyFCDPP) module allows the use of the Funcube Dongle Pro+.
 
-        You can get it [here](https://github.com/pothosware/SoapyFCDPP).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `soapysdr-module-fcdpp`.
         """
         return self._has_soapy_driver("fcdpp")
 
     def has_soapy_bladerf(self):
         """
-        The SoapyBladeRF module allows the use of Blade RF devices.
+        The [SoapyBladeRF](https://github.com/pothosware/SoapyBladeRF) module allows the use of Blade RF devices.
 
-        You can get it [here](https://github.com/pothosware/SoapyBladeRF).
+        Debian and Ubuntu users should be able to install the package `soapysdr-module-bladerf` from their distribution.
         """
         return self._has_soapy_driver("bladerf")
 
     def has_m17_demod(self):
         """
-        The `m17-demod` tool is used to demodulate M17 digital voice signals.
+        OpenWebRX uses the [M17 Demodulator](https://github.com/mobilinkd/m17-cxx-demod) to demodulate M17 digital
+        voice signals.
 
-        You can find more information [here](https://github.com/mobilinkd/m17-cxx-demod)
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `m17-demod`.
         """
         return self.command_is_runnable("m17-demod", 0)
 
     def has_direwolf(self):
         """
         OpenWebRX uses the [direwolf](https://github.com/wb2osz/direwolf) software modem to decode Packet Radio and
-        report data back to APRS-IS. Direwolf is available from the package manager on many distributions, or you can
-        compile it from source.
+        report data back to APRS-IS.
+
+        Debian and Ubuntu users should be able to install the package `direwolf` from their distribution.
         """
         return self.command_is_runnable("direwolf --help")
-
-    def has_airspy_rx(self):
-        """
-        In order to use an Airspy Receiver, you need to install the airspy_rx receiver software.
-        """
-        return self.command_is_runnable("airspy_rx --help")
 
     def has_wsjtx(self):
         """
         To decode FT8 and other digimodes, you need to install the WSJT-X software suite. Please check the
         [WSJT-X homepage](https://wsjt.sourceforge.io/) for ready-made packages or instructions
         on how to build from source.
+
+        Debian and Ubuntu users can also install the `wsjtx` package provided by the distribution.
         """
         return reduce(and_, map(self.command_is_runnable, ["jt9", "wsprd"]), True)
 
@@ -479,25 +488,28 @@ class FeatureDetector(object):
 
     def has_msk144decoder(self):
         """
-        To decode the MSK144 digimode please install the "msk144decoder". See the
-        [project page](https://github.com/alexander-sholohov/msk144decoder) for more details.
+        To decode the MSK144 digimode please install
+        [msk144decoder](https://github.com/alexander-sholohov/msk144decoder).
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `msk144decoder`.
         """
         return self.command_is_runnable("msk144decoder")
 
     def has_js8(self):
         """
-        To decode JS8, you will need to install [JS8Call](http://js8call.com/)
+        To decode JS8, you will need to install [JS8Call](http://js8call.com/).
 
-        Please note that the `js8` command line decoder is not made available on $PATH by some JS8Call package builds.
-        You will need to manually make it available by either linking it to `/usr/bin` or by adding its location to
-        $PATH.
+        Debian and Ubuntu users should be able to install the package `js8call` from their distribution.
         """
         return self.command_is_runnable("js8")
 
     def has_js8py(self):
         """
-        The js8py library is used to decode binary JS8 messages into readable text. More information is available on
-        [its github page](https://github.com/jketterl/js8py).
+        OpenWebRX uses [js8py](https://github.com/jketterl/js8py) to decode binary JS8 messages into readable text.
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `python3-js8py`.
         """
         required_version = StrictVersion("0.2")
         try:
@@ -510,13 +522,15 @@ class FeatureDetector(object):
     def has_alsa(self):
         """
         Some SDR receivers are identifying themselves as a soundcard. In order to read their data, OpenWebRX relies
-        on the Alsa library. It is available as a package for most Linux distributions.
+        on the Alsa library.
+
+        Debian and Ubuntu users should be able to install the package `alsa-utils` from their distribution.
         """
         return self.command_is_runnable("arecord --help")
 
     def has_rockprog(self):
         """
-        The "rockprog" executable is required to send commands to your FiFiSDR. It needs to be installed separately.
+        The `rockprog` executable is required to send commands to your FiFiSDR. It needs to be installed separately.
 
         You can find instructions and downloads [here](https://o28.sischa.net/fifisdr/trac/wiki/De%3Arockprog).
         """
@@ -524,12 +538,15 @@ class FeatureDetector(object):
 
     def has_freedv_rx(self):
         """
-        The "freedv\\_rx" executable is required to demodulate FreeDV digital transmissions. It comes together with the
+        The `freedv_rx` executable is required to demodulate FreeDV digital transmissions. It comes together with the
         codec2 library, but it's only a supplemental part and not installed by default or contained in its packages.
         To install it, you will need to compile codec2 from source and manually install freedv\\_rx.
 
         Detailed installation instructions are available on the
         [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/FreeDV-demodulator-notes).
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `codec2`.
         """
         return self.command_is_runnable("freedv_rx")
 
@@ -537,9 +554,11 @@ class FeatureDetector(object):
         """
         In order to be able to decode DRM broadcasts, OpenWebRX needs the "dream" DRM decoder.
 
-        The version supplied by most distributions will not work properly on the command line, so compiling from source
-        with a custom set of commands is recommended. Detailed installation instructions are available on the
-        [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/DRM-demodulator-notes).
+        A custom set of commands is recommended when compiling from source. Detailed installation instructions are
+        available on the [OpenWebRX wiki](https://github.com/jketterl/openwebrx/wiki/DRM-demodulator-notes).
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `dream-headless`.
         """
         return self.command_is_runnable("dream --help", 0)
 
@@ -553,27 +572,33 @@ class FeatureDetector(object):
 
     def has_hpsdr_connector(self):
         """
-        In order to use the HPSDR connector, you will need to install [hpsdrconnector]
-        (https://github.com/jancona/hpsdrconnector).
+        The [HPSDR Connector](https://github.com/jancona/hpsdrconnector) is required to interface OpenWebRX with
+        Hermes Lite 2, Red Pitaya, and similar networked SDR devices.
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `hpsdrconnector`.
         """
         return self.command_is_runnable("hpsdrconnector -h")
 
     def has_runds_connector(self):
         """
-        To use radios supporting R&S radios via EB200 or Ammos, you need to install the runds_connector.
+        To use radios supporting R&S radios via EB200 or Ammos, you need to install
+        [runds_connector](https://github.com/jketterl/runds_connector).
 
-        You can find more information [here](https://github.com/jketterl/runds_connector).
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `runds-connector`.
         """
         return self._check_connector("runds_connector", LooseVersion("0.2"))
 
     def has_codecserver_ambe(self):
         """
-        Codecserver is used to decode audio data from digital voice modes using the AMBE codec.
-
-        You can find more information [here](https://github.com/jketterl/codecserver).
+        [Codecserver](https://github.com/jketterl/codecserver) is used to decode audio data from digital voice modes using the AMBE codec.
 
         NOTE: this feature flag checks both the availability of codecserver as well as the availability of the AMBE
         codec in the configured codecserer instance.
+
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `codecserver`.
         """
 
         config = Config.get()
@@ -611,19 +636,17 @@ class FeatureDetector(object):
 
     def has_rtl_433(self):
         """
-        OpenWebRX can make use of the `rtl_433` software to decode various signals in the ISM bands.
+        OpenWebRX can make use of [`rtl_433`](https://github.com/merbanan/rtl_433) to decode various signals in the
+        ISM bands.
 
-        You can find more information [here](https://github.com/merbanan/rtl_433).
-
-        Debian and Ubuntu based systems should be able to install the package `rtl-433` from the package manager.
+        Debian and Ubuntu users should be able to install the package `rtl-433` from their distribution.
         """
         return self.command_is_runnable("rtl_433 -h")
 
     def has_dumphfdl(self):
         """
-        OpenWebRX supports decoding HFDL airplane communications using the `dumphfdl` decoder.
-
-        You can find more information [here](https://github.com/szpajder/dumphfdl)
+        OpenWebRX supports decoding HFDL airplane communications using
+        [`dumphfdl`](https://github.com/szpajder/dumphfdl).
 
         If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
         `dumphfdl`.
@@ -632,9 +655,8 @@ class FeatureDetector(object):
 
     def has_dumpvdl2(self):
         """
-        OpenWebRX supports decoding VDL Mode 2 airplane communications using the `dumpvdl2` decoder.
-
-        You can find more information [here](https://github.com/szpajder/dumpvdl2)
+        OpenWebRX supports decoding VDL Mode 2 airplane communications using
+        [`dumpvdl2`](https://github.com/szpajder/dumpvdl2).
 
         If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
         `dumpvdl2`.
@@ -643,9 +665,8 @@ class FeatureDetector(object):
 
     def has_redsea(self):
         """
-        OpenWebRX can decode RDS data on WFM broadcast station if the `redsea` decoder is available.
-
-        You can find more information [here](https://github.com/windytan/redsea)
+        OpenWebRX can decode RDS data on WFM broadcast station if the [`redsea`](https://github.com/windytan/redsea)
+        decoder is available.
 
         If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
         `redsea`.
@@ -658,8 +679,8 @@ class FeatureDetector(object):
         [`csdr-eti`](https://github.com/jketterl/csdr-eti) project, together with the
         associated python bindings from [`pycsdr-eti`](https://github.com/jketterl/pycsdr-eti).
 
-        If you are using the OpenWebRX Debian or Ubuntu repository, the `python3-csdr-eti` package should be all you
-        need.
+        If you are using the OpenWebRX Debian or Ubuntu repository, you should be able to install the package
+        `python3-csdr-eti`.
         """
         required_version = LooseVersion("0.1")
 
@@ -679,7 +700,7 @@ class FeatureDetector(object):
         To decode DAB broadcast signals, OpenWebRX needs the [`dablin`](https://github.com/Opendigitalradio/dablin)
         decoding software.
 
-        Dablin comes packaged with Debian and Ubuntu, so installing the `dablin` package should get you going.
+        Debian and Ubuntu users should be able to install the package `dablin` from their distribution.
         """
         return self.command_is_runnable("dablin -h")
 
@@ -688,7 +709,7 @@ class FeatureDetector(object):
         OpenWebRX can pass decoded signal data to an MQTT broker for processing in third-party applications. To be able
         to do this, the [paho-mqtt](https://pypi.org/project/paho-mqtt/) library is required.
 
-        If you are using Debian or Ubuntu, you can install the `python3-paho-mqtt` package.
+        Debian and Ubuntu users should be able to install the package `python3-paho-mqtt` from their distribution.
         """
         try:
             from paho.mqtt import __version__
