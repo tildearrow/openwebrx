@@ -134,11 +134,8 @@ class Modes(object):
             "freedv", "FreeDV", bandpass=Bandpass(300, 3000), requirements=["digital_voice_freedv"], squelch=False
         ),
         AnalogMode("drm", "DRM", bandpass=Bandpass(-5000, 5000), requirements=["drm"], squelch=False),
-        AnalogMode("dab", "DAB", bandpass=None, ifRate=2.048e6, requirements=["dab"], squelch=False),
-        AnalogMode("hdr1", "HDR1", bandpass=None, ifRate=744188, requirements=["hdradio"], squelch=False),
-        AnalogMode("hdr2", "HDR2", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
-        AnalogMode("hdr3", "HDR3", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
-        AnalogMode("hdr4", "HDR4", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
+        AnalogMode("dab", "DAB", bandpass=None, ifRate=2048000, requirements=["dab"], squelch=False),
+        AnalogMode("hdr", "HDR", bandpass=Bandpass(-200000, 200000), requirements=["hdradio"], squelch=False),
         DigitalMode("bpsk31", "BPSK31", underlying=["usb"]),
         DigitalMode("bpsk63", "BPSK63", underlying=["usb"]),
         DigitalMode("rtty170", "RTTY 45/170", underlying=["usb", "lsb"]),
