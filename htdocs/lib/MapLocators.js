@@ -10,9 +10,10 @@ function LocatorManager(spectral = true) {
     var colors = spectral? ['darkviolet', 'blue', 'green', 'red'] : ['red', 'blue', 'green'];
 
     // Current locators
-    this.locators = {};
-    this.bands    = {};
-    this.modes    = {};
+    this.locators  = {};
+    this.bands     = {};
+    this.modes     = {};
+    this.callsigns = {};
 
     // The color scale used
     this.colorScale = chroma.scale(colors).mode('hsl');
@@ -46,6 +47,13 @@ LocatorManager.prototype.add = function(id, locator) {
     return this.locators[id];
 };
 
+LocatorManager.prototype.id2latlng = function(id) {
+    return {
+        lat: (id.charCodeAt(1) - 65 - 9) * 10 + Number(id[3]) + 0.5,
+        lng: (id.charCodeAt(0) - 65 - 9) * 20 + Number(id[2]) * 2 + 1.0
+    };
+};
+
 LocatorManager.prototype.update = function(id, data, map) {
     // Do not update unless locator present
     if (!(id in this.locators)) return false;
@@ -64,7 +72,7 @@ LocatorManager.prototype.update = function(id, data, map) {
         }
     }
 
-    // Keep track modes
+    // Keep track of modes
     if (!(data.mode in this.modes)) {
         this.modes[data.mode] = '#000000';
         this.assignColors(this.modes);
@@ -76,6 +84,41 @@ LocatorManager.prototype.update = function(id, data, map) {
 
     // Update locator
     this.locators[id].update(data, map);
+
+    // Index locators by callsign
+    this.callsigns[data.callsign] = id;
+
+    // Update links to other locators
+    var callees = this.locators[id].callees = {};
+    for (var src in this.locators[id].callsigns) {
+        var dst = this.locators[id].callsigns[src].callees;
+        for (var j=0 ; j<dst.length ; j++) {
+            if (dst[j] in this.callsigns) {
+                var callee = this.callsigns[dst[j]];
+                if (callee in callees) {
+                    callees[callee].count++;
+                } else {
+                    callees[callee] = { count: 1 };
+                }
+            }
+        }
+    }
+
+    // Create polylines
+    for(var dst in callees) {
+        if (callees[dst].count > 1) {
+            callees[dst].line = new google.maps.Polyline({
+                path: [this.id2latlng(id), this.id2latlng(dst)],
+                geodesic: true,
+                strokeColor: "#000000",
+                strokeOpacity: 0.5,
+                strokeWeight: callees[dst].count,
+                zIndex: 1
+            });
+            callees[dst].line.setMap(map);
+        }
+    }
+
     return true;
 };
 
@@ -198,6 +241,7 @@ Locator.prototype.update = function(data, map) {
         lastseen : data.lastseen,
         mode     : data.mode,
         band     : data.band,
+        callees  : data.callees,
         weight   : 1
     };
 
