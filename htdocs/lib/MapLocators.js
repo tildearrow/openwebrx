@@ -10,10 +10,9 @@ function LocatorManager(spectral = true) {
     var colors = spectral? ['darkviolet', 'blue', 'green', 'red'] : ['red', 'blue', 'green'];
 
     // Current locators
-    this.locators  = {};
-    this.bands     = {};
-    this.modes     = {};
-    this.callsigns = {};
+    this.locators = {};
+    this.bands    = {};
+    this.modes    = {};
 
     // The color scale used
     this.colorScale = chroma.scale(colors).mode('hsl');
@@ -58,6 +57,9 @@ LocatorManager.prototype.update = function(id, data, map) {
     // Do not update unless locator present
     if (!(id in this.locators)) return false;
 
+    // Filter out link messages
+    if ('callee' in data) return this.updateLink(id, data, map);
+
     // Make sure we have valid band and mode names
     if (!data.band) data.band = 'other';
     if (!data.mode) data.mode = 'other';
@@ -84,42 +86,12 @@ LocatorManager.prototype.update = function(id, data, map) {
 
     // Update locator
     this.locators[id].update(data, map);
-
-    // Index locators by callsign
-    this.callsigns[data.callsign] = id;
-
-    // Update links to other locators
-    var callees = this.locators[id].callees = {};
-    for (var src in this.locators[id].callsigns) {
-        var dst = this.locators[id].callsigns[src].callees;
-        for (var j=0 ; j<dst.length ; j++) {
-            if (dst[j] in this.callsigns) {
-                var callee = this.callsigns[dst[j]];
-                if (callee in callees) {
-                    callees[callee].count++;
-                } else {
-                    callees[callee] = { count: 1 };
-                }
-            }
-        }
-    }
-
-    // Create polylines
-    for(var dst in callees) {
-        if (callees[dst].count > 1) {
-            callees[dst].line = new google.maps.Polyline({
-                path: [this.id2latlng(id), this.id2latlng(dst)],
-                geodesic: true,
-                strokeColor: "#000000",
-                strokeOpacity: 0.5,
-                strokeWeight: callees[dst].count,
-                zIndex: 1
-            });
-            callees[dst].line.setMap(map);
-        }
-    }
-
     return true;
+};
+
+LocatorManager.prototype.updateLink = function(id, data, map) {
+    // @@@ TODO!!!
+    return false;
 };
 
 LocatorManager.prototype.getSortedKeys = function(colorMap) {
@@ -241,7 +213,6 @@ Locator.prototype.update = function(data, map) {
         lastseen : data.lastseen,
         mode     : data.mode,
         band     : data.band,
-        callees  : data.callees,
         weight   : 1
     };
 

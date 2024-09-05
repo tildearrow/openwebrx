@@ -146,6 +146,9 @@ MapManager.prototype.processUpdates = function(updates) {
     }
 
     updates.forEach(function(update) {
+        // TODO: Process caller-callee links here!!!
+        if (!('location' in update)) return;
+
         switch (update.location.type) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);

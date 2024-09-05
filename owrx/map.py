@@ -36,6 +36,7 @@ class Map(object):
     def __init__(self):
         self.clients = []
         self.positions = {}
+        self.links = []
         self.positionsLock = threading.Lock()
 
         def removeLoop():
@@ -65,7 +66,12 @@ class Map(object):
     def addClient(self, client):
         self.clients.append(client)
         with self.positionsLock:
-            positions = [self._makeRecord(key, record) for (key, record) in self.positions.items()]
+            positions = [
+                self._makeRecord(key, record) for (key, record) in self.positions.items()
+            ] + [
+                self._makeLink(link) for link in self.links
+            ]
+
         client.write_update(positions)
 
     def removeClient(self, client):
@@ -74,6 +80,17 @@ class Map(object):
         except ValueError:
             pass
 
+    def _makeLink(self, link):
+        return {
+            "caller": link["caller"],
+            "callee": link["callee"],
+            "src": link["src"].__dict__(),
+            "dst": link["dst"].__dict__(),
+            "lastseen": link.timestamp() * 1000,
+            "mode": link["mode"],
+            "band": link["band"].getName() if link["band"] is not None else None
+        }
+
     def _makeRecord(self, callsign, record):
         return {
             "callsign": callsign,
@@ -81,8 +98,7 @@ class Map(object):
             "lastseen": record["updated"].timestamp() * 1000,
             "mode": record["mode"],
             "band": record["band"].getName() if record["band"] is not None else None,
-            "hops": record["hops"],
-            "callees": list(record["callees"].keys()),
+            "hops": record["hops"]
         }
 
     def updateLink(self, key, callee, mode: str, band: Band = None, timestamp: datetime = None):
@@ -98,9 +114,22 @@ class Map(object):
 
         # update the list of callees for existing callsigns
         with self.positionsLock:
-            if key in self.positions:
-                self.positions[key]["callees"][callee] = timestamp
-                broadcast = self._makeRecord(key, self.positions[key])
+            if key in self.positions and callee in self.positions:
+                src = self.positions[key]["location"]
+                dst = self.positions[callee]["location"]
+                link = {
+                    "caller": key,
+                    "callee": callee,
+                    "timestamp": timestamp,
+                    "mode": mode,
+                    "band": band,
+                    "src": src,
+                    "dst": dst
+                }
+                broadcast = self._makeLink(link)
+                self.links.append(link)
+                if len(self.links) > 15:
+                    self.links.pop(0)
 
         if broadcast is not None:
             self.broadcast([broadcast])
@@ -122,7 +151,7 @@ class Map(object):
             # prefer messages with shorter hop count unless preferRecent set
             with self.positionsLock:
                 if key not in self.positions:
-                    self.positions[key] = { "location": loc, "updated": timestamp, "mode": mode, "band": band, "hops": hops, "callees": {} }
+                    self.positions[key] = { "location": loc, "updated": timestamp, "mode": mode, "band": band, "hops": hops }
                     broadcast = self._makeRecord(key, self.positions[key])
                 elif preferRecent or len(hops) <= len(self.positions[key]["hops"]):
                     if isinstance(loc, IncrementalUpdate):
