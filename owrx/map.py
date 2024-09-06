@@ -36,7 +36,7 @@ class Map(object):
     def __init__(self):
         self.clients = []
         self.positions = {}
-        self.links = []
+        self.calls = []
         self.positionsLock = threading.Lock()
 
         def removeLoop():
@@ -69,7 +69,7 @@ class Map(object):
             positions = [
                 self._makeRecord(key, record) for (key, record) in self.positions.items()
             ] + [
-                self._makeLink(link) for link in self.links
+                self._makeCall(call) for call in self.calls
             ]
 
         client.write_update(positions)
@@ -80,15 +80,15 @@ class Map(object):
         except ValueError:
             pass
 
-    def _makeLink(self, link):
+    def _makeCall(self, call):
         return {
-            "caller": link["caller"],
-            "callee": link["callee"],
-            "src": link["src"].__dict__(),
-            "dst": link["dst"].__dict__(),
-            "lastseen": link.timestamp() * 1000,
-            "mode": link["mode"],
-            "band": link["band"].getName() if link["band"] is not None else None
+            "caller": call["caller"],
+            "callee": call["callee"],
+            "src": call["src"].__dict__(),
+            "dst": call["dst"].__dict__(),
+            "lastseen": call["timestamp"].timestamp() * 1000,
+            "mode": call["mode"],
+            "band": call["band"].getName() if call["band"] is not None else None
         }
 
     def _makeRecord(self, callsign, record):
@@ -101,7 +101,7 @@ class Map(object):
             "hops": record["hops"]
         }
 
-    def updateLink(self, key, callee, mode: str, band: Band = None, timestamp: datetime = None):
+    def updateCall(self, key, callee, mode: str, band: Band = None, timestamp: datetime = None):
         logger.info("{0} call from {1} to {2}".format(mode, key, callee))
 
         # if we get an external timestamp, make sure it's not already expired
@@ -117,7 +117,7 @@ class Map(object):
             if key in self.positions and callee in self.positions:
                 src = self.positions[key]["location"]
                 dst = self.positions[callee]["location"]
-                link = {
+                call = {
                     "caller": key,
                     "callee": callee,
                     "timestamp": timestamp,
@@ -126,10 +126,10 @@ class Map(object):
                     "src": src,
                     "dst": dst
                 }
-                broadcast = self._makeLink(link)
-                self.links.append(link)
-                if len(self.links) > 15:
-                    self.links.pop(0)
+                broadcast = self._makeCall(call)
+                self.calls.append(call)
+                if len(self.calls) > 15:
+                    self.calls.pop(0)
 
         if broadcast is not None:
             self.broadcast([broadcast])

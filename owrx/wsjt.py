@@ -293,7 +293,7 @@ class WsjtParser(AudioChopperParser):
                 )
                 ReportingEngine.getSharedInstance().spot(out)
             if "callsign" in out and "callee" in out:
-                Map.getSharedInstance().updateLink(
+                Map.getSharedInstance().updateCall(
                     out["callsign"], out["callee"], mode, band
                 )
 

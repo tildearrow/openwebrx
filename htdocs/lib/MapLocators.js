@@ -13,6 +13,7 @@ function LocatorManager(spectral = true) {
     this.locators = {};
     this.bands    = {};
     this.modes    = {};
+    this.calls    = [];
 
     // The color scale used
     this.colorScale = chroma.scale(colors).mode('hsl');
@@ -57,9 +58,6 @@ LocatorManager.prototype.update = function(id, data, map) {
     // Do not update unless locator present
     if (!(id in this.locators)) return false;
 
-    // Filter out link messages
-    if ('callee' in data) return this.updateLink(id, data, map);
-
     // Make sure we have valid band and mode names
     if (!data.band) data.band = 'other';
     if (!data.mode) data.mode = 'other';
@@ -89,9 +87,28 @@ LocatorManager.prototype.update = function(id, data, map) {
     return true;
 };
 
-LocatorManager.prototype.updateLink = function(id, data, map) {
-    // @@@ TODO!!!
-    return false;
+LocatorManager.prototype.updateCall = function(data, map) {
+    // Create an arc
+    data.arc = new google.maps.Polyline({
+        path: [
+            this.id2latlng(data.src.locator),
+            this.id2latlng(data.dst.locator)
+        ],
+        geodesic: true,
+        strokeColor: "#000000",
+        strokeOpacity: 0.2,
+        strokeWeight: 1
+    });
+    data.arc.setMap(map);
+
+    // Push into array, limit array length
+    this.calls.push(data);
+    if (this.calls.length > 15) {
+        var old = this.calls.shift();
+        old.arc.setMap();
+    }
+
+    return true;
 };
 
 LocatorManager.prototype.getSortedKeys = function(colorMap) {
@@ -336,3 +353,4 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
         + Utils.makeListTitle('Active Callsigns')
         + '<table align="center" class="openwebrx-map-info">' + list + '</table>';
 };
+
