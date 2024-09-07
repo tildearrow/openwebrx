@@ -162,6 +162,7 @@ LocatorManager.prototype.updateLegend = function() {
 LocatorManager.prototype.setColorMode = function(newColorMode) {
     $('#openwebrx-map-colormode').val(newColorMode);
     LS.save('mapColorMode', newColorMode);
+    // Clearing filter when color mode is changed
     this.colorMode = newColorMode;
     this.setFilter();
 };

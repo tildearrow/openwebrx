@@ -102,8 +102,6 @@ class Map(object):
         }
 
     def updateCall(self, key, callee, mode: str, band: Band = None, timestamp: datetime = None):
-        logger.info("{0} call from {1} to {2}".format(mode, key, callee))
-
         # if we get an external timestamp, make sure it's not already expired
         if timestamp is None:
             timestamp = datetime.now(timezone.utc)
@@ -127,6 +125,7 @@ class Map(object):
                     "src": src,
                     "dst": dst
                 }
+                logger.debug("{0} call from {1} ({2}) to {3} ({4})".format(mode, key, src, callee, dst))
                 # remove excessive calls
                 while len(self.calls) > 0 and len(self.calls) >= max_calls:
                     self.calls.pop(0)

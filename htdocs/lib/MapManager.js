@@ -43,16 +43,20 @@ function MapManager() {
 
         // Toggle color modes on click
         $('#openwebrx-map-colormode').on('change', function() {
-            self.lman.setColorMode($(this).val());
-            self.cman.setColorMode($(this).val());
+            var colorMode = $(this).val();
+            self.lman.setColorMode(colorMode);
+            self.cman.setColorMode(colorMode);
+            LS.save('mapColorMode', colorMode);
         });
 
         // Restore saved control settings
         if (LS.has('openwebrx-map-selectors'))
             self.toggleLegend(LS.loadBool('openwebrx-map-selectors'));
         if (LS.has('mapColorMode')) {
-            self.lman.setColorMode(LS.loadStr('mapColorMode'));
-            self.cman.setColorMode(LS.loadStr('mapColorMode'));
+            var colorMode = LS.loadStr('mapColorMode');
+            self.lman.setColorMode(colorMode);
+            self.cman.setColorMode(colorMode);
+            $('#openwebrx-map-colormode').val(colorMode);
         }
     });
 
@@ -104,6 +108,9 @@ MapManager.prototype.process = function(e) {
                 }
                 if ('map_position_retention_time' in this.config) {
                     retention_time = this.config.map_position_retention_time * 1000;
+                }
+                if ('map_call_retention_time' in this.config) {
+                    call_retention_time = this.config.map_call_retention_time * 1000;
                 }
                 if ('map_max_calls' in this.config) {
                     max_calls = this.config.map_max_calls;

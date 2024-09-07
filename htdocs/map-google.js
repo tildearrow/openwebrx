@@ -1,6 +1,7 @@
 // Reasonable defaults, will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;
-var max_calls = 15;
+var call_retention_time = 15 * 60;
+var max_calls = 5;
 
 // Our Google Map
 var map = null;

@@ -48,8 +48,9 @@ CallManager.prototype.setFilter = function(filterBy = null) {
 };
 
 CallManager.prototype.setColorMode = function(colorMode) {
+    // Clearing filter when color mode is changed
     this.colorMode = colorMode;
-    this.reColor();
+    this.setFilter();
 };
 
 CallManager.prototype.reColor = function() {
@@ -97,7 +98,7 @@ Call.prototype.reColor = function(colorMode, filterBy = null) {
 };
 
 Call.prototype.age = function(now) {
-    if (now - this.lastseen > retention_time) {
+    if (now - this.lastseen > call_retention_time) {
         this.setMap();
         return false;
     }
