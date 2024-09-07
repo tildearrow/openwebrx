@@ -169,6 +169,14 @@ function GCall() {
     const dash = {
         path          : 'M 0,-1 0,1',
         scale         : 2,
+        strokeColor   : '#000000',
+        strokeWeight  : 1,
+        strokeOpacity : 0.5
+    };
+    const arrow = {
+        path          : google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
+        scale         : 2,
+        strokeColor   : '#000000',
         strokeWeight  : 1,
         strokeOpacity : 0.5
     };
@@ -178,7 +186,11 @@ function GCall() {
         strokeColor   : '#000000',
         strokeOpacity : 0,
         strokeWeight  : 0,
-        icons         : [{ icon: dash, offset: 0, repeat: '8px' }]
+        icons         : [
+             { icon: dash, offset: '0%', repeat: '8px' },
+             { icon: arrow, offset: '25px' },
+             { icon: arrow, offset: '100%' }
+        ]
     });
 }
 
@@ -195,13 +207,13 @@ GCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
 };
 
 GCall.prototype.setColor = function(color) {
-    this.line.icons[0].icon.strokeColor = color;
+    this.line.icons.forEach((x) => { x.icon.strokeColor = color; });
     this.line.setOptions({ icons: this.line.icons });
 //    this.line.setOptions({ strokeColor: color });
 };
 
 GCall.prototype.setOpacity = function(opacity) {
-    this.line.icons[0].icon.strokeOpacity = opacity;
+    this.line.icons.forEach((x) => { x.icon.strokeOpacity = opacity; });
     this.line.setOptions({ icons: this.line.icons });
 //    this.line.setOptions({ strokeOpacity : opacity });
 };
