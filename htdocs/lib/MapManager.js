@@ -21,10 +21,14 @@ function MapManager() {
     // Locators management (FT8, FT4, WSPR, etc)
     this.lman = new LocatorManager();
 
+    // Calls management (FT8, etc)
+    this.cman = new CallManager();
+
     // Fade out / remove positions after time
     setInterval(function() {
         self.lman.ageAll();
         self.mman.ageAll();
+        self.cman.ageAll();
     }, 15000);
 
     // When stuff loads...
@@ -98,6 +102,9 @@ MapManager.prototype.process = function(e) {
                 if ('map_position_retention_time' in this.config) {
                     retention_time = this.config.map_position_retention_time * 1000;
                 }
+                if ('map_max_calls' in this.config) {
+                    max_calls = this.config.map_max_calls;
+                }
                 if ('callsign_url' in this.config) {
                     Utils.setCallsignUrl(this.config.callsign_url);
                 }
@@ -140,6 +147,7 @@ MapManager.prototype.connect = function() {
         self.removeReceiver();
         self.mman.clear();
         self.lman.clear();
+        self.cman.clear();
 
         if (self.reconnect_timeout) {
             // Max value: roundabout 8 and a half minutes

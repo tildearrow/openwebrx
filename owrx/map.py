@@ -110,6 +110,7 @@ class Map(object):
         elif datetime.now(timezone.utc) - loc.getTTL() > timestamp:
             return
 
+        max_calls = Config.get()["map_max_calls"]
         broadcast = None
 
         # update the list of callees for existing callsigns
@@ -126,10 +127,13 @@ class Map(object):
                     "src": src,
                     "dst": dst
                 }
-                broadcast = self._makeCall(call)
-                self.calls.append(call)
-                if len(self.calls) > 15:
+                # remove excessive calls
+                while len(self.calls) > 0 and len(self.calls) >= max_calls:
                     self.calls.pop(0)
+                # add a new call
+                if len(self.calls) < max_calls:
+                    broadcast = self._makeCall(call)
+                    self.calls.append(call)
 
         if broadcast is not None:
             self.broadcast([broadcast])

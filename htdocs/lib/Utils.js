@@ -239,6 +239,14 @@ Utils.mmsiIsGround = function(mmsi) {
     return mmsi.substring(0, 2) === '00';
 };
 
+// Convert Maidenhead locator ID to lat/lon pair.
+Utils.loc2latlng = function(id) {
+    return [
+        (id.charCodeAt(1) - 65 - 9) * 10 + Number(id[3]) + 0.5,
+        (id.charCodeAt(0) - 65 - 9) * 20 + Number(id[2]) * 2 + 1.0
+    ];
+};
+
 // Save given canvas into a PNG file.
 Utils.saveCanvas = function(canvas) {
     // Get canvas by its ID

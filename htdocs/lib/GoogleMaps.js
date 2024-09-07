@@ -125,8 +125,7 @@ GSimpleMarker.prototype.setMarkerOptions = function(options) {
 //
 
 function GLocator() {
-    this.rect = new google.maps.Rectangle();
-    this.rect.setOptions({
+    this.rect = new google.maps.Rectangle({
         strokeWeight : 0,
         strokeColor  : "#FFFFFF",
         fillColor    : "#FFFFFF",
@@ -160,4 +159,29 @@ GLocator.prototype.setOpacity = function(opacity) {
         strokeOpacity : LocatorManager.strokeOpacity * opacity,
         fillOpacity   : LocatorManager.fillOpacity * opacity
     });
+};
+
+//
+// GoogleMaps-Specific Call
+//
+
+function GCall() {
+    this.line = new google.maps.Polyline({
+        geodesic      : true,
+        strokeColor   : "#000000",
+        strokeOpacity : 0.2,
+        strokeWeight  : 1
+    });
+}
+
+GCall.prototype = new Call();
+
+GCall.prototype.setMap = function(map) {
+    this.line.setMap(map);
+};
+
+GCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
+    this.line.setOptions({ path : [
+        {lat: lat1, lng: lon1}, {lat: lat2, lng: lon2}
+    ]});
 };

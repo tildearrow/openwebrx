@@ -259,6 +259,12 @@ class GeneralSettingsController(SettingsFormController):
                     infotext="Specifies how long markers / grids will remain visible on the map",
                     append="s",
                 ),
+                NumberInput(
+                    "map_max_calls",
+                    "Number of latest calls shown",
+                    infotext="Specifies how many calls between grids are visible on the map",
+                    validator=RangeValidator(0, 50),
+                ),
                 CheckboxInput(
                     "map_ignore_indirect_reports",
                     "Ignore position reports arriving via indirect path",

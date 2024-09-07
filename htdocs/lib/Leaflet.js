@@ -4,7 +4,7 @@
 
 function LMarker () {
     this._marker = L.marker();
-};
+}
 
 LMarker.prototype.onAdd = function() {
     this.div   = this.create();
@@ -76,7 +76,11 @@ function LSimpleMarker() { $.extend(this, new LMarker(), new AprsMarker()); }
 //
 
 function LLocator() {
-    this._rect = L.rectangle([[0,0], [1,1]], { color: '#FFFFFF', weight: 0, fillOpacity: 1 });
+    this._rect = L.rectangle([[0,0], [1,1]], {
+        color       : '#FFFFFF',
+        weight      : 0,
+        fillOpacity : 1
+    });
 }
 
 LLocator.prototype = new Locator();
@@ -89,7 +93,7 @@ LLocator.prototype.setMap = function(map) {
 LLocator.prototype.setCenter = function(lat, lon) {
     this.center = [lat, lon];
     this._rect.setBounds([[lat - 0.5, lon - 1], [lat + 0.5, lon + 1]]);
-}
+};
 
 LLocator.prototype.setColor = function(color) {
     this._rect.setStyle({ color });
@@ -107,6 +111,29 @@ LLocator.prototype.addListener = function (e, f) {
 };
 
 //
+// Leaflet-Specific Call
+//
+
+function LCall() {
+    this._line = L.polyline([[0, 0], [0, 0]], {
+        color   : "#000000",
+        opacity : 0.2,
+        weight  : 1
+    });
+}
+
+LCall.prototype = new Call();
+
+LCall.prototype.setMap = function(map) {
+    if (map) this._line.addTo(map);
+    else this._line.remove();
+};
+
+LCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
+    this._line.setLatLngs([[lat1, lon1], [lat2, lon2]]);
+};
+
+//
 // Position object
 //
 
@@ -119,5 +146,5 @@ function posObj(pos) {
     this._lng = pos[1];
 }
 
-posObj.prototype.lat = function () { return this._lat; }
-posObj.prototype.lng = function () { return this._lng; }
+posObj.prototype.lat = function () { return this._lat; };
+posObj.prototype.lng = function () { return this._lng; };

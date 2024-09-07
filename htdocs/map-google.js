@@ -1,5 +1,6 @@
-// reasonable default; will be overriden by server
+// Reasonable defaults, will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;
+var max_calls = 15;
 
 // Our Google Map
 var map = null;
@@ -148,7 +149,9 @@ MapManager.prototype.processUpdates = function(updates) {
     updates.forEach(function(update) {
         // Process caller-callee updates
         if ('caller' in update) {
-            self.lman.updateCall(update, map);
+            var call = new GCall();
+            call.create(update, map);
+            self.cman.add(call);
             return;
         }
 

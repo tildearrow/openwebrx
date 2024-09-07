@@ -310,6 +310,7 @@ defaultConfig = PropertyLayer(
     map_position_retention_time=2 * 60 * 60,
     map_prefer_recent_reports=True,
     map_ignore_indirect_reports=False,
+    map_max_calls=15,
     callsign_url="https://www.qrzcq.com/call/{}",
     vessel_url="https://www.vesselfinder.com/vessels/details/{}",
     flight_url="https://flightaware.com/live/flight/{}",

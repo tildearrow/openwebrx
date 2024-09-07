@@ -47,13 +47,6 @@ LocatorManager.prototype.add = function(id, locator) {
     return this.locators[id];
 };
 
-LocatorManager.prototype.id2latlng = function(id) {
-    return {
-        lat: (id.charCodeAt(1) - 65 - 9) * 10 + Number(id[3]) + 0.5,
-        lng: (id.charCodeAt(0) - 65 - 9) * 20 + Number(id[2]) * 2 + 1.0
-    };
-};
-
 LocatorManager.prototype.update = function(id, data, map) {
     // Do not update unless locator present
     if (!(id in this.locators)) return false;
@@ -84,30 +77,6 @@ LocatorManager.prototype.update = function(id, data, map) {
 
     // Update locator
     this.locators[id].update(data, map);
-    return true;
-};
-
-LocatorManager.prototype.updateCall = function(data, map) {
-    // Create an arc
-    data.arc = new google.maps.Polyline({
-        path: [
-            this.id2latlng(data.src.locator),
-            this.id2latlng(data.dst.locator)
-        ],
-        geodesic: true,
-        strokeColor: "#000000",
-        strokeOpacity: 0.2,
-        strokeWeight: 1
-    });
-    data.arc.setMap(map);
-
-    // Push into array, limit array length
-    this.calls.push(data);
-    if (this.calls.length > 15) {
-        var old = this.calls.shift();
-        old.arc.setMap();
-    }
-
     return true;
 };
 
@@ -217,10 +186,8 @@ Locator.prototype.create = function(id) {
     this.colorMode = 'band';
 
     // Center locator at its maidenhead id
-    this.setCenter(
-        (id.charCodeAt(1) - 65 - 9) * 10 + Number(id[3]) + 0.5,
-        (id.charCodeAt(0) - 65 - 9) * 20 + Number(id[2]) * 2 + 1.0
-    );
+    var center = Utils.loc2latlng(id);
+    this.setCenter(center[0], center[1]);
 }
 
 Locator.prototype.update = function(data, map) {
@@ -353,4 +320,3 @@ Locator.prototype.getInfoHTML = function(locator, pos, receiverMarker = null) {
         + Utils.makeListTitle('Active Callsigns')
         + '<table align="center" class="openwebrx-map-info">' + list + '</table>';
 };
-
