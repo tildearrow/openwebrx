@@ -58,8 +58,8 @@ Shortcuts.init = function(target) {
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-txt">toggle noise reduction</div>
-        <div class="ks-item-kbd">${this.keycap('N')}</div>
+        <div class="ks-item-txt">toggle scanner</div>
+        <div class="ks-item-kbd">${this.keycap('S')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">adjust bandpass offset</div>
@@ -71,8 +71,8 @@ Shortcuts.init = function(target) {
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-txt">toggle scanner</div>
-        <div class="ks-item-kbd">${this.keycap('S')}</div>
+        <div class="ks-item-txt">toggle noise reduction</div>
+        <div class="ks-item-kbd">${this.keycap('N')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">adjust waterfall min level</div>
@@ -225,6 +225,14 @@ Shortcuts.handleKey = function(event) {
                 // DOWN: Zoom out
                 zoomOutOneStep();
             }
+            break;
+
+        case 'pagedown':
+            jumpBySteps(-1);
+            break;
+
+        case 'pageup':
+            jumpBySteps(1);
             break;
 
         case '1': case '2': case '3': case '4': case '5':
