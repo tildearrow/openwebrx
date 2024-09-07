@@ -39,6 +39,16 @@ CallManager.prototype.clear = function() {
     this.calls = [];
 };
 
+CallManager.prototype.setFilter = function(filterBy = null) {
+    if (filterBy == null) {
+        this.calls.forEach((x) => { x.setOpacity(0.2); });
+    } else {
+        this.calls.forEach((x) => {
+            x.setOpacity(x.band===filterBy || x.mode==filterBy? 0.2 : 0.0);
+        });
+    }
+};
+
 //
 // Generic Map Call
 //     Derived classes have to implement:
@@ -64,6 +74,7 @@ Call.prototype.create = function(data, map) {
 
     // Place on the map
     this.setMap(map);
+    this.setOpacity(0.2);
 
     // Age call
     this.age(new Date().getTime());

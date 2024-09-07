@@ -191,12 +191,14 @@ MapManager.prototype.setupLegendFilters = function($legend) {
         if ($lis.hasClass('disabled') && !$el.hasClass('disabled')) {
             $lis.removeClass('disabled');
             self.lman.setFilter();
+            self.cman.setFilter();
         } else {
             $el.removeClass('disabled');
             $lis.filter(function() {
                 return this != $el[0]
             }).addClass('disabled');
             self.lman.setFilter($el.data('selector'));
+            self.cman.setFilter($el.data('selector'));
         }
     });
 

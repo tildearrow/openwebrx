@@ -96,7 +96,7 @@ LLocator.prototype.setCenter = function(lat, lon) {
 };
 
 LLocator.prototype.setColor = function(color) {
-    this._rect.setStyle({ color });
+    this._rect.setStyle({ color: color });
 };
 
 LLocator.prototype.setOpacity = function(opacity) {
@@ -132,6 +132,15 @@ LCall.prototype.setMap = function(map) {
 LCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
     this._line.setLatLngs([[lat1, lon1], [lat2, lon2]]);
 };
+
+LCall.prototype.setColor = function(color) {
+    this._line.setStyle({ color: color });
+};
+
+LCall.prototype.setOpacity = function(opacity) {
+    this._line.setStyle({ opacity: opacity });
+};
+
 
 //
 // Position object

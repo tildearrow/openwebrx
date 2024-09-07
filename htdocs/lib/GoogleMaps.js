@@ -182,6 +182,14 @@ GCall.prototype.setMap = function(map) {
 
 GCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
     this.line.setOptions({ path : [
-        {lat: lat1, lng: lon1}, {lat: lat2, lng: lon2}
+        { lat: lat1, lng: lon1 }, { lat: lat2, lng: lon2 }
     ]});
+};
+
+GCall.prototype.setColor = function(color) {
+    this.line.setOptions({ strokeColor: color });
+};
+
+GCall.prototype.setOpacity = function(opacity) {
+    this.line.setOptions({ strokeOpacity : opacity });
 };
