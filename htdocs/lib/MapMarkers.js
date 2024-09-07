@@ -78,7 +78,7 @@ MarkerManager.prototype.toggle = function(map, type, onoff) {
 
     // Show or hide features on the map
     $.each(this.markers, function(_, x) {
-        if (x.mode === type) x.setMap(onoff ? map : undefined);
+        if (x.mode === type) x.setMap(onoff ? map : null);
     });
 };
 

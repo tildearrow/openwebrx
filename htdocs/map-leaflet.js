@@ -485,7 +485,7 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.update(update);
 
                 // Assign marker to map
-                marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
+                marker.setMap(self.mman.isEnabled(update.mode)? map : null);
 
                 // Apply marker options
                 if (marker instanceof LFeatureMarker) {

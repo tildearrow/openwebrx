@@ -2,8 +2,7 @@
 // Map Calls Management
 //
 
-CallManager.strokeOpacity = 0.8;
-CallManager.fillOpacity   = 0.35;
+CallManager.strokeOpacity = 0.5;
 
 function CallManager() {
     // Current calls
@@ -89,11 +88,11 @@ Call.prototype.create = function(data, map) {
 
 Call.prototype.reColor = function(colorMode, filterBy = null) {
     this.setOpacity(
-        colorMode==='off'? 0.0
-      : filterBy==null?    0.2
-      : colorMode==='band' && this.band==filterBy? 0.2
-      : colorMode==='mode' && this.mode==filterBy? 0.2
-      : 0.0
+        colorMode==='off'? 0
+      : filterBy==null?    CallManager.strokeOpacity
+      : colorMode==='band' && this.band==filterBy? CallManager.strokeOpacity
+      : colorMode==='mode' && this.mode==filterBy? CallManager.strokeOpacity
+      : 0
     );
 };
 

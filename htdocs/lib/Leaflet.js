@@ -24,9 +24,8 @@ LMarker.prototype.setMarkerOptions = function(options) {
     }
 };
 
-LMarker.prototype.setMap = function (map) {
-    if (map) this._marker.addTo(map);
-    else this._marker.remove();
+LMarker.prototype.setMap = function (map = null) {
+    if (map) this._marker.addTo(map); else this._marker.remove();
 };
 
 LMarker.prototype.addListener = function (e, f) {
@@ -85,9 +84,8 @@ function LLocator() {
 
 LLocator.prototype = new Locator();
 
-LLocator.prototype.setMap = function(map) {
-    if (map) this._rect.addTo(map);
-    else this._rect.remove();
+LLocator.prototype.setMap = function(map = null) {
+    if (map) this._rect.addTo(map); else this._rect.remove();
 };
 
 LLocator.prototype.setCenter = function(lat, lon) {
@@ -116,17 +114,18 @@ LLocator.prototype.addListener = function (e, f) {
 
 function LCall() {
     this._line = L.polyline([[0, 0], [0, 0]], {
-        color   : "#000000",
-        opacity : 0.2,
-        weight  : 1
+        dashArray  : [4, 4],
+        dashOffset : 0,
+        color      : '#000000',
+        opacity    : 0.5,
+        weight     : 1
     });
 }
 
 LCall.prototype = new Call();
 
-LCall.prototype.setMap = function(map) {
-    if (map) this._line.addTo(map);
-    else this._line.remove();
+LCall.prototype.setMap = function(map = null) {
+    if (map) this._line.addTo(map); else this._line.remove();
 };
 
 LCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {

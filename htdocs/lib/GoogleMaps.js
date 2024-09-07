@@ -135,7 +135,7 @@ function GLocator() {
 
 GLocator.prototype = new Locator();
 
-GLocator.prototype.setMap = function(map) {
+GLocator.prototype.setMap = function(map = null) {
     this.rect.setMap(map);
 };
 
@@ -166,17 +166,25 @@ GLocator.prototype.setOpacity = function(opacity) {
 //
 
 function GCall() {
+    const dash = {
+        path          : 'M 0,-1 0,1',
+        scale         : 2,
+        strokeWeight  : 1,
+        strokeOpacity : 0.5
+    };
+
     this.line = new google.maps.Polyline({
         geodesic      : true,
-        strokeColor   : "#000000",
-        strokeOpacity : 0.2,
-        strokeWeight  : 1
+        strokeColor   : '#000000',
+        strokeOpacity : 0,
+        strokeWeight  : 0,
+        icons         : [{ icon: dash, offset: 0, repeat: '8px' }]
     });
 }
 
 GCall.prototype = new Call();
 
-GCall.prototype.setMap = function(map) {
+GCall.prototype.setMap = function(map = null) {
     this.line.setMap(map);
 };
 
@@ -187,9 +195,13 @@ GCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
 };
 
 GCall.prototype.setColor = function(color) {
-    this.line.setOptions({ strokeColor: color });
+    this.line.icons[0].icon.strokeColor = color;
+    this.line.setOptions({ icons: this.line.icons });
+//    this.line.setOptions({ strokeColor: color });
 };
 
 GCall.prototype.setOpacity = function(opacity) {
-    this.line.setOptions({ strokeOpacity : opacity });
+    this.line.icons[0].icon.strokeOpacity = opacity;
+    this.line.setOptions({ icons: this.line.icons });
+//    this.line.setOptions({ strokeOpacity : opacity });
 };
