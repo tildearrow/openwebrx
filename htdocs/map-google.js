@@ -1,5 +1,7 @@
-// reasonable default; will be overriden by server
+// Reasonable defaults, will be overriden by server
 var retention_time = 2 * 60 * 60 * 1000;
+var call_retention_time = 15 * 60;
+var max_calls = 5;
 
 // Our Google Map
 var map = null;
@@ -146,6 +148,15 @@ MapManager.prototype.processUpdates = function(updates) {
     }
 
     updates.forEach(function(update) {
+        // Process caller-callee updates
+        if ('caller' in update) {
+            var call = new GCall();
+            call.create(update, map);
+            self.cman.add(call);
+            return;
+        }
+
+        // Process position updates
         switch (update.location.type) {
             case 'latlon':
                 var marker = self.mman.find(update.callsign);
@@ -184,7 +195,7 @@ MapManager.prototype.processUpdates = function(updates) {
                 marker.update(update);
 
                 // Assign marker to map
-                marker.setMap(self.mman.isEnabled(update.mode)? map : undefined);
+                marker.setMap(self.mman.isEnabled(update.mode)? map : null);
 
                 // Apply marker options
                 if (marker instanceof GFeatureMarker) {

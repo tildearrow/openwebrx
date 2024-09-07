@@ -549,6 +549,8 @@ class MapConnection(OpenWebRxClient):
             "map_position_retention_time",
             "map_ignore_indirect_reports",
             "map_prefer_recent_reports",
+            "map_call_retention_time",
+            "map_max_calls",
             "callsign_url",
             "vessel_url",
             "flight_url",

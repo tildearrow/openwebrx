@@ -13,6 +13,7 @@ function LocatorManager(spectral = true) {
     this.locators = {};
     this.bands    = {};
     this.modes    = {};
+    this.calls    = [];
 
     // The color scale used
     this.colorScale = chroma.scale(colors).mode('hsl');
@@ -64,7 +65,7 @@ LocatorManager.prototype.update = function(id, data, map) {
         }
     }
 
-    // Keep track modes
+    // Keep track of modes
     if (!(data.mode in this.modes)) {
         this.modes[data.mode] = '#000000';
         this.assignColors(this.modes);
@@ -161,6 +162,7 @@ LocatorManager.prototype.updateLegend = function() {
 LocatorManager.prototype.setColorMode = function(newColorMode) {
     $('#openwebrx-map-colormode').val(newColorMode);
     LS.save('mapColorMode', newColorMode);
+    // Clearing filter when color mode is changed
     this.colorMode = newColorMode;
     this.setFilter();
 };
@@ -185,10 +187,8 @@ Locator.prototype.create = function(id) {
     this.colorMode = 'band';
 
     // Center locator at its maidenhead id
-    this.setCenter(
-        (id.charCodeAt(1) - 65 - 9) * 10 + Number(id[3]) + 0.5,
-        (id.charCodeAt(0) - 65 - 9) * 20 + Number(id[2]) * 2 + 1.0
-    );
+    var center = Utils.loc2latlng(id);
+    this.setCenter(center[0], center[1]);
 }
 
 Locator.prototype.update = function(data, map) {

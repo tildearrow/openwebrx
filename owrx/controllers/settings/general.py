@@ -256,16 +256,29 @@ class GeneralSettingsController(SettingsFormController):
                 NumberInput(
                     "map_position_retention_time",
                     "Map retention time",
-                    infotext="Specifies how long markers / grids will remain visible on the map",
+                    infotext="Specifies how long markers / grids will remain visible on the map.",
                     append="s",
+                ),
+                NumberInput(
+                    "map_call_retention_time",
+                    "Call retention time",
+                    infotext="Specifies how long calls will remain visible on the map.",
+                    validator=RangeValidator(15, 60*60),
+                    append="s",
+                ),
+                NumberInput(
+                    "map_max_calls",
+                    "Number of calls shown",
+                    infotext="Specifies how many calls between grids are visible on the map.",
+                    validator=RangeValidator(0, 50),
                 ),
                 CheckboxInput(
                     "map_ignore_indirect_reports",
-                    "Ignore position reports arriving via indirect path",
+                    "Ignore position reports arriving via indirect path.",
                 ),
                 CheckboxInput(
                     "map_prefer_recent_reports",
-                    "Prefer more recent position reports to shorter path reports",
+                    "Prefer more recent position reports to shorter path reports.",
                 ),
                 TextInput(
                     "callsign_url",
