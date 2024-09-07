@@ -1,3 +1,11 @@
+**1.2.68**
+- Added map display of completed FT8 calls.
+- Added config to limit the number of shown calls.
+- Added config to limit retention time of shown calls.
+- Fixed HTTPS support by catching SSL-specific exception.
+- Fixed and optimized map-related JavaScript code.
+- [PgUp]/[PgDown] keys change center frequency, if allowed.
+
 **1.2.67**
 - Added keyboard shortcuts (press [?] for help).
 - Added range check to the FFT overlap parameter.

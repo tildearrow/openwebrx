@@ -1,3 +1,14 @@
+openwebrx (1.2.68) bullseye jammy; urgency=low
+
+  * Added map display of completed FT8 calls.
+  * Added config to limit the number of shown calls.
+  * Added config to limit retention time of shown calls.
+  * Fixed HTTPS support by catching SSL-specific exception.
+  * Fixed and optimized map-related JavaScript code.
+  * [PgUp]/[PgDown] keys change center frequency, if allowed.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 9 Sep 2024 16:12:00 +0000
+
 openwebrx (1.2.67) bullseye jammy; urgency=low
 
   * Added keyboard shortcuts (press [?] for help).
