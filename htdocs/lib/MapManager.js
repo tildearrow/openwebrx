@@ -44,13 +44,16 @@ function MapManager() {
         // Toggle color modes on click
         $('#openwebrx-map-colormode').on('change', function() {
             self.lman.setColorMode($(this).val());
+            self.cman.setColorMode($(this).val());
         });
 
         // Restore saved control settings
         if (LS.has('openwebrx-map-selectors'))
             self.toggleLegend(LS.loadBool('openwebrx-map-selectors'));
-        if (LS.has('mapColorMode'))
+        if (LS.has('mapColorMode')) {
             self.lman.setColorMode(LS.loadStr('mapColorMode'));
+            self.cman.setColorMode(LS.loadStr('mapColorMode'));
+        }
     });
 
     // Connect web socket

@@ -7,7 +7,9 @@ CallManager.fillOpacity   = 0.35;
 
 function CallManager() {
     // Current calls
-    this.calls = [];
+    this.calls     = [];
+    this.colorMode = 'band';
+    this.filterBy  = null;
 }
 
 CallManager.prototype.add = function(call) {
@@ -21,6 +23,7 @@ CallManager.prototype.add = function(call) {
     if (max_calls <= 0) return false;
 
     // Add new call
+    call.reColor(this.colorMode, this.filterBy);
     this.calls.push(call);
     return true;
 };
@@ -40,13 +43,17 @@ CallManager.prototype.clear = function() {
 };
 
 CallManager.prototype.setFilter = function(filterBy = null) {
-    if (filterBy == null) {
-        this.calls.forEach((x) => { x.setOpacity(0.2); });
-    } else {
-        this.calls.forEach((x) => {
-            x.setOpacity(x.band===filterBy || x.mode==filterBy? 0.2 : 0.0);
-        });
-    }
+    this.filterBy = filterBy;
+    this.reColor();
+};
+
+CallManager.prototype.setColorMode = function(colorMode) {
+    this.colorMode = colorMode;
+    this.reColor();
+};
+
+CallManager.prototype.reColor = function() {
+    this.calls.forEach((x) => { x.reColor(this.colorMode, this.filterBy); });
 };
 
 //
@@ -74,11 +81,20 @@ Call.prototype.create = function(data, map) {
 
     // Place on the map
     this.setMap(map);
-    this.setOpacity(0.2);
 
     // Age call
     this.age(new Date().getTime());
 }
+
+Call.prototype.reColor = function(colorMode, filterBy = null) {
+    this.setOpacity(
+        colorMode==='off'? 0.0
+      : filterBy==null?    0.2
+      : colorMode==='band' && this.band==filterBy? 0.2
+      : colorMode==='mode' && this.mode==filterBy? 0.2
+      : 0.0
+    );
+};
 
 Call.prototype.age = function(now) {
     if (now - this.lastseen > retention_time) {
