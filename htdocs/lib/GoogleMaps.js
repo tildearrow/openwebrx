@@ -175,10 +175,11 @@ function GCall() {
     };
     const arrow = {
         path          : google.maps.SymbolPath.FORWARD_CLOSED_ARROW,
-        scale         : 2,
+        scale         : 1.5,
         strokeColor   : '#000000',
         strokeWeight  : 1,
-        strokeOpacity : 0.5
+        strokeOpacity : 0.5,
+        fillOpacity   : 1.0
     };
 
     this.line = new google.maps.Polyline({
