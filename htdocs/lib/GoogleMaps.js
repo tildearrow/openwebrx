@@ -214,7 +214,10 @@ GCall.prototype.setColor = function(color) {
 };
 
 GCall.prototype.setOpacity = function(opacity) {
-    this.line.icons.forEach((x) => { x.icon.strokeOpacity = opacity; });
+    this.line.icons.forEach((x) => {
+        x.icon.strokeOpacity = opacity;
+        x.icon.fillOpacity = opacity;
+    });
     this.line.setOptions({ icons: this.line.icons });
 //    this.line.setOptions({ strokeOpacity : opacity });
 };
