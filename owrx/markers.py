@@ -243,10 +243,12 @@ class Markers(object):
 
     # Update given markers on the map
     def updateMap(self, markers):
-        # Create a timestamp far into the future, for permanent markers
-        permanent = datetime.now(timezone.utc) + timedelta(weeks=500)
-        for r in markers.values():
-            Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), timestamp=permanent)
+        # Must have valid markers to update
+        if markers is not None:
+            # Create a timestamp far into the future, for permanent markers
+            permanent = datetime.now(timezone.utc) + timedelta(weeks=500)
+            for r in markers.values():
+                Map.getSharedInstance().updateLocation(r.getId(), r, r.getMode(), timestamp=permanent)
 
     # Scrape online databases, updating cache file
     def updateCache(self):
