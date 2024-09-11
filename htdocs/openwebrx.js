@@ -1192,6 +1192,9 @@ function onAudioStart(apiType){
     // Load user interface settings from local storage
     UI.loadSettings();
     Chat.loadSettings();
+
+    // Initialize keyboard shortcuts
+    Shortcuts.init(document.body);
 }
 
 var reconnect_timeout = false;
@@ -1403,9 +1406,6 @@ function openwebrx_init() {
 
     // Create and run clock
     clock = new Clock($('#openwebrx-clock-utc'));
-
-    // Initialize keyboard shortcuts
-    Shortcuts.init(document.body);
 }
 
 function initSliders() {
