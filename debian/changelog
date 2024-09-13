@@ -1,3 +1,13 @@
+openwebrx (1.2.69) bullseye jammy; urgency=low
+
+  * Added [ALT]+[UP]/[DOWN] for volume control on MacOS.
+  * Fixed an exception when any of the markers fail to load.
+  * Fixed call arrows remaining after locator display disabled.
+  * Blocked keyboard shortcuts until settings are loaded.
+  * Sorted digital modes inside combo box (by Richard Murnane).
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 16 Sep 2024 16:12:00 +0000
+
 openwebrx (1.2.68) bullseye jammy; urgency=low
 
   * Added map display of completed FT8 calls.

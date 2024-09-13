@@ -1,3 +1,10 @@
+**1.2.69**
+- Added [ALT]+[UP]/[DOWN] for volume control on MacOS.
+- Fixed an exception when any of the markers fail to load.
+- Fixed call arrows remaining after locator display disabled.
+- Blocked keyboard shortcuts until settings are loaded.
+- Sorted digital modes inside combo box (by Richard Murnane).
+
 **1.2.68**
 - Added map display of completed FT8 calls.
 - Added config to limit the number of shown calls.
