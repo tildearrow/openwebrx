@@ -190,7 +190,8 @@ Shortcuts.handleKey = function(event) {
             break;
 
         case 'arrowup':
-            if (event.ctrlKey) {
+            // Added ALT+UP for MacOS users who can't use CTRL+UP
+            if (event.ctrlKey || event.altKey) {
                 // CTRL+UP: Increase volume
                 this.moveSlider('#openwebrx-panel-volume', 1);
             } else if (event.shiftKey) {
@@ -209,7 +210,8 @@ Shortcuts.handleKey = function(event) {
             break;
 
         case 'arrowdown':
-            if (event.ctrlKey) {
+            // Added ALT+DOWN for MacOS users who can't use CTRL+DOWN
+            if (event.ctrlKey || event.altKey) {
                 // CTRL+DOWN: Decrease volume
                 this.moveSlider('#openwebrx-panel-volume', -1);
             } else if (event.shiftKey) {
