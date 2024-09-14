@@ -91,9 +91,9 @@ WsjtMessagePanel.prototype.pushMessage = function(msg) {
     var matches;
 
     if (this.qsoModes.indexOf(msg['mode']) >= 0) {
-        matches = linkedmsg.match(/^(.*?)([A-Z0-9]+)\s([A-Z0-9]+)\s(([A-R]{2}[0-9]{2})|(R?[+\-]?[0-9]{2})|(RRR))$/);
+        matches = linkedmsg.match(/^(.*?)([A-Z0-9\/]+)\s([A-Z0-9\/]+)\s(([A-R]{2}[0-9]{2})|(R?[+\-]?[0-9]{2})|(RRR))$/);
         if (matches) {
-            var destination = matches[2]!=='CQ' && matches[2]!=='DX'?
+            var destination = matches[2]!=='CQ' && matches[2]!=='DX' && matches[2]!=='TEST'?
                 Utils.linkifyCallsign(matches[2]) : matches[2];
             var locator = matches[5] && matches[5]!=='RR73'?
                 Utils.linkifyLocator(matches[5]) : matches[4];
