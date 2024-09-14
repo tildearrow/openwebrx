@@ -2,6 +2,7 @@
 - Added [ALT]+[UP]/[DOWN] for volume control on MacOS.
 - Fixed an exception when any of the markers fail to load.
 - Fixed call arrows remaining after locator display disabled.
+- Fixed Chrome showing empty "Settings" UI section.
 - Blocked keyboard shortcuts until settings are loaded.
 - Sorted digital modes inside combo box (by Richard Murnane).
 
