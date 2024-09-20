@@ -136,9 +136,9 @@ LCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
         ? (this._line.statistics.totalDistance > 10000)
             ? (this._line.statistics.totalDistance / 1000).toFixed(0) + ' km'
             : (this._line.statistics.totalDistance).toFixed(0) + ' m'
-        : 'invalid')
+        : '???')
     // options for setText(): https://github.com/makinacorpus/Leaflet.TextPath
-    this._line.setText(' ► ' + totalDistance, { offset: 10});
+    this._line.setText('►' + totalDistance, { offset: -3, center: true });
 };
 
 LCall.prototype.setColor = function(color) {
