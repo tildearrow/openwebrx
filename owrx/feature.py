@@ -100,6 +100,7 @@ class FeatureDetector(object):
         "dab": ["csdreti", "dablin"],
         "mqtt": ["paho_mqtt"],
         "hdradio": ["nrsc5"],
+        "rigcontrol": ["hamlib"],
     }
 
     def feature_availability(self):
@@ -766,3 +767,11 @@ class FeatureDetector(object):
         from the OpenWebRX+ repositories.
         """
         return self.command_is_runnable("nrsc5 -v")
+
+    def has_hamlib(self):
+        """
+        OpenWebRX uses the [Hamlib](https://github.com/Hamlib/Hamlib) `rigctl`
+        tool to synchronize frequency and modulation with external transceivers.
+        The `hamlib` package is available in most Linux distributions.
+        """
+        return self.command_is_runnable("rigctl -V")
