@@ -2,6 +2,7 @@ from owrx.source import SdrSourceEventClient, SdrSourceState, SdrClientClass
 from owrx.property import PropertyStack, PropertyLayer, PropertyValidator, PropertyDeleted, PropertyDeletion
 from owrx.property.validators import OrValidator, RegexValidator, BoolValidator
 from owrx.modes import Modes, DigitalMode
+from owrx.rigcontrol import RigControl
 from csdr.chain import Chain
 from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, HdAudio, \
     SecondaryDemodulator, DialFrequencyReceiver, MetaProvider, SlotFilterChain, SecondarySelectorChain, \
@@ -569,6 +570,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
 
         self.sdrSource.addClient(self)
 
+        self.rigControl = RigControl(self.props)
+
+
     def setSecondaryFftSize(self, size):
         self.chain.setSecondaryFftSize(size)
         self.handler.write_secondary_dsp_config({"secondary_fft_size": size})
@@ -854,6 +858,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         for sub in self.subscriptions:
             sub.cancel()
         self.subscriptions = []
+        self.rigControl.stop()
 
     def setProperties(self, props):
         for k, v in props.items():

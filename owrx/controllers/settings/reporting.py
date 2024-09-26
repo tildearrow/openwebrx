@@ -1,11 +1,11 @@
 from owrx.controllers.settings import SettingsFormController, SettingsBreadcrumb
 from owrx.form.section import Section
-from owrx.form.input.converter import OptionalConverter
+from owrx.form.input.converter import OptionalConverter, IntConverter
 from owrx.form.input.aprs import AprsBeaconSymbols, AprsAntennaDirections
-from owrx.form.input import TextInput, CheckboxInput, DropdownInput, NumberInput, PasswordInput
+from owrx.form.input import TextInput, CheckboxInput, DropdownInput, NumberInput, PasswordInput, Option
 from owrx.form.input.validator import AddressAndOptionalPortValidator
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem
-
+from owrx.rigcontrol import RigControl
 
 class ReportingController(SettingsFormController):
     def getTitle(self):
@@ -127,6 +127,29 @@ class ReportingController(SettingsFormController):
                     "MQTT topic",
                     infotext="MQTT topic to publish reports to (default: openwebrx)",
                     converter=OptionalConverter(),
+                ),
+            ),
+            Section(
+                "RigControl settings",
+                CheckboxInput(
+                    "rig_enabled",
+                    "Enable sending changes to a standalone transceiver",
+                ),
+                DropdownInput(
+                    "rig_model",
+                    "Transceiver model",
+                    options=[Option(str(RigControl.RIGS[x]), x) for x in RigControl.RIGS.keys()],
+                    converter=IntConverter(),
+                ),
+                TextInput(
+                    "rig_device",
+                    "Transceiver CAT device",
+                    infotext="Device or IP address:port used to control transceiver",
+                ),
+                NumberInput(
+                    "rig_address",
+                    "Transceiver CI-V address",
+                    infotext="Optional transceiver CI-V address (used by Icom)",
                 ),
             )
         ]
