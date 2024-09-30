@@ -424,4 +424,5 @@ class RigControl():
                     rsp = pipe.read().decode("utf-8").strip()
                     logger.debug("STD{0}: {1}".format("ERR" if pipe==self.rigctl.stderr else "OUT", rsp))
             except Exception as e:
+                logger.debug("RigControl thread done: {1}.".format(str(e)))
                 break
