@@ -33,7 +33,7 @@ Shortcuts.init = function(target) {
 
       <div class="ks-item">
         <div class="ks-item-txt">change tuning step</div>
-        <div class="ks-item-kbd">${this.keycap('[')}|${this.keycap(']')}</div>
+        <div class="ks-item-kbd">${this.keycap('{')}|${this.keycap('}')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">change volume</div>
@@ -42,6 +42,19 @@ Shortcuts.init = function(target) {
       <div class="ks-item">
         <div class="ks-item-txt">mute/unumte sound</div>
         <div class="ks-item-kbd">${this.keycap('Space')}</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-txt">toggle noise reduction</div>
+        <div class="ks-item-kbd">${this.keycap('N')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">adjust bandpass offset</div>
+        <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">adjust bandpass width</div>
+        <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowUp')}|${this.keycap('ArrowDown')}</div>
       </div>
 
       <div class="ks-item">
@@ -62,17 +75,17 @@ Shortcuts.init = function(target) {
         <div class="ks-item-kbd">${this.keycap('S')}</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-txt">adjust bandpass offset</div>
-        <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
+        <div class="ks-item-txt">tune by squelch</div>
+        <div class="ks-item-kbd">${this.keycap('[')}|${this.keycap(']')}</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-txt">adjust bandpass width</div>
-        <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowUp')}|${this.keycap('ArrowDown')}</div>
+        <div class="ks-item-txt">side-step current profile</div>
+        <div class="ks-item-kbd">${this.keycap('PageDown')}|${this.keycap('PageUp')}</div>
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-txt">toggle noise reduction</div>
-        <div class="ks-item-kbd">${this.keycap('N')}</div>
+        <div class="ks-item-txt">show this help panel</div>
+        <div class="ks-item-kbd">${this.keycap('?')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">adjust waterfall min level</div>
@@ -230,11 +243,33 @@ Shortcuts.handleKey = function(event) {
             break;
 
         case 'pagedown':
+            // PageDown: Shift central frequency down (if allowed)
             jumpBySteps(-1);
             break;
 
         case 'pageup':
+            // PageUp: Shift central frequency up (if allowed)
             jumpBySteps(1);
+            break;
+
+        case '[':
+            // [: Tune to a previous signal, by squelch
+            tuneBySquelch(-1);
+            break;
+
+        case ']':
+            // ]: Tune to a next signal, by squelch
+            tuneBySquelch(1);
+            break;
+
+        case '{':
+            // {: Decrease tuning step
+            this.moveSelector('#openwebrx-tuning-step-listbox', -1);
+            break;
+
+        case '}':
+            // }: Increase tuning step
+            this.moveSelector('#openwebrx-tuning-step-listbox', 1);
             break;
 
         case '1': case '2': case '3': case '4': case '5':
@@ -245,16 +280,6 @@ Shortcuts.handleKey = function(event) {
             n = n > 0? n - 1 : 9;
             if (event.ctrlKey) n += 10;
             if (n < $modes.length) $modes[n].click();
-            break;
-
-        case '[': case '{':
-            // [: Decrease tuning step
-            this.moveSelector('#openwebrx-tuning-step-listbox', -1);
-            break;
-
-        case ']': case '}':
-            // ]: Increase tuning step
-            this.moveSelector('#openwebrx-tuning-step-listbox', 1);
             break;
 
         case 'a':
@@ -351,6 +376,7 @@ Shortcuts.handleKey = function(event) {
             break;
 
         case '/': case '?':
+            // ?: Show keyboard shortcuts help
             Shortcuts.overlay.slideToggle(100);
             break;
 

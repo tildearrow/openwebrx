@@ -3,9 +3,9 @@
 
 #ks-overlay {
   position: fixed;
-  top: 5vh;
+  top: 1vh;
   left: calc((100vw - 800px) / 2);
-  max-height: 90vh;
+  max-height: 95vh;
   width: 800px;
   color: white;
   background-color: #000;
@@ -22,7 +22,7 @@
 .ks-title {
   font-weight: bold;
   font-size: 1.5rem;
-  margin-top: 1rem;
+  margin-top: 0.8rem;
 }
 
 .ks-subtitle {

@@ -39,7 +39,7 @@ var bandplan = null;
 var scanner = null;
 var bookmarks = null;
 var audioEngine = null;
-
+var waterfall_last = null;
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -63,6 +63,32 @@ function tuneBySteps(steps) {
         var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
         var f = demodulator.get_offset_frequency();
         demodulator.set_offset_frequency(f + steps * tuning_step);
+    }
+}
+
+function tuneBySquelch(dir) {
+    // Must have a copy of the last received waterfall
+    if (waterfall_last == null) return;
+
+    // Get current squelch threshold from the slider
+    // (why do we need to subtract ~13dB here to make FFT match the S-meter?)
+    var $slider = $('#openwebrx-panel-receiver .openwebrx-squelch-slider');
+    var squelch = $slider.val() - 13.0;
+
+    // Start from the current offset within the waterfall
+    var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
+    var f = demodulator.get_offset_frequency();
+
+    // Scan up or down the waterfall
+    dir = tuning_step * (dir>=0? 1 : -1);
+    for(f += dir ; ; f += dir) {
+        var i = Math.round(waterfall_last.length * (f / bandwidth + 0.5));
+        if (i < 0 || i >= waterfall_last.length) {
+            break;
+        } else if (waterfall_last[i] >= squelch) {
+            demodulator.set_offset_frequency(f);
+            break;
+        }
     }
 }
 
@@ -1105,6 +1131,8 @@ function on_ws_recv(evt) {
                 spectrum.update(waterfall_f32);
                 // Feed scanner with data
                 scanner.update(waterfall_f32);
+                // Save waterfall for squelch-based tuning
+                waterfall_last = waterfall_f32;
                 break;
             case 2:
                 // audio data
