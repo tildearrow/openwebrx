@@ -340,14 +340,14 @@ class RigControl():
             self.mod = mod
 
     def rigTX(self, active: bool) -> bool:
-        return self.rigCommand("set_ptt {0}".format(1 if active else 0))
+        return self.rigCommand("T {0}".format(1 if active else 0))
 
     def rigFrequency(self, freq: int) -> bool:
-        return self.rigCommand("set_freq {0}".format(freq))
+        return self.rigCommand("F {0}".format(freq))
 
     def rigModulation(self, mod: str) -> bool:
         if mod in self.MODES:
-            return self.rigCommand("set_mode {0} 0".format(self.MODES[mod]))
+            return self.rigCommand("M {0} 0".format(self.MODES[mod]))
         else:
             return False
 
@@ -372,7 +372,7 @@ class RigControl():
         ) + ["-"]
         #cmd = ["rigctl", "-"] # @@@ REMOVE ME!!!!
         # Create Rigctl process, make stdout/stderr pipes non-blocking
-        self.rigctl = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        self.rigctl = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE, text=True)
         os.set_blocking(self.rigctl.stdout.fileno(), False)
         os.set_blocking(self.rigctl.stderr.fileno(), False)
         # Create and start thread
@@ -405,25 +405,34 @@ class RigControl():
     def rigCommand(self, cmd: str) -> bool:
         if self.rigctl is not None:
             try:
-                self.rigctl.stdin.write((cmd + "\n").encode("utf-8"))
+                self.rigctl.stdin.write(cmd + "\n")
                 self.rigctl.stdin.flush()
                 logger.debug("Sent '{0}' to RigControl.".format(cmd))
                 return True
             except Exception as e:
                 logger.debug("Failed sending '{0}' to RigControl: {1}.".format(cmd, str(e)))
+                self.rigStop()
         # Failed to send command
         return False
 
     # This is the actual thread function
     def _rigThread(self):
-        # Wait for output from the process
-        while self.rigctl is not None:
+        # While RigControl is running...
+        while self.rigctl is not None and self.rigctl.poll() is None:
             try:
+                # Wait for output from the process
                 readable, _, _ = select.select([self.rigctl.stdout, self.rigctl.stderr], [], [])
                 for pipe in readable:
-                    rsp = pipe.read().decode("utf-8").strip()
-                    if len(rsp) > 0:
-                        logger.debug("STD{0}: {1}".format("ERR" if pipe==self.rigctl.stderr else "OUT", rsp))
+                    rsp = pipe.read().strip()
+                    #if len(rsp) > 0:
+                    logger.debug("STD{0}: {1}".format("ERR" if pipe==self.rigctl.stderr else "OUT", rsp))
             except Exception as e:
-                logger.debug("RigControl thread done: {1}.".format(str(e)))
-                break
+                logger.debug("RigControl thread terminated: {1}.".format(str(e)))
+                return
+
+        # Make sure we get rid of completed RigControl process
+        if self.rigctl is not None and self.rigctl.poll() is not None:
+            logger.debug("RigControl process quit ({0}).".format(self.rigctl.poll()))
+            self.rigctl = None
+
+        logger.debug("RigControl thread done.")
