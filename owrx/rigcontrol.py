@@ -411,7 +411,6 @@ class RigControl():
                 return True
             except Exception as e:
                 logger.debug("Failed sending '{0}' to RigControl: {1}.".format(cmd, str(e)))
-                self.rigStop()
         # Failed to send command
         return False
 
