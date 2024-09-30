@@ -1,8 +1,12 @@
 from owrx.feature import FeatureDetector
 from owrx.property import PropertyStack
 from owrx.config import Config
+from subprocess import Popen, PIPE, STDOUT, TimeoutExpired
 
-import subprocess
+import threading
+import select
+import os
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -303,46 +307,55 @@ class RigControl():
     }
 
     def __init__(self, props: PropertyStack):
+        self.rigctl  = None
+        self.thread  = None
         self.mod     = None
-        self.fCenter = 0
-        self.fOffset = 0
+        self.fCenter = None
+        self.fOffset = None
         self.subscriptions = [
             props.wireProperty("offset_freq", self.setFrequencyOffset),
             props.wireProperty("center_freq", self.setCenterFrequency),
             props.wireProperty("mod", self.setDemodulator),
         ]
         super().__init__()
+        self.rigStart()
 
     def stop(self):
         for sub in self.subscriptions:
             sub.cancel()
         self.subscriptions = []
+        self.rigStop()
 
     def setFrequencyOffset(self, offset: int) -> None:
-        if offset != self.fOffset and self.rigFrequency(self.fCenter + offset):
-            self.fOffset = offset
+        if self.fCenter is not None and offset != self.fOffset:
+            if self.rigFrequency(self.fCenter + offset):
+                self.fOffset = offset
 
     def setCenterFrequency(self, center: int) -> None:
-        if center != self.fCenter and self.rigFrequency(center + self.fOffset):
-            self.fCenter = center
+        self.fCenter = center
+        self.fOffset = None
 
     def setDemodulator(self, mod: str) -> None:
         if mod != self.mod and self.rigModulation(mod):
             self.mod = mod
 
     def rigTX(self, active: bool) -> bool:
-        return self.rigCommand(["set_ptt", "1" if active else "0"])
+        return self.rigCommand("set_ptt {0}".format(1 if active else 0))
 
     def rigFrequency(self, freq: int) -> bool:
-        return self.rigCommand(["set_freq", str(freq)])
+        return self.rigCommand("set_freq {0}".format(freq))
 
     def rigModulation(self, mod: str) -> bool:
         if mod in self.MODES:
-            return self.rigCommand(["set_mode", self.MODES[mod], "0"])
+            return self.rigCommand("set_mode {0} 0".format(self.MODES[mod]))
         else:
             return False
 
-    def rigCommand(self, cmd: list[str]) -> bool:
+    # Start the main thread
+    def rigStart(self):
+        # Do not start twice
+        if self.rigctl is not None:
+            return True
         # Must have Hamlib/Rigctl installed
         if not FeatureDetector().is_available("rigcontrol"):
             return False
@@ -351,9 +364,64 @@ class RigControl():
         if not pm["rig_enabled"]:
             return False
         # Compose Rigctl command
-        rigctl  = ["rigctl", "-m", str(pm["rig_model"]), "-r", pm["rig_device"]]
         address = pm["rig_address"]
-        if address > 0 and address < 256:
-            rigctl += ["-c", str(address)]
-        # Rigctl must return 0 to indicate success
-        return subprocess.run(rigctl + cmd).returncode == 0
+        cmd = [
+            "rigctl", "-m", str(pm["rig_model"]), "-r", pm["rig_device"]
+        ] + (
+            ["-c", str(address)] if address > 0 and address < 256 else []
+        ) + ["-"]
+        #cmd = ["rigctl", "-"] # @@@ REMOVE ME!!!!
+        # Create Rigctl process, make stdout/stderr pipes non-blocking
+        self.rigctl = Popen(cmd, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+        os.set_blocking(self.rigctl.stdout.fileno(), False)
+        os.set_blocking(self.rigctl.stderr.fileno(), False)
+        # Create and start thread
+        self.thread = threading.Thread(target=self._rigThread)
+        self.thread.start()
+        # Done
+        logger.debug("Started RigControl as '{0}'.".format(" ".join(cmd)))
+        return True
+
+    # Stop the main thread
+    def rigStop(self):
+        # Do not stop twice
+        if self.rigctl is None:
+            return
+        # Try terminating RigCtl normally, kill if failed to terminate
+        logger.info("Stopping RigControl executable...")
+        try:
+            self.rigctl.terminate()
+            self.rigctl.wait(3)
+        except TimeoutExpired:
+            self.rigctl.kill()
+        self.rigctl = None
+        # The thread should have exited, since stdout/stderr closed
+        logger.info("Waiting for RigControl thread...")
+        self.thread.join()
+        self.thread = None
+        logger.info("Stopped RigControl.")
+
+    # Send command to Rigctl
+    def rigCommand(self, cmd: str) -> bool:
+        if self.rigctl is not None:
+            try:
+                self.rigctl.stdin.write((cmd + "\n").encode("utf-8"))
+                self.rigctl.stdin.flush()
+                logger.debug("Sent '{0}' to RigControl.".format(cmd))
+                return True
+            except Exception as e:
+                logger.debug("Failed sending '{0}' to RigControl: {1}.".format(cmd, str(e)))
+        # Failed to send command
+        return False
+
+    # This is the actual thread function
+    def _rigThread(self):
+        # Wait for output from the process
+        while self.rigctl is not None:
+            try:
+                readable, _, _ = select.select([self.rigctl.stdout, self.rigctl.stderr], [], [])
+                for pipe in readable:
+                    rsp = pipe.read().decode("utf-8").strip()
+                    logger.debug("STD{0}: {1}".format("ERR" if pipe==self.rigctl.stderr else "OUT", rsp))
+            except Exception as e:
+                break
