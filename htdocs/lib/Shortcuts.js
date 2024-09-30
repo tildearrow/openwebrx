@@ -19,29 +19,29 @@ Shortcuts.init = function(target) {
     <div class="ks-content">
 
       <div class="ks-item">
-        <div class="ks-item-txt">tune frequency</div>
-        <div class="ks-item-kbd">${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
+        <div class="ks-item-txt">select modulation</div>
+        <div class="ks-item-kbd">(${this.keycap('Control')}+)&nbsp;${this.keycap('0')}..${this.keycap('9')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">zoom waterfall</div>
         <div class="ks-item-kbd">${this.keycap('ArrowUp')}|${this.keycap('ArrowDown')}</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-txt">select modulation</div>
-        <div class="ks-item-kbd">(${this.keycap('Control')}+)&nbsp;${this.keycap('0')}..${this.keycap('9')}</div>
+        <div class="ks-item-txt">tune frequency</div>
+        <div class="ks-item-kbd">${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-txt">change tuning step</div>
-        <div class="ks-item-kbd">${this.keycap('{')}|${this.keycap('}')}</div>
+        <div class="ks-item-txt">mute/unumte sound</div>
+        <div class="ks-item-kbd">${this.keycap('Space')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">change volume</div>
         <div class="ks-item-kbd">${this.keycap('Control')}+${this.keycap('ArrowUp')}|${this.keycap('ArrowDown')}</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-txt">mute/unumte sound</div>
-        <div class="ks-item-kbd">${this.keycap('Space')}</div>
+        <div class="ks-item-txt">change tuning step</div>
+        <div class="ks-item-kbd">${this.keycap('Control')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
       </div>
 
       <div class="ks-item">
@@ -49,12 +49,12 @@ Shortcuts.init = function(target) {
         <div class="ks-item-kbd">${this.keycap('N')}</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-txt">adjust bandpass offset</div>
-        <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
-      </div>
-      <div class="ks-item">
         <div class="ks-item-txt">adjust bandpass width</div>
         <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowUp')}|${this.keycap('ArrowDown')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">adjust bandpass offset</div>
+        <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
       </div>
 
       <div class="ks-item">
@@ -63,7 +63,7 @@ Shortcuts.init = function(target) {
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">change squelch level</div>
-        <div class="ks-item-kbd">${this.keycap('Control')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
+        <div class="ks-item-kbd">${this.keycap('{')}|${this.keycap('}')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">disable squelch</div>
@@ -166,8 +166,8 @@ Shortcuts.handleKey = function(event) {
     switch (event.key.toLowerCase()) {
         case 'arrowleft':
             if (event.ctrlKey) {
-                // CTRL+LEFT: Decrease squelch
-                this.moveSlider('#openwebrx-panel-receiver .openwebrx-squelch-slider', -1);
+                // CTRL+LEFT: Decrease tuning step
+                this.moveSelector('#openwebrx-tuning-step-listbox', -1);
             } else if (event.shiftKey) {
                 // SHIFT+LEFT: Shift bandpass left
                 var demodulators = getDemodulators();
@@ -185,8 +185,8 @@ Shortcuts.handleKey = function(event) {
 
         case 'arrowright':
             if (event.ctrlKey) {
-                // CTRL+RIGHT: Increase squelch
-                this.moveSlider('#openwebrx-panel-receiver .openwebrx-squelch-slider', 1);
+                // CTRL+RIGHT: Increase tuning step
+                this.moveSelector('#openwebrx-tuning-step-listbox', 1);
             } else if (event.shiftKey) {
                 // SHIFT+RIGHT: Shift bandpass right
                 var demodulators = getDemodulators();
@@ -263,13 +263,13 @@ Shortcuts.handleKey = function(event) {
             break;
 
         case '{':
-            // {: Decrease tuning step
-            this.moveSelector('#openwebrx-tuning-step-listbox', -1);
+            // {: Decrease squelch
+            this.moveSlider('#openwebrx-panel-receiver .openwebrx-squelch-slider', -1);
             break;
 
         case '}':
-            // }: Increase tuning step
-            this.moveSelector('#openwebrx-tuning-step-listbox', 1);
+            // }: Increase squelch
+            this.moveSlider('#openwebrx-panel-receiver .openwebrx-squelch-slider', 1);
             break;
 
         case '1': case '2': case '3': case '4': case '5':
