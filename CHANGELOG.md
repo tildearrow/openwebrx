@@ -1,3 +1,12 @@
+**1.2.70**
+- Fixed flood of broken pipe errors when client disconnects.
+- Added ability to control external transceiver rigs.
+- Added geodesic call lines and distance to Leaflet maps.
+- Added tuning by squelch with [[]/[]] keys.
+- Squelch control now achieved with [{]/[}] keys.
+- Tuning step control done with [SHIFT]+[LEFT]/[RIGHT] keys.
+- Updated keyboard shortcuts help panel.
+
 **1.2.69**
 - Added [ALT]+[UP]/[DOWN] for volume control on MacOS.
 - Fixed an exception when any of the markers fail to load.
