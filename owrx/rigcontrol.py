@@ -300,10 +300,11 @@ class RigControl():
     }
 
     MODES = {
-        "nfm" : "FM",  "wfm" : "WFM",
-        "am"  : "AM",  "sam" : "SAM",
-        "lsb" : "LSB", "usb" : "USB",
-        "cw"  : "CW",
+        "nfm"  : "FM",     "wfm"  : "WFM",
+        "am"   : "AM",     "sam"  : "SAM",
+        "lsb"  : "LSB",    "usb"  : "USB",
+        "lsbd" : "PKTLSB", "usbd" : "PKTUSB",
+        "cw"   : "CWR",
     }
 
     def __init__(self, props: PropertyStack):
@@ -394,12 +395,12 @@ class RigControl():
             self.rigctl.wait(3)
         except TimeoutExpired:
             self.rigctl.kill()
-        self.rigctl = None
         # The thread should have exited, since stdout/stderr closed
         logger.info("Waiting for RigControl thread...")
         self.thread.join()
-        self.thread = None
         logger.info("Stopped RigControl.")
+        self.thread = None
+        self.rigctl = None
 
     # Send command to Rigctl
     def rigCommand(self, cmd: str) -> bool:
@@ -417,7 +418,7 @@ class RigControl():
     # This is the actual thread function
     def _rigThread(self):
         # While RigControl is running...
-        while self.rigctl is not None and self.rigctl.poll() is None:
+        while self.rigctl.poll() is None:
             try:
                 # Wait for output from the process
                 readable, _, _ = select.select([self.rigctl.stdout, self.rigctl.stderr], [], [])
@@ -426,12 +427,8 @@ class RigControl():
                     #if len(rsp) > 0:
                     logger.debug("STD{0}: {1}".format("ERR" if pipe==self.rigctl.stderr else "OUT", rsp))
             except Exception as e:
-                logger.debug("RigControl thread terminated: {1}.".format(str(e)))
-                return
+                logger.debug("Failed receiving from RigControl: {1}.".format(str(e)))
 
-        # Make sure we get rid of completed RigControl process
-        if self.rigctl is not None and self.rigctl.poll() is not None:
-            logger.debug("RigControl process quit ({0}).".format(self.rigctl.poll()))
-            self.rigctl = None
-
+        # RigControl stopped
+        logger.debug("RigControl process quit ({0}).".format(self.rigctl.poll()))
         logger.debug("RigControl thread done.")
