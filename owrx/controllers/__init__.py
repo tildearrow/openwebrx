@@ -34,8 +34,11 @@ class Controller(object):
         if type(content) == str:
             content = content.encode()
         while len(content):
-            w = self.handler.wfile.write(content)
-            content = content[w:]
+            try:
+                w = self.handler.wfile.write(content)
+                content = content[w:]
+            except BrokenPipeError:
+                break
 
     def send_redirect(self, location, code=303):
         self.handler.send_response(code)
