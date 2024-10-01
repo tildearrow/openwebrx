@@ -405,6 +405,9 @@ class RigControl():
     # Send command to Rigctl
     def rigCommand(self, cmd: str) -> bool:
         if self.rigctl is not None:
+            if self.rigctl.poll() is not None:
+                self.rigctl = None
+                return False
             try:
                 self.rigctl.stdin.write(cmd + "\n")
                 self.rigctl.stdin.flush()
@@ -431,4 +434,3 @@ class RigControl():
 
         # RigControl stopped
         logger.debug("RigControl process quit ({0}).".format(self.rigctl.poll()))
-        logger.debug("RigControl thread done.")
