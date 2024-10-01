@@ -12,6 +12,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 class RigControl():
+    # Mapping from rig names to Rigctl rig types
     RIGS = {
 #       "Hamlib Dummy"        : 1,
         "Hamlib"              : 2,
@@ -299,6 +300,7 @@ class RigControl():
         "Yaesu VR-5000"    : 1026,
     }
 
+    # Mapping from OpenWebRX modulations to Rigctl modulations
     MODES = {
         "nfm"  : "FM",     "wfm"  : "WFM",
         "am"   : "AM",     "sam"  : "SAM",
@@ -340,19 +342,22 @@ class RigControl():
         if mod != self.mod and self.rigModulation(mod):
             self.mod = mod
 
+    # Press or release rig's PTT (i.e. transmit)
     def rigTX(self, active: bool) -> bool:
         return self.rigCommand("T {0}".format(1 if active else 0))
 
+    # Set rig's frequency
     def rigFrequency(self, freq: int) -> bool:
         return self.rigCommand("F {0}".format(freq))
 
+    # Set rig's modulation
     def rigModulation(self, mod: str) -> bool:
         if mod in self.MODES:
             return self.rigCommand("M {0} 0".format(self.MODES[mod]))
         else:
             return False
 
-    # Start the main thread
+    # Start Rigctl and associated thread
     def rigStart(self):
         # Do not start twice
         if self.rigctl is not None:
@@ -383,19 +388,21 @@ class RigControl():
         logger.debug("Started RigControl as '{0}'.".format(" ".join(cmd)))
         return True
 
-    # Stop the main thread
+    # Stop Rigctl and associated thread
     def rigStop(self):
         # Do not stop twice
         if self.rigctl is None:
             return
-        # Try terminating RigCtl normally, kill if failed to terminate
-        logger.info("Stopping RigControl executable...")
-        try:
-            self.rigctl.terminate()
-            self.rigctl.wait(3)
-        except TimeoutExpired:
-            self.rigctl.kill()
-        # The thread should have exited, since stdout/stderr closed
+        # If Rigctl still running...
+        if self.rigctl.poll() is None:
+            # Try terminating Rigctl normally, kill if failed
+            logger.info("Stopping RigControl executable...")
+            try:
+                self.rigctl.terminate()
+                self.rigctl.wait(3)
+            except TimeoutExpired:
+                self.rigctl.kill()
+        # The thread should have exited, since Rigctl exited
         logger.info("Waiting for RigControl thread...")
         self.thread.join()
         logger.info("Stopped RigControl.")
@@ -418,19 +425,18 @@ class RigControl():
         # Failed to send command
         return False
 
-    # This is the actual thread function
+    # This thread function reads from Rigctl process' stdout/stderr
     def _rigThread(self):
-        # While RigControl is running...
+        # While process is running...
         while self.rigctl.poll() is None:
             try:
                 # Wait for output from the process
                 readable, _, _ = select.select([self.rigctl.stdout, self.rigctl.stderr], [], [])
                 for pipe in readable:
                     rsp = pipe.read().strip()
-                    #if len(rsp) > 0:
                     logger.debug("STD{0}: {1}".format("ERR" if pipe==self.rigctl.stderr else "OUT", rsp))
             except Exception as e:
                 logger.debug("Failed receiving from RigControl: {1}.".format(str(e)))
 
-        # RigControl stopped
+        # Process stopped
         logger.debug("RigControl process quit ({0}).".format(self.rigctl.poll()))
