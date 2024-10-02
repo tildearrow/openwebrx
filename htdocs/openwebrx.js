@@ -39,7 +39,7 @@ var bandplan = null;
 var scanner = null;
 var bookmarks = null;
 var audioEngine = null;
-var waterfall_last = null;
+var wf_data = null;
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -68,7 +68,7 @@ function tuneBySteps(steps) {
 
 function tuneBySquelch(dir) {
     // Must have a copy of the last received waterfall
-    if (waterfall_last == null) return;
+    if (wf_data == null) return;
 
     // Get current squelch threshold from the slider
     // (why do we need to subtract ~13dB here to make FFT match the S-meter?)
@@ -82,12 +82,26 @@ function tuneBySquelch(dir) {
     // Scan up or down the waterfall
     dir = tuning_step * (dir>=0? 1 : -1);
     for(f += dir ; ; f += dir) {
-        var i = Math.round(waterfall_last.length * (f / bandwidth + 0.5));
-        if (i < 0 || i >= waterfall_last.length) {
+        var i = Math.round(wf_data.length * (f / bandwidth + 0.5));
+        if (i < 0 || i >= wf_data.length) {
             break;
-        } else if (waterfall_last[i] >= squelch) {
+        } else if (wf_data[i] >= squelch) {
             demodulator.set_offset_frequency(f);
             break;
+        }
+    }
+}
+
+function monitorLevels(data) {
+    if (wf_data == null || wf_data.length != data.length) {
+        wf_data = data;
+    } else {
+        for (var j = 0 ; j < data.length ; j++) {
+            if (data[j] >= wf_data[j]) {
+                wf_data[j] = data[j];
+            } else {
+                wf_data[j] += (data[j] - wf_data[j]) / 5.0;
+            }
         }
     }
 }
@@ -1131,8 +1145,8 @@ function on_ws_recv(evt) {
                 spectrum.update(waterfall_f32);
                 // Feed scanner with data
                 scanner.update(waterfall_f32);
-                // Save waterfall for squelch-based tuning
-                waterfall_last = waterfall_f32;
+                // Monitor waterfall levels for squelch-based tuning
+                monitorLevels(waterfall_f32);
                 break;
             case 2:
                 // audio data
