@@ -45,8 +45,8 @@ Shortcuts.init = function(target) {
       </div>
 
       <div class="ks-item">
-        <div class="ks-item-txt">toggle noise reduction</div>
-        <div class="ks-item-kbd">${this.keycap('N')}</div>
+        <div class="ks-item-txt">toggle receiver panel</div>
+        <div class="ks-item-kbd">${this.keycap('Enter')}</div>
       </div>
       <div class="ks-item">
         <div class="ks-item-txt">adjust bandpass width</div>
@@ -55,6 +55,32 @@ Shortcuts.init = function(target) {
       <div class="ks-item">
         <div class="ks-item-txt">adjust bandpass offset</div>
         <div class="ks-item-kbd">${this.keycap('Shift')}+${this.keycap('ArrowLeft')}|${this.keycap('ArrowRight')}</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-txt">toggle noise reduction</div>
+        <div class="ks-item-kbd">${this.keycap('N')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">adjust waterfall min level</div>
+        <div class="ks-item-kbd">${this.keycap(',')}|${this.keycap('.')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">adjust waterfall max level</div>
+        <div class="ks-item-kbd">${this.keycap('<')}|${this.keycap('>')}</div>
+      </div>
+
+      <div class="ks-item">
+        <div class="ks-item-txt">auto-set colors once</div>
+        <div class="ks-item-kbd">${this.keycap('Z')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">auto-set colors</div>
+        <div class="ks-item-kbd">${this.keycap('X')}</div>
+      </div>
+      <div class="ks-item">
+        <div class="ks-item-txt">set default colors</div>
+        <div class="ks-item-kbd">${this.keycap('C')}</div>
       </div>
 
       <div class="ks-item">
@@ -79,34 +105,8 @@ Shortcuts.init = function(target) {
         <div class="ks-item-kbd">${this.keycap('[')}|${this.keycap(']')}</div>
       </div>
       <div class="ks-item">
-        <div class="ks-item-txt">side-step current profile</div>
-        <div class="ks-item-kbd">${this.keycap('PageDown')}|${this.keycap('PageUp')}</div>
-      </div>
-
-      <div class="ks-item">
-        <div class="ks-item-txt">show this help panel</div>
-        <div class="ks-item-kbd">${this.keycap('?')}</div>
-      </div>
-      <div class="ks-item">
-        <div class="ks-item-txt">adjust waterfall min level</div>
-        <div class="ks-item-kbd">${this.keycap(',')}|${this.keycap('.')}</div>
-      </div>
-      <div class="ks-item">
-        <div class="ks-item-txt">adjust waterfall max level</div>
-        <div class="ks-item-kbd">${this.keycap('<')}|${this.keycap('>')}</div>
-      </div>
-
-      <div class="ks-item">
-        <div class="ks-item-txt">auto-set colors once</div>
-        <div class="ks-item-kbd">${this.keycap('Z')}</div>
-      </div>
-      <div class="ks-item">
-        <div class="ks-item-txt">auto-set colors</div>
-        <div class="ks-item-kbd">${this.keycap('X')}</div>
-      </div>
-      <div class="ks-item">
-        <div class="ks-item-txt">set default colors</div>
-        <div class="ks-item-kbd">${this.keycap('C')}</div>
+        <div class="ks-item-txt">toggle log/chat</div>
+        <div class="ks-item-kbd">${this.keycap('L')}</div>
       </div>
 
       <div class="ks-item">
@@ -360,19 +360,29 @@ Shortcuts.handleKey = function(event) {
             this.moveSlider('#openwebrx-waterfall-color-min', 1);
             break;
 
-       case 'f':
+        case 'f':
             // F: Open file browser
             $('a.button[target="openwebrx-files"]')[0].click();
             break;
 
-       case 'h':
+        case 'h':
             // H: Open documentation
             $('a.button[target="openwebrx-help"]')[0].click();
             break;
 
-       case 'm':
+        case 'm':
             // M: Open map
             $('a.button[target="openwebrx-map"]')[0].click();
+            break;
+
+        case 'l':
+            // L: Toggle log/chat panel
+            $('div.button[data-toggle-panel="openwebrx-panel-log"]')[0].click();
+            break;
+
+        case 'enter':
+            // ENTER: Toggle receiver panel
+            $('div.button[data-toggle-panel="openwebrx-panel-receiver"]')[0].click();
             break;
 
         case '/': case '?':
