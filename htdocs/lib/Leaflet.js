@@ -143,12 +143,19 @@ LCall.prototype.setEnds = function(lat1, lon1, lat2, lon2) {
 
 LCall.prototype.setColor = function(color) {
     this._line.setStyle({ color: color });
+    // Leaflet.Geodesic does not provide its own setStyle method, it
+    // just passes it to Leaflet's polyline. Thus, we need to update
+    // the textNode to reflect changes.
+    if (this._line._textNode) this._line._textNode.style.color = color;
 };
 
 LCall.prototype.setOpacity = function(opacity) {
     this._line.setStyle({ opacity: opacity });
+    // Leaflet.Geodesic does not provide its own setStyle method, it
+    // just passes it to Leaflet's polyline. Thus, we need to update
+    // the textNode to reflect changes.
+    if (this._line._textNode) this._line._textNode.style.opacity = opacity;
 };
-
 
 //
 // Position object
