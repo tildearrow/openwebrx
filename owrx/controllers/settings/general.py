@@ -280,6 +280,9 @@ class GeneralSettingsController(SettingsFormController):
                     "map_prefer_recent_reports",
                     "Prefer more recent position reports to shorter path reports.",
                 ),
+            ),
+            Section(
+                "External links",
                 TextInput(
                     "callsign_url",
                     "Callsign database URL",
