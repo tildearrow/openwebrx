@@ -2,7 +2,7 @@ import subprocess
 from functools import reduce
 from operator import and_
 import re
-from distutils.version import LooseVersion, StrictVersion
+from packaging.version import Version
 import inspect
 from owrx.config.core import CoreConfig
 from owrx.config import Config
@@ -205,15 +205,15 @@ class FeatureDetector(object):
         the OpenWebRX repositories, should be all you need. Do not forget
         to restart OpenWebRX after installing this package.
         """
-        required_version = LooseVersion("0.18.0")
+        required_version = Version("0.18.0")
 
         try:
             from pycsdr.modules import csdr_version
             from pycsdr.modules import version as pycsdr_version
 
             return (
-                LooseVersion(csdr_version) >= required_version and
-                LooseVersion(pycsdr_version) >= required_version
+                Version(csdr_version) >= required_version and
+                Version(pycsdr_version) >= required_version
             )
         except ImportError:
             return False
@@ -255,15 +255,15 @@ class FeatureDetector(object):
         repositories, should be all you need. Do not forget to
         restart OpenWebRX after installing this package.
         """
-        required_version = LooseVersion("0.6")
+        required_version = Version("0.6")
 
         try:
             from digiham.modules import digiham_version as digiham_version
             from digiham.modules import version as pydigiham_version
 
             return (
-                LooseVersion(digiham_version) >= required_version
-                and LooseVersion(pydigiham_version) >= required_version
+                Version(digiham_version) >= required_version
+                and Version(pydigiham_version) >= required_version
             )
         except ImportError:
             return False
@@ -276,14 +276,14 @@ class FeatureDetector(object):
             matches = owrx_connector_version_regex.match(process.stdout.readline().decode())
             if matches is None:
                 return False
-            version = LooseVersion(matches.group(1))
+            version = Version(matches.group(1))
             process.wait(1)
             return version >= required_version
         except FileNotFoundError:
             return False
 
     def _check_owrx_connector(self, command):
-        return self._check_connector(command, LooseVersion("0.5"))
+        return self._check_connector(command, Version("0.5"))
 
     def has_rtl_connector(self):
         """
@@ -486,7 +486,7 @@ class FeatureDetector(object):
             matches = wsjt_version_regex.match(process.stdout.readline().decode())
             if matches is None:
                 return False
-            version = LooseVersion(matches.group(1))
+            version = Version(matches.group(1))
             process.wait(1)
             return version >= required_version
         except FileNotFoundError:
@@ -498,7 +498,7 @@ class FeatureDetector(object):
         [WSJT-X](https://wsjt.sourceforge.io/) version 2.3 or higher.
         Use the latest `wsjtx` package available in your Linux distribution.
         """
-        return self.has_wsjtx() and self._has_wsjtx_version(LooseVersion("2.3"))
+        return self.has_wsjtx() and self._has_wsjtx_version(Version("2.3"))
 
     def has_wsjtx_2_4(self):
         """
@@ -506,7 +506,7 @@ class FeatureDetector(object):
         [WSJT-X](https://wsjt.sourceforge.io/) version 2.4 or higher.
         Use the latest `wsjtx` package available in your Linux distribution.
         """
-        return self.has_wsjtx() and self._has_wsjtx_version(LooseVersion("2.4"))
+        return self.has_wsjtx() and self._has_wsjtx_version(Version("2.4"))
 
     def has_msk144decoder(self):
         """
@@ -538,11 +538,10 @@ class FeatureDetector(object):
         repositories. Do not forget to restart OpenWebRX after
         installing this package.
         """
-        required_version = StrictVersion("0.1")
+        required_version = Version("0.1")
         try:
-            from js8py.version import strictversion
-
-            return strictversion >= required_version
+            from js8py.version import _versionstring as js8py_version
+            return Version(js8py_version) >= required_version
         except ImportError:
             return False
 
@@ -592,7 +591,7 @@ class FeatureDetector(object):
         allows connectivity with SDR devices powered by the `libsddc`
         library, such as RX666, RX888, HF103, etc.
         """
-        return self._check_connector("sddc_connector", LooseVersion("0.1"))
+        return self._check_connector("sddc_connector", Version("0.1"))
 
     def has_hpsdr_connector(self):
         """
@@ -608,7 +607,7 @@ class FeatureDetector(object):
         The [RunDS Connector](https://github.com/jketterl/runds_connector)
         allows using R&S radios via EB200 or Ammos.
         """
-        return self._check_connector("runds_connector", LooseVersion("0.2"))
+        return self._check_connector("runds_connector", Version("0.2"))
 
     def has_codecserver_ambe(self):
         """
@@ -691,15 +690,15 @@ class FeatureDetector(object):
         should be all you need. Do not forget to restart OpenWebRX after
         installing this package.
         """
-        required_version = LooseVersion("0.0.11")
+        required_version = Version("0.0.11")
 
         try:
             from csdreti.modules import csdreti_version
             from csdreti.modules import version as pycsdreti_version
 
             return (
-                LooseVersion(csdreti_version) >= required_version
-                and LooseVersion(pycsdreti_version) >= required_version
+                Version(csdreti_version) >= required_version
+                and Version(pycsdreti_version) >= required_version
             )
         except ImportError:
             return False
