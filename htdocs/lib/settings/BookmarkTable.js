@@ -417,6 +417,13 @@ $.fn.bookmarktable = function() {
                                 if (modulation_name in modes) {
                                     modulation_name = modes[modulation_name];
                                 }
+                                var underlying_name = bookmark.underlying;
+                                if (underlying_name in modes) {
+                                    underlying_name = modes[underlying_name];
+                                }
+                                if (underlying_name) {
+                                    modulation_name += ' (' + underlying_name + ')';
+                                }
                                 // provide reasonable default for missing fields
                                 if (!('description' in bookmark)) {
                                     bookmark.description = '';
