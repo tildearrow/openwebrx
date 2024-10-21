@@ -2,7 +2,7 @@ function BookmarkBar() {
     var me = this;
     me.modesToScan = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
     me.localBookmarks = new BookmarkLocalStorage();
-    me.$container = $("#openwebrx-bookmarks-container");
+    me.$container = $('#openwebrx-bookmarks-container');
     me.bookmarks = {};
 
     me.$container.on('click', '.bookmark', function(e){
@@ -11,9 +11,7 @@ function BookmarkBar() {
         var b = $bookmark.data();
         if (!b || !b.frequency || !b.modulation) return;
         me.getDemodulator().set_offset_frequency(b.frequency - center_freq);
-        if (b.modulation) {
-            me.getDemodulatorPanel().setMode(b.modulation, b.underlying);
-        }
+        me.getDemodulatorPanel().setMode(b.modulation, b.underlying);
         $bookmark.addClass('selected');
         stopScanner();
     });
@@ -41,7 +39,7 @@ function BookmarkBar() {
         me.showEditDialog();
     });
 
-    me.$dialog = $("#openwebrx-dialog-bookmark");
+    me.$dialog = $('#openwebrx-dialog-bookmark');
     me.$dialog.find('.openwebrx-button[data-action=cancel]').click(function(){
         me.$dialog.hide();
     });
@@ -108,13 +106,16 @@ BookmarkBar.prototype.render = function(){
 
 BookmarkBar.prototype.showEditDialog = function(bookmark) {
     if (!bookmark) {
-        var mode = this.getDemodulator().get_secondary_demod() || this.getDemodulator().get_modulation();
+        var mode1 = this.getDemodulator().get_secondary_demod()
+        var mode2 = this.getDemodulator().get_modulation();
+        if (!mode1) { mode1 = mode2; mode2 = ''; }
         bookmark = {
-            name: "",
+            name: '',
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),
-            modulation: mode,
-            description: "",
-            scannable : this.modesToScan.indexOf(mode) >= 0
+            modulation: mode1,
+            underlying: mode2,
+            description: '',
+            scannable : this.modesToScan.indexOf(mode1) >= 0
         }
     }
     this.$dialog.bookmarkDialog().setValues(bookmark);

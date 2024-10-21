@@ -106,7 +106,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             return
         try:
             data = json.loads(self.get_body().decode("utf-8"))
-            for key in ["name", "frequency", "modulation", "description", "scannable"]:
+            for key in ["name", "frequency", "modulation", "underlying", "description", "scannable"]:
                 if key in data:
                     value = data[key]
                     if key == "frequency":
@@ -125,7 +125,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
         def create(bookmark_data):
             # sanitize
             data = {}
-            for key in ["name", "frequency", "modulation", "description", "scannable"]:
+            for key in ["name", "frequency", "modulation", "underlying", "description", "scannable"]:
                 if key in bookmark_data:
                     if key == "frequency":
                         data[key] = int(bookmark_data[key])
