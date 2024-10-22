@@ -109,6 +109,7 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
         var mode1 = this.getDemodulator().get_secondary_demod()
         var mode2 = this.getDemodulator().get_modulation();
         if (!mode1) { mode1 = mode2; mode2 = ''; }
+        if (!mode2) mode2 = '';
         bookmark = {
             name: '',
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),

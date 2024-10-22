@@ -376,9 +376,16 @@ $.fn.bookmarktable = function() {
                     if (modulation in modes) {
                         modulation = modes[modulation];
                     }
+                    var underlying = b.underlying;
+                    if (underlying in modes) {
+                        underlying = modes[underlying];
+                    }
+                    if (underlying) {
+                        modulation += ' (' + underlying + ')';
+                    }
                     var row = $(
                         '<tr>' +
-                            '<td><input class="form-check-input select" type="checkbox"></td>' +
+                            '<td><input class="form-check-input select" type="checkbox">&nbsp;</td>' +
                             '<td>' + b.name + '</td>' +
                             '<td class="frequency">' + renderFrequency(b.frequency) + '</td>' +
                             '<td>' + modulation + '</td>' +

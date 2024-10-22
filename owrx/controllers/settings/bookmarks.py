@@ -65,8 +65,13 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                 suffix = suffixes[exp]
             return "{num:g} {suffix}Hz".format(num=num, suffix=suffix)
 
-        mode = Modes.findByModulation(bookmark.getModulation())
-        scan = bookmark.isScannable()
+        scan  = bookmark.isScannable()
+        mode1 = Modes.findByModulation(bookmark.getModulation())
+        mode2 = Modes.findByModulation(bookmark.getUnderlying())
+        name1 = bookmark.getModulation() if mode1 is None else mode1.name
+        name2 = bookmark.getUnderlying() if mode2 is None else mode2.name
+        if name2:
+            name1 += " (" + name2 + ")"
         return """
             <tr data-id="{id}">
                 <td data-editor="name" data-value="{name}">{name}</td>
@@ -84,8 +89,8 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             # TODO render frequency in si units
             frequency=bookmark.getFrequency(),
             rendered_frequency=render_frequency(bookmark.getFrequency()),
-            modulation=bookmark.getModulation() if mode is None else mode.modulation,
-            modulation_name=bookmark.getModulation() if mode is None else mode.name,
+            modulation=bookmark.getModulation() if mode1 is None else mode1.modulation,
+            modulation_name=name1,
             description=bookmark.getDescription(),
             scannable="true" if scan else "false",
             scannable_check="&check;" if scan else "",
