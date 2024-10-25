@@ -220,6 +220,22 @@ ScannableEditor.prototype.getHtml = function() {
     return this.getValue()? '&check;' : '';
 };
 
+var renderModulation = function(b, modes) {
+    var modulation = b.modulation;
+    if (modulation in modes) {
+        modulation = modes[modulation];
+    }
+    var underlying = b.underlying;
+    if (underlying in modes) {
+        underlying = modes[underlying];
+    }
+    // add underlying modulation, if present
+    if (underlying) {
+        modulation += ' (' + underlying + ')';
+    }
+    return modulation;
+}
+
 $.fn.bookmarktable = function() {
     var editors = {
         name: NameEditor,
@@ -372,23 +388,12 @@ $.fn.bookmarktable = function() {
                 var modes = $table.data('modes');
                 var $list = $('<table class="table table-sm">');
                 $list.append(bookmarks.map(function(b) {
-                    var modulation = b.modulation;
-                    if (modulation in modes) {
-                        modulation = modes[modulation];
-                    }
-                    var underlying = b.underlying;
-                    if (underlying in modes) {
-                        underlying = modes[underlying];
-                    }
-                    if (underlying) {
-                        modulation += ' (' + underlying + ')';
-                    }
                     var row = $(
                         '<tr>' +
                             '<td><input class="form-check-input select" type="checkbox">&nbsp;</td>' +
                             '<td>' + b.name + '</td>' +
                             '<td class="frequency">' + renderFrequency(b.frequency) + '</td>' +
-                            '<td>' + modulation + '</td>' +
+                            '<td>' + renderModulation(b, modes) + '</td>' +
                         '</tr>'
                     );
                     row.data('bookmark', b);
@@ -420,17 +425,6 @@ $.fn.bookmarktable = function() {
                         if (data.length && data.length == selected.length) {
                             $table.append(data.map(function(obj, index) {
                                 var bookmark = selected[index];
-                                var modulation_name = bookmark.modulation;
-                                if (modulation_name in modes) {
-                                    modulation_name = modes[modulation_name];
-                                }
-                                var underlying_name = bookmark.underlying;
-                                if (underlying_name in modes) {
-                                    underlying_name = modes[underlying_name];
-                                }
-                                if (underlying_name) {
-                                    modulation_name += ' (' + underlying_name + ')';
-                                }
                                 // provide reasonable default for missing fields
                                 if (!('description' in bookmark)) {
                                     bookmark.description = '';
@@ -443,7 +437,7 @@ $.fn.bookmarktable = function() {
                                     '<tr data-id="' + obj.bookmark_id + '">' +
                                         '<td data-editor="name" data-value="' + bookmark.name + '">' + bookmark.name + '</td>' +
                                         '<td data-editor="frequency" data-value="' + bookmark.frequency + '" class="frequency">' + renderFrequency(bookmark.frequency) +'</td>' +
-                                        '<td data-editor="modulation" data-value="' + bookmark.modulation + '">' + modulation_name + '</td>' +
+                                        '<td data-editor="modulation" data-value="' + bookmark.modulation + '">' + renderModulation(bookmark, modes) + '</td>' +
                                         '<td data-editor="description" data-value="' + bookmark.description + '">' + bookmark.description + '</td>' +
                                         '<td data-editor="scannable" data-value="' + bookmark.scannable + '">' + (bookmark.scannable? '&check;':'') + '</td>' +
                                         '<td>' +
