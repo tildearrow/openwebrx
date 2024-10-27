@@ -188,6 +188,27 @@ ModulationEditor.prototype.getHtml = function() {
     return $option.html();
 };
 
+function UnderlyingEditor(table) {
+    Editor.call(this, table);
+    this.modes = table.data('modes');
+}
+
+UnderlyingEditor.prototype = new Editor();
+
+UnderlyingEditor.prototype.getInputHtml = function() {
+    return '<select class="form-control form-control-sm">' +
+        '<option value=""></option>' +
+        $.map(this.modes, function(name, modulation) {
+            return '<option value="' + modulation + '">' + name + '</option>';
+        }).join('') +
+        '</select>';
+};
+
+UnderlyingEditor.prototype.getHtml = function() {
+    var $option = this.input.find('option:selected')
+    return $option? $option.html() : '';
+};
+
 function DescriptionEditor(table) {
     Editor.call(this, table);
 }
@@ -220,20 +241,8 @@ ScannableEditor.prototype.getHtml = function() {
     return this.getValue()? '&check;' : '';
 };
 
-var renderModulation = function(b, modes) {
-    var modulation = b.modulation;
-    if (modulation in modes) {
-        modulation = modes[modulation];
-    }
-    var underlying = b.underlying;
-    if (underlying in modes) {
-        underlying = modes[underlying];
-    }
-    // add underlying modulation, if present
-    if (underlying) {
-        modulation += ' (' + underlying + ')';
-    }
-    return modulation;
+var renderModulation = function(m, modes) {
+    return m in modes? modes[m] : m;
 }
 
 $.fn.bookmarktable = function() {
@@ -241,6 +250,7 @@ $.fn.bookmarktable = function() {
         name: NameEditor,
         frequency: FrequencyEditor,
         modulation: ModulationEditor,
+        underlying: UnderlyingEditor,
         description: DescriptionEditor,
         scannable: ScannableEditor
     };
@@ -393,7 +403,8 @@ $.fn.bookmarktable = function() {
                             '<td><input class="form-check-input select" type="checkbox">&nbsp;</td>' +
                             '<td>' + b.name + '</td>' +
                             '<td class="frequency">' + renderFrequency(b.frequency) + '</td>' +
-                            '<td>' + renderModulation(b, modes) + '</td>' +
+                            '<td>' + renderModulation(b.modulation, modes) + '</td>' +
+                            '<td>' + renderModulation(b.underlying, modes) + '</td>' +
                         '</tr>'
                     );
                     row.data('bookmark', b);
@@ -424,22 +435,23 @@ $.fn.bookmarktable = function() {
                         var modes = $table.data('modes');
                         if (data.length && data.length == selected.length) {
                             $table.append(data.map(function(obj, index) {
-                                var bookmark = selected[index];
+                                var b = selected[index];
                                 // provide reasonable default for missing fields
-                                if (!('description' in bookmark)) {
-                                    bookmark.description = '';
+                                if (!('description' in b)) {
+                                    b.description = '';
                                 }
-                                if (!('scannable' in bookmark)) {
+                                if (!('scannable' in b)) {
                                     var modesToScan = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
-                                    bookmark.scannable = modesToScan.indexOf(bookmark.modulation) >= 0;
+                                    b.scannable = modesToScan.indexOf(b.modulation) >= 0;
                                 }
                                 return $(
                                     '<tr data-id="' + obj.bookmark_id + '">' +
-                                        '<td data-editor="name" data-value="' + bookmark.name + '">' + bookmark.name + '</td>' +
-                                        '<td data-editor="frequency" data-value="' + bookmark.frequency + '" class="frequency">' + renderFrequency(bookmark.frequency) +'</td>' +
-                                        '<td data-editor="modulation" data-value="' + bookmark.modulation + '">' + renderModulation(bookmark, modes) + '</td>' +
-                                        '<td data-editor="description" data-value="' + bookmark.description + '">' + bookmark.description + '</td>' +
-                                        '<td data-editor="scannable" data-value="' + bookmark.scannable + '">' + (bookmark.scannable? '&check;':'') + '</td>' +
+                                        '<td data-editor="name" data-value="' + b.name + '">' + b.name + '</td>' +
+                                        '<td data-editor="frequency" data-value="' + b.frequency + '" class="frequency">' + renderFrequency(b.frequency) +'</td>' +
+                                        '<td data-editor="modulation" data-value="' + b.modulation + '">' + renderModulation(b.modulation, modes) + '</td>' +
+                                        '<td data-editor="underlying" data-value="' + b.underlying + '">' + renderModulation(b.underlying, modes) + '</td>' +
+                                        '<td data-editor="description" data-value="' + b.description + '">' + b.description + '</td>' +
+                                        '<td data-editor="scannable" data-value="' + b.scannable + '">' + (b.scannable? '&check;':'') + '</td>' +
                                         '<td>' +
                                             '<button type="button" class="btn btn-sm btn-danger bookmark-delete">delete</button>' +
                                         '</td>' +

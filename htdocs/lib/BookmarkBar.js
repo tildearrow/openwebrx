@@ -108,13 +108,13 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
     if (!bookmark) {
         var mode1 = this.getDemodulator().get_secondary_demod()
         var mode2 = this.getDemodulator().get_modulation();
+        // if no secondary demod, use the primary one
         if (!mode1) { mode1 = mode2; mode2 = ''; }
-        if (!mode2) mode2 = '';
         bookmark = {
             name: '',
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),
             modulation: mode1,
-            underlying: mode2,
+            underlying: this.verifyUnderlying(mode2, mode1),
             description: '',
             scannable : this.modesToScan.indexOf(mode1) >= 0
         }
@@ -124,11 +124,31 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
     this.$dialog.find('#name').focus();
 };
 
+BookmarkBar.prototype.verifyUnderlying = function(underlying, modulation) {
+    if (!underlying) return '';
+
+    // check that underlying demod is valid and NOT the default one
+    var mode = Modes.findByModulation(modulation);
+    if (!mode || !mode.underlying || mode.underlying.indexOf(underlying) <= 0) {
+        return '';
+    }
+
+    return underlying;
+};
+
 BookmarkBar.prototype.storeBookmark = function() {
     var me = this;
     var bookmark = this.$dialog.bookmarkDialog().getValues();
     if (!bookmark) return;
+
+    // parse bookmark frequency to a number
     bookmark.frequency = Number(bookmark.frequency);
+
+    // make sure underlying demod, if present, is valid
+    bookmark.underlying = this.verifyUnderlying(
+        bookmark.modulation,
+        bookmark.underlying
+    );
 
     var bookmarks = me.localBookmarks.getBookmarks();
 

@@ -24,7 +24,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
     def render_table(self):
         bookmarks = Bookmarks.getSharedInstance().getEditableBookmarks()
         emptyText = """
-            <tr class="emptytext"><td colspan="4">
+            <tr class="emptytext"><td colspan="7">
                 No bookmarks in storage. You can add new bookmarks using the buttons below. 
             </td></tr>
         """
@@ -35,6 +35,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                     <th>Name</th>
                     <th class="frequency">Frequency</th>
                     <th>Modulation</th>
+                    <th>Underlying</th>
                     <th>Description</th>
                     <th>Scan</th>
                     <th>Actions</th>
@@ -66,17 +67,17 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             return "{num:g} {suffix}Hz".format(num=num, suffix=suffix)
 
         scan  = bookmark.isScannable()
-        mode1 = Modes.findByModulation(bookmark.getModulation())
-        mode2 = Modes.findByModulation(bookmark.getUnderlying())
-        name1 = bookmark.getModulation() if mode1 is None else mode1.name
-        name2 = bookmark.getUnderlying() if mode2 is None else mode2.name
-        if name2:
-            name1 += " (" + name2 + ")"
+        name1 = bookmark.getModulation()
+        name2 = bookmark.getUnderlying()
+        mode1 = Modes.findByModulation(name1)
+        mode2 = Modes.findByModulation(name2)
+
         return """
             <tr data-id="{id}">
                 <td data-editor="name" data-value="{name}">{name}</td>
                 <td data-editor="frequency" data-value="{frequency}" class="frequency">{rendered_frequency}</td>
                 <td data-editor="modulation" data-value="{modulation}">{modulation_name}</td>
+                <td data-editor="underlying" data-value="{underlying}">{underlying_name}</td>
                 <td data-editor="description" data-value="{description}">{description}</td>
                 <td data-editor="scannable" data-value="{scannable}">{scannable_check}</td>
                 <td>
@@ -89,8 +90,10 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             # TODO render frequency in si units
             frequency=bookmark.getFrequency(),
             rendered_frequency=render_frequency(bookmark.getFrequency()),
-            modulation=bookmark.getModulation() if mode1 is None else mode1.modulation,
-            modulation_name=name1,
+            modulation=name1 if mode1 is None else mode1.modulation,
+            underlying=name2 if mode2 is None else mode2.modulation,
+            modulation_name=name1 if mode1 is None else mode1.name,
+            underlying_name=name2 if mode2 is None else mode2.name,
             description=bookmark.getDescription(),
             scannable="true" if scan else "false",
             scannable_check="&check;" if scan else "",
