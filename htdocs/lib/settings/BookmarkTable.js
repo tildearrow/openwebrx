@@ -245,7 +245,7 @@ ScannableEditor.prototype.getHtml = function() {
 };
 
 var renderModulation = function(m, modes) {
-    return m in modes? modes[m] : m;
+    return !m? 'None' : m in modes? modes[m].name : m;
 }
 
 $.fn.bookmarktable = function() {
@@ -258,7 +258,7 @@ $.fn.bookmarktable = function() {
         scannable: ScannableEditor
     };
 
-    $.each(this, function(){
+    $.each(this, function() {
         var $table = $(this).find('table');
 
         $table.on('dblclick', 'td', function(e) {
@@ -281,9 +281,11 @@ $.fn.bookmarktable = function() {
                     data: JSON.stringify(Object.fromEntries([[name, editor.getValue()]])),
                     contentType: 'application/json',
                     method: 'POST'
-                }).done(function(){
+                }).done(function() {
                     $cell.data('value', editor.getValue());
                     $cell.html(editor.getHtml());
+                }).fail(function() {
+                    $cell.html(html);
                 });
             };
 
@@ -366,7 +368,7 @@ $.fn.bookmarktable = function() {
                     data: JSON.stringify([data]),
                     contentType: 'application/json',
                     method: 'POST'
-                }).done(function(data){
+                }).done(function(data) {
                     if (data.length && data.length === 1 && 'bookmark_id' in data[0]) {
                         row.attr('data-id', data[0]['bookmark_id']);
                         var tds = row.find('td');
@@ -407,7 +409,7 @@ $.fn.bookmarktable = function() {
                             '<td>' + b.name + '</td>' +
                             '<td class="frequency">' + renderFrequency(b.frequency) + '</td>' +
                             '<td>' + renderModulation(b.modulation, modes) + '</td>' +
-                            '<td>' + renderModulation(b.underlying, modes) + '</td>' +
+//                            '<td>' + renderModulation(b.underlying, modes) + '</td>' +
                         '</tr>'
                     );
                     row.data('bookmark', b);
@@ -439,10 +441,9 @@ $.fn.bookmarktable = function() {
                         if (data.length && data.length == selected.length) {
                             $table.append(data.map(function(obj, index) {
                                 var b = selected[index];
-                                // provide reasonable default for missing fields
-                                if (!('description' in b)) {
-                                    b.description = '';
-                                }
+                                // provide reasonable defaults for missing fields
+                                if (!('underlying' in b))  b.underlying = '';
+                                if (!('description' in b)) b.description = '';
                                 if (!('scannable' in b)) {
                                     var modesToScan = ['lsb', 'usb', 'cw', 'am', 'sam', 'nfm'];
                                     b.scannable = modesToScan.indexOf(b.modulation) >= 0;

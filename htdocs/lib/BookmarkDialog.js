@@ -10,7 +10,7 @@ $.fn.bookmarkDialog = function() {
             return this;
         },
         setUnderlying: function(modes) {
-            $el.find('#underlying').html('<option value=""></option>' +
+            $el.find('#underlying').html('<option value="">None</option>' +
             modes.filter(function(m) {
                 return m.isAvailable() && !m.underlying && m.type === 'analog';
             }).map(function(m) {

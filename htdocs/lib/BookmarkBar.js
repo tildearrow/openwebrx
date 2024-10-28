@@ -146,8 +146,8 @@ BookmarkBar.prototype.storeBookmark = function() {
 
     // make sure underlying demod, if present, is valid
     bookmark.underlying = this.verifyUnderlying(
-        bookmark.modulation,
-        bookmark.underlying
+        bookmark.underlying,
+        bookmark.modulation
     );
 
     var bookmarks = me.localBookmarks.getBookmarks();
