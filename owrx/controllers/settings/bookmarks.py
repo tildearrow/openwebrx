@@ -110,26 +110,44 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
         except StopIteration:
             return None
 
-    def _verifyUnderlyingMode(self, data):
-        # Get both modes
-        mode1 = Modes.findByModulation(data["modulation"]) if "modulation" in data else None
-        mode2 = Modes.findByModulation(data["underlying"]) if "underlying" in data else None
-        # Unknown main mode
-        if mode1 is None:
-            return False
-        # No underlying mode
-        if mode2 is None:
-            data["underlying"] = ""
-            return True
-        # Main mode has no underlying mode or underlying mode incorrect
-        if not hasattr(mode1, "underlying") or mode2.modulation not in mode1.underlying:
-            return False
-        # Underlying mode is at the default value
-        if mode2.modulation == mode1.underlying[0]:
-            data["underlying"] = ""
-            return True
-        # Underlying mode ok
-        return True
+    def _sanitizeBookmark(self, data):
+        try:
+            # Must have name, frequency, modulation
+            if "name" not in data or "frequency" not in data or "modulation" not in data:
+                return "Bookmark missing required fields"
+            # Name must not be empty
+            data["name"] = data["name"].strip()
+            if len(data["name"]) == 0:
+                return "Empty bookmark name"
+            # Frequency must be integer
+            if not isinstance(data["frequency"], int):
+                data["frequency"] = int(data["frequency"])
+            # Frequency must be >0
+            if data["frequency"] <= 0:
+                return "Frequency must be positive"
+            # Get both modes
+            mode1 = Modes.findByModulation(data["modulation"]) if "modulation" in data else None
+            mode2 = Modes.findByModulation(data["underlying"]) if "underlying" in data else None
+            # Unknown main mode
+            if mode1 is None:
+                return "Invalid modulation"
+            # No underlying mode
+            if mode2 is None:
+                data["underlying"] = ""
+            else:
+                # Main mode has no underlying mode or underlying mode incorrect
+                if not hasattr(mode1, "underlying") or mode2.modulation not in mode1.underlying:
+                    return "Incorrect underlying modulation"
+                # Underlying mode is at the default value
+                #if mode2.modulation == mode1.underlying[0]:
+                #    data["underlying"] = ""
+
+        except Exception as e:
+            # Something else went horribly wrong
+            return str(e)
+
+        # Everything ok
+        return None
 
     def update(self):
         bookmark_id = int(self.request.matches.group(1))
@@ -142,15 +160,13 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             data = json.loads(self.get_body().decode("utf-8"))
             for key in ["name", "frequency", "modulation", "underlying", "description", "scannable"]:
                 if key in data:
-                    value = data[key]
-                    if key == "frequency":
-                        value = int(value)
-                    newd[key] = value
+                    newd[key] = data[key]
                 elif hasattr(bookmark, key):
                     newd[key] = getattr(bookmark, key)
-            # Make sure underlying mode is correct
-            if not self._verifyUnderlyingMode(newd):
-                raise ValueError("Bad underlying modulation")
+            # Make sure everything is correct
+            error = self._sanitizeBookmark(newd)
+            if error is not None:
+                raise ValueError(error)
             # Update and store bookmark
             for key in newd:
                 setattr(bookmark, key, newd[key])
@@ -158,7 +174,8 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             # TODO this should not be called explicitly... bookmarks don't have any event capability right now, though
             Bookmarks.getSharedInstance().notifySubscriptions(bookmark)
             self.send_response("{}", content_type="application/json", code=200)
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.warning("Failed updating bookmark: " + str(e))
             self.send_response("{}", content_type="application/json", code=400)
 
     def new(self):
@@ -169,12 +186,10 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             data = {}
             for key in ["name", "frequency", "modulation", "underlying", "description", "scannable"]:
                 if key in bookmark_data:
-                    if key == "frequency":
-                        data[key] = int(bookmark_data[key])
-                    else:
-                        data[key] = bookmark_data[key]
-            if not self._verifyUnderlyingMode(data):
-                raise ValueError("Bad underlying modulation")
+                    data[key] = bookmark_data[key]
+            error = self._sanitizeBookmark(data)
+            if error is not None:
+                raise ValueError(error)
             bookmark = Bookmark(data)
             bookmarks.addBookmark(bookmark)
             return {"bookmark_id": id(bookmark)}
@@ -184,7 +199,8 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             result = [create(b) for b in data]
             bookmarks.store()
             self.send_response(json.dumps(result), content_type="application/json", code=200)
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, ValueError) as e:
+            logger.warning("Failed creating bookmark: " + str(e))
             self.send_response("{}", content_type="application/json", code=400)
 
     def delete(self):

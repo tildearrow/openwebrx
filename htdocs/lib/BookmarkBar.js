@@ -114,26 +114,39 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
             name: '',
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),
             modulation: mode1,
-            underlying: this.verifyUnderlying(mode2, mode1),
+            underlying: mode2,
             description: '',
             scannable : this.modesToScan.indexOf(mode1) >= 0
         }
+        this.sanitizeBookmark(bookmark);
     }
     this.$dialog.bookmarkDialog().setValues(bookmark);
     this.$dialog.show();
     this.$dialog.find('#name').focus();
 };
 
-BookmarkBar.prototype.verifyUnderlying = function(underlying, modulation) {
-    if (!underlying) return '';
+BookmarkBar.prototype.sanitizeBookmark = function(b) {
+    // must have name, frequency, and modulation
+    if (!b.name || !b.frequency || !b.modulation)
+        return "Must have name, frequency, and modulation.";
 
-    // check that underlying demod is valid and NOT the default one
-    var mode = Modes.findByModulation(modulation);
-    if (!mode || !mode.underlying || mode.underlying.indexOf(underlying) <= 0) {
-        return '';
-    }
+    // must have non-empty name
+    b.name = b.name.trim();
+    if (b.name.length <= 0) return "Must have a non-empty name.";
 
-    return underlying;
+    // must have positive frequency
+    b.frequency = Number(b.frequency);
+    if (b.frequency <= 0) return "Frequency must be positive.";
+
+    // must have valid modulation
+    var mode = Modes.findByModulation(b.modulation);
+    if (!mode) return "Must have valid modulation."
+
+    // check that underlying demodulator is valid
+    if (!b.underlying || !mode.underlying || mode.underlying.indexOf(b.underlying) < 0)
+        b.underlying = '';
+
+    return null;
 };
 
 BookmarkBar.prototype.storeBookmark = function() {
@@ -141,14 +154,8 @@ BookmarkBar.prototype.storeBookmark = function() {
     var bookmark = this.$dialog.bookmarkDialog().getValues();
     if (!bookmark) return;
 
-    // parse bookmark frequency to a number
-    bookmark.frequency = Number(bookmark.frequency);
-
-    // make sure underlying demod, if present, is valid
-    bookmark.underlying = this.verifyUnderlying(
-        bookmark.underlying,
-        bookmark.modulation
-    );
+    var error = this.sanitizeBookmark(bookmark);
+    if (error) { alert(error); return; }
 
     var bookmarks = me.localBookmarks.getBookmarks();
 

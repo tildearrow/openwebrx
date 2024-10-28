@@ -47,4 +47,4 @@ $.fn.bookmarkDialog = function() {
             return bookmark;
         }
     }
-}
+};

@@ -368,6 +368,9 @@ $.fn.bookmarktable = function() {
                     data: JSON.stringify([data]),
                     contentType: 'application/json',
                     method: 'POST'
+                }).fail(function(data) {
+                    //  adding failed, reenable inputs
+                    $.map(inputs, function(input, name) { input.disable(false); });
                 }).done(function(data) {
                     if (data.length && data.length === 1 && 'bookmark_id' in data[0]) {
                         row.attr('data-id', data[0]['bookmark_id']);
@@ -378,16 +381,16 @@ $.fn.bookmarktable = function() {
                             td.data('value', input.getValue());
                             td.html(input.getHtml());
                         });
+                    }
 
-                        var $cell = row.find('td').last();
-                        var $group = $cell.find('.btn-group');
-                        if ($group.length) {
-                            $group.remove;
-                            $cell.html('<div class="btn btn-sm btn-danger bookmark-delete">delete</div>');
-                        }
+                    // remove inputs
+                    var $cell = row.find('td').last();
+                    var $group = $cell.find('.btn-group');
+                    if ($group.length) {
+                        $group.remove;
+                        $cell.html('<div class="btn btn-sm btn-danger bookmark-delete">delete</div>');
                     }
                 });
-
             });
 
             $table.append(row);
@@ -435,7 +438,10 @@ $.fn.bookmarktable = function() {
                         data: JSON.stringify(selected),
                         contentType: 'application/json',
                         method: 'POST'
-                    }).done(function(data){
+                    }).fail(function(data) {
+                        // import failed
+                        $table.find('.emptytext').remove();
+                    }).done(function(data) {
                         $table.find('.emptytext').remove();
                         var modes = $table.data('modes');
                         if (data.length && data.length == selected.length) {
