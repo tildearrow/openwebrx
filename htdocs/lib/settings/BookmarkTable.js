@@ -177,8 +177,8 @@ ModulationEditor.prototype = new Editor();
 
 ModulationEditor.prototype.getInputHtml = function() {
     return '<select class="form-control form-control-sm">' +
-        $.map(this.modes, function(name, modulation) {
-            return '<option value="' + modulation + '">' + name + '</option>';
+        $.map(this.modes, function(mode, name) {
+            return '<option value="' + name + '">' + mode.name + '</option>';
         }).join('') +
         '</select>';
 };
@@ -197,9 +197,12 @@ UnderlyingEditor.prototype = new Editor();
 
 UnderlyingEditor.prototype.getInputHtml = function() {
     return '<select class="form-control form-control-sm">' +
-        '<option value=""></option>' +
-        $.map(this.modes, function(name, modulation) {
-            return '<option value="' + modulation + '">' + name + '</option>';
+        '<option value="">None</option>' +
+        $.map(this.modes, function(mode, name) {
+            if (mode.analog && !mode.underlying.length)
+                return '<option value="' + name + '">' + mode.name + '</option>';
+            else
+                return '';
         }).join('') +
         '</select>';
 };

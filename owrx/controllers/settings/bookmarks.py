@@ -2,7 +2,7 @@ from owrx.controllers.template import WebpageController
 from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.settings import SettingsBreadcrumb
 from owrx.bookmarks import Bookmark, Bookmarks
-from owrx.modes import Modes
+from owrx.modes import Modes, AnalogMode
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
 import json
 import math
@@ -44,7 +44,11 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             </table>
         """.format(
             bookmarks="".join(self.render_bookmark(b) for b in bookmarks) if bookmarks else emptyText,
-            modes=json.dumps({m.modulation: m.name for m in Modes.getAvailableModes()}),
+            modes=json.dumps({m.modulation: {
+                "name"       : m.name,
+                "analog"     : isinstance(m, AnalogMode),
+                "underlying" : m.underlying if hasattr(m, "underlying") else []
+            } for m in Modes.getAvailableModes()}),
         )
 
     def render_bookmark(self, bookmark: Bookmark):
@@ -93,7 +97,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
             modulation=name1 if mode1 is None else mode1.modulation,
             underlying=name2 if mode2 is None else mode2.modulation,
             modulation_name=name1 if mode1 is None else mode1.name,
-            underlying_name=name2 if mode2 is None else mode2.name,
+            underlying_name="None" if not name2 else name2 if mode2 is None else mode2.name,
             description=bookmark.getDescription(),
             scannable="true" if scan else "false",
             scannable_check="&check;" if scan else "",
