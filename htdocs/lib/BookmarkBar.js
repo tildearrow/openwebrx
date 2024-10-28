@@ -143,8 +143,12 @@ BookmarkBar.prototype.sanitizeBookmark = function(b) {
     if (!mode) return "Must have valid modulation."
 
     // check that underlying demodulator is valid
-    if (!b.underlying || !mode.underlying || mode.underlying.indexOf(b.underlying) < 0)
+    if (!b.underlying)
         b.underlying = '';
+    else if (!mode.underlying)
+        return "Must not have underlying modulation.";
+    else if (mode.underlying.indexOf(b.underlying) < 0)
+        return "Must have valid underlying modulation.";
 
     return null;
 };
