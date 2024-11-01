@@ -149,6 +149,9 @@ BookmarkBar.prototype.sanitizeBookmark = function(b) {
         return "Must not have underlying modulation.";
     else if (mode.underlying.indexOf(b.underlying) < 0)
         return "Must have valid underlying modulation.";
+    else if (mode.underlying.indexOf(b.underlying) == 0)
+        // default underlying modulation
+        b.underlying = '';
 
     return null;
 };
