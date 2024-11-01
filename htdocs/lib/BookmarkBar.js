@@ -108,8 +108,16 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
     if (!bookmark) {
         var mode1 = this.getDemodulator().get_secondary_demod()
         var mode2 = this.getDemodulator().get_modulation();
-        // if no secondary demod, use the primary one
-        if (!mode1) { mode1 = mode2; mode2 = ''; }
+        if (!mode2) mode2 = '';
+        if (!mode1) {
+            // if no secondary demod, use the primary one
+            mode1 = mode2;
+            mode2 = '';
+        } else {
+            // check for default underlying demod
+            var m = Modes.findByModulation(mode1);
+            if (m && m.underlying.indexOf(mode2) == 0) mode2 = '';
+        }
         bookmark = {
             name: '',
             frequency: center_freq + this.getDemodulator().get_offset_frequency(),
@@ -118,7 +126,6 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
             description: '',
             scannable : this.modesToScan.indexOf(mode1) >= 0
         }
-        this.sanitizeBookmark(bookmark);
     }
     this.$dialog.bookmarkDialog().setValues(bookmark);
     this.$dialog.show();
@@ -149,9 +156,6 @@ BookmarkBar.prototype.sanitizeBookmark = function(b) {
         return "Must not have underlying modulation.";
     else if (mode.underlying.indexOf(b.underlying) < 0)
         return "Must have valid underlying modulation.";
-    else if (mode.underlying.indexOf(b.underlying) == 0)
-        // default underlying modulation
-        b.underlying = '';
 
     return null;
 };
