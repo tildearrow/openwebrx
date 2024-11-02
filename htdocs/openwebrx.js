@@ -74,7 +74,7 @@ function tuneBySquelch(dir) {
     var squelch = $slider.val() - 13.0;
 
     // Start from the current offset within the waterfall
-    var f = UI.getOffsetFreqency();
+    var f = UI.getOffsetFrequency();
 
     // Scan up or down the waterfall
     dir = tuning_step * (dir>=0? 1 : -1);
