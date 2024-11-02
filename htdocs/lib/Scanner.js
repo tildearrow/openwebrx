@@ -11,9 +11,8 @@ Scanner.prototype.tuneBookmark = function(b) {
     //console.log("TUNE: " + b.name + " at " + b.frequency + ": " + b.modulation);
 
     // Tune to the bookmark frequency
-    var panel = $('#openwebrx-panel-receiver').demodulatorPanel();
-    panel.getDemodulator().set_offset_frequency(b.frequency - center_freq);
-    panel.setMode(b.modulation, b.underlying);
+    UI.setFrequency(b.frequency);
+    UI.setModulation(b.modulation, b.underlying);
 
     // Done
     return true;

@@ -60,9 +60,7 @@ function zoomOutTotal() {
 function tuneBySteps(steps) {
     steps = Math.round(steps);
     if (steps != 0) {
-        var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
-        var f = demodulator.get_offset_frequency();
-        demodulator.set_offset_frequency(f + steps * tuning_step);
+        UI.setOffsetFrequency(UI.getOffsetFrequency() + steps * tuning_step);
     }
 }
 
@@ -76,8 +74,7 @@ function tuneBySquelch(dir) {
     var squelch = $slider.val() - 13.0;
 
     // Start from the current offset within the waterfall
-    var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
-    var f = demodulator.get_offset_frequency();
+    var f = UI.getOffsetFreqency();
 
     // Scan up or down the waterfall
     dir = tuning_step * (dir>=0? 1 : -1);
@@ -86,7 +83,7 @@ function tuneBySquelch(dir) {
         if (i < 0 || i >= wf_data.length) {
             break;
         } else if (wf_data[i] >= squelch) {
-            demodulator.set_offset_frequency(f);
+            UI.setOffsetFrequency(f);
             break;
         }
     }
@@ -109,7 +106,7 @@ function monitorLevels(data) {
 function jumpBySteps(steps) {
     steps = Math.round(steps);
     if (steps != 0) {
-        var key = $('#openwebrx-panel-receiver').demodulatorPanel().getMagicKey();
+        var key = UI.getDemodulatorPanel().getMagicKey();
         var f = center_freq + steps * bandwidth / 4;
         ws.send(JSON.stringify({
             "type": "setfrequency", "params": { "frequency": f, "key": key }
@@ -179,11 +176,7 @@ function typeInAnimation(element, timeout, what, onFinish) {
 // ========================================================
 
 function getDemodulators() {
-    return [
-        $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator()
-    ].filter(function(d) {
-        return !!d;
-    });
+    return [ UI.getDemodulator() ].filter(function(d) { return !!d; });
 }
 
 function mkenvelopes(visible_range) //called from mkscale
@@ -285,7 +278,7 @@ function scale_canvas_mousemove(evt) {
 
 function frequency_container_mousemove(evt) {
     var frequency = center_freq + scale_offset_freq_from_px(evt.pageX);
-    $('#openwebrx-panel-receiver').demodulatorPanel().setMouseFrequency(frequency);
+    UI.getDemodulatorPanel().setMouseFrequency(frequency);
 }
 
 function scale_canvas_end_drag(x) {
@@ -711,7 +704,7 @@ function canvas_mousemove(evt) {
     if (!waterfall_setup_done) return;
     var relativeX = get_relative_x(evt);
     if (!canvas_mouse_down) {
-        $('#openwebrx-panel-receiver').demodulatorPanel().setMouseFrequency(canvas_get_frequency(relativeX));
+        UI.getDemodulatorPanel().setMouseFrequency(canvas_get_frequency(relativeX));
     } else {
         if (!canvas_drag && Math.abs(evt.pageX - canvas_drag_start_x) > canvas_drag_min_delta) {
             canvas_drag = true;
@@ -751,16 +744,12 @@ function canvas_mouseup(evt) {
         var relativeX = get_relative_x(evt);
 
         if (!canvas_drag) {
-            var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
             var f = canvas_get_freq_offset(relativeX);
             // For CW, move offset 800Hz below the actual carrier
-            if (demodulator.get_modulation() === 'cw') {
-                f = f - 800;
-            }
-            demodulator.set_offset_frequency(f);
+            if (UI.getModulation() === 'cw') f = f - 800;
+            UI.setOffsetFrequency(f);
             stopScanner();
-        }
-        else {
+        } else {
             canvas_end_drag();
         }
         canvas_mouse_down = false;
@@ -853,7 +842,7 @@ function zoom_set(level) {
     level = parseInt(level);
     zoom_level = level;
     //zoom_center_rel=canvas_get_freq_offset(-canvases[0].offsetLeft+waterfallWidth()/2); //zoom to screen center instead of demod envelope
-    var demodulator = $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator();
+    var demodulator = UI.getDemodulator();
     zoom_center_rel = demodulator != null? demodulator.get_offset_frequency() : 0;
     zoom_center_where = 0.5 + (zoom_center_rel / bandwidth); //this is a kind of hack
     resize_canvases(true);
@@ -940,11 +929,14 @@ function on_ws_recv(evt) {
 
                         waterfall_init();
 
-                        var demodulatorPanel = $('#openwebrx-panel-receiver').demodulatorPanel();
+                        var demodulatorPanel = UI.getDemodulatorPanel();
+
                         demodulatorPanel.setCenterFrequency(center_freq);
                         demodulatorPanel.setInitialParams(initial_demodulator_params);
+
                         if ('squelch_auto_margin' in config)
                             demodulatorPanel.setSquelchMargin(config['squelch_auto_margin']);
+
                         bookmarks.loadLocalBookmarks();
 
                         if ('sdr_id' in config || 'profile_id' in config) {
@@ -963,7 +955,7 @@ function on_ws_recv(evt) {
                         }
 
                         if ('tuning_precision' in config)
-                            $('#openwebrx-panel-receiver').demodulatorPanel().setTuningPrecision(config['tuning_precision']);
+                            demodulatorPanel.setTuningPrecision(config['tuning_precision']);
 
                         if ('tuning_step' in config) {
                             tuning_step_default = config['tuning_step'];
@@ -1072,7 +1064,7 @@ function on_ws_recv(evt) {
                         var $overlay = $('#openwebrx-error-overlay');
                         $overlay.find('.errormessage').text(json['value']);
                         $overlay.show();
-                        $("#openwebrx-panel-receiver").demodulatorPanel().stopDemodulator();
+                        UI.getDemodulatorPanel().stopDemodulator();
                         break;
                     case "demodulator_error":
                         divlog(json['value'], true);
@@ -1242,7 +1234,7 @@ function onAudioStart(apiType){
 var reconnect_timeout = false;
 
 function on_ws_closed() {
-    var demodulatorPanel = $("#openwebrx-panel-receiver").demodulatorPanel();
+    var demodulatorPanel = UI.getDemodulatorPanel();
     demodulatorPanel.stopDemodulator();
     demodulatorPanel.resetInitialParams();
     if (reconnect_timeout) {
@@ -1496,7 +1488,7 @@ function update_dmr_timeslot_filtering() {
     }).toArray().reduce(function (acc, v) {
         return acc | v;
     }, 0);
-    $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().setDmrFilter(filter);
+    UI.getDemodulator().setDmrFilter(filter);
 }
 
 function hideOverlay() {
@@ -1760,7 +1752,7 @@ function secondary_demod_update_channel_freq_from_event(evt) {
     if (!secondary_demod_waiting_for_set) {
         secondary_demod_waiting_for_set = true;
         window.setTimeout(function () {
-                $('#openwebrx-panel-receiver').demodulatorPanel().getDemodulator().set_secondary_offset_freq(Math.floor(secondary_demod_channel_freq));
+                UI.getDemodulator().set_secondary_offset_freq(Math.floor(secondary_demod_channel_freq));
                 secondary_demod_waiting_for_set = false;
             },
             50
@@ -1819,7 +1811,7 @@ function secondary_demod_waterfall_set_zoom(low_cut, high_cut) {
 
 function sdr_profile_changed() {
     var value = $('#openwebrx-sdr-profiles-listbox').val();
-    var key = $('#openwebrx-panel-receiver').demodulatorPanel().getMagicKey();
+    var key = UI.getDemodulatorPanel().getMagicKey();
     ws.send(JSON.stringify({
         "type": "selectprofile", "params": { "profile": value, "key": key }
     }));

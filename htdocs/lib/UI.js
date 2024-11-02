@@ -67,6 +67,50 @@ UI.loadSettings = function() {
 };
 
 //
+// Frequency and Modulation Controls
+//
+
+UI.getDemodulatorPanel = function() {
+    return $('#openwebrx-panel-receiver').demodulatorPanel();
+};
+
+UI.getDemodulator = function() {
+    return this.getDemodulatorPanel().getDemodulator();
+}
+
+UI.getOffsetFrequency = function() {
+    return this.getDemodulator().get_offset_frequency();
+};
+
+UI.setOffsetFrequency = function(offset) {
+    return this.getDemodulator().set_offset_frequency(offset);
+};
+
+UI.getFrequency = function() {
+    return center_freq + this.getOffsetFrequency();
+};
+
+UI.setFrequency = function(freq) {
+    return this.setOffsetFrequency(freq - center_freq);
+};
+
+UI.getModulation = function() {
+    var mode1 = this.getDemodulator().get_secondary_demod();
+    var mode2 = this.getDemodulator().get_modulation();
+    return !!mode1? mode1 : !mode2? '' : mode2;
+};
+
+UI.getUnderlying = function() {
+    var mode1 = this.getDemodulator().get_secondary_demod();
+    var mode2 = this.getDemodulator().get_modulation();
+    return !mode1? '' : !mode2? '' : mode2;
+};
+
+UI.setModulation = function(mode, underlying) {
+    this.getDemodulatorPanel().setMode(mode, underlying);
+};
+
+//
 // Volume Controls
 //
 
