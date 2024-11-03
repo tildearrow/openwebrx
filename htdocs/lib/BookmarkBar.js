@@ -106,6 +106,7 @@ BookmarkBar.prototype.render = function(){
 
 BookmarkBar.prototype.showEditDialog = function(bookmark) {
     if (!bookmark) {
+        var freq  = UI.getFrequency();
         var mode1 = UI.getModulation();
         var mode2 = UI.getUnderlying();
         if (!!mode1 && !!mode2) {
@@ -114,12 +115,12 @@ BookmarkBar.prototype.showEditDialog = function(bookmark) {
             if (m && m.underlying.indexOf(mode2) == 0) mode2 = '';
         }
         bookmark = {
-            name: '',
-            frequency: UI.getFrequency(),
-            modulation: mode1,
-            underlying: mode2,
-            description: '',
-            scannable : this.modesToScan.indexOf(mode1) >= 0
+            name        : '',
+            frequency   : mode1 === 'cw'? freq + 800 : freq,
+            modulation  : mode1,
+            underlying  : mode2,
+            description : '',
+            scannable   : this.modesToScan.indexOf(mode1) >= 0
         }
     }
     this.$dialog.bookmarkDialog().setValues(bookmark);

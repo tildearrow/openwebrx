@@ -513,21 +513,6 @@ function resize_scale() {
     bookmarks.position();
 }
 
-function canvas_get_freq_offset(relativeX) {
-    var rel = (relativeX / canvas_container.clientWidth);
-    var off = (bandwidth * rel) - (bandwidth / 2);
-
-    return tuning_step>0?
-        Math.round(off / tuning_step) * tuning_step : Math.round(off);
-}
-
-function canvas_get_frequency(relativeX) {
-    var f = center_freq + canvas_get_freq_offset(relativeX);
-
-    return tuning_step>0? Math.round(f / tuning_step) * tuning_step : f;
-}
-
-
 function format_frequency(format, freq_hz, pre_divide, decimals) {
     var out = format.replace("{x}", (freq_hz / pre_divide).toFixed(decimals));
     var at = out.indexOf(".") + 4;
@@ -704,7 +689,7 @@ function canvas_mousemove(evt) {
     if (!waterfall_setup_done) return;
     var relativeX = get_relative_x(evt);
     if (!canvas_mouse_down) {
-        UI.getDemodulatorPanel().setMouseFrequency(canvas_get_frequency(relativeX));
+        UI.getDemodulatorPanel().setMouseFrequency(UI.getFrequency(relativeX));
     } else {
         if (!canvas_drag && Math.abs(evt.pageX - canvas_drag_start_x) > canvas_drag_min_delta) {
             canvas_drag = true;
@@ -744,7 +729,7 @@ function canvas_mouseup(evt) {
         var relativeX = get_relative_x(evt);
 
         if (!canvas_drag) {
-            var f = canvas_get_freq_offset(relativeX);
+            var f = UI.getOffsetFrequency(relativeX);
             // For CW, move offset 800Hz below the actual carrier
             if (UI.getModulation() === 'cw') f = f - 800;
             UI.setOffsetFrequency(f);
@@ -827,7 +812,7 @@ function zoom_step(out, where, onscreen) {
     if (out) --zoom_level;
     else ++zoom_level;
 
-    zoom_center_rel = canvas_get_freq_offset(where);
+    zoom_center_rel = UI.getOffsetFrequency(where);
     //console.log("zoom_step || zlevel: "+zoom_level.toString()+" zlevel_val: "+zoom_levels[zoom_level].toString()+" zoom_center_rel: "+zoom_center_rel.toString());
     zoom_center_where = onscreen;
     //console.log(zoom_center_where, zoom_center_rel, where);
@@ -841,7 +826,7 @@ function zoom_set(level) {
     if (!(level >= 0 && level <= zoom_levels.length - 1)) return;
     level = parseInt(level);
     zoom_level = level;
-    //zoom_center_rel=canvas_get_freq_offset(-canvases[0].offsetLeft+waterfallWidth()/2); //zoom to screen center instead of demod envelope
+    //zoom_center_rel=UI.getOffsetFrequency(-canvases[0].offsetLeft+waterfallWidth()/2); //zoom to screen center instead of demod envelope
     var demodulator = UI.getDemodulator();
     zoom_center_rel = demodulator != null? demodulator.get_offset_frequency() : 0;
     zoom_center_where = 0.5 + (zoom_center_rel / bandwidth); //this is a kind of hack
