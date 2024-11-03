@@ -67,6 +67,70 @@ UI.loadSettings = function() {
 };
 
 //
+// Modulation Controls
+//
+
+UI.getDemodulatorPanel = function() {
+    return $('#openwebrx-panel-receiver').demodulatorPanel();
+};
+
+UI.getDemodulator = function() {
+    return this.getDemodulatorPanel().getDemodulator();
+}
+
+UI.getModulation = function() {
+    var mode1 = this.getDemodulator().get_secondary_demod();
+    var mode2 = this.getDemodulator().get_modulation();
+    return !!mode1? mode1 : !mode2? '' : mode2;
+};
+
+UI.getUnderlying = function() {
+    var mode1 = this.getDemodulator().get_secondary_demod();
+    var mode2 = this.getDemodulator().get_modulation();
+    return !mode1? '' : !mode2? '' : mode2;
+};
+
+UI.setModulation = function(mode, underlying) {
+    this.getDemodulatorPanel().setMode(mode, underlying);
+};
+
+//
+// Frequency Controls
+//
+
+UI.getOffsetFrequency = function(x) {
+    if (typeof(x) === 'undefined') {
+        // No argument: return currently tuned offset
+        return this.getDemodulator().get_offset_frequency();
+    } else {
+        // Pointer position: return offset under pointer
+        // Use rounded absolute frequency to get offset
+        return this.getFrequency(x) - center_freq;
+    }
+};
+
+UI.getFrequency = function(x) {
+    if (typeof(x) === 'undefined') {
+        // No argument: return currently tuned frequency
+        return center_freq + this.getOffsetFrequency();
+    } else {
+        // Pointer position: return frequency under pointer
+        x = x / canvas_container.clientWidth;
+        x = center_freq + (bandwidth * x) - (bandwidth / 2);
+        return tuning_step>0?
+            Math.round(x / tuning_step) * tuning_step : Math.round(x);
+    }
+};
+
+UI.setOffsetFrequency = function(offset) {
+    return this.getDemodulator().set_offset_frequency(offset);
+};
+
+UI.setFrequency = function(freq) {
+    return this.setOffsetFrequency(freq - center_freq);
+};
+
+//
 // Volume Controls
 //
 
