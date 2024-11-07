@@ -290,7 +290,7 @@ function scale_canvas_end_drag(x) {
     for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_end();
     if (!event_handled) {
         demodulators[0].set_offset_frequency(scale_offset_freq_from_px(x));
-        stopScanner();
+        UI.toggleScanner(false);
     }
 }
 
@@ -733,7 +733,7 @@ function canvas_mouseup(evt) {
             // For CW, move offset 800Hz below the actual carrier
             if (UI.getModulation() === 'cw') f = f - 800;
             UI.setOffsetFrequency(f);
-            stopScanner();
+            UI.toggleScanner(false);
         } else {
             canvas_end_drag();
         }
@@ -929,7 +929,7 @@ function on_ws_recv(evt) {
                             currentprofile['profile_id'] = config['profile_id'] || currentprofile['profile_id'];
                             $('#openwebrx-sdr-profiles-listbox').val(currentprofile.toString());
 
-                            stopScanner();
+                            UI.toggleScanner(false);
                             tuning_step_reset();
                             waterfall_clear();
                             zoom_set(0);
@@ -1449,7 +1449,7 @@ function initSliders() {
 
     // Enable scanner by pressing the right mouse button on SQUELCH
     $('.openwebrx-squelch-auto').on('contextmenu', function() {
-        toggleScanner();
+        UI.toggleScanner();
         return false;
     });
 }
@@ -1576,29 +1576,6 @@ function initSpectrum() {
 
     // Create spectrum display
     spectrum = new Spectrum(canvas, 150);
-}
-
-function stopScanner() {
-    if (scanner.isRunning()) {
-        // Stop scanner
-        scanner.stop();
-        // Modify scanner button state
-        var $scanButton = $('.openwebrx-squelch-auto');
-        $scanButton.css('animation-name', '');
-        $scanButton.removeClass('highlighted');
-    }
-}
-
-function toggleScanner() {
-    var $scanButton = $('.openwebrx-squelch-auto');
-    var on = scanner.toggle();
-
-    $scanButton.css('animation-name', on? 'openwebrx-scan-animation' : '');
-    if (on) {
-        $scanButton.addClass('highlighted');
-    } else {
-        $scanButton.removeClass('highlighted');
-    }
 }
 
 /*

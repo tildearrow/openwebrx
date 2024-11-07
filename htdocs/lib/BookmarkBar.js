@@ -8,12 +8,10 @@ function BookmarkBar() {
     me.$container.on('click', '.bookmark', function(e){
         var $bookmark = $(e.target).closest('.bookmark');
         me.$container.find('.bookmark').removeClass('selected');
-        var b = $bookmark.data();
-        if (!b || !b.frequency || !b.modulation) return;
-        UI.setFrequency(b.frequency);
-        UI.setModulation(b.modulation, b.underlying);
-        $bookmark.addClass('selected');
-        stopScanner();
+        if (UI.tuneBookmark($bookmark.data())) {
+            $bookmark.addClass('selected');
+            UI.toggleScanner(false);
+        }
     });
 
     me.$container.on('click', '.action[data-action=edit]', function(e){

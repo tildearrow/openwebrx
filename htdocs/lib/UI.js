@@ -130,6 +130,21 @@ UI.setFrequency = function(freq) {
     return this.setOffsetFrequency(freq - center_freq);
 };
 
+UI.tuneBookmark = function(b) {
+    // Bookmark must have frequency and modulation
+    if (!b || !b.frequency || !b.modulation) return false;
+
+    //console.log("TUNE: " + b.name + " at " + b.frequency + ": " + b.modulation);
+
+    // Tune to the bookmark frequency
+    var freq = b.modulation === 'cw'? b.frequency - 800 : b.frequency;
+    UI.setFrequency(freq, b.modulation);
+    UI.setModulation(b.modulation, b.underlying);
+
+    // Done
+    return true;
+};
+
 //
 // Volume Controls
 //
@@ -227,6 +242,33 @@ UI.toggleRecording = function(on) {
             audioEngine.startRecording();
             $recButton.css('animation-name', 'openwebrx-record-animation');
         }
+    }
+};
+
+//
+// Scanner Controls
+//
+
+UI.toggleScanner = function(on) {
+    // If no argument given, toggle scanner
+    if (typeof(on) === 'undefined') on = !scanner.isRunning();
+
+    // Do not change scanner state if not needed
+    if (scanner.isRunning() == on) return;
+
+    // Start or stop scanner as needed
+    if (on) scanner.start(); else scanner.stop();
+
+    // Get current scanner state
+    on = scanner.isRunning();
+
+    // Update UI elements
+    var $scanButton = $('.openwebrx-squelch-auto');
+    $scanButton.css('animation-name', on? 'openwebrx-scan-animation' : '');
+    if (on) {
+        $scanButton.addClass('highlighted');
+    } else {
+        $scanButton.removeClass('highlighted');
     }
 };
 
