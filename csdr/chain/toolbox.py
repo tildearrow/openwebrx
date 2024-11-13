@@ -228,6 +228,7 @@ class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.sampleRate = sampleRate
         self.parser = CwSkimmerParser()
         workers = [
+            Convert(Format.FLOAT, Format.SHORT),
             CwSkimmerModule(sampleRate, charCount),
             self.parser,
         ]

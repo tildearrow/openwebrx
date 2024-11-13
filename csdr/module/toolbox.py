@@ -122,7 +122,7 @@ class AcarsDecModule(WavFileModule):
 class CwSkimmerModule(ExecModule):
     def __init__(self, sampleRate: int = 12000, charCount: int = 8):
         cmd = ["csdr-cwskimmer", "-r", str(sampleRate), "-n", str(charCount)]
-        super().__init__(Format.FLOAT, Format.CHAR, cmd)
+        super().__init__(Format.SHORT, Format.CHAR, cmd)
 
 
 class RedseaModule(ExecModule):
