@@ -414,3 +414,37 @@ class EasParser(TextParser):
 
         # Return received message as text
         return "\n".join(out)
+
+
+class CwSkimmerParser(TextParser):
+    def __init__(self, charTotal: int = 32, service: bool = False):
+        self.reLine = re.compile("^(\d+):\s*(.*)$")
+        self.data = {}
+        # Construct parent object
+        super().__init__(filePrefix="CW", service=service)
+
+    def parse(self, msg: bytes):
+        # Do not parse in service mode
+        if self.service:
+            return None
+        # Parse CW messages by frequency
+        msg = msg.decode("utf-8", "replace")
+        r = self.reLine.match(msg)
+        if r is not None:
+            freq = int(r.group(1))
+            text = r.group(2)
+            # Add up newly decoded characters
+            if freq in self.data:
+                text = self.data[freq] + text
+            # Truncate received text to charTotal
+            text = text if len(text) <= charTotal else text[:charTotal]
+            self.data[freq] = text
+            # Compose output
+            out = { "mode": "CW", "text": text }
+            # Add frequency, if known
+            if self.frequency:
+                out["freq"] = self.frequency + freq
+            # Done
+            return out
+        # No result
+        return None
