@@ -877,3 +877,63 @@ $.fn.faxMessagePanel = function() {
     }
     return this.data('panel');
 };
+
+CwSkimmerMessagePanel = function(el) {
+    MessagePanel.call(this, el);
+    this.initClearTimer();
+    this.freqs = [];
+    this.texts = [];
+}
+
+CwSkimmerMessagePanel.prototype = Object.create(MessagePanel.prototype);
+
+CwSkimmerMessagePanel.prototype.supportsMessage = function(message) {
+    return message['mode'] === 'CW';
+};
+
+CwSkimmerMessagePanel.prototype.render = function() {
+    $(this.el).append($(
+        '<table>' +
+            '<thead><tr>' +
+                '<th class="frequency">Freq</th>' +
+                '<th class="data">Message</th>' +
+            '</tr></thead>' +
+            '<tbody></tbody>' +
+        '</table>'
+    ));
+};
+
+CwSkimmerMessagePanel.prototype.pushMessage = function(msg) {
+    // Find existing frequency
+    var j = this.freqs.indexOf(msg.freq);
+
+    if (j >= 0) {
+        // Update existing entry
+        this.texts[j] = msg.text;
+    } else {
+        // Add a new entry
+        this.freqs.push(msg.freq);
+        this.texts.push(msg.text);
+        // Limit the number of active frequencies
+        if (this.freqs.length > 10) {
+            this.freqs.pop();
+            this.texts.pop();
+        }
+    }
+
+    // Generate table body
+    var body = '';
+    for (j = 0 ; j < this.freqs.length ; j++) {
+        body += '<tr><td>' + this.freqs[j] + '</td><td>' + this.texts[j] + '</td></tr>\n';
+    }
+
+    // Assign new table body
+    $(this.el).find('tbody').html(body);
+};
+
+$.fn.cwskimmerMessagePanel = function() {
+    if (!this.data('panel')) {
+        this.data('panel', new CwSkimmerMessagePanel(this));
+    }
+    return this.data('panel');
+};
