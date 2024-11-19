@@ -893,7 +893,7 @@ CwSkimmerMessagePanel.prototype.supportsMessage = function(message) {
 
 CwSkimmerMessagePanel.prototype.render = function() {
     $(this.el).append($(
-        '<table>' +
+        '<table width="100%">' +
             '<thead><tr>' +
                 '<th class="frequency">Freq</th>' +
                 '<th class="data">Message</th>' +
@@ -904,27 +904,33 @@ CwSkimmerMessagePanel.prototype.render = function() {
 };
 
 CwSkimmerMessagePanel.prototype.pushMessage = function(msg) {
+    // Must have some text
+    if (!msg.text) return;
+
     // Find existing frequency
     var j = this.freqs.indexOf(msg.freq);
-
     if (j >= 0) {
         // Update existing entry
-        this.texts[j] = msg.text;
+        this.texts[j] = (this.texts[j] + msg.text).slice(-64);
     } else {
         // Add a new entry
         this.freqs.push(msg.freq);
         this.texts.push(msg.text);
         // Limit the number of active frequencies
-        if (this.freqs.length > 10) {
-            this.freqs.pop();
-            this.texts.pop();
-        }
+//        if (this.freqs.length > 16) {
+//            this.freqs.shift();
+//            this.texts.shift();
+//        }
     }
 
     // Generate table body
     var body = '';
     for (j = 0 ; j < this.freqs.length ; j++) {
-        body += '<tr><td>' + this.freqs[j] + '</td><td>' + this.texts[j] + '</td></tr>\n';
+        body +=
+            '<tr style="color:black;background-color:' + (j&1? '#E0FFE0':'#FFFFFF') +
+            ';"><td style="text-align:right;">' + Math.round(this.freqs[j]/10)/100 +
+            '</td><td style="font-family:monospace;white-space:nowrap;">' +
+            this.texts[j] + '</td></tr>\n';
     }
 
     // Assign new table body

@@ -417,10 +417,9 @@ class EasParser(TextParser):
 
 
 class CwSkimmerParser(TextParser):
-    def __init__(self, charTotal: int = 32, service: bool = False):
-        self.reLine = re.compile("^(\d+):\s*(.*)$")
+    def __init__(self, charTotal: int = 64, service: bool = False):
+        self.reLine = re.compile("^(\d+):(.+)$")
         self.charTotal = charTotal
-        self.cwCache = {}
         # Construct parent object
         super().__init__(filePrefix="CW", service=service)
 
@@ -434,12 +433,6 @@ class CwSkimmerParser(TextParser):
         if r is not None:
             freq = int(r.group(1))
             text = r.group(2)
-            # Add up newly decoded characters
-            if freq in self.cwCache:
-                text = self.cwCache[freq] + text
-            # Truncate received text to charTotal
-            text = text if len(text) <= self.charTotal else text[:self.charTotal]
-            self.cwCache[freq] = text
             # Compose output
             out = { "mode": "CW", "text": text }
             # Add frequency, if known
