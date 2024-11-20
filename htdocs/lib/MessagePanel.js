@@ -881,7 +881,6 @@ $.fn.faxMessagePanel = function() {
 CwSkimmerMessagePanel = function(el) {
     MessagePanel.call(this, el);
     this.initClearTimer();
-    this.freqs = [];
     this.texts = [];
 }
 
@@ -895,8 +894,8 @@ CwSkimmerMessagePanel.prototype.render = function() {
     $(this.el).append($(
         '<table width="100%">' +
             '<thead><tr>' +
-                '<th class="frequency">Freq</th>' +
-                '<th class="data">Message</th>' +
+                '<th class="freq">Freq</th>' +
+                '<th class="text">Text</th>' +
             '</tr></thead>' +
             '<tbody></tbody>' +
         '</table>'
@@ -907,30 +906,40 @@ CwSkimmerMessagePanel.prototype.pushMessage = function(msg) {
     // Must have some text
     if (!msg.text) return;
 
-    // Find existing frequency
-    var j = this.freqs.indexOf(msg.freq);
-    if (j >= 0) {
+    // Clear cache if requested
+    if (msg.changed) this.texts = [];
+
+    // Current time
+    var now = Date.now();
+
+    // Modify or add a new entry
+    var j = this.texts.findIndex(function(x) { return x.freq >= msg.freq });
+    if (j < 0) {
+        // Append a new entry
+        this.texts.push({ freq: msg.freq, text: msg.text, ts: now });
+    } else if (this.texts[j].freq == msg.freq) {
         // Update existing entry
-        this.texts[j] = (this.texts[j] + msg.text).slice(-64);
+        this.texts[j].text = (this.texts[j].text + msg.text).slice(-64);
+        this.texts[j].ts   = now;
     } else {
-        // Add a new entry
-        this.freqs.push(msg.freq);
-        this.texts.push(msg.text);
-        // Limit the number of active frequencies
-//        if (this.freqs.length > 16) {
-//            this.freqs.shift();
-//            this.texts.shift();
-//        }
+        // Insert a new entry
+        this.texts.splice(j, 0, { freq: msg.freq, text: msg.text, ts: now });
     }
 
     // Generate table body
     var body = '';
-    for (j = 0 ; j < this.freqs.length ; j++) {
-        body +=
-            '<tr style="color:black;background-color:' + (j&1? '#E0FFE0':'#FFFFFF') +
-            ';"><td style="text-align:right;">' + Math.round(this.freqs[j]/10)/100 +
-            '</td><td style="font-family:monospace;white-space:nowrap;">' +
-            this.texts[j] + '</td></tr>\n';
+    for (var j = 0 ; j < this.texts.length ; j++) {
+        // Limit the lifetime of entries depending on their length
+        var cutoff = 5000 * this.texts[j].text.length;
+        if (now - this.texts[j].ts >= cutoff) {
+            this.texts.splice(j--, 1);
+        } else {
+            var f = Math.floor(this.texts[j].freq / 100.0) / 10.0;
+            body +=
+                '<tr style="color:black;background-color:' + (j&1? '#E0FFE0':'#FFFFFF') +
+                ';"><td class="freq">' + f.toFixed(1) +
+                '</td><td class="text">' + this.texts[j].text + '</td></tr>\n';
+        }
     }
 
     // Assign new table body

@@ -419,6 +419,7 @@ class EasParser(TextParser):
 class CwSkimmerParser(TextParser):
     def __init__(self, service: bool = False):
         self.reLine = re.compile("^(\d+):(.+)$")
+        self.freqChanged = False
         # Construct parent object
         super().__init__(filePrefix="CW", service=service)
 
@@ -438,7 +439,15 @@ class CwSkimmerParser(TextParser):
                 # Add frequency, if known
                 if self.frequency:
                     out["freq"] = self.frequency + freq
+                # Report frequency changes
+                if self.freqChanged:
+                    self.freqChanged = False
+                    out["changed"] = True
                 # Done
                 return out
         # No result
         return None
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.freqChanged = frequency != self.frequency
+        super().setDialFrequency(frequency)

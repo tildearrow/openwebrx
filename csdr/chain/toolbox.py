@@ -224,7 +224,7 @@ class RdsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, sampleRate: int = 12000, charCount: int = 4, service: bool = False):
+    def __init__(self, sampleRate: int = 48000, charCount: int = 4, service: bool = False):
         self.sampleRate = sampleRate
         self.parser = CwSkimmerParser(service)
         workers = [
