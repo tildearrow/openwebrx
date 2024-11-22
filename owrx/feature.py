@@ -101,6 +101,7 @@ class FeatureDetector(object):
         "mqtt": ["paho_mqtt"],
         "hdradio": ["nrsc5"],
         "rigcontrol": ["hamlib"],
+        "cwskimmer": ["csdr_cwskimmer"],
     }
 
     def feature_availability(self):
@@ -775,3 +776,11 @@ class FeatureDetector(object):
         The `hamlib` package is available in most Linux distributions.
         """
         return self.command_is_runnable("rigctl -V")
+
+    def has_csdr_cwskimmer(self):
+        """
+        OpenWebRX uses the [CSDR CWSkimmer](https://github.com/luarvique/csdr-cwskimmer)
+        to decode multiple CW signals at once. You can install the
+        `csdr-cwskimmer` package from the OpenWebRX+ repositories.
+        """
+        return self.command_is_runnable("csdr-cwskimmer -h")

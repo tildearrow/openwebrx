@@ -174,6 +174,9 @@ class Modes(object):
             service=True,
             squelch=False,
         ),
+# Replaced by Jakob's RTTY decoder
+#        DigitalMode("mfrtty170", "RTTY-170", underlying=["usb"]),
+#        DigitalMode("mfrtty450", "RTTY-450", underlying=["usb"]),
 # Replaced by the general paging decoder (both POCSAG and FLEX)
 #        DigitalMode(
 #            "pocsag",
@@ -194,9 +197,14 @@ class Modes(object):
             squelch=False,
         ),
         DigitalMode("cwdecoder", "CW Decoder", underlying=["usb", "lsb"]),
-# Replaced by Jakob's RTTY decoder
-#        DigitalMode("mfrtty170", "RTTY-170", underlying=["usb"]),
-#        DigitalMode("mfrtty450", "RTTY-450", underlying=["usb"]),
+        DigitalMode(
+            "cwskimmer",
+            "CW Skimmer",
+            underlying=["usbd"],
+            requirements=["cwskimmer"],
+            service=False,
+            squelch=False,
+        ),
         DigitalMode(
             "sstv",
             "SSTV",
