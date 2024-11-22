@@ -1,3 +1,13 @@
+openwebrx (1.2.74) bullseye jammy; urgency=low
+
+  * Added CWSkimmer decoder using csdr-cwskimmer tool.
+  * Added UI.tuneBookmark(), UI.toggleScanner().
+  * Fixed FLEX decoder to parse multiple capcodes.
+  * Fixed several scanner bugs.
+  * No longer translating EIBI CW bookmarks 800Hz down.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 22 Nov 2024 16:12:00 +0000
+
 openwebrx (1.2.73) bullseye jammy; urgency=low
 
   * Added frequency to recorded MP3 filenames.

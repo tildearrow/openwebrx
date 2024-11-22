@@ -1,3 +1,10 @@
+**1.2.74**
+- Added CWSkimmer decoder using csdr-cwskimmer tool.
+- Added UI.tuneBookmark(), UI.toggleScanner().
+- Fixed FLEX decoder to parse multiple capcodes.
+- Fixed several scanner bugs.
+- No longer translating EIBI CW bookmarks 800Hz down.
+
 **1.2.73**
 - Added frequency to recorded MP3 filenames.
 - Added 800Hz to newly created CW bookmarks.
