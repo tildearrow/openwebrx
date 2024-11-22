@@ -418,7 +418,7 @@ class EasParser(TextParser):
 
 class CwSkimmerParser(TextParser):
     def __init__(self, service: bool = False):
-        self.reLine = re.compile("^(\d+):(.+)$")
+        self.reLine = re.compile("^([0-9]+):(.+)$")
         self.freqChanged = False
         # Construct parent object
         super().__init__(filePrefix="CW", service=service)
