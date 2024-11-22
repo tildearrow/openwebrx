@@ -880,7 +880,7 @@ $.fn.faxMessagePanel = function() {
 
 CwSkimmerMessagePanel = function(el) {
     MessagePanel.call(this, el);
-    this.initClearTimer();
+    this.clearButton.css('display', 'none');
     this.texts = [];
 }
 
