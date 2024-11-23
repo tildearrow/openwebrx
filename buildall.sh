@@ -233,7 +233,7 @@ fi
 
 if [ "${BUILD_CWSKIMMER:-}" == "y" ]; then
 	echo "##### Building csdr-cwskimmer... #####"
-	git clone -b master "$GIT_CWSKIMMER"
+	git clone "$GIT_CWSKIMMER"
 	pushd csdr-cwskimmer
 	dpkg-buildpackage -us -uc
 	popd

@@ -1,6 +1,6 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
 from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule, SatDumpModule, CwSkimmerModule
-from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch
+from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch, RealPart
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, EasParser, IsmParser, RdsParser, CwSkimmerParser
 from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
@@ -228,6 +228,8 @@ class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.sampleRate = sampleRate
         self.parser = CwSkimmerParser(service)
         workers = [
+            RealPart(),
+            Agc(Format.FLOAT),
             Convert(Format.FLOAT, Format.SHORT),
             CwSkimmerModule(sampleRate, charCount),
             self.parser,

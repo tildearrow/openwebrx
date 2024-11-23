@@ -200,7 +200,8 @@ class Modes(object):
         DigitalMode(
             "cwskimmer",
             "CW Skimmer",
-            underlying=["usbd"],
+            underlying=["empty"],
+            bandpass=Bandpass(0, 24000),
             requirements=["cwskimmer"],
             service=False,
             squelch=False,

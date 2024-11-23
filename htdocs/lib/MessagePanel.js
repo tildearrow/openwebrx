@@ -880,8 +880,11 @@ $.fn.faxMessagePanel = function() {
 
 CwSkimmerMessagePanel = function(el) {
     MessagePanel.call(this, el);
-    this.clearButton.css('display', 'none');
     this.texts = [];
+
+    // CLEAR button clears underlying texts storage
+    var me = this;
+    this.clearButton.on('click', function() { me.texts = []; });
 }
 
 CwSkimmerMessagePanel.prototype = Object.create(MessagePanel.prototype);
