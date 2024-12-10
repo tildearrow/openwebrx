@@ -773,8 +773,8 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     // Combine altitude and vertical speed
     if (this.altitude) {
         var alt = this.altitude.toFixed(0) + ' ft';
-        if (this.vspeed > 0) alt += ' &uarr;' + this.vspeed + ' ft/m';
-        else if (this.vspeed < 0) alt += ' &darr;' + (-this.vspeed) + ' ft/m';
+        if (this.vspeed > 0) alt = '&uarr;' + this.vspeed + ' ft/m ' + alt;
+        else if (this.vspeed < 0) alt = '&darr;' + (-this.vspeed) + ' ft/m ' + alt;
         detailsString += Utils.makeListItem('Altitude', alt);
     }
 
