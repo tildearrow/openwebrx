@@ -1,3 +1,11 @@
+**1.2.75**
+- Added profile-specific transceiver rig control setting.
+- Added CLEAR button to CW skimmer.
+- Replaced ascent/descent symbols Chrome turned into emojis.
+- Removed backslash before underscore in 'freedv_rx'.
+- Now loading UI and audio settings separately.
+- Silenced CW skimmer audio.
+
 **1.2.74**
 - Added CWSkimmer decoder using csdr-cwskimmer tool.
 - Added UI.tuneBookmark(), UI.toggleScanner().
