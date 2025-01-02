@@ -978,6 +978,13 @@ function on_ws_recv(evt) {
                             Utils.setVesselUrl(config['vessel_url']);
                         }
 
+                        // Load user interface settings
+                        UI.loadSettings();
+                        Chat.loadSettings();
+
+                        // Initialize keyboard shortcuts
+                        Shortcuts.init(document.body);
+
                         break;
                     case "secondary_config":
                         var s = json['value'];
@@ -1208,12 +1215,8 @@ function onAudioStart(apiType){
         toggle_panel("openwebrx-panel-log", !!was_error);
     }, 2000);
 
-    // Load user interface settings from local storage
-    UI.loadSettings();
-    Chat.loadSettings();
-
-    // Initialize keyboard shortcuts
-    Shortcuts.init(document.body);
+    // Load audio settings from local storage
+    UI.loadAudioSettings();
 }
 
 var reconnect_timeout = false;
