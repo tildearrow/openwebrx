@@ -5,6 +5,7 @@ openwebrx (1.2.75) bullseye jammy; urgency=low
   * Replaced ascent/descent symbols Chrome turned into emojis.
   * Removed backslash before underscore in 'freedv_rx'.
   * Now loading UI and audio settings separately.
+  * Removed some FT8 debug messages.
   * Silenced CW skimmer audio.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Fri, 3 Jan 2025 16:12:00 +0000

@@ -4,6 +4,7 @@
 - Replaced ascent/descent symbols Chrome turned into emojis.
 - Removed backslash before underscore in 'freedv_rx'.
 - Now loading UI and audio settings separately.
+- Removed some FT8 debug messages.
 - Silenced CW skimmer audio.
 
 **1.2.74**
