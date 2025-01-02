@@ -398,6 +398,10 @@ class RigControl():
         # Create and start thread
         self.thread = threading.Thread(target=self._rigThread)
         self.thread.start()
+        # Clear current frequency and modulation
+        self.mod     = None
+        self.fCenter = None
+        self.fOffset = None
         # Done
         logger.debug("Started RigControl as '{0}'.".format(" ".join(cmd)))
         return True
