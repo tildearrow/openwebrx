@@ -471,6 +471,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 "wfm_deemphasis_tau",
                 "wfm_rds_rbds",
                 "digital_voice_codecserver",
+                "rig_enabled",
             ),
         )
 
