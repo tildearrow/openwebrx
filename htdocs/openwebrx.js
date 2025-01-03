@@ -982,6 +982,9 @@ function on_ws_recv(evt) {
                         UI.loadSettings();
                         Chat.loadSettings();
 
+                        // Initialize keyboard shortcuts
+                        Shortcuts.init(document.body);
+
                         break;
                     case "secondary_config":
                         var s = json['value'];
@@ -1214,9 +1217,6 @@ function onAudioStart(apiType){
 
     // Load audio settings from local storage
     UI.loadAudioSettings();
-
-    // Initialize keyboard shortcuts
-    Shortcuts.init(document.body);
 }
 
 var reconnect_timeout = false;
