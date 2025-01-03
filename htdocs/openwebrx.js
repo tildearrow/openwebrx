@@ -978,12 +978,9 @@ function on_ws_recv(evt) {
                             Utils.setVesselUrl(config['vessel_url']);
                         }
 
-                        // Load user interface settings
+                        // Load user interface settings from local storage
                         UI.loadSettings();
                         Chat.loadSettings();
-
-                        // Initialize keyboard shortcuts
-                        Shortcuts.init(document.body);
 
                         break;
                     case "secondary_config":
@@ -1217,6 +1214,9 @@ function onAudioStart(apiType){
 
     // Load audio settings from local storage
     UI.loadAudioSettings();
+
+    // Initialize keyboard shortcuts
+    Shortcuts.init(document.body);
 }
 
 var reconnect_timeout = false;
