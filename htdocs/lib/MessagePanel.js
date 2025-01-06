@@ -910,7 +910,7 @@ CwSkimmerMessagePanel.prototype.pushMessage = function(msg) {
     if (!msg.text) return;
 
     // Clear cache if requested
-    if (msg.changed) this.texts = [];
+//    if (msg.changed) this.texts = [];
 
     // Current time
     var now = Date.now();
