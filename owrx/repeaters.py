@@ -34,6 +34,18 @@ class Repeaters(object):
         coreConfig = CoreConfig()
         return "{data_directory}/repeaters.json".format(data_directory=coreConfig.get_data_directory())
 
+    # Get last downloaded timestamp or 0 for none
+    @staticmethod
+    def lastDownloaded():
+        try:
+            file = Repeaters._getCachedDatabaseFile()
+            if os.path.isfile(file) and os.path.getsize(file) > 0:
+                return os.path.getmtime(file)
+            else:
+                return 0
+        except Exception as e:
+            return 0
+
     # Compute distance, in kilometers, between two latlons.
     @staticmethod
     def distKm(p1, p2):
@@ -115,12 +127,10 @@ class Repeaters(object):
     # Load cached database or refresh it from the web.
     #
     def refresh(self):
-        # This file contains cached database
+        # This file contains cached repeaters database
         file = self._getCachedDatabaseFile()
-        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
-
         # If cached database is stale...
-        if time.time() - ts >= self.refreshPeriod:
+        if time.time() - self.lastDownloaded() >= self.refreshPeriod:
             # Load EIBI database file from the web
             repeaters = self.loadFromWeb()
             if repeaters:

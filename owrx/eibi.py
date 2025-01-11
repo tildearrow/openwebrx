@@ -37,6 +37,18 @@ class EIBI(object):
         coreConfig = CoreConfig()
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
 
+    # Get last downloaded timestamp or 0 for none
+    @staticmethod
+    def lastDownloaded():
+        try:
+            file = EIBI._getCachedScheduleFile()
+            if os.path.isfile(file) and os.path.getsize(file) > 0:
+                return os.path.getmtime(file)
+            else:
+                return 0
+        except Exception as e:
+            return 0
+
     # Offset frequency for proper tuning
     @staticmethod
     def correctFreq(freq: int, mode: str) -> int:
@@ -109,10 +121,8 @@ class EIBI(object):
     def refresh(self):
         # This file contains cached schedule
         file = self._getCachedScheduleFile()
-        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
-
         # If cached schedule is stale...
-        if time.time() - ts >= self.refreshPeriod:
+        if time.time() - self.lastDownloaded() >= self.refreshPeriod:
             # Load EIBI database file from the web
             schedule = self.loadFromWeb()
             if schedule:

@@ -2,6 +2,9 @@ from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.template import WebpageController
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
 from owrx.service import Services
+from owrx.repeaters import Repeaters
+from owrx.eibi import EIBI
+from datetime import datetime
 import json
 import re
 
@@ -30,9 +33,28 @@ class ServiceController(AuthorizationMixin, WebpageController):
                     </tr>
                     {services}
                 </table>
+                {status}
         """.format(
-            services="".join(ServiceController.renderService(c) for c in Services.listAll())
+            services="".join(ServiceController.renderService(c) for c in Services.listAll()),
+            status=ServiceController.renderStatus()
         )
+
+    @staticmethod
+    def renderStatus():
+        result = ""
+        ts = Repeaters.lastDownloaded()
+        if ts > 0:
+            ts = datetime.fromtimestamp(ts).strftime("%H:%M:%S, %m/%d/%Y")
+            result += "<div style='color:green;width:100%;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
+        else:
+            result += "<div style='color:red;width:100%;text-align:center;'>Repeaters database not downloaded.</div>\n"
+        ts = EIBI.lastDownloaded()
+        if ts > 0:
+            ts = datetime.fromtimestamp(ts).strftime("%H:%M:%S, %m/%d/%Y")
+            result += "<div style='color:green;width:100%;text-align:center;'>Shortwave schedule downloaded at {0}.</div>\n".format(ts)
+        else:
+            result += "<div style='color:red;width:100%;text-align:center;'>Shortwave schedule not downloaded.</div>\n"
+        return "<p style='width:100%;'>\n" + result + "</p>\n"
 
     @staticmethod
     def renderService(c):
