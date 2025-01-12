@@ -32,8 +32,10 @@ class ServiceController(AuthorizationMixin, WebpageController):
                         <th>Frequency</th>
                     </tr>
                     {services}
+                    <tr>
+                        <td colspan=3>{status}</td>
+                    </tr>
                 </table>
-                {status}
         """.format(
             services="".join(ServiceController.renderService(c) for c in Services.listAll()),
             status=ServiceController.renderStatus()
@@ -45,16 +47,16 @@ class ServiceController(AuthorizationMixin, WebpageController):
         ts = Repeaters.lastDownloaded()
         if ts > 0:
             ts = datetime.fromtimestamp(ts).strftime("%H:%M:%S, %m/%d/%Y")
-            result += "<div style='color:#00FF00;width:100%;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
+            result += "<div style='color:#00FF00;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
         else:
-            result += "<div style='color:#FF0000;width:100%;text-align:center;'>Repeaters database not downloaded.</div>\n"
+            result += "<div style='color:#FF0000;text-align:center;'>Repeaters database not downloaded.</div>\n"
         ts = EIBI.lastDownloaded()
         if ts > 0:
             ts = datetime.fromtimestamp(ts).strftime("%H:%M:%S, %m/%d/%Y")
-            result += "<div style='color:#00FF00;width:100%;text-align:center;'>Shortwave schedule downloaded at {0}.</div>\n".format(ts)
+            result += "<div style='color:#00FF00;text-align:center;'>Shortwave schedule downloaded at {0}.</div>\n".format(ts)
         else:
-            result += "<div style='color:#FF0000;width:100%;text-align:center;'>Shortwave schedule not downloaded.</div>\n"
-        return "<p style='width:100%;'>\n" + result + "</p>\n"
+            result += "<div style='color:#FF0000;text-align:center;'>Shortwave schedule not downloaded.</div>\n"
+        return result
 
     @staticmethod
     def renderService(c):
