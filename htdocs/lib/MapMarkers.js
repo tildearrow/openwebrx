@@ -479,7 +479,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         weatherString += '<div>' + Utils.makeListTitle('Weather');
 
         if (this.weather.temperature) {
-            weatherString += Utils.makeListItem('Temperature', this.weather.temperature.toFixed(1) + ' oC');
+            weatherString += Utils.makeListItem('Temperature', this.weather.temperature.toFixed(1) + '&deg;C');
         }
 
         if (this.weather.humidity) {
