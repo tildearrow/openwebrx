@@ -919,14 +919,18 @@ CwSkimmerMessagePanel.prototype.pushMessage = function(msg) {
     var j = this.texts.findIndex(function(x) { return x.freq >= msg.freq });
     if (j < 0) {
         // Append a new entry
-        this.texts.push({ freq: msg.freq, text: msg.text, ts: now });
+        if (msg.text.trim().length > 0) {
+            this.texts.push({ freq: msg.freq, text: msg.text, ts: now });
+        }
     } else if (this.texts[j].freq == msg.freq) {
         // Update existing entry
         this.texts[j].text = (this.texts[j].text + msg.text).slice(-64);
         this.texts[j].ts   = now;
     } else {
         // Insert a new entry
-        this.texts.splice(j, 0, { freq: msg.freq, text: msg.text, ts: now });
+        if (msg.text.trim().length > 0) {
+            this.texts.splice(j, 0, { freq: msg.freq, text: msg.text, ts: now });
+        }
     }
 
     // Generate table body
