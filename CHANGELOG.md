@@ -1,3 +1,14 @@
+**1.2.76**
+- Refactored SSTV decoder code.
+- Eliminated FFTW3 race condition in SSTV decoder.
+- Disabled AVT-90 SSTV mode due to quality concerns.
+- Fixed Scottie DX VIS code.
+- Improved CW skimmer sensitivity.
+- Not clearing CW skimmer when frequency changes.
+- Settings page shows EIBI schedule download time.
+- Settings page shows repeaters list download time.
+- Using degree sign for temperatures on the map.
+
 **1.2.75**
 - Added profile-specific transceiver rig control setting.
 - Added CLEAR button to CW skimmer.
