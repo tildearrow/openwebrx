@@ -5,6 +5,7 @@ from owrx.service import Services
 from owrx.repeaters import Repeaters
 from owrx.eibi import EIBI
 from datetime import datetime
+
 import json
 import re
 
@@ -44,18 +45,22 @@ class ServiceController(AuthorizationMixin, WebpageController):
     @staticmethod
     def renderStatus():
         result = ""
-        ts = Repeaters.lastDownloaded()
-        if ts > 0:
-            ts = datetime.fromtimestamp(ts).strftime("%H:%M:%S, %m/%d/%Y")
-            result += "<div style='color:#00FF00;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
-        else:
-            result += "<div style='color:#FF0000;text-align:center;'>Repeaters database not downloaded.</div>\n"
+        ts = datetime.fromtimestamp(EIBI.lastStarted())
+        td = str(datetime.now() - ts).split(".", 1)[0]
+        ts = ts.astimezone().strftime("%H:%M:%S %Z, %d %b %Y")
+        result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}, {1} ago.</div>\n".format(ts, td)
         ts = EIBI.lastDownloaded()
         if ts > 0:
-            ts = datetime.fromtimestamp(ts).strftime("%H:%M:%S, %m/%d/%Y")
+            ts = datetime.fromtimestamp(ts).astimezone().strftime("%H:%M:%S %Z, %d %b %Y")
             result += "<div style='color:#00FF00;text-align:center;'>Shortwave schedule downloaded at {0}.</div>\n".format(ts)
         else:
             result += "<div style='color:#FF0000;text-align:center;'>Shortwave schedule not downloaded.</div>\n"
+        ts = Repeaters.lastDownloaded()
+        if ts > 0:
+            ts = datetime.fromtimestamp(ts).astimezone().strftime("%H:%M:%S %Z, %d %b %Y")
+            result += "<div style='color:#00FF00;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
+        else:
+            result += "<div style='color:#FF0000;text-align:center;'>Repeaters database not downloaded.</div>\n"
         return result
 
     @staticmethod
