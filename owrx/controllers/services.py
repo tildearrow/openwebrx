@@ -43,21 +43,26 @@ class ServiceController(AuthorizationMixin, WebpageController):
         )
 
     @staticmethod
-    def renderStatus():
-        result = ""
-        ts = datetime.fromtimestamp(EIBI.lastStarted())
+    def renderTime(ts):
+        ts = datetime.fromtimestamp(ts)
         td = str(datetime.now() - ts).split(".", 1)[0]
         ts = ts.astimezone().strftime("%H:%M:%S %Z, %d %b %Y")
-        result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}, {1} ago.</div>\n".format(ts, td)
+        return ts + ", " + td + " ago"
+
+    @staticmethod
+    def renderStatus():
+        result = ""
+        ts = ServiceController.renderTime(EIBI.lastStarted())
+        result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}.</div>\n".format(ts)
         ts = EIBI.lastDownloaded()
         if ts > 0:
-            ts = datetime.fromtimestamp(ts).astimezone().strftime("%H:%M:%S %Z, %d %b %Y")
+            ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>Shortwave schedule downloaded at {0}.</div>\n".format(ts)
         else:
             result += "<div style='color:#FF0000;text-align:center;'>Shortwave schedule not downloaded.</div>\n"
         ts = Repeaters.lastDownloaded()
         if ts > 0:
-            ts = datetime.fromtimestamp(ts).astimezone().strftime("%H:%M:%S %Z, %d %b %Y")
+            ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
         else:
             result += "<div style='color:#FF0000;text-align:center;'>Repeaters database not downloaded.</div>\n"
