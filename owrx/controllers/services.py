@@ -7,6 +7,8 @@ from owrx.eibi import EIBI
 from datetime import datetime
 
 import json
+import time
+import os
 import re
 
 import logging
@@ -43,6 +45,14 @@ class ServiceController(AuthorizationMixin, WebpageController):
         )
 
     @staticmethod
+    def lastBooted():
+        try:
+            with open('/proc/uptime', 'r') as f:
+                return time.time() - float(f.readline().split()[0])
+        except:
+            return 0
+
+    @staticmethod
     def renderTime(ts):
         ts = datetime.fromtimestamp(ts)
         td = str(datetime.now() - ts).split(".", 1)[0]
@@ -52,6 +62,10 @@ class ServiceController(AuthorizationMixin, WebpageController):
     @staticmethod
     def renderStatus():
         result = ""
+        ts = ServiceController.lastBooted()
+        if ts > 0:
+            ts = ServiceController.renderTime(ts)
+            result += "<div style='color:#00FF00;text-align:center;'>System booted at {0}.</div>\n".format(ts)
         ts = ServiceController.renderTime(EIBI.lastStarted())
         result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}.</div>\n".format(ts)
         ts = EIBI.lastDownloaded()
