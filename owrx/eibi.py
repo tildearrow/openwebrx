@@ -24,7 +24,6 @@ MAX_DISTANCE = 25000
 class EIBI(object):
     sharedInstance = None
     creationLock = threading.Lock()
-    timeStarted = time.time()
 
     @staticmethod
     def getSharedInstance():
@@ -37,11 +36,6 @@ class EIBI(object):
     def _getCachedScheduleFile():
         coreConfig = CoreConfig()
         return "{data_directory}/eibi.json".format(data_directory=coreConfig.get_data_directory())
-
-    # Get last started timestamp
-    @staticmethod
-    def lastStarted():
-        return EIBI.timeStarted
 
     # Get last downloaded timestamp or 0 for none
     @staticmethod

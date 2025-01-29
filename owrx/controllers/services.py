@@ -17,6 +17,8 @@ logger = logging.getLogger(__name__)
 
 
 class ServiceController(AuthorizationMixin, WebpageController):
+    timeStarted = time.time()
+
     def indexAction(self):
         self.serve_template("services.html", **self.template_variables())
 
@@ -44,6 +46,11 @@ class ServiceController(AuthorizationMixin, WebpageController):
             status=ServiceController.renderStatus()
         )
 
+    # Get last started timestamp
+    @staticmethod
+    def lastStarted():
+        return ServiceController.timeStarted
+
     @staticmethod
     def lastBooted():
         try:
@@ -66,8 +73,10 @@ class ServiceController(AuthorizationMixin, WebpageController):
         if ts > 0:
             ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>System booted at {0}.</div>\n".format(ts)
-        ts = ServiceController.renderTime(EIBI.lastStarted())
-        result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}.</div>\n".format(ts)
+        ts = ServiceController.lastStarted()
+        if ts > 0:
+            ts = ServiceController.renderTime(ts)
+            result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}.</div>\n".format(ts)
         ts = EIBI.lastDownloaded()
         if ts > 0:
             ts = ServiceController.renderTime(ts)
