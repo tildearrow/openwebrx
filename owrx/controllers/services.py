@@ -78,19 +78,19 @@ class ServiceController(AuthorizationMixin, WebpageController):
         if ts > 0:
             ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>Server started at {0}.</div>\n".format(ts)
-        ts = EIBI.lastDownloaded()
+        ts = EIBI.getSharedInstance().lastDownloaded()
         if ts > 0:
             ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>Shortwave schedule downloaded at {0}.</div>\n".format(ts)
         else:
             result += "<div style='color:#FF0000;text-align:center;'>Shortwave schedule not downloaded.</div>\n"
-        ts = Repeaters.lastDownloaded()
+        ts = Repeaters.getSharedInstance().lastDownloaded()
         if ts > 0:
             ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
         else:
             result += "<div style='color:#FF0000;text-align:center;'>Repeaters database not downloaded.</div>\n"
-        ts = Receivers.lastDownloaded()
+        ts = Receivers.getSharedInstance().lastDownloaded()
         if ts > 0:
             ts = ServiceController.renderTime(ts)
             result += "<div style='color:#00FF00;text-align:center;'>Receivers database downloaded at {0}.</div>\n".format(ts)
