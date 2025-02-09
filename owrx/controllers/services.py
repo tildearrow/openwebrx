@@ -2,8 +2,9 @@ from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.template import WebpageController
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
 from owrx.service import Services
-from owrx.repeaters import Repeaters
-from owrx.eibi import EIBI
+from owrx.web.receivers import Receivers
+from owrx.web.repeaters import Repeaters
+from owrx.web.eibi import EIBI
 from datetime import datetime
 
 import json
@@ -89,6 +90,12 @@ class ServiceController(AuthorizationMixin, WebpageController):
             result += "<div style='color:#00FF00;text-align:center;'>Repeaters database downloaded at {0}.</div>\n".format(ts)
         else:
             result += "<div style='color:#FF0000;text-align:center;'>Repeaters database not downloaded.</div>\n"
+        ts = Receivers.lastDownloaded()
+        if ts > 0:
+            ts = ServiceController.renderTime(ts)
+            result += "<div style='color:#00FF00;text-align:center;'>Receivers database downloaded at {0}.</div>\n".format(ts)
+        else:
+            result += "<div style='color:#FF0000;text-align:center;'>Receivers database not downloaded.</div>\n"
         return result
 
     @staticmethod
