@@ -330,6 +330,16 @@ class Modes(object):
 #            squelch=False,
 #            secondaryFft=False
 #        ),
+#        DigitalMode(
+#            "elektro-lrit",
+#            "ELEKTRO-L LRIT",
+#            underlying=["empty"],
+#            bandpass=Bandpass(-200000, 200000),
+#            requirements=["wxsat"],
+#            service=True,
+#            squelch=False,
+#            secondaryFft=False
+#        ),
     ]
 
     @staticmethod

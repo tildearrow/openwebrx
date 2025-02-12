@@ -293,3 +293,27 @@ class MeteorLrptDemodulator(ServiceDemodulator):
 
     def supportsSquelch(self) -> bool:
         return False
+
+
+class ElektroLritDemodulator(ServiceDemodulator):
+    def __init__(self, symbolrate: int = 72, service: bool = False):
+        d = datetime.utcnow()
+        self.outFolder  = "/tmp/satdump/ELEKTRO-{0}".format(d.strftime('%y%m%d-%H%M%S'))
+        self.sampleRate = 400000
+        mode = "elektro_lrit"
+        workers = [
+            SatDumpModule(mode = mode,
+                sampleRate = self.sampleRate,
+                frequency = 1691000000,
+                outFolder  = self.outFolder,
+                options    = { "start_timestamp" : int(d.timestamp()) }
+            )
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return self.sampleRate
+
+    def supportsSquelch(self) -> bool:
+        return False

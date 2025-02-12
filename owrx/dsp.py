@@ -763,6 +763,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "meteor-lrpt":
             from csdr.chain.toolbox import MeteorLrptDemodulator
             return MeteorLrptDemodulator()
+        elif mod == "elektro-lrit":
+            from csdr.chain.toolbox import ElektroLritDemodulator
+            return ElektroLritDemodulator()
 
     def setSecondaryDemodulator(self, mod):
         demodulator = self._getSecondaryDemodulator(mod)
