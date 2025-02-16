@@ -4,6 +4,7 @@ from owrx.map import Map, LatLngLocation
 from owrx.aprs import getSymbolData
 from owrx.config import Config
 from owrx.reporting import ReportingEngine
+from owrx.icao import IcaoRegistration, IcaoCountry
 from datetime import datetime, timedelta
 import threading
 import pickle
@@ -96,7 +97,7 @@ class AircraftLocation(LatLngLocation):
         res = super(AircraftLocation, self).__dict__()
         res["symbol"] = self.getSymbol()
         # Convert aircraft-specific data into APRS-like data
-        for x in ["icao", "aircraft", "flight", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog", "ttl"]:
+        for x in ["icao", "aircraft", "flight", "country", "ccode", "speed", "altitude", "course", "destination", "origin", "vspeed", "squawk", "rssi", "msglog", "ttl"]:
             if x in self.data:
                 res[x] = self.data[x]
         # Return APRS-like dictionary object
@@ -598,6 +599,17 @@ class AdsbParser(AircraftParser):
                 "msgs"      : entry["messages"],
                 "rssi"      : entry["rssi"]
             }
+
+            # Country and aircraft registration from ICAO ID
+            icao     = int(entry["hex"], 16)
+            country  = IcaoCountry.find(icao)
+            aircraft = IcaoRegistration.find(icao)
+            if country and country[0]:
+                out["country"] = country[0]
+            if country and country[1]:
+                out["ccode"] = country[1]
+            if aircraft:
+                out["aircraft"] = aircraft
 
             # Position
             if "lat" in entry and "lon" in entry:

@@ -623,6 +623,8 @@ AircraftMarker.prototype.update = function(update) {
     // HFDL, ACARS, VDL2, ADSB
     this.altitude = update.location.altitude;
     this.aircraft = update.location.aircraft;
+    this.country  = update.location.country;
+    this.ccode    = update.location.ccode;
     this.destination = update.location.destination;
     this.origin   = update.location.origin;
     this.flight   = update.location.flight;
@@ -741,6 +743,10 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
 
     if (this.aircraft) {
         detailsString += Utils.makeListItem('Aircraft', Utils.linkifyFlight(this.aircraft));
+    }
+
+    if (this.country) {
+        detailsString += Utils.makeListItem('Country', this.country);
     }
 
     if (this.squawk) {
