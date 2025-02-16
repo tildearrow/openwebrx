@@ -1,3 +1,11 @@
+**1.2.77**
+- Refactored web data sources (EIBI, receivers, repeaters).
+- Fixed RepeaterBook updates to happen daily.
+- Fixed KiwiSDR receiver database updates.
+- Added OpenWebRX uptime display to Settings page.
+- Added Linux uptime display to Settings page.
+- Added receivers database update time to Settings page.
+
 **1.2.76**
 - Refactored SSTV decoder code.
 - Eliminated FFTW3 race condition in SSTV decoder.
