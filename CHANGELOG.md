@@ -3,6 +3,7 @@
 - Fixed RepeaterBook updates to happen daily.
 - Fixed KiwiSDR receiver database updates.
 - Added aircraft and country lookup by ICAO ID (from TAR1090).
+- Added country and its flag to aircraft map bubbles.
 - Added OpenWebRX uptime display to Settings page.
 - Added Linux uptime display to Settings page.
 - Added receivers database update time to Settings page.
