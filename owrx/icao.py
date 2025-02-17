@@ -322,8 +322,8 @@ ICAO_COUNTRIES = [
     IcaoCountry(0x032000, 0x032FFF, "Burundi", "bi"),
     IcaoCountry(0x034000, 0x034FFF, "Cameroon", "cm"),
     IcaoCountry(0x035000, 0x0353FF, "Comoros", "km"),
-    # Is "CG" correct here?
-    IcaoCountry(0x036000, 0x036FFF, "Congo", "cg"),
+    # "CD" for Democratic Republic of Congo, "CG" for Republic of Congo
+    IcaoCountry(0x036000, 0x036FFF, "DR Congo", "cd"),
     IcaoCountry(0x038000, 0x038FFF, "Cote d'Ivoire", "ci"),
     IcaoCountry(0x03E000, 0x03EFFF, "Gabon", "ga"),
     IcaoCountry(0x040000, 0x040FFF, "Ethiopia", "et"),
@@ -492,7 +492,6 @@ ICAO_COUNTRIES = [
     IcaoCountry(0x894000, 0x894FFF, "Bahrain", "bh"),
     IcaoCountry(0x895000, 0x8953FF, "Brunei", "bn"),
     IcaoCountry(0x896000, 0x896FFF, "United Arab Emirates", "ae"),
-    # Is "SB" correct here?
     IcaoCountry(0x897000, 0x8973FF, "Solomon Islands", "sb"),
     IcaoCountry(0x898000, 0x898FFF, "Papua New Guinea", "pg"),
     IcaoCountry(0x899000, 0x8993FF, "Taiwan", "tw"),

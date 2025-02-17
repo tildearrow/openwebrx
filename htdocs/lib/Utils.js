@@ -222,7 +222,7 @@ Utils.getOpacityScale = function(age) {
 
 // Get country flag from a two-letter country code.
 Utils.ccode2flag = function(ccode) {
-    if (ccode.length != 2)
+    if (!ccode || (ccode.length != 2))
         return '';
     else
         return '&#' + (0x1F1E6 + ccode.charCodeAt(0) - 0x61)
