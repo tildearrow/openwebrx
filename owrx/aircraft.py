@@ -369,6 +369,22 @@ class AircraftParser(TextParser):
         # Done
         return out
 
+    # Common function to get country and aircraft registration from ICAO ID
+    def parseIcaoId(self, icao, out):
+        # Convert hex ICAO ID to an integer, if required
+        if isinstance(icao, str):
+            icao = int(icao, 16)
+        country  = IcaoCountry.find(icao)
+        aircraft = IcaoRegistration.find(icao)
+        if country and country[0]:
+            out["country"] = country[0]
+        if country and country[1]:
+            out["ccode"] = country[1]
+        if aircraft:
+            out["aircraft"] = aircraft
+        # Done
+        return out
+
 
 #
 # Parser for HFDL messages coming from DumpHFDL in JSON format.
@@ -416,7 +432,11 @@ class HfdlParser(AircraftParser):
         out["type"] = data["type"]["name"]
         # Add aircraft info, if present, assign color right away
         if "ac_info" in data and "icao" in data["ac_info"]:
+            # Get ICAO ID
             out["icao"] = data["ac_info"]["icao"].strip()
+            # Get country and aircraft registration from ICAO ID
+            self.parseIcaoId(out["icao"], out)
+
         # Source might be a ground station
         #if data["src"]["type"] == "Ground station":
         #    out["flight"] = "GS-%d" % data["src"]["id"]
@@ -486,6 +506,8 @@ class Vdl2Parser(AircraftParser):
             return out
         # Address is the ICAO ID
         out["icao"] = p["addr"]
+        # Get country and aircraft registration from ICAO ID
+        self.parseIcaoId(out["icao"], out)
         # Clarify message type as much as possible
         if "status" in p:
             out["type"] = p["status"]
@@ -601,15 +623,7 @@ class AdsbParser(AircraftParser):
             }
 
             # Country and aircraft registration from ICAO ID
-            icao     = int(entry["hex"], 16)
-            country  = IcaoCountry.find(icao)
-            aircraft = IcaoRegistration.find(icao)
-            if country and country[0]:
-                out["country"] = country[0]
-            if country and country[1]:
-                out["ccode"] = country[1]
-            if aircraft:
-                out["aircraft"] = aircraft
+            self.parseIcaoId(entry["hex"], out)
 
             # Position
             if "lat" in entry and "lon" in entry:
