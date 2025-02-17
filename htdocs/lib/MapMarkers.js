@@ -750,8 +750,8 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         if (this.ccode.length == 2)
             country += '&#' + (0x1F1E6 + this.ccode.charCodeAt(0) - 0x61)
                     + ';&#' + (0x1F1E6 + this.ccode.charCodeAt(1) - 0x61)
-                    + ';&nbsp;';
-        if (this.country) country += this.country;
+                    + ';';
+        if (this.country) country += '&nbsp;' + this.country;
         detailsString += Utils.makeListItem('Country', country);
     }
 
