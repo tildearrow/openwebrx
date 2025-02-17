@@ -745,8 +745,14 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Utils.makeListItem('Aircraft', Utils.linkifyFlight(this.aircraft));
     }
 
-    if (this.country) {
-        detailsString += Utils.makeListItem('Country', this.country);
+    if (this.country || this.ccode) {
+        var country = '';
+        if (this.ccode.length == 2)
+            country += '&#' + (0x1F1E6 + this.ccode.charCodeAt(0) - 0x61)
+                    + ';&#' + (0x1F1E6 + this.ccode.charCodeAt(1) - 0x61)
+                    + ';&nbsp;';
+        if (this.country) country += this.country;
+        detailsString += Utils.makeListItem('Country', country);
     }
 
     if (this.squawk) {
