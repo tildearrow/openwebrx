@@ -225,8 +225,9 @@ Utils.ccode2flag = function(ccode) {
     if (!ccode || (ccode.length != 2))
         return '';
     else
-        return '&#' + (0x1F1E6 + ccode.charCodeAt(0) - 0x61)
-            + ';&#' + (0x1F1E6 + ccode.charCodeAt(1) - 0x61)
+        ccode = ccode.toUpperCase();
+        return '&#' + (0x1F1E6 + ccode.charCodeAt(0) - 0x41)
+            + ';&#' + (0x1F1E6 + ccode.charCodeAt(1) - 0x41)
             + ';';
 };
 
