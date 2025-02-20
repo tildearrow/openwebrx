@@ -218,12 +218,22 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
     source = msg.mode === 'AIS'?
         Utils.linkifyVessel(source) : Utils.linkifyCallsign(source);
 
+    // Compose comment
+    var comment = msg.comment || msg.message || '';
+    if (comment !== '') {
+        comment = Utils.htmlEscape(comment);
+    } else {
+        // Add country flag and name in lieu of comment
+        if (msg.ccode)   comment += Utils.ccode2flag(msg.ccode);
+        if (msg.country) comment += (comment? '&nbsp;':'') + msg.country;
+    }
+
     $b.append($(
         '<tr>' +
         '<td class="time">' + timestamp + '</td>' +
         '<td class="callsign">' + source + '</td>' +
         '<td class="coord">' + link + '</td>' +
-        '<td class="message">' + Utils.htmlEscape(msg.comment || msg.message || '') + '</td>' +
+        '<td class="message">' + comment + '</td>' +
         '</tr>'
     ));
     this.scrollToBottom();
