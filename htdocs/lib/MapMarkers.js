@@ -565,10 +565,7 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (this.country || this.ccode) {
-        var country = '';
-        if (this.ccode)   country += Utils.ccode2flag(this.ccode);
-        if (this.country) country += '&nbsp;' + this.country;
-        detailsString += Utils.makeListItem('Country', country);
+        detailsString += Utils.makeListItem('Country', Lookup.cdata2flag([this.ccode, this.country]));
     }
 
     if (detailsString.length > 0) {
@@ -748,10 +745,7 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     }
 
     if (this.country || this.ccode) {
-        var country = '';
-        if (this.ccode)   country += Utils.ccode2flag(this.ccode);
-        if (this.country) country += '&nbsp;' + this.country;
-        detailsString += Utils.makeListItem('Country', country);
+        detailsString += Utils.makeListItem('Country', Lookup.cdata2flag([this.ccode, this.country]));
     }
 
     if (this.squawk) {

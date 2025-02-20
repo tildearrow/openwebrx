@@ -221,11 +221,11 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
     // Compose comment
     var comment = msg.comment || msg.message || '';
     if (comment !== '') {
+        // Escape all special characters
         comment = Utils.htmlEscape(comment);
     } else {
         // Add country flag and name in lieu of comment
-        if (msg.ccode)   comment += Utils.ccode2flag(msg.ccode);
-        if (msg.country) comment += (comment? '&nbsp;':'') + msg.country;
+        comment = Lookup.cdata2flag([msg.ccode, msg.country]);
     }
 
     $b.append($(
