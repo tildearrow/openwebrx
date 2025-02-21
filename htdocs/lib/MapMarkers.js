@@ -564,8 +564,10 @@ AprsMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
 
-    if (this.country || this.ccode) {
+    if (this.country) {
         detailsString += Utils.makeListItem('Country', Lookup.cdata2flag([this.ccode, this.country]));
+    } else if (this.mode === 'AIS') {
+        detailsString += Utils.makeListItem('Country', Lookup.mmsi2flag(name));
     }
 
     if (detailsString.length > 0) {
@@ -744,7 +746,7 @@ AircraftMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Utils.makeListItem('Aircraft', Utils.linkifyFlight(this.aircraft));
     }
 
-    if (this.country || this.ccode) {
+    if (this.country) {
         detailsString += Utils.makeListItem('Country', Lookup.cdata2flag([this.ccode, this.country]));
     }
 
