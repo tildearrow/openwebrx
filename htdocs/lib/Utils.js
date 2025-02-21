@@ -108,13 +108,13 @@ Utils.linkifyCallsign = function(callsign) {
     // Strip callsign of modifiers
     var id = callsign.replace(/[-/].*$/, '');
     // Add country name as a tooltip
-    return this.linkify(id, this.callsign_url, callsign, Lookup.call2country(id));
+    return this.linkify(id, this.callsign_url, callsign, Lookup.call2cname(id));
 };
 
 // Create link to a maritime vessel, with country tooltip, etc.
 Utils.linkifyVessel = function(mmsi) {
     // Add country name as a tooltip
-    return this.linkify(mmsi, this.vessel_url, mmsi, Lookup.mmsi2country(mmsi));
+    return this.linkify(mmsi, this.vessel_url, mmsi, Lookup.mmsi2cname(mmsi));
 };
 
 // Create link to a flight or an aircraft

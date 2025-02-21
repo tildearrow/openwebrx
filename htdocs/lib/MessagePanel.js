@@ -221,10 +221,10 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         comment = Utils.htmlEscape(comment);
     } else if (msg.country) {
         // Add country flag and name in lieu of comment
-        comment = Lookup.cdata2flag([msg.ccode, msg.country]);
+        comment = Lookup.cdata2country([msg.ccode, msg.country]);
     } else if (msg.mode === 'AIS') {
         // Get country flag and name from the MMSI
-        comment = Lookup.mmsi2flag(source);
+        comment = Lookup.mmsi2country(source);
     }
 
     // Linkify source based on what it is (vessel or HAM callsign)

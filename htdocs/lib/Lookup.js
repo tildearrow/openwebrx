@@ -17,7 +17,7 @@ Lookup.ccode2flag = function(ccode) {
 };
 
 // Get country flag + name from a ccode/cname tuple.
-Lookup.cdata2flag = function(cdata) {
+Lookup.cdata2country = function(cdata) {
     if (!cdata || (cdata.length != 2))
         return '';
     else {
@@ -47,14 +47,14 @@ Lookup.call2ccode = function(callsign) {
 };
 
 // Get country name from a HAM callsign.
-Lookup.call2country = function(callsign) {
+Lookup.call2cname = function(callsign) {
     var cdata = this.call2cdata(callsign);
     return cdata && cdata[1]? cdata[1] : '';
 };
 
 // Get country flag + name from a HAM callsign.
-Lookup.call2flag = function(callsign) {
-    return this.cdata2flag(this.call2cdata(callsign));
+Lookup.call2country = function(callsign) {
+    return this.cdata2country(this.call2cdata(callsign));
 };
 
 //
@@ -84,14 +84,14 @@ Lookup.mmsi2ccode = function(mmsi) {
 };
 
 // Get country name from an MMSI number.
-Lookup.mmsi2country = function(mmsi) {
+Lookup.mmsi2cname = function(mmsi) {
     var cdata = this.mmsi2cdata(mmsi);
     return cdata && cdata[1]? cdata[1] : '';
 };
 
 // Get country flag + name from an MMSI number.
-Lookup.mmsi2flag = function(mmsi) {
-    return this.cdata2flag(this.mmsi2cdata(mmsi));
+Lookup.mmsi2country = function(mmsi) {
+    return this.cdata2country(this.mmsi2cdata(mmsi));
 };
 
 //
