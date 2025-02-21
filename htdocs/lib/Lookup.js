@@ -63,12 +63,12 @@ Lookup.call2flag = function(callsign) {
 
 // Check if a MMSI corresponds to a ground station.
 Lookup.mmsiIsGround = function(mmsi) {
-    return mmsi.substring(0, 2) === '00';
+    return mmsi && mmsi.substring(0, 2) === '00';
 };
 
 // Get MID part from an AIS MMSI.
 Lookup.mmsi2mid = function(mmsi) {
-    return mmsi.substring(0, 3);
+    return mmsi? mmsi.substring(0, 3) : '';
 };
 
 // Get country code and name from an AIS MMSI.

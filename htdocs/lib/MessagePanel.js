@@ -214,19 +214,22 @@ PacketMessagePanel.prototype.pushMessage = function(msg) {
         link = '<div ' + attrs + '>' + overlay + '</div>'
     }
 
-    // Linkify source based on what it is (vessel or HAM callsign)
-    source = msg.mode === 'AIS'?
-        Utils.linkifyVessel(source) : Utils.linkifyCallsign(source);
-
     // Compose comment
     var comment = msg.comment || msg.message || '';
     if (comment !== '') {
         // Escape all special characters
         comment = Utils.htmlEscape(comment);
-    } else {
+    } else if (msg.country) {
         // Add country flag and name in lieu of comment
         comment = Lookup.cdata2flag([msg.ccode, msg.country]);
+    } else if (msg.mode === 'AIS') {
+        // Get country flag and name from the MMSI
+        comment = Lookup.mmsi2flag(source);
     }
+
+    // Linkify source based on what it is (vessel or HAM callsign)
+    source = msg.mode === 'AIS'?
+        Utils.linkifyVessel(source) : Utils.linkifyCallsign(source);
 
     $b.append($(
         '<tr>' +
