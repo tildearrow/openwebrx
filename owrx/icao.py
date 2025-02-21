@@ -218,7 +218,7 @@ class NumericMapping(object):
         if not self.contains(icao):
             return None
 
-        result = str(icao - self.start + self.offset)
+        result = str(icao - self.start + self.first)
         return self.template[:len(self.template)-len(result)] + result
 
 
