@@ -5,7 +5,7 @@ from owrx.metrics import Metrics, CounterMetric
 from owrx.reporting import ReportingEngine
 from owrx.audio import AudioChopperProfile, StaticProfileSource, ConfigWiredProfileSource
 from owrx.audio.chopper import AudioChopperParser
-from owrx.data import HamCallsign
+from owrx.lookup import HamCallsign
 from abc import ABC, ABCMeta, abstractmethod
 from owrx.config import Config
 from enum import Enum

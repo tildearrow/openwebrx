@@ -2,7 +2,7 @@ from owrx.map import Map, LatLngLocation
 from owrx.metrics import Metrics, CounterMetric
 from owrx.bands import Bandplan
 from owrx.reporting import ReportingEngine
-from owrx.data import MmsiNumber
+from owrx.lookup import MmsiNumber
 from datetime import datetime, timezone
 from csdr.module import PickleModule
 import re
