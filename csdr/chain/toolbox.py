@@ -1,5 +1,5 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
-from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule, SatDumpModule, CwSkimmerModule
+from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule, SatDumpModule, CwSkimmerModule, AleModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch, RealPart
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, EasParser, IsmParser, RdsParser, CwSkimmerParser
@@ -221,6 +221,26 @@ class RdsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
     def setDialFrequency(self, frequency: int) -> None:
         self.parser.setDialFrequency(frequency)
+
+
+class AleDemodulator(ServiceDemodulator, DialFrequencyReceiver):
+    def __init__(self):
+        workers = [
+            Agc(Format.FLOAT),
+            Convert(Format.FLOAT, Format.SHORT),
+            AleModule(),
+        ]
+        # Connect all the workers
+        super().__init__(workers)
+
+    def getFixedAudioRate(self) -> int:
+        return 8000
+
+    def supportsSquelch(self) -> bool:
+        return True
+
+    def setDialFrequency(self, frequency: int) -> None:
+        pass
 
 
 class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):

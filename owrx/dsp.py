@@ -751,6 +751,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator()
+        elif mod == "ale":
+            from csdr.chain.toolbox import AleDemodulator
+            return AleDemodulator()
         elif mod == "noaa-apt-15":
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=15)

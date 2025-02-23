@@ -102,6 +102,7 @@ class FeatureDetector(object):
         "hdradio": ["nrsc5"],
         "rigcontrol": ["hamlib"],
         "cwskimmer": ["csdr_cwskimmer"],
+        "ale": ["linuxale"],
     }
 
     def feature_availability(self):
@@ -784,3 +785,11 @@ class FeatureDetector(object):
         `csdr-cwskimmer` package from the OpenWebRX+ repositories.
         """
         return self.command_is_runnable("csdr-cwskimmer -h")
+
+    def has_linuxale(self):
+        """
+        OpenWebRX uses the [LinuxALE](https://github.com/DigitalHERMES/LinuxALE)
+        tool to decode Automatic Link Establishment protocol messages.
+        You will have to compile LinuxALE from the sources.
+        """
+        return self.command_is_runnable("LinuxALE")
