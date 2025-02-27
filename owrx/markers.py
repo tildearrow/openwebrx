@@ -16,6 +16,7 @@ import json
 import re
 import os
 import time
+import random
 
 logger = logging.getLogger(__name__)
 
@@ -134,13 +135,18 @@ class Markers(object):
         self.updateMap(self.txmarkers)
         self.updateMap(self.remarkers)
 
+        # Random times to refresh receivers and repeaters data
+        receiversHour = random.randint(0, 1)
+        refreshMinute = random.randint(10, 49)
+
         #
         # Main Loop
         #
 
         while not self.event.is_set():
-            # Wait for the head of the next hour
+            # Wait until the head of an hour
             self.event.wait((60 - datetime.utcnow().minute) * 60)
+            # Check if we need to exit
             if self.event.is_set():
                 break
 
@@ -150,25 +156,29 @@ class Markers(object):
                 logger.info("Refreshing transmitters schedule...")
                 self.applyUpdate(self.txmarkers, data)
 
+            # This is the current hour and minute
+            currentHour   = datetime.utcnow().hour & 1
+            currentMinute = datetime.utcnow().minute
+            # Wait until the prescribed minute
+            if refreshMinute > currentMinute:
+                self.event.wait((rfreshMinute - currentMinute) * 60)
             # Check if we need to exit
             if self.event.is_set():
                 break
 
-            # Update receivers data as necessary
-            data = self.loadReceivers(onlyNew=True)
-            if data is not None:
-                logger.info("Refreshing receiver markers...")
-                self.applyUpdate(self.rxmarkers, data)
-
-            # Check if we need to exit
-            if self.event.is_set():
-                break
-
-            # Update repeaters data as necessary
-            data = self.loadRepeaters(onlyNew=True)
-            if data is not None:
-                logger.info("Refreshing repeater markers...")
-                self.applyUpdate(self.remarkers, data)
+            # If it is time to check on the receivers...
+            if currentHour == receiversHour:
+                # Update receivers data as necessary
+                data = self.loadReceivers(onlyNew=True)
+                if data is not None:
+                    logger.info("Refreshing receiver markers...")
+                    self.applyUpdate(self.rxmarkers, data)
+            else:
+                # Update repeaters data as necessary
+                data = self.loadRepeaters(onlyNew=True)
+                if data is not None:
+                    logger.info("Refreshing repeater markers...")
+                    self.applyUpdate(self.remarkers, data)
 
             # Check if we need to exit
             if self.event.is_set():
@@ -242,26 +252,29 @@ class Markers(object):
     # Returns known online SDR receivers. Will update receivers cache
     # by scraping online databases as necessary.
     def loadReceivers(self, onlyNew: bool = False):
-        # No result yet
-        result = {}
         # Refresh / load receivers database, as needed
+        logger.info("Refreshing receivers database...")
         if not Receivers.getSharedInstance().refresh() and onlyNew:
             return None
+        # No result yet
+        result = {}
         # Create markers from the current receivers database
         for entry in Receivers.getSharedInstance().getAll():
             rl = MarkerLocation(entry)
             result[rl.getId()] = rl
         # Done
+        logger.info("Loaded {0} receivers.".format(len(result)))
         return result
 
     # Returns repeaters inside given range. Will query online database
     # for updated list of repeaters and cache it as necessary.
     def loadRepeaters(self, rangeKm: int = 200, onlyNew: bool = False):
-        # No result yet
-        result = {}
         # Refresh / load repeaters database, as needed
+        logger.info("Refreshing repeaters database...")
         if not Repeaters.getSharedInstance().refresh() and onlyNew:
             return None
+        # No result yet
+        result = {}
         # Load repeater sites from the cached database
         for entry in Repeaters.getSharedInstance().getAllInRange(rangeKm):
             rl = MarkerLocation({
@@ -278,6 +291,7 @@ class Markers(object):
             })
             result[rl.getId()] = rl
         # Done
+        logger.info("Loaded {0} repeaters.".format(len(result)))
         return result
 
     # Returns currently broadcasting transmitters. Will load a new
