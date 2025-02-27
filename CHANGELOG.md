@@ -1,3 +1,10 @@
+**1.2.78**
+- Randomized web refresh times for repeaters and receivers.
+- Introduced web refresh cutoff after several failures.
+- Added server lookup from callsigns to countries.
+- Added server lookup from MMSIs to countries.
+- Fixed NumericMapping bug.
+
 **1.2.77**
 - Refactored web data sources (EIBI, receivers, repeaters).
 - Fixed RepeaterBook updates to happen daily.
