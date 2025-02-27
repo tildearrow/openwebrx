@@ -30,7 +30,7 @@ class Receivers(WebScraper):
         receivers.update(self.scrapeWebSDR())
         logger.info("Scraping OpenWebRX website...")
         receivers.update(self.scrapeOWRX())
-        return list(receivers.values())
+        return list(receivers.values()) if len(receivers) > 0 else None
 
     #
     # Following functions scrape data from websites

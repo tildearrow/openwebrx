@@ -414,6 +414,7 @@ class EIBI(WebScraper):
 
         except Exception as e:
             logger.error("loadFromWeb() exception: {0}".format(e))
+            return None
 
         # Done
         return result

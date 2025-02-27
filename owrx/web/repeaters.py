@@ -132,7 +132,7 @@ class Repeaters(WebScraper):
                     break
             # If no results, do not continue
             if "results" not in data:
-                return []
+                return None
             # For every entry in the response...
             for entry in data["results"]:
                 result += [{
@@ -148,6 +148,7 @@ class Repeaters(WebScraper):
 
         except Exception as e:
             logger.error("loadFromWeb() exception: {0}".format(e))
+            return None
 
         # Done
         return result

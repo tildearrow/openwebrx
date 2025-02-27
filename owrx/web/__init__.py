@@ -15,6 +15,8 @@ class WebScraper(object):
         self.refreshPeriod = 60*60*24
         self.lock = threading.Lock()
         self.dataName = dataName
+        self.errorCount = 0
+        self.maxErrors = 5
         self.data = []
 
     # Get name of the cached database file
@@ -47,11 +49,16 @@ class WebScraper(object):
         # This file contains cached receivers database
         file = self._getCachedDatabaseFile()
         # If cached database is stale...
-        if time.time() - self.lastDownloaded() >= self.refreshPeriod:
-            logger.info("Updating {0} database from web...".format(self.dataName))
+        if self.errorCount < self.maxErrors and time.time() - self.lastDownloaded() >= self.refreshPeriod:
+            logger.info("Updating {0} database from web ({1}/{2} errors)...".format(self.dataName, self.errorCount, self.maxErrors))
             # Load receivers list from the web
             data = self._loadFromWeb()
-            if data:
+            if data is None:
+                # Count continuous errors
+                self.errorCount += 1
+            else:
+                # Clear error count
+                self.errorCount = 0
                 # Save parsed data into a file
                 self.saveData(file, data)
                 # Update current database
