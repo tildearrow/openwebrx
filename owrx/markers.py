@@ -161,7 +161,7 @@ class Markers(object):
             currentMinute = datetime.utcnow().minute
             # Wait until the prescribed minute
             if refreshMinute > currentMinute:
-                self.event.wait((rfreshMinute - currentMinute) * 60)
+                self.event.wait((refreshMinute - currentMinute) * 60)
             # Check if we need to exit
             if self.event.is_set():
                 break
