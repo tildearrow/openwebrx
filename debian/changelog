@@ -4,6 +4,7 @@ openwebrx (1.2.78) bullseye jammy; urgency=low
   * Introduced web refresh cutoff after several failures.
   * Added server lookup from callsigns to countries.
   * Added server lookup from MMSIs to countries.
+  * Added more profiles to the default RTLSDR device.
   * Fixed NumericMapping bug.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Fri, 28 Feb 2025 16:12:00 +0000

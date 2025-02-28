@@ -3,6 +3,7 @@
 - Introduced web refresh cutoff after several failures.
 - Added server lookup from callsigns to countries.
 - Added server lookup from MMSIs to countries.
+- Added more profiles to the default RTLSDR device.
 - Fixed NumericMapping bug.
 
 **1.2.77**
