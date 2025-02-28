@@ -83,7 +83,7 @@ defaultConfig = PropertyLayer(
                         direct_sampling=2,
                     ),
                     "am": PropertyLayer(
-                        name="AM Broadcasting",
+                        name="AM Broadcast",
                         center_freq=1000000,
                         samp_rate=1024000,
                         start_freq=1200000,
