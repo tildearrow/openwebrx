@@ -15,8 +15,6 @@ import logging
 import json
 import re
 import os
-import time
-import random
 
 logger = logging.getLogger(__name__)
 
@@ -59,10 +57,16 @@ class Markers(object):
     @staticmethod
     def start():
         Markers.getSharedInstance().startThread()
+        Receivers.start()
+        Repeaters.start()
+        EIBI.start()
 
     @staticmethod
     def stop():
         Markers.getSharedInstance().stopThread()
+        Receivers.stop()
+        Repeaters.stop()
+        EIBI.stop()
 
     @staticmethod
     def _getCachedMarkersFile():
@@ -91,19 +95,13 @@ class Markers(object):
 
     # Start the main thread
     def startThread(self):
-        Receivers.getSharedInstance().startThread()
-        Repeaters.getSharedInstance().startThread()
-        EIBI.getSharedInstance().startThread()
         if self.thread is None:
             self.event.clear()
-            self.thread = threading.Thread(target=self._refreshThread)
+            self.thread = threading.Thread(target=self._refreshThread, name=type(self).__name__)
             self.thread.start()
 
     # Stop the main thread
     def stopThread(self):
-        Receivers.getSharedInstance().stopThread()
-        Repeaters.getSharedInstance().stopThread()
-        EIBI.getSharedInstance().stopThread()
         if self.thread is not None:
             logger.info("Stopping marker database thread.")
             self.event.set()

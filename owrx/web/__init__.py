@@ -1,5 +1,6 @@
 from owrx.config.core import CoreConfig
 
+import random
 import urllib
 import threading
 import logging
@@ -60,7 +61,7 @@ class WebScraper(object):
         if self.thread is None:
             logger.info("Starting {0} database thread.".format(self.dataName))
             self.event.clear()
-            self.thread = threading.Thread(target=self._refreshThread)
+            self.thread = threading.Thread(target=self._refreshThread, name=type(self).__name__)
             self.thread.start()
 
     # Stop the main thread

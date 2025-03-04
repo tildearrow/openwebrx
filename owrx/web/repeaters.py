@@ -27,6 +27,14 @@ class Repeaters(WebScraper):
                 Repeaters.sharedInstance = Repeaters("repeaters.json")
         return Repeaters.sharedInstance
 
+    @staticmethod
+    def start():
+        Repeaters.getSharedInstance().startThread()
+
+    @staticmethod
+    def stop():
+        Repeaters.getSharedInstance().stopThread()
+
     # Compute distance, in kilometers, between two latlons.
     @staticmethod
     def distKm(p1, p2):
