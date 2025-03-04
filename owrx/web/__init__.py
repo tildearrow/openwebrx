@@ -1,4 +1,5 @@
 from owrx.config.core import CoreConfig
+from datetime import datetime
 
 import random
 import urllib
@@ -7,7 +8,6 @@ import logging
 import json
 import os
 import time
-import re
 
 logger = logging.getLogger(__name__)
 
@@ -75,12 +75,12 @@ class WebScraper(object):
     # This is the actual thread function
     def _refreshThread(self):
         # Random time to refresh data
-        refreshMinute = random.randint(10, 49)
+        refreshMinute = random.randint(5, 49)
         # Main Loop
         while not self.event.is_set():
             # Wait until the check-and-update time
             currentMinute = datetime.utcnow().minute
-            if refreshMniute > currentMinute:
+            if refreshMinute > currentMinute:
                 self.event.wait((refreshMinute - currentMinute) * 60)
             # Check if we need to exit
             if self.event.is_set():
