@@ -59,7 +59,7 @@ class WebScraper(object):
     # Start the main thread
     def startThread(self):
         if self.thread is None:
-            logger.info("Starting {0} database thread.".format(self.dataName))
+            logger.info("Starting {0} database thread.".format(type(self).__name__))
             self.event.clear()
             self.thread = threading.Thread(target=self._refreshThread, name=type(self).__name__)
             self.thread.start()
@@ -67,7 +67,7 @@ class WebScraper(object):
     # Stop the main thread
     def stopThread(self):
         if self.thread is not None:
-            logger.info("Stopping {0} database thread.".format(self.dataName))
+            logger.info("Stopping {0} database thread.".format(type(self).__name__))
             self.event.set()
             self.thread.join()
             self.thread = None
@@ -96,7 +96,7 @@ class WebScraper(object):
         file = self._getCachedDatabaseFile()
         # If cached database is stale...
         if self.errorCount < self.maxErrors and time.time() - self.lastDownloaded() >= self.refreshPeriod:
-            logger.info("Updating {0} database from web ({1}/{2} errors)...".format(self.dataName, self.errorCount, self.maxErrors))
+            logger.info("Updating {0} database from web ({1}/{2} errors)...".format(type(self).__name__, self.errorCount, self.maxErrors))
             # Load receivers list from the web
             data = self._loadFromWeb()
             if data is None:
