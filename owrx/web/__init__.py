@@ -79,9 +79,9 @@ class WebScraper(object):
         # Main Loop
         while not self.event.is_set():
             # Wait until the check-and-update time
-            currentMinute = datetime.utcnow().minute
-            if refreshMinute > currentMinute:
-                self.event.wait((refreshMinute - currentMinute) * 60)
+            waitMinutes = refreshMinute - datetime.utcnow().minute
+            waitMinutes = waitMinutes + 60 if waitMinutes <= 0 else waitMinutes
+            self.event.wait(waitMinutes * 60)
             # Check if we need to exit
             if self.event.is_set():
                 break
@@ -96,7 +96,7 @@ class WebScraper(object):
         file = self._getCachedDatabaseFile()
         # If cached database is stale...
         if self.errorCount < self.maxErrors and time.time() - self.lastDownloaded() >= self.refreshPeriod:
-            logger.info("Updating {0} database from web ({1}/{2} errors)...".format(type(self).__name__, self.errorCount, self.maxErrors))
+            logger.info("Updating {0} database from web (attempt {1}/{2})...".format(type(self).__name__, self.errorCount + 1, self.maxErrors))
             # Load receivers list from the web
             data = self._loadFromWeb()
             if data is None:
