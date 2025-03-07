@@ -1,6 +1,7 @@
 from owrx.config import Config
 from owrx.bookmarks import Bookmark
 from owrx.web import WebScraper
+from owrx.version import openwebrx_version
 
 import urllib
 import threading
@@ -122,7 +123,7 @@ class Repeaters(WebScraper):
             pm   = Config.get()
             lat  = pm["receiver_gps"]["lat"]
             lon  = pm["receiver_gps"]["lon"]
-            hdrs = { "User-Agent": "(OpenWebRX+, luarvique@gmail.com)" }
+            hdrs = { "User-Agent": "(OpenWebRX+ " + openwebrx_version + ", luarvique@gmail.com)" }
             # Start with US/Canada database for north-wester quartersphere
             if lat > 0 and lon < 0:
                 scps = ["export.php", "exportROW.php"]
