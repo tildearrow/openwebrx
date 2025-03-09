@@ -1,6 +1,6 @@
 from owrx.config import Config
 from owrx.bookmarks import Bookmark
-from owrx.web import WebScraper
+from owrx.web import WebAgent
 from owrx.version import openwebrx_version
 
 import urllib
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 #
 MAX_DISTANCE = 200
 
-class Repeaters(WebScraper):
+class Repeaters(WebAgent):
     sharedInstance = None
     creationLock = threading.Lock()
 

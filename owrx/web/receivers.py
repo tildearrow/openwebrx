@@ -1,4 +1,4 @@
-from owrx.web import WebScraper
+from owrx.web import WebAgent
 
 import threading
 import logging
@@ -7,7 +7,7 @@ import re
 
 logger = logging.getLogger(__name__)
 
-class Receivers(WebScraper):
+class Receivers(WebAgent):
     sharedInstance = None
     creationLock = threading.Lock()
 

@@ -11,7 +11,7 @@ import time
 
 logger = logging.getLogger(__name__)
 
-class WebScraper(object):
+class WebAgent(object):
     def __init__(self, dataName: str):
         self.refreshPeriod = 60*60*24
         self.lock = threading.Lock()
