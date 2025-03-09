@@ -27,6 +27,14 @@ class EIBI(WebScraper):
                 EIBI.sharedInstance = EIBI("eibi.json")
         return EIBI.sharedInstance
 
+    @staticmethod
+    def start():
+        EIBI.getSharedInstance().startThread()
+
+    @staticmethod
+    def stop():
+        EIBI.getSharedInstance().stopThread()
+
     # Offset frequency for proper tuning
     @staticmethod
     def correctFreq(freq: int, mode: str) -> int:

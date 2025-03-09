@@ -18,6 +18,14 @@ class Receivers(WebScraper):
                 Receivers.sharedInstance = Receivers("receivers.json")
         return Receivers.sharedInstance
 
+    @staticmethod
+    def start():
+        Receivers.getSharedInstance().startThread()
+
+    @staticmethod
+    def stop():
+        Receivers.getSharedInstance().stopThread()
+
     def __init__(self, dataName: str):
         super().__init__(dataName)
 
