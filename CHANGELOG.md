@@ -1,3 +1,8 @@
+**1.2.79**
+- Shrunk SDRPlay rfgain_sel range to 0..27.
+- Refactored and improved web agents.
+- Added OWRX+ version to RepeaterBook agent string.
+
 **1.2.78**
 - Randomized web refresh times for repeaters and receivers.
 - Introduced web refresh cutoff after several failures.
