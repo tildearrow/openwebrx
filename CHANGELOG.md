@@ -1,4 +1,5 @@
 **1.2.79**
+- Added configurable fax page length limit.
 - Shrunk SDRPlay rfgain_sel range to 0..27.
 - Refactored and improved web agents.
 - Added OWRX+ version to RepeaterBook agent string.
