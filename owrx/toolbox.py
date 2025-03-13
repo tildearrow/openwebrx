@@ -198,7 +198,7 @@ class PageParser(TextParser):
         self.rePocsag = re.compile(r"POCSAG(\d+):\s*Address:\s*(\S+)\s+Function:\s*(-?\d+)(\s+Certainty:\s*(-?\d+))?(\s+(\S+):\s*(.*))?")
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN|<type>|<message>
         # FLEX|NNNN-NN-NN NN:NN:NN|<baud>/<value>/C/C|NN.NNN|NNNNNNNNN NNNNNNNNN|<type>|<message>
-        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+)/(\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+)?)\|(\S+)\|(.*)")
+        self.reFlex1 = re.compile(r"FLEX\|(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\|(\d+)/(\d+/\S/\S)\|(\d\d\.\d\d\d)\|(\d+(?:\s+\d+){0,})\|(\S+)\|(.*)")
         # FLEX: NNNN-NN-NN NN:NN:NN <baud>/<value>/C NN.NNN [NNNNNNNNN] <type> <message>
         self.reFlex2 = re.compile(r"FLEX:\s+(\d\d\d\d-\d\d-\d\d\s+\d\d:\d\d:\d\d)\s+(\d+)/(\d+/\S)\s+(\d\d\.\d\d\d)\s+\[(\d+)\]\s+(\S+)\s+(.*)")
         # FLEX message status
@@ -414,3 +414,40 @@ class EasParser(TextParser):
 
         # Return received message as text
         return "\n".join(out)
+
+
+class CwSkimmerParser(TextParser):
+    def __init__(self, service: bool = False):
+        self.reLine = re.compile("^([0-9]+):(.+)$")
+        self.freqChanged = False
+        # Construct parent object
+        super().__init__(filePrefix="CW", service=service)
+
+    def parse(self, msg: bytes):
+        # Do not parse in service mode
+        if self.service:
+            return None
+        # Parse CW messages by frequency
+        msg = msg.decode("utf-8", "replace")
+        r = self.reLine.match(msg)
+        if r is not None:
+            freq = int(r.group(1))
+            text = r.group(2)
+            if len(text) > 0:
+                # Compose output
+                out = { "mode": "CW", "text": text }
+                # Add frequency, if known
+                if self.frequency:
+                    out["freq"] = self.frequency + freq
+                # Report frequency changes
+                if self.freqChanged:
+                    self.freqChanged = False
+                    out["changed"] = True
+                # Done
+                return out
+        # No result
+        return None
+
+    def setDialFrequency(self, frequency: int) -> None:
+        self.freqChanged = frequency != self.frequency
+        super().setDialFrequency(frequency)

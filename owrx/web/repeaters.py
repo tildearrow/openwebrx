@@ -1,14 +1,13 @@
-from owrx.config.core import CoreConfig
 from owrx.config import Config
-from owrx.version import openwebrx_version
 from owrx.bookmarks import Bookmark
+from owrx.web import WebAgent
+from owrx.version import openwebrx_version
 
 import urllib
 import threading
 import logging
 import json
 import os
-import time
 import math
 
 logger = logging.getLogger(__name__)
@@ -18,7 +17,7 @@ logger = logging.getLogger(__name__)
 #
 MAX_DISTANCE = 200
 
-class Repeaters(object):
+class Repeaters(WebAgent):
     sharedInstance = None
     creationLock = threading.Lock()
 
@@ -26,13 +25,16 @@ class Repeaters(object):
     def getSharedInstance():
         with Repeaters.creationLock:
             if Repeaters.sharedInstance is None:
-                Repeaters.sharedInstance = Repeaters()
+                Repeaters.sharedInstance = Repeaters("repeaters.json")
         return Repeaters.sharedInstance
 
     @staticmethod
-    def _getCachedDatabaseFile():
-        coreConfig = CoreConfig()
-        return "{data_directory}/repeaters.json".format(data_directory=coreConfig.get_data_directory())
+    def start():
+        Repeaters.getSharedInstance().startThread()
+
+    @staticmethod
+    def stop():
+        Repeaters.getSharedInstance().stopThread()
 
     # Compute distance, in kilometers, between two latlons.
     @staticmethod
@@ -88,10 +90,8 @@ class Repeaters(object):
         # Done
         return " ".join(description)
 
-    def __init__(self):
-        self.refreshPeriod = 60*60*24
-        self.lock = threading.Lock()
-        self.repeaters = []
+    def __init__(self, dataName: str):
+        super().__init__(dataName)
         # Update repeater list when receiver location changes
         pm = Config.get()
         self.location = (pm["receiver_gps"]["lat"], pm["receiver_gps"]["lon"])
@@ -112,71 +112,18 @@ class Repeaters(object):
             os.remove(file)
 
     #
-    # Load cached database or refresh it from the web.
-    #
-    def refresh(self):
-        # This file contains cached database
-        file = self._getCachedDatabaseFile()
-        ts   = os.path.getmtime(file) if os.path.isfile(file) else 0
-
-        # If cached database is stale...
-        if time.time() - ts >= self.refreshPeriod:
-            # Load EIBI database file from the web
-            repeaters = self.loadFromWeb()
-            if repeaters:
-                # Save parsed data into a file
-                self.saveRepeaters(file, repeaters)
-                # Update current schedule
-                with self.lock:
-                    self.repeaters = repeaters
-
-        # If no current databse, load it from cached file
-        if not self.repeaters:
-            repeaters = self.loadRepeaters(file)
-            with self.lock:
-                self.repeaters = repeaters
-
-    #
-    # Save database to a given JSON file.
-    #
-    def saveRepeaters(self, file: str, repeaters):
-        logger.info("Saving {0} repeaters to '{1}'...".format(len(repeaters), file))
-        try:
-            with open(file, "w") as f:
-                json.dump(repeaters, f, indent=2)
-                f.close()
-        except Exception as e:
-            logger.error("saveRepeaters() exception: {0}".format(e))
-
-    #
-    # Load database from a given JSON file.
-    #
-    def loadRepeaters(self, file: str):
-        logger.info("Loading repeaters from '{0}'...".format(file))
-        if not os.path.isfile(file):
-            result = []
-        else:
-            try:
-                with open(file, "r") as f:
-                    result = json.load(f)
-                    f.close()
-            except Exception as e:
-                logger.error("loadRepeaters() exception: {0}".format(e))
-                result = []
-        # Done
-        logger.info("Loaded {0} repeaters from '{1}'...".format(len(result), file))
-        return result
-
-    #
     # Load repeater database from the RepeaterBook.com website.
     #
-    def loadFromWeb(self, url: str = "https://www.repeaterbook.com/api/{script}?qtype=prox&dunit=km&lat={lat}&lng={lon}&dist={range}", rangeKm: int = MAX_DISTANCE):
+    def _loadFromWeb(self):
+        return self.loadFromWeb("https://www.repeaterbook.com/api/{script}?qtype=prox&dunit=km&lat={lat}&lng={lon}&dist={range}", MAX_DISTANCE)
+
+    def loadFromWeb(self, url: str, rangeKm: int):
         result = []
         try:
             pm   = Config.get()
             lat  = pm["receiver_gps"]["lat"]
             lon  = pm["receiver_gps"]["lon"]
-            hdrs = { "User-Agent": "(OpenWebRX+, luarvique@gmail.com)" }
+            hdrs = { "User-Agent": "(OpenWebRX+ " + openwebrx_version + ", luarvique@gmail.com)" }
             # Start with US/Canada database for north-wester quartersphere
             if lat > 0 and lon < 0:
                 scps = ["export.php", "exportROW.php"]
@@ -194,7 +141,7 @@ class Repeaters(object):
                     break
             # If no results, do not continue
             if "results" not in data:
-                return []
+                return None
             # For every entry in the response...
             for entry in data["results"]:
                 result += [{
@@ -210,6 +157,7 @@ class Repeaters(object):
 
         except Exception as e:
             logger.error("loadFromWeb() exception: {0}".format(e))
+            return None
 
         # Done
         return result
@@ -236,7 +184,7 @@ class Repeaters(object):
 
         # Search for repeaters within frequency and distance ranges
         with self.lock:
-            for entry in self.repeaters:
+            for entry in self.data:
                 try:
                     f = entry["freq"]
                     if f1 <= f <= f2:
@@ -271,7 +219,7 @@ class Repeaters(object):
 
         # Search for repeaters within given distance range
         with self.lock:
-            for entry in self.repeaters:
+            for entry in self.data:
                 try:
                     if self.distKm(rxPos, (entry["lat"], entry["lon"])) <= rangeKm:
                         result += [entry]
