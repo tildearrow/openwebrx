@@ -412,6 +412,7 @@ defaultConfig = PropertyLayer(
     hfdl_ttl=1800,
     acars_ttl=1800,
     fax_lpm=120,
+    fax_length=1400,
     fax_postprocess=True,
     fax_color=False,
     fax_am=False,
