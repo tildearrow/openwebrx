@@ -54,7 +54,11 @@ rm $SDRPLAY_BINARY
 echo "+ Install redsea (RDS)"
 git clone https://github.com/windytan/redsea.git
 pushd redsea
-./autogen.sh && ./configure && make && make install
+mkdir build
+cd build
+meson ..
+meson compile
+meson install
 popd
 
 echo "+ Install PerseusSDR..."

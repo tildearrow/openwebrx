@@ -24,9 +24,8 @@ if [[ -z ${1:-} ]]; then
   apt-get update
   apt-get -y install --no-install-recommends $STATIC_PACKAGES $BUILD_PACKAGES
 
-  git clone https://github.com/osmocom/rtl-sdr.git
-  # release 2.0.1 from master as of 2024-02-04
-  cmakebuild rtl-sdr 420086af84d7eaaf98ff948cd11fea2cae71734a
+  git clone https://github.com/rtlsdrblog/rtl-sdr-blog.git
+  cmakebuild rtl-sdr-blog master
 
   git clone https://github.com/pothosware/SoapyRTLSDR.git
   cmakebuild SoapyRTLSDR soapy-rtl-sdr-0.3.1
