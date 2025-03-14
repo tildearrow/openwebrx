@@ -1,8 +1,10 @@
 **1.2.79**
 - Added configurable fax page length limit.
+- Added OWRX+ version to RepeaterBook agent string.
 - Shrunk SDRPlay rfgain_sel range to 0..27.
 - Refactored and improved web agents.
-- Added OWRX+ version to RepeaterBook agent string.
+- Added newer Yaesu radios to APRS (Geoffrey Phillips).
+- Fixed Leaflet geodesic line bugs (Stanislav Lechev).
 
 **1.2.78**
 - Randomized web refresh times for repeaters and receivers.
