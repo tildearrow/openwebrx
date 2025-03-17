@@ -19,7 +19,6 @@ class TextParser(LineBasedModule):
     def __init__(self, filePrefix: str = None, service: bool = False):
         self.service   = service
         self.frequency = 0
-        self.data      = bytearray(b"")
         self.filePfx   = filePrefix
         self.file      = None
         self.maxLines  = 10000
@@ -113,12 +112,10 @@ class TextParser(LineBasedModule):
             if self.service and self.filePfx is not None:
                 if out:
                     # If parser returned output, write it into log file
-                    self.writeFile(str(out).encode("utf-8"))
-                    self.writeFile(b"\n")
+                    self.writeFile(str(out).encode("utf-8") + b"\n")
                 elif out is None and len(line)>0:
                     # Write input into log file, including end-of-line
-                    self.writeFile(line)
-                    self.writeFile(b"\n")
+                    self.writeFile(line + b"\n")
 
         except Exception as exptn:
             logger.error("%s: Exception parsing: %s" % (self.myName(), str(exptn)))
