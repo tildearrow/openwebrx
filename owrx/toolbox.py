@@ -2,7 +2,7 @@ from owrx.storage import Storage
 from owrx.config import Config
 from owrx.color import ColorCache
 from owrx.reporting import ReportingEngine
-from csdr.module import LineBasedModule
+from csdr.module import ThreadModule, LineBasedModule
 from pycsdr.types import Format
 from owrx.dsame3.dsame import same_decode_string
 from datetime import datetime, timezone
@@ -15,15 +15,15 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-class TextParser(LineBasedModule):
-    def __init__(self, filePrefix: str = None, service: bool = False):
-        self.service   = service
+
+class DataRecorder(object):
+    def __init__(self, filePrefix: str = None, fileExtension: str = "", maxBytes: int = 8 * 1024 * 1024):
         self.frequency = 0
         self.filePfx   = filePrefix
+        self.fileExt   = fileExtension
         self.file      = None
-        self.maxLines  = 10000
-        self.cntLines  = 0
-        super().__init__()
+        self.maxBytes  = maxBytes
+        self.cntBytes  = 0
 
     def __del__(self):
         # Close currently open file, if any
@@ -32,7 +32,7 @@ class TextParser(LineBasedModule):
     def closeFile(self):
         if self.file is not None:
             try:
-                logger.info("Closing log file '%s'." % self.file.name)
+                logger.info("Closing file '%s'." % self.file.name)
                 self.file.close()
                 self.file = None
                 # Delete excessive files from storage
@@ -46,9 +46,9 @@ class TextParser(LineBasedModule):
     def newFile(self, fileName):
         self.closeFile()
         try:
-            logger.info("Opening log file '%s'..." % fileName)
+            logger.info("Opening file '%s'..." % fileName)
             self.file = Storage.getSharedInstance().newFile(fileName, buffering = 0)
-            self.cntLines = 0
+            self.cntBytes = 0
 
         except Exception as exptn:
             logger.error("Exception opening file: %s" % str(exptn))
@@ -57,7 +57,7 @@ class TextParser(LineBasedModule):
     def writeFile(self, data):
         # If no file open, create and open a new file
         if self.file is None and self.filePfx is not None:
-            self.newFile(Storage.makeFileName(self.filePfx+"-{0}", self.frequency) + ".txt")
+            self.newFile(Storage.makeFileName(self.filePfx+"-{0}", self.frequency) + self.fileExt)
         # If file open now...
         if self.file is not None:
             # Write new line into the file
@@ -65,10 +65,23 @@ class TextParser(LineBasedModule):
                 self.file.write(data)
             except Exception as exptn:
                 logger.error("Exception writing file: %s" % str(exptn))
-            # No more than maxLines per file
-            self.cntLines = self.cntLines + 1
-            if self.cntLines >= self.maxLines:
+            # No more than maxBytes per file
+            self.cntBytes = self.cntBytes + len(data)
+            if self.cntBytes >= self.maxBytes:
                 self.closeFile()
+
+    def setDialFrequency(self, frequency: int) -> None:
+        # Open a new file if frequency changes
+        if frequency != self.frequency:
+            self.frequency = frequency
+            self.closeFile()
+
+
+class Mp3Recorder(ThreadModule, DataRecorder):
+    def __init__(self, service: bool = False):
+        self.service = service
+        DataRecorder.__init__(self, "REC", ".mp3")
+        ThreadModule.__init__(self)
 
     def getInputFormat(self) -> Format:
         return Format.CHAR
@@ -76,8 +89,20 @@ class TextParser(LineBasedModule):
     def getOutputFormat(self) -> Format:
         return Format.CHAR
 
-    def setDialFrequency(self, frequency: int) -> None:
-        self.frequency = frequency
+    def run(self):
+        while self.doRun:
+            data = self.reader.read()
+            if data is None:
+                self.doRun = False
+            else:
+                self.writeFile(data)
+
+
+class TextParser(LineBasedModule, DataRecorder):
+    def __init__(self, filePrefix: str = None, service: bool = False):
+        self.service = service
+        DataRecorder.__init__(self, filePrefix, ".txt")
+        LineBasedModule.__init__(self)
 
     # Compose name of this decoder, made of client/service and frequency
     def myName(self):
@@ -86,10 +111,6 @@ class TextParser(LineBasedModule):
             " " + self.filePfx if self.filePfx else "",
             " at %dkHz" % (self.frequency // 1000) if self.frequency>0 else ""
         )
-
-    # Get current UTC time in a standardized format
-    def getUtcTime(self) -> str:
-        return datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
     # By default, do not parse
     def parse(self, msg: bytes):

@@ -1,8 +1,8 @@
 from csdr.chain.demodulator import ServiceDemodulator, DialFrequencyReceiver
-from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule, SatDumpModule, CwSkimmerModule, AudioRecorderModule
+from csdr.module.toolbox import Rtl433Module, MultimonModule, DumpHfdlModule, DumpVdl2Module, Dump1090Module, AcarsDecModule, RedseaModule, SatDumpModule, CwSkimmerModule, LameModule
 from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch, RealPart
 from pycsdr.types import Format
-from owrx.toolbox import TextParser, PageParser, SelCallParser, EasParser, IsmParser, RdsParser, CwSkimmerParser
+from owrx.toolbox import TextParser, PageParser, SelCallParser, EasParser, IsmParser, RdsParser, CwSkimmerParser, Mp3Recorder
 from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
 from owrx.storage import Storage
 
@@ -252,8 +252,11 @@ class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, sampleRate: int = 12000, service: bool = False):
         self.sampleRate = sampleRate
         self.frequency = 0
+        self.recorder = Mp3Recorder(service)
         workers = [
             Convert(Format.FLOAT, Format.SHORT),
+            LameModule(sampleRate),
+            self.recorder,
         ]
         # Connect all the workers
         super().__init__(workers)
@@ -265,14 +268,9 @@ class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
         return True
 
     def setDialFrequency(self, frequency: int) -> None:
-        fileName = Storage.makeFileName("REC-{0}", frequency) + ".mp3"
-        fileName = Storage.getFilePath(fileName)
-        recorder = AudioRecorderModule(fileName, self.sampleRate)
-        if self.frequency == 0:
-            self.append(recorder)
-        else:
-            self.replace(1, recorder)
-        self.frequency = frequency
+        # Not restarting LAME, it is ok to continue on a new file
+        #self.replace(1, LameModule(self.sampleRate))
+        self.recorder.setDialFrequency(frequency)
 
 
 class NoaaAptDemodulator(ServiceDemodulator):
