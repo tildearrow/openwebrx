@@ -154,10 +154,8 @@ class DablinModule(ExecModule):
 class AudioRecorderModule(ExecModule):
     def __init__(self, outFile: str, sampleRate: int = 12000):
         cmd = [
-            "lame", "-r", "-m", "m", "--verbose",
-            "--signed", "-s", str(sampleRate / 1000),
-            "--bitwidth", "16",
-            "-", outFile
+            "lame", "-r", "-m", "m", "--signed", "--bitwidth", "16",
+            "-s", str(sampleRate / 1000), "-", outFile
         ]
         super().__init__(Format.SHORT, Format.CHAR, cmd)
 

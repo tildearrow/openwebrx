@@ -4,6 +4,7 @@ from pycsdr.modules import FmDemod, AudioResampler, Convert, Agc, Squelch, RealP
 from pycsdr.types import Format
 from owrx.toolbox import TextParser, PageParser, SelCallParser, EasParser, IsmParser, RdsParser, CwSkimmerParser
 from owrx.aircraft import HfdlParser, Vdl2Parser, AdsbParser, AcarsParser
+from owrx.storage import Storage
 
 from datetime import datetime
 import os
@@ -250,9 +251,9 @@ class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, sampleRate: int = 12000, service: bool = False):
         self.sampleRate = sampleRate
+        self.frequency = 0
         workers = [
             Convert(Format.FLOAT, Format.SHORT),
-            AudioRecorderModule("/tmp/test.mp3", sampleRate),
         ]
         # Connect all the workers
         super().__init__(workers)
@@ -264,8 +265,14 @@ class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
         return True
 
     def setDialFrequency(self, frequency: int) -> None:
-        # Add code here
-        pass
+        fileName = Storage.makeFileName("REC-{0}", frequency) + ".mp3"
+        fileName = Storage.getFilePath(fileName)
+        recorder = AudioRecorderModule(fileName, self.sampleRate)
+        if self.frequency == 0:
+            self.append(recorder)
+        else:
+            self.replace(1, recorder)
+        self.frequency = frequency
 
 
 class NoaaAptDemodulator(ServiceDemodulator):
