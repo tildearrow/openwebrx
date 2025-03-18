@@ -350,12 +350,12 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "acars":
             from csdr.chain.toolbox import AcarsDemodulator
             return AcarsDemodulator(service=True)
-        elif mod == "am":
-            from csdr.chain.analog import Am
-            return Am(service=True)
         elif mod == "adsb":
             from csdr.chain.toolbox import AdsbDemodulator
             return AdsbDemodulator(service=True)
+        elif mod == "recorder":
+            from csdr.chain.toolbox import AudioRecorder
+            return AudioRecorder(service=True)
         elif mod == "noaa-apt-15":
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=15, service=True)

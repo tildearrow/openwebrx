@@ -152,14 +152,14 @@ class DablinModule(ExecModule):
 
 
 class AudioRecorderModule(ExecModule):
-    def __init__(self, outFile: str, sampleRate: int = 12000, format: Format = Format.FLOAT):
+    def __init__(self, outFile: str, sampleRate: int = 12000):
         cmd = [
             "lame", "-r", "-m", "m", "--verbose",
             "--signed", "-s", str(sampleRate / 1000),
-            "--bitwidth", "32" if format == Format.FLOAT else "16",
+            "--bitwidth", "16",
             "-", outFile
         ]
-        super().__init__(format, Format.CHAR, cmd)
+        super().__init__(Format.SHORT, Format.CHAR, cmd)
 
 
 class SatDumpModule(ExecModule):

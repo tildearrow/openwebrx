@@ -289,6 +289,14 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
+        DigitalMode(
+            "recorder",
+            "Recorder",
+            underlying=["am", "usb", "lsb", "nfm"],
+            requirements=["mp3"],
+            service=True,
+            squelch=True
+        ),
 # SatDump stuff is work in progress!
 #        DigitalMode(
 #            "noaa-apt-15",
