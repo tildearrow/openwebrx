@@ -4,12 +4,12 @@ from pycsdr.modules import AmDemod, DcBlock, FmDemod, Limit, NfmDeemphasis, Agc,
     WfmDeemphasis, FractionalDecimator, RealPart, Writer, Buffer
 from pycsdr.types import Format, AgcProfile
 from csdr.chain.toolbox import RdsDemodulator
+from csdr.module.toolbox import AudioRecorderModule
 from typing import Optional
 from owrx.feature import FeatureDetector
 
-
 class Am(BaseDemodulatorChain):
-    def __init__(self):
+    def __init__(self, service: bool = False):
         agc = Agc(Format.FLOAT)
         agc.setProfile(AgcProfile.SLOW)
         agc.setInitialGain(200)
@@ -18,7 +18,8 @@ class Am(BaseDemodulatorChain):
             DcBlock(),
             agc,
         ]
-
+        if service:
+            workers.append(AudioRecorderModule("/tmp/test.mp3"))
         super().__init__(workers)
 
 

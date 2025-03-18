@@ -151,6 +151,17 @@ class DablinModule(ExecModule):
         self.restart()
 
 
+class AudioRecorderModule(ExecModule):
+    def __init__(self, outFile: str, sampleRate: int = 12000, format: Format = Format.FLOAT):
+        cmd = [
+            "lame", "-r", "-m", "m", "--verbose",
+            "--signed", "-s", str(sampleRate / 1000),
+            "--bitwidth", "32" if format == Format.FLOAT else "16",
+            "-", outFile
+        ]
+        super().__init__(format, Format.CHAR, cmd)
+
+
 class SatDumpModule(ExecModule):
     def __init__(self, mode: str = "noaa_apt", sampleRate: int = 50000, frequency: int = 137100000, outFolder: str = "/tmp/satdump", options = None):
         # Make sure we have output folder
