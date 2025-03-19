@@ -94,9 +94,12 @@ class Mp3Recorder(ThreadModule, DataRecorder):
             data = self.reader.read()
             if data is None:
                 self.doRun = False
-            else:
+            elif self.service:
+                # Record data when in service mode
                 self.writeFile(data)
-
+            else:
+                # Drop data in client mode, this should never happen!
+                pass
 
 class TextParser(LineBasedModule, DataRecorder):
     def __init__(self, filePrefix: str = None, service: bool = False):

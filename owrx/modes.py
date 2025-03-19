@@ -80,6 +80,10 @@ class DigitalMode(Mode):
         )
 
 
+class ServiceOnlyMode(DigitalMode):
+    pass
+
+
 class AudioChopperMode(DigitalMode, metaclass=ABCMeta):
     def __init__(self, modulation, name, bandpass=None, requirements=None):
         if bandpass is None:
@@ -289,9 +293,9 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
-        DigitalMode(
-            "recorder",
-            "Recorder",
+        ServiceOnlyMode(
+            "audio",
+            "Audio Recorder",
             underlying=["am", "usb", "lsb", "nfm"],
             requirements=["mp3"],
             service=True,
