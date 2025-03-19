@@ -7,6 +7,7 @@ from csdr.chain.toolbox import RdsDemodulator
 from typing import Optional
 from owrx.feature import FeatureDetector
 
+
 class Am(BaseDemodulatorChain):
     def __init__(self):
         agc = Agc(Format.FLOAT)
