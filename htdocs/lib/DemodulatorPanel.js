@@ -103,11 +103,22 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
     }
 
     var modulation;
-    if (mode.type === 'digimode') {
-        modulation = underlyingModulation = underlyingModulation || mode.underlying[0];
-    } else {
+    if (mode.type !== 'digimode') {
+        // analog modes have no underlying modulation
         underlyingModulation = undefined;
         modulation = mode.modulation;
+    } else if (underlyingModulation) {
+        // use given underlying modulation
+        modulation = underlyingModulation;
+    } else if (mode.underlying.indexOf(this.underlyingModulation) >= 0) {
+        // use current underlying modulation if it fits
+        modulation = underlyingModulation = this.underlyingModulation;
+    } else if (mode.underlying.indexOf(this.mode.modulation) >= 0) {
+        // use current mode modulation if it fits
+        modulation = underlyingModulation = this.mode.modulation;
+    } else {
+        // use mode's default underlying modulation
+        modulation = underlyingModulation = mode.underlying[0];
     }
 
     var current = this.collectParams();
