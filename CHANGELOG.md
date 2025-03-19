@@ -1,3 +1,12 @@
+**1.2.80**
+- Added server-side background audio recording to MP3.
+- Audio recordings are shown at the "Files" page.
+- Audio recorder requires Linux "lame" package.
+- Sorting contents of "Files" page by creation time.
+- Retaining underlying modulation on mode changes.
+- Fixed typo in Northwood bookmarks.
+- Updated NRSC5 Python library.
+
 **1.2.79**
 - Added configurable fax page length limit.
 - Added OWRX+ version to RepeaterBook agent string.
