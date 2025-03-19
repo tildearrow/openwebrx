@@ -2,7 +2,8 @@
 - Added server-side background audio recording to MP3.
 - Audio recordings are shown at the "Files" page.
 - Audio recorder requires Linux "lame" package.
-- Sorting contents of "Files" page by creation time.
+- Sorted contents of "Files" page by creation time.
+- Sorted services in background decoding settings.
 - Retaining underlying modulation on mode changes.
 - Fixed typo in Northwood bookmarks.
 - Updated NRSC5 Python library.

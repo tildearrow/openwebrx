@@ -273,7 +273,9 @@ class MultiCheckboxInput(Input):
 
 class ServicesCheckboxInput(MultiCheckboxInput):
     def __init__(self, id, label, infotext=None):
-        services = [Option(s.modulation, s.name) for s in Modes.getAvailableServices()]
+        services = Modes.getAvailableServices()
+        services.sort(key = lambda x: x.name)
+        services = [Option(s.modulation, s.name) for s in services]
         super().__init__(id, label, services, infotext)
 
 
