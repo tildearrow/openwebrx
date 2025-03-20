@@ -4,6 +4,7 @@
 - Audio recorder requires Linux "lame" package.
 - Sorted contents of "Files" page by creation time.
 - Sorted services in background decoding settings.
+- Moved mode requirements check from client to server.
 - Retaining underlying modulation on mode changes.
 - Fixed typo in Northwood bookmarks.
 - Updated NRSC5 Python library.

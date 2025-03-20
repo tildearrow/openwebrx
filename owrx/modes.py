@@ -363,6 +363,10 @@ class Modes(object):
         return [m for m in Modes.getModes() if m.is_available()]
 
     @staticmethod
+    def getAvailableClientModes():
+        return [m for m in Modes.getAvailableModes() if not isinstance(m, ServiceOnlyMode)]
+
+    @staticmethod
     def getAvailableServices():
         return [m for m in Modes.getAvailableModes() if m.is_service()]
 

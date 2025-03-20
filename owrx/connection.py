@@ -12,7 +12,7 @@ from owrx.web.repeaters import Repeaters
 from owrx.web.eibi import EIBI
 from owrx.map import Map
 from owrx.property import PropertyStack, PropertyDeleted
-from owrx.modes import Modes, DigitalMode, ServiceOnlyMode
+from owrx.modes import Modes, DigitalMode
 from owrx.config import Config
 from owrx.waterfall import WaterfallOptions
 from owrx.websocket import Handler
@@ -179,7 +179,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         features = FeatureDetector().feature_availability()
         self.write_features(features)
 
-        modes = Modes.getModes()
+        modes = Modes.getAvailableClientModes()
         self.write_modes(modes)
 
         self.configSubs.append(SdrService.getActiveSources().wire(self._onSdrDeviceChanges))
@@ -533,9 +533,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 res["secondaryFft"] = m.secondaryFft
             return res
 
-        self.send({"type": "modes", "value": [
-            to_json(m) for m in modes if not isinstance(m, ServiceOnlyMode)
-        ]})
+        self.send({"type": "modes", "value": [to_json(m) for m in modes]})
 
 
 class MapConnection(OpenWebRxClient):

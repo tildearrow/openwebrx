@@ -2,7 +2,7 @@ from owrx.controllers.template import WebpageController
 from owrx.controllers.admin import AuthorizationMixin
 from owrx.controllers.settings import SettingsBreadcrumb
 from owrx.bookmarks import Bookmark, Bookmarks
-from owrx.modes import Modes, AnalogMode, ServiceOnlyMode
+from owrx.modes import Modes, AnalogMode
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem, BreadcrumbMixin
 import json
 import math
@@ -48,7 +48,7 @@ class BookmarksController(AuthorizationMixin, BreadcrumbMixin, WebpageController
                 "name"       : m.name,
                 "analog"     : isinstance(m, AnalogMode),
                 "underlying" : m.underlying if hasattr(m, "underlying") else []
-            } for m in Modes.getAvailableModes() if not isinstance(m, ServiceOnlyMode)})
+            } for m in Modes.getAvailableClientModes() })
         )
 
     def render_bookmark(self, bookmark: Bookmark):

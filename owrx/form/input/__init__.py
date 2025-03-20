@@ -335,7 +335,7 @@ class DropdownEnum(Enum):
 
 class ModesInput(DropdownInput):
     def __init__(self, id, label):
-        options = [Option(m.modulation, m.name) for m in Modes.getAvailableModes()]
+        options = [Option(m.modulation, m.name) for m in Modes.getAvailableClientModes()]
         super().__init__(id, label, options)
 
 
