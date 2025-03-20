@@ -249,7 +249,7 @@ class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 
 class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, sampleRate: int = 12000, service: bool = False):
+    def __init__(self, sampleRate: int = 24000, service: bool = False):
         self.sampleRate = sampleRate
         self.frequency = 0
         self.recorder = Mp3Recorder(service)

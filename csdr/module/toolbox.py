@@ -152,7 +152,7 @@ class DablinModule(ExecModule):
 
 
 class LameModule(ExecModule):
-    def __init__(self, sampleRate: int = 12000):
+    def __init__(self, sampleRate: int = 24000):
         cmd = [
             "lame", "-r", "-m", "m", "--signed", "--bitwidth", "16",
             "-s", str(sampleRate / 1000), "-", "-"
