@@ -293,6 +293,8 @@ class Modes(object):
             squelch=False,
             secondaryFft=False
         ),
+        # Server-side audio recording is a background service only.
+        # See JavaScript code for client-side audio recording.
         ServiceOnlyMode(
             "audio",
             "Audio Recorder",
@@ -301,57 +303,58 @@ class Modes(object):
             service=True,
             squelch=True
         ),
-# SatDump stuff is work in progress!
-#        DigitalMode(
-#            "noaa-apt-15",
-#            "NOAA-15 APT",
-#            underlying=["empty"],
-#            bandpass=Bandpass(-25000, 25000),
-#            requirements=["wxsat"],
-#            service=True,
-#            squelch=False,
-#            secondaryFft=False
-#        ),
-#        DigitalMode(
-#            "noaa-apt-18",
-#            "NOAA-18 APT",
-#            underlying=["empty"],
-#            bandpass=Bandpass(-25000, 25000),
-#            requirements=["wxsat"],
-#            service=True,
-#            squelch=False,
-#            secondaryFft=False
-#        ),
-#        DigitalMode(
-#            "noaa-apt-19",
-#            "NOAA-19 APT",
-#            underlying=["empty"],
-#            bandpass=Bandpass(-25000, 25000),
-#            requirements=["wxsat"],
-#            service=True,
-#            squelch=False,
-#            secondaryFft=False
-#        ),
-#        DigitalMode(
-#            "meteor-lrpt",
-#            "Meteor-M2 LRPT",
-#            underlying=["empty"],
-#            bandpass=Bandpass(-75000, 75000),
-#            requirements=["wxsat"],
-#            service=True,
-#            squelch=False,
-#            secondaryFft=False
-#        ),
-#        DigitalMode(
-#            "elektro-lrit",
-#            "ELEKTRO-L LRIT",
-#            underlying=["empty"],
-#            bandpass=Bandpass(-200000, 200000),
-#            requirements=["wxsat"],
-#            service=True,
-#            squelch=False,
-#            secondaryFft=False
-#        ),
+        # SatDump-based weather satellite reception is not real-time
+        # and thus only works as background services.
+        ServiceOnlyMode(
+            "noaa-apt-15",
+            "NOAA-15 APT",
+            underlying=["empty"],
+            bandpass=Bandpass(-25000, 25000),
+            requirements=["wxsat"],
+            service=True,
+            squelch=False,
+            secondaryFft=False
+        ),
+        ServiceOnlyMode(
+            "noaa-apt-18",
+            "NOAA-18 APT",
+            underlying=["empty"],
+            bandpass=Bandpass(-25000, 25000),
+            requirements=["wxsat"],
+            service=True,
+            squelch=False,
+            secondaryFft=False
+        ),
+        ServiceOnlyMode(
+            "noaa-apt-19",
+            "NOAA-19 APT",
+            underlying=["empty"],
+            bandpass=Bandpass(-25000, 25000),
+            requirements=["wxsat"],
+            service=True,
+            squelch=False,
+            secondaryFft=False
+        ),
+        ServiceOnlyMode(
+            "meteor-lrpt",
+            "Meteor-M2 LRPT",
+            underlying=["empty"],
+            bandpass=Bandpass(-75000, 75000),
+            requirements=["wxsat"],
+            service=True,
+            squelch=False,
+            secondaryFft=False
+        ),
+        ServiceOnlyMode(
+            "elektro-lrit",
+            "ELEKTRO-L LRIT",
+            underlying=["empty"],
+            bandpass=Bandpass(-200000, 200000),
+            requirements=["wxsat"],
+            service=True,
+            squelch=False,
+            secondaryFft=False
+        ),
     ]
 
     @staticmethod
