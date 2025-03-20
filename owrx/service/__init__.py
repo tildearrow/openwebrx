@@ -295,6 +295,9 @@ class ServiceHandler(SdrSourceEventClient):
         elif demod == "am":
             from csdr.chain.analog import Am
             return Am()
+        elif demod == "sam":
+            from csdr.chain.analog import SAm
+            return SAm()
         elif demod in ["usb", "lsb", "cw"]:
             from csdr.chain.analog import Ssb
             return Ssb()

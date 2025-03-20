@@ -296,7 +296,7 @@ class Modes(object):
         ServiceOnlyMode(
             "audio",
             "Audio Recorder",
-            underlying=["am", "usb", "lsb", "nfm"],
+            underlying=["am", "usb", "lsb", "nfm", "sam", "cw"],
             requirements=["mp3"],
             service=True,
             squelch=True
