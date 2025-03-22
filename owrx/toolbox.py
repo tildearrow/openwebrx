@@ -96,7 +96,7 @@ class Mp3Recorder(ThreadModule, DataRecorder):
                 self.doRun = False
             else:
                 self.writeFile(data)
-
+        self.closeFile()
 
 class TextParser(LineBasedModule, DataRecorder):
     def __init__(self, filePrefix: str = None, service: bool = False):
@@ -120,6 +120,7 @@ class TextParser(LineBasedModule, DataRecorder):
         logger.info("%s starting..." % self.myName())
         super().run()
         logger.info("%s exiting..." % self.myName())
+        self.closeFile()
 
     def process(self, line: bytes) -> any:
         # No result yet
