@@ -6,6 +6,7 @@
 - Sorted services in background decoding settings.
 - Moved mode requirements check from client to server.
 - Retaining underlying modulation on mode changes.
+- Fixed frequency scale background in default theme.
 - Fixed missing math import in toolbox.py.
 - Fixed typo in Northwood bookmarks.
 - Randomized web user agent string.
