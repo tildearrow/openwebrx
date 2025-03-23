@@ -1,5 +1,6 @@
 from owrx.config.core import CoreConfig
 from datetime import datetime
+from random import randint
 
 import random
 import urllib
@@ -29,7 +30,7 @@ class WebAgent(object):
 
     # Fake generic User-Agent, since at least KiwiSDR website likes that
     def _openUrl(self, url: str):
-        hdrs = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/135.0" }
+        hdrs = { "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:135.0) Gecko/20100101 Firefox/" + str(randint(100, 135)) + ".0" }
         req  = urllib.request.Request(url, headers = hdrs)
         return urllib.request.urlopen(req)
 
