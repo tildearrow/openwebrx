@@ -16,6 +16,7 @@ UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
 UI.bandplan = false;
+UI.stopfft = false;
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -33,6 +34,7 @@ UI.loadSettings = function() {
     this.toggleWheelSwap(LS.has('ui_wheel')? LS.loadBool('ui_wheel') : false);
     this.toggleSpectrum(LS.has('ui_spectrum')? LS.loadBool('ui_spectrum') : false);
     this.toggleBandplan(LS.has('ui_bandplan')? LS.loadBool('ui_bandplan') : false);
+    this.toggleStopFFT(LS.has('ui_stopfft')? LS.loadBool('ui_stopfft') : false);
     this.setWfTheme(LS.has('wf_theme')? LS.loadStr('wf_theme') : 'default');
     this.setNR(LS.has('nr_threshold')? LS.loadInt('nr_threshold') : false);
     this.toggleNR(LS.has('nr_enabled')? LS.loadBool('nr_enabled') : false);
@@ -326,6 +328,19 @@ UI.toggleBandplan = function(on) {
         LS.save('ui_bandplan', on);
         $('#openwebrx-bandplan-checkbox').attr('checked', on);
         if (bandplan) bandplan.toggle(on);
+    }
+};
+
+// Disable or enable waterfall updates
+UI.toggleStopFFT = function(on) {
+    // If no argument given, toggle bandplan
+    if (typeof(on) === 'undefined') on = !this.stopfft;
+
+    if (this.stopfft != on) {
+        this.stopfft = on;
+        LS.save('ui_stopfft', on);
+        $('#openwebrx-stopfft-checkbox').attr('checked', on);
+	stopfft = this.stopfft;
     }
 };
 

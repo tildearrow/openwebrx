@@ -40,6 +40,7 @@ var scanner = null;
 var bookmarks = null;
 var audioEngine = null;
 var wf_data = null;
+var stopfft = false;
 
 function zoomInOneStep() {
     zoom_set(zoom_level + 1);
@@ -1113,6 +1114,7 @@ function on_ws_recv(evt) {
 
         switch (type) {
             case 1:
+		if (stopfft) break;
                 // FFT data
                 if (fft_compression === "none") {
                     waterfall_f32 = new Float32Array(data);
