@@ -109,7 +109,7 @@ DemodulatorPanel.prototype.setMode = function(requestedModulation, underlyingMod
     } else if (mode.underlying.indexOf(this.underlyingModulation) >= 0) {
         // use current underlying modulation if it fits
         modulation = underlyingModulation = this.underlyingModulation;
-    } else if (mode.underlying.indexOf(this.mode.modulation) >= 0) {
+    } else if (this.mode && mode.underlying.indexOf(this.mode.modulation) >= 0) {
         // use current mode modulation if it fits
         modulation = underlyingModulation = this.mode.modulation;
     } else {
