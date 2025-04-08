@@ -212,7 +212,7 @@ class FaxParser(DataRecorder, ThreadModule):
                     #    self.myName(), self.line, w, len(self.data)/b
                     #))
                     # Check for trailing lines marked with "END-PAGE!"
-                    frameEnded = self.data[0, 9] == b"END-PAGE!"
+                    frameEnded = self.data[0:9] == b"END-PAGE!"
                     # If running as a service...
                     if self.service:
                         # Write a scanline into open image file
