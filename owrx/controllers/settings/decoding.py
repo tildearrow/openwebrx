@@ -142,7 +142,7 @@ class DecodingSettingsController(SettingsFormController):
                 CheckboxInput("fax_am", "Use amplitude modulation"),
             ),
             Section(
-                "Image Compression",
+                "Image compression",
                 CheckboxInput("image_compress", "Compress final images to reduce space."),
                 DropdownInput(
                     "image_compress_level",
