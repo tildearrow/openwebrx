@@ -1,6 +1,25 @@
 #!/bin/bash
 set -euo pipefail
 
+#if ! pgrep sdrplay_apiService; then
+#  echo "This container is ass\!"
+#  exit 1
+#fi
+
+echo "Probing SDRplay Devices..."
+SoapySDRUtil --probe=driver=sdrplay
+#mkfifo /tmp/waitfifo
+#soapy_connector 2>/tmp/waitfifo &
+#cat /tmp/waitfifo | while read line; do
+#  if echo "$line" | grep -q "Radioberry"; then
+#    break
+#  fi
+#done
+#kill %1
+#fg
+echo "Done..."
+#rm /tmp/waitfifo
+
 mkdir -p /etc/openwebrx/openwebrx.conf.d
 mkdir -p /var/lib/openwebrx
 mkdir -p /tmp/openwebrx/
