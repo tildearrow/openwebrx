@@ -11,7 +11,7 @@ UI.frame = false;
 UI.opacity = 100;
 UI.volume = -1;
 UI.volumeMuted = -1;
-UI.nrThreshold = 0;
+UI.nrThreshold = -20;
 UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
@@ -36,7 +36,7 @@ UI.loadSettings = function() {
     this.toggleBandplan(LS.has('ui_bandplan')? LS.loadBool('ui_bandplan') : false);
     this.toggleStopFFT(LS.has('ui_stopfft')? LS.loadBool('ui_stopfft') : false);
     this.setWfTheme(LS.has('wf_theme')? LS.loadStr('wf_theme') : 'default');
-    this.setNR(LS.has('nr_threshold')? LS.loadInt('nr_threshold') : false);
+    this.setNR(LS.has('nr_threshold')? LS.loadInt('nr_threshold') : 0);
     this.toggleNR(LS.has('nr_enabled')? LS.loadBool('nr_enabled') : false);
 
     // Toggle UI sections
@@ -210,7 +210,7 @@ UI.setNR = function(x) {
     if (this.nrThreshold != x) {
         this.nrThreshold = x;
         LS.save('nr_threshold', x);
-        $('#openwebrx-panel-nr').attr('title', 'Noise level (' + x + ' dB)').val(x);
+        $('#openwebrx-panel-nr').attr('title', 'Noise reduction level (' + x + ' dB)').val(x);
         this.updateNR();
     }
 };

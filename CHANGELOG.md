@@ -1,3 +1,21 @@
+**1.2.83**
+- Added configurable image compression (Jacob Morris).
+- Added more Yaesu radios to APRS (Geoffrey Phillips).
+- Added Kenwood TH-D75 to APRS (Geoffrey Phillips).
+
+**1.2.82**
+- Added check for a specific end-of-fax-page marker.
+- Set default maximum fax page length to 1500.
+
+**1.2.81**
+- Now truncating FAX images as transmission ends.
+- Now saving SSTV images if at least half is received.
+- Added function to adjust image size when closing image.
+- Added configurable minimum fax length parameter.
+- Fixed error when entering profile with default digital mode.
+- Fixed noise reduction level display.
+- Refactored data recording.
+
 **1.2.80**
 - Added server-side background audio recording to MP3.
 - Audio recordings are shown at the "Files" page.
@@ -6,6 +24,7 @@
 - Sorted services in background decoding settings.
 - Moved mode requirements check from client to server.
 - Retaining underlying modulation on mode changes.
+- Fixed frequency scale background in default theme.
 - Fixed missing math import in toolbox.py.
 - Fixed typo in Northwood bookmarks.
 - Randomized web user agent string.
