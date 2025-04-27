@@ -1,5 +1,6 @@
 **1.2.83**
 - Added configurable image compression (Jacob Morris).
+- Added SoapySDDC RX-888 SDR source (Lax Telcel).
 - Added more Yaesu radios to APRS (Geoffrey Phillips).
 - Added Kenwood TH-D75 to APRS (Geoffrey Phillips).
 
