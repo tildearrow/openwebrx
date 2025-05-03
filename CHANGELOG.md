@@ -1,4 +1,5 @@
 **1.2.84**
+- Enabled ADSB updates via MQTT.
 - Added squelch to background audio recorder.
 - Background recording squelch set via Setings.
 - Improved Power and Squelch modules.
