@@ -1,3 +1,10 @@
+**1.2.84**
+- Added squelch to background audio recorder.
+- Background recording squelch set via Setings.
+- Improved Power and Squelch modules.
+- Now supporting non-complex Squelch input.
+- Now supporting float Exec input.
+
 **1.2.83**
 - Added configurable image compression (Jacob Morris).
 - Added SoapySDDC RX-888 SDR source (Lax Telcel).
