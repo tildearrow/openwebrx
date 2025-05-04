@@ -1,10 +1,8 @@
 **1.2.84**
 - Enabled ADSB updates via MQTT.
+- Added hang time to squelch to avoid dropouts.
 - Added squelch to background audio recorder.
 - Background recording squelch set via Setings.
-- Improved Power and Squelch modules.
-- Now supporting non-complex Squelch input.
-- Now supporting float Exec input.
 
 **1.2.83**
 - Added configurable image compression (Jacob Morris).

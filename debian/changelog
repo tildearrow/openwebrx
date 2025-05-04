@@ -1,11 +1,9 @@
 openwebrx (1.2.84) bullseye jammy; urgency=low
 
   * Enabled ADSB updates via MQTT.
+  * Added hang time to squelch to avoid dropouts.
   * Added squelch to background audio recorder.
   * Background recording squelch set via Setings.
-  * Improved Power and Squelch modules.
-  * Now supporting non-complex Squelch input.
-  * Now supporting float Exec input.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Tue, 6 May 2025 16:12:00 +0000
 

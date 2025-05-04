@@ -104,9 +104,14 @@ class Selector(Chain):
         self.measurementsPerSec = 16
         self.readingsPerSec = 4
         if withSquelch:
-            blockLength  = int(self.outputRate / self.measurementsPerSec)
-            reportPeriod = int(self.measurementsPerSec / self.readingsPerSec)
-            self.squelch = Squelch(Format.COMPLEX_FLOAT, blockLength, 5, 5 * blockLength, reportPeriod)
+            blockLength = int(self.outputRate / self.measurementsPerSec)
+            self.squelch = Squelch(Format.COMPLEX_FLOAT,
+                length      = blockLength,
+                decimation  = 5,
+                hangLength  = 2 * blockLength,
+                flushLength = 5 * blockLength,
+                reportInterval = int(self.measurementsPerSec / self.readingsPerSec)
+            )
             workers += [self.squelch]
         else:
             self.squelch = None
