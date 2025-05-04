@@ -52,7 +52,7 @@ class MultimonDemodulator(ServiceDemodulator, DialFrequencyReceiver):
             self.squelch = Squelch(Format.COMPLEX_FLOAT,
                 length      = blockLength,
                 decimation  = 5,
-                hangLength  = 8 * blockLength,
+                hangLength  = 2 * blockLength,
                 flushLength = 5 * blockLength,
                 reportInterval = int(self.measurementsPerSec / self.readingsPerSec)
             )
