@@ -341,7 +341,7 @@ class ModesInput(DropdownInput):
 
 class AgcInput(DropdownInput):
     def __init__(self, id, label, infotext=None):
-        options = [Option(p.value, p.value) for p in AgcProfile.getAvailableProfiles()]
+        options = [Option(p.value, p.value) for p in AgcProfile]
         super().__init__(id, label, options, infotext=infotext)
 
 
