@@ -12,7 +12,7 @@ from csdr.chain.clientaudio import ClientAudioChain
 from csdr.chain.fft import FftChain
 from csdr.chain.dummy import DummyDemodulator
 from pycsdr.modules import Buffer, Writer
-from pycsdr.types import Format
+from pycsdr.types import Format, AgcProfile
 from typing import Union, Optional
 from io import BytesIO
 from abc import ABC, abstractmethod
@@ -472,6 +472,10 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 "wfm_rds_rbds",
                 "digital_voice_codecserver",
                 "rig_enabled",
+                "dab_output_rate",
+                "ssb_agc_profile",
+                "nfm_agc_profile",
+                "am_agc_profile"
             ),
         )
 
@@ -584,19 +588,19 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         # TODO: move this to Modes
         if demod == "nfm":
             from csdr.chain.analog import NFm
-            return NFm(self.props["output_rate"])
+            return NFm(self.props["output_rate"], AgcProfile(self.props["nfm_agc_profile"]))
         elif demod == "wfm":
             from csdr.chain.analog import WFm
             return WFm(self.props["hd_output_rate"], self.props["wfm_deemphasis_tau"], self.props["wfm_rds_rbds"])
         elif demod == "am":
             from csdr.chain.analog import Am
-            return Am()
+            return Am(AgcProfile(self.props["am_agc_profile"]))
         elif demod == "sam":
             from csdr.chain.analog import SAm
-            return SAm()
+            return SAm(AgcProfile(self.props["am_agc_profile"]))
         elif demod in ["usb", "lsb", "cw"]:
             from csdr.chain.analog import Ssb
-            return Ssb()
+            return Ssb(AgcProfile(self.props["ssb_agc_profile"]))
         elif demod == "dmr":
             from csdr.chain.digiham import Dmr
             return Dmr(self.props["digital_voice_codecserver"])
@@ -623,7 +627,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return FreeDV()
         elif demod == "dab":
             from csdr.chain.dablin import Dablin
-            return Dablin()
+            return Dablin(self.props["dab_output_rate"])
         elif demod == "empty":
             from csdr.chain.analog import Empty
             return Empty()

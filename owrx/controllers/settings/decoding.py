@@ -1,6 +1,7 @@
 from owrx.controllers.settings import SettingsFormController, SettingsBreadcrumb
 from owrx.form.section import Section
-from owrx.form.input import CheckboxInput, NumberInput, DropdownInput, Js8ProfileCheckboxInput, MultiCheckboxInput, Option, TextInput
+from owrx.form.input import CheckboxInput, NumberInput, DropdownInput, Js8ProfileCheckboxInput, MultiCheckboxInput, Option, TextInput, AgcInput
+from owrx.form.input.dab import DabOutputRateValues
 from owrx.form.input.wfm import WfmTauValues
 from owrx.form.input.wsjt import Q65ModeMatrix, WsjtDecodingDepthsInput
 from owrx.form.input.converter import OptionalConverter
@@ -31,6 +32,27 @@ class DecodingSettingsController(SettingsFormController):
                     "Secondary FFT size",
                     infotext="Secondary waterfall resolution in digital modes",
                     append="bins"
+                ),
+                AgcInput(
+                    "ssb_agc_profile",
+                    "SSB AGC profile",
+                    infotext="AGC profile used for LSB and USB analog modes",
+                ),
+                AgcInput(
+                    "am_agc_profile",
+                    "AM AGC profile",
+                    infotext="AGC profile used for AM and SAM analog modes",
+                ),
+                AgcInput(
+                    "nfm_agc_profile",
+                    "NFM AGC profile",
+                    infotext="AGC profile used for NFM analog mode",
+                ),
+                DropdownInput(
+                    "dab_output_rate",
+                    "DAB audio rate",
+                    DabOutputRateValues,
+                    infotext="Your local DAB station may use a different audio rate",
                 ),
                 DropdownInput(
                     "wfm_deemphasis_tau",

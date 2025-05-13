@@ -430,5 +430,9 @@ defaultConfig = PropertyLayer(
     rig_model=2,
     rig_device="127.0.0.1:4533",
     rig_address=0,
-    rec_squelch=-150
+    rec_squelch=-150,
+    ssb_agc_profile="Fast",
+    nfm_agc_profile="Slow",
+    am_agc_profile="Slow",
+    dab_output_rate=48000
 ).readonly()
