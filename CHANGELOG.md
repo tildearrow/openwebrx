@@ -1,3 +1,8 @@
+**1.2.85**
+- Added configurable AGC to analog modes.
+- Added configurable DAB output rate.
+- Changed SSB bandpass filter to 150..2750Hz.
+
 **1.2.84**
 - Enabled ADSB updates via MQTT.
 - Added hang time to squelch to avoid dropouts.

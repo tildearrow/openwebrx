@@ -1,3 +1,11 @@
+openwebrx (1.2.85) bullseye jammy; urgency=low
+
+  * Added configurable AGC to analog modes.
+  * Added configurable DAB output rate.
+  * Changed SSB bandpass filter to 150..2750Hz.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Tue, 20 May 2025 16:12:00 +0000
+
 openwebrx (1.2.84) bullseye jammy; urgency=low
 
   * Enabled ADSB updates via MQTT.
