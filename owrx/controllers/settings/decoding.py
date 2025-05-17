@@ -36,17 +36,7 @@ class DecodingSettingsController(SettingsFormController):
                 AgcInput(
                     "ssb_agc_profile",
                     "SSB AGC profile",
-                    infotext="AGC profile used for LSB and USB analog modes",
-                ),
-                AgcInput(
-                    "am_agc_profile",
-                    "AM AGC profile",
-                    infotext="AGC profile used for AM and SAM analog modes",
-                ),
-                AgcInput(
-                    "nfm_agc_profile",
-                    "NFM AGC profile",
-                    infotext="AGC profile used for NFM analog mode",
+                    infotext="AGC profile used for LSB, USB, and CW analog modes",
                 ),
                 DropdownInput(
                     "dab_output_rate",

@@ -1,6 +1,6 @@
 **1.2.85**
-- Added configurable AGC to analog modes.
 - Added configurable DAB output rate.
+- Added configurable AGC to SSB analog modes.
 - Added LAGGY and MID AGC modes, useful for SSB.
 - Changed SSB bandpass filter to 150..2750Hz.
 
