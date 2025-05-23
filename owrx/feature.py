@@ -83,7 +83,7 @@ class FeatureDetector(object):
         "wsjt-x-2-3": ["wsjtx_2_3"],
         "wsjt-x-2-4": ["wsjtx_2_4"],
         "msk144": ["msk144decoder"],
-        "packet": ["direwolf"],
+        "packet": ["direwolf", "aprs_symbols"],
         "pocsag": ["digiham"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
@@ -806,3 +806,11 @@ class FeatureDetector(object):
         is available in most Linux distributions.
         """
         return self.command_is_runnable("lame --help")
+
+    def has_aprs_symbols(self):
+        """
+        OpenWebRX uses a collection of APRS symbol icons to show APRS
+        traffic at the map. You can install the `aprs-symbols` package
+        from the OpenWebRX repositories.
+        """
+        return os.path.isdir("/usr/share/aprs-symbols")
