@@ -1798,7 +1798,7 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-metadata-hdr {
 	width: 350px;
-	max-height: 300px;
+	max-height: 400px;
 	padding: 10px 10px 10px 10px;
 }
 
@@ -1806,6 +1806,12 @@ img.openwebrx-mirror-img
 	width: 100%;
 	text-align: center;
 	overflow: hidden auto;
+}
+
+.hdr-image {
+	display: flex;
+	justify-content: center;
+	max-height: 200px;
 }
 
 .hdr-container .hdr-station {
