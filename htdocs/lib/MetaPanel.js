@@ -560,7 +560,7 @@ WfmMetaPanel.prototype.clear = function() {
 function HdrMetaPanel(el) {
     MetaPanel.call(this, el);
     this.modes = ['HDR'];
-    this.fccId = -1;
+    this.frequency = -1;
 
     // Create info panel
     var $container = $(
@@ -604,16 +604,15 @@ HdrMetaPanel.prototype.update = function(data) {
         return;
     }
 
-    // If we have got an FCC ID...
+    // Clear logo image when frequency changes
+    if (data.frequency != this.frequency) {
+        this.frequency = data.frequency;
+        $('#hdr-logo').html('');
+    }
+
+    // Convert FCC ID to hexadecimal
     var fcc_id = '';
     if ('fcc_id' in data) {
-        // Clear logo image when FCC ID changes
-        if (data.fcc_id != this.fccId) {
-            this.fccId = data.fccId;
-            $('#hdr-logo').html('');
-        }
-
-        // Convert FCC ID to hexadecimal
         fcc_id = data.fcc_id.toString(16).toUpperCase();
         fcc_id = '0x' + ('0000' + fcc_id).slice(-4);
         fcc_id = ('country' in data?  data.country + ':' : '') + fcc_id;
