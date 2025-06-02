@@ -1809,8 +1809,8 @@ img.openwebrx-mirror-img
 }
 
 .hdr-image {
-	display: flex;
-	justify-content: center;
+	display: block;
+	margin: auto;
 	max-height: 200px;
 }
 
