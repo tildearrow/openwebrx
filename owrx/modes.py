@@ -316,16 +316,6 @@ class Modes(object):
             secondaryFft=False
         ),
         ServiceOnlyMode(
-            "noaa-apt-18",
-            "NOAA-18 APT",
-            underlying=["empty"],
-            bandpass=Bandpass(-25000, 25000),
-            requirements=["wxsat"],
-            service=True,
-            squelch=False,
-            secondaryFft=False
-        ),
-        ServiceOnlyMode(
             "noaa-apt-19",
             "NOAA-19 APT",
             underlying=["empty"],
