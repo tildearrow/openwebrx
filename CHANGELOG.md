@@ -1,3 +1,9 @@
+**1.2.86**
+- Disabled awkward "camera control" in Google Maps.
+- Removed NOAA-18 support (satellite decommissioned).
+- Added logo display to HDRadio stations.
+- Added 'aprs-symbols' as requirement to receive APRS.
+
 **1.2.85**
 - Added configurable DAB output rate.
 - Added configurable AGC to SSB analog modes.
