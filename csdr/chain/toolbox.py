@@ -263,7 +263,7 @@ class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, sampleRate: int = 24000, service: bool = False):
         self.sampleRate = sampleRate
         self.recorder = Mp3Recorder(service)
-        self.squelch = SnrSquelch(Format.FLOAT, int(sampleRate / 4), 512, sampleRate, 0, 1)
+        self.squelch = SnrSquelch(Format.FLOAT, 2048, 512, sampleRate, 0, 1)
         # Set recording squelch level
         pm = Config.get()
         self.setSquelchLevel(pm["rec_squelch"])

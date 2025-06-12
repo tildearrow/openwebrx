@@ -88,8 +88,8 @@ class DecodingSettingsController(SettingsFormController):
                 "Background audio recording",
                 NumberInput(
                     "rec_squelch",
-                    "Recording squelch level",
-                    validator=RangeValidator(-150, 50),
+                    "Recording squelch SNR level",
+                    validator=RangeValidator(5, 70),
                     append="dB",
                 ),
             ),
