@@ -8,7 +8,7 @@ openwebrx (1.2.86) bullseye jammy; urgency=low
   * Added logo display to HDRadio stations.
   * Added 'aprs-symbols' as requirement to receive APRS.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Tue, 10 Jun 2025 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Thu, 12 Jun 2025 16:12:00 +0000
 
 openwebrx (1.2.85) bullseye jammy; urgency=low
 
