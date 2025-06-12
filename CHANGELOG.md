@@ -1,6 +1,6 @@
 **1.2.86**
 - Added SNR-based "smart squelch" to audio recorder.
-- Please, set background squelch to around +20dB.
+- Set background recording squelch to around +20dB.
 - Increased default squelch hang time to one second.
 - Disabled awkward "camera control" in Google Maps.
 - Removed NOAA-18 support (satellite decommissioned).
