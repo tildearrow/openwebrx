@@ -90,6 +90,11 @@ class GeneralSettingsController(SettingsFormController):
                     infotext="Number of people who can connect at the same time.",
                 ),
                 NumberInput(
+                    "max_clients_per_ip",
+                    "Number of clients per IP",
+                    infotext="Number of people who can connect from the same IP address.",
+                ),
+                NumberInput(
                     "keep_files",
                     "Maximum number of files",
                     infotext="Number of received images and other files to keep.",

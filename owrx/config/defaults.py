@@ -4,6 +4,7 @@ from owrx.property import PropertyLayer
 defaultConfig = PropertyLayer(
     version=8,
     max_clients=20,
+    max_clients_per_ip=20,
     receiver_name="[Callsign]",
     receiver_location="Budapest, Hungary",
     receiver_asl=200,
