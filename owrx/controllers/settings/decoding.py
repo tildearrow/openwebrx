@@ -38,6 +38,13 @@ class DecodingSettingsController(SettingsFormController):
                     "SSB AGC profile",
                     infotext="AGC profile used for LSB, USB, and CW analog modes",
                 ),
+                NumberInput(
+                    "sql_hang_time",
+                    "Squelch hang time",
+                    validator=RangeValidator(0, 5000),
+                    infotext="Time squelch stays open after signal disappears",
+                    append="ms"
+                ),
                 DropdownInput(
                     "dab_output_rate",
                     "DAB audio rate",
@@ -88,9 +95,17 @@ class DecodingSettingsController(SettingsFormController):
                 "Background audio recording",
                 NumberInput(
                     "rec_squelch",
-                    "Recording squelch SNR level",
+                    "Recording squelch level",
                     validator=RangeValidator(5, 70),
+                    infotext="Signal-to-noise ratio (SNR) that triggers recording",
                     append="dB",
+                ),
+                NumberInput(
+                    "rec_hang_time",
+                    "Recording squelch hang time",
+                    validator=RangeValidator(0, 5000),
+                    infotext="Time recording keeps going after signal disappears",
+                    append="ms"
                 ),
             ),
             Section(

@@ -261,12 +261,16 @@ class CwSkimmerDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, sampleRate: int = 24000, service: bool = False):
+        # Get settings
+        pm = Config.get()
+        squelchLevel = pm["rec_squelch"]
+        hangTime = int(sampleRate * pm["rec_hang_time"] / 1000)
+        # Initialize state
         self.sampleRate = sampleRate
         self.recorder = Mp3Recorder(service)
-        self.squelch = SnrSquelch(Format.FLOAT, 2048, 512, sampleRate, 0, 1)
+        self.squelch = SnrSquelch(Format.FLOAT, 2048, 512, hangTime, 0, 1)
         # Set recording squelch level
-        pm = Config.get()
-        self.setSquelchLevel(pm["rec_squelch"])
+        self.setSquelchLevel(squelchLevel)
         workers = [
             self.squelch,
             Convert(Format.FLOAT, Format.SHORT),

@@ -121,7 +121,7 @@ class Selector(Chain):
         squelch = Squelch(Format.COMPLEX_FLOAT,
             length      = blockLength,
             decimation  = 5,
-            hangLength  = self.outputRate,
+            hangLength  = 2 * blockLength,
             flushLength = 5 * blockLength,
             reportInterval = int(self.measurementsPerSec / self.readingsPerSec)
         )
