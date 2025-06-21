@@ -1,3 +1,12 @@
+openwebrx (1.2.87) bullseye jammy; urgency=low
+
+  * Added file size display to the file browser.
+  * Added configurable limit of clients per IP address.
+  * Added configurable hang time to audio recording.
+  * Reduced squelch hang time back, by public request.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Thu, 26 Jun 2025 16:12:00 +0000
+
 openwebrx (1.2.86) bullseye jammy; urgency=low
 
   * Added SNR-based "smart squelch" to audio recorder.

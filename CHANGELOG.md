@@ -1,3 +1,9 @@
+**1.2.87**
+- Added file size display to the file browser.
+- Added configurable limit of clients per IP address.
+- Added configurable hang time to audio recording.
+- Reduced squelch hang time back, by public request.
+
 **1.2.86**
 - Added SNR-based "smart squelch" to audio recorder.
 - Set background recording squelch to around +20dB.
