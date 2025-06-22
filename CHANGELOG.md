@@ -4,7 +4,7 @@
 - Added configurable hang time to audio recording.
 - Reduced squelch hang time back, by public request.
 - Widened noise reduction control range to 20dB.
-- Simplified noise reduction algorithm.
+- Improved noise reduction algorithm.
 - Improved SNR computation.
 
 **1.2.86**

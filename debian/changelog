@@ -5,7 +5,7 @@ openwebrx (1.2.87) bullseye jammy; urgency=low
   * Added configurable hang time to audio recording.
   * Reduced squelch hang time back, by public request.
   * Widened noise reduction control range to 20dB.
-  * Simplified noise reduction algorithm.
+  * Improved noise reduction algorithm.
   * Improved SNR computation.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Thu, 26 Jun 2025 16:12:00 +0000
