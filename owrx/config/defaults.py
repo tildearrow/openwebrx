@@ -433,7 +433,6 @@ defaultConfig = PropertyLayer(
     rig_address=0,
     rec_squelch=20,
     rec_hang_time=1000,
-    sql_hang_time=200,
     ssb_agc_profile="Fast",
     dab_output_rate=48000
 ).readonly()

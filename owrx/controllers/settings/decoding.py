@@ -38,13 +38,6 @@ class DecodingSettingsController(SettingsFormController):
                     "SSB AGC profile",
                     infotext="AGC profile used for LSB, USB, and CW analog modes",
                 ),
-                NumberInput(
-                    "sql_hang_time",
-                    "Squelch hang time",
-                    validator=RangeValidator(0, 5000),
-                    infotext="Time squelch stays open after signal disappears",
-                    append="ms"
-                ),
                 DropdownInput(
                     "dab_output_rate",
                     "DAB audio rate",
