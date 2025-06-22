@@ -8,7 +8,7 @@ openwebrx (1.2.87) bullseye jammy; urgency=low
   * Improved noise reduction algorithm.
   * Improved SNR computation.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Thu, 26 Jun 2025 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 23 Jun 2025 16:12:00 +0000
 
 openwebrx (1.2.86) bullseye jammy; urgency=low
 
