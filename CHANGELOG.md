@@ -3,6 +3,8 @@
 - Added configurable limit of clients per IP address.
 - Added configurable hang time to audio recording.
 - Reduced squelch hang time back, by public request.
+- Simplified noise reduction algorithm.
+- Improved SNR computation.
 
 **1.2.86**
 - Added SNR-based "smart squelch" to audio recorder.
