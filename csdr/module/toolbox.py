@@ -7,12 +7,12 @@ import os
 class Rtl433Module(ExecModule):
     def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
         cmd = [
-            "rtl_433", "-r", "cs16:-", "-s", str(sampleRate),
+            "rtl_433", "-r", "cf32:-", "-s", str(sampleRate),
             "-M", "time:unix" if jsonOutput else "time:utc",
             "-F", "json" if jsonOutput else "kv",
-            "-A",
+            "-Y", "autolevel", "-A",
         ]
-        super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
+        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd)
 
 
 class MultimonModule(ExecModule):

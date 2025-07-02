@@ -19,8 +19,6 @@ class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
         self.sampleRate = 250000
         self.parser = IsmParser(service=service)
         workers = [
-            Agc(Format.COMPLEX_FLOAT),
-            Convert(Format.COMPLEX_FLOAT, Format.COMPLEX_SHORT),
             Rtl433Module(self.sampleRate, jsonOutput = True),
             self.parser,
         ]
