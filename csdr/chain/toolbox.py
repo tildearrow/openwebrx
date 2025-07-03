@@ -15,8 +15,8 @@ logger = logging.getLogger(__name__)
 
 
 class IsmDemodulator(ServiceDemodulator, DialFrequencyReceiver):
-    def __init__(self, service: bool = False):
-        self.sampleRate = 250000
+    def __init__(self, sampleRate: int = 250000, service: bool = False):
+        self.sampleRate = sampleRate
         self.parser = IsmParser(service=service)
         workers = [
             Rtl433Module(self.sampleRate, jsonOutput = True),

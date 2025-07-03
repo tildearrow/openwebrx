@@ -343,7 +343,10 @@ class ServiceHandler(SdrSourceEventClient):
             return EasDemodulator(service=True)
         elif mod == "ism":
             from csdr.chain.toolbox import IsmDemodulator
-            return IsmDemodulator(service=True)
+            return IsmDemodulator(250000, service=True)
+        elif mod == "wmbus":
+            from csdr.chain.toolbox import IsmDemodulator
+            return IsmDemodulator(1200000, service=True)
         elif mod == "hfdl":
             from csdr.chain.toolbox import HfdlDemodulator
             return HfdlDemodulator(service=True)
@@ -362,9 +365,6 @@ class ServiceHandler(SdrSourceEventClient):
         elif mod == "noaa-apt-15":
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=15, service=True)
-        elif mod == "noaa-apt-18":
-            from csdr.chain.toolbox import NoaaAptDemodulator
-            return NoaaAptDemodulator(satellite=18, service=True)
         elif mod == "noaa-apt-19":
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=19, service=True)

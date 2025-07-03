@@ -10,7 +10,8 @@ class Rtl433Module(ExecModule):
             "rtl_433", "-r", "cf32:-", "-s", str(sampleRate),
             "-M", "time:unix" if jsonOutput else "time:utc",
             "-F", "json" if jsonOutput else "kv",
-            "-Y", "autolevel", "-A",
+            "-A", "-Y", "autolevel",
+            # "-M", "level",
         ]
         super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd)
 

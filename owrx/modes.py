@@ -256,6 +256,15 @@ class Modes(object):
             squelch=False
         ),
         DigitalMode(
+            "wmbus",
+            "WMBus",
+            underlying=["empty"],
+            bandpass=Bandpass(-125000, 125000),
+            requirements=["ism"],
+            service=True,
+            squelch=False
+        ),
+        DigitalMode(
             "hfdl",
             "HFDL",
             underlying=["empty"],

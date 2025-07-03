@@ -740,7 +740,11 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             return FaxDemodulator()
         elif mod == "ism":
             from csdr.chain.toolbox import IsmDemodulator
-            return IsmDemodulator()
+            return IsmDemodulator(250000)
+        elif mod == "wmbus":
+            # WMBus likes 1.2Msps, which does not work for other ISM
+            from csdr.chain.toolbox import IsmDemodulator
+            return IsmDemodulator(1200000)
         elif mod == "hfdl":
             from csdr.chain.toolbox import HfdlDemodulator
             return HfdlDemodulator()
@@ -758,18 +762,19 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             from csdr.chain.toolbox import AudioRecorder
             return AudioRecorder()
         elif mod == "noaa-apt-15":
+            # this should only run as a service though
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=15)
-        elif mod == "noaa-apt-18":
-            from csdr.chain.toolbox import NoaaAptDemodulator
-            return NoaaAptDemodulator(satellite=18)
         elif mod == "noaa-apt-19":
+            # this should only run as a service though
             from csdr.chain.toolbox import NoaaAptDemodulator
             return NoaaAptDemodulator(satellite=19)
         elif mod == "meteor-lrpt":
+            # this should only run as a service though
             from csdr.chain.toolbox import MeteorLrptDemodulator
             return MeteorLrptDemodulator()
         elif mod == "elektro-lrit":
+            # this should only run as a service though
             from csdr.chain.toolbox import ElektroLritDemodulator
             return ElektroLritDemodulator()
 
