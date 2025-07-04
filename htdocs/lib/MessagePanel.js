@@ -653,7 +653,7 @@ IsmMessagePanel = function(el) {
 IsmMessagePanel.prototype = Object.create(MessagePanel.prototype);
 
 IsmMessagePanel.prototype.supportsMessage = function(message) {
-    return message['mode'] === 'ISM';
+    return (message['mode'] === 'ISM') || (message['mode'] === 'WMBUS');
 };
 
 IsmMessagePanel.prototype.render = function() {

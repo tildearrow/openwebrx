@@ -1612,6 +1612,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-content-container,
+#openwebrx-panel-digimodes[data-mode="wmbus"]   #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="dsc"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="cwskimmer"] #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ft8"]     #openwebrx-digimode-select-channel,
@@ -1635,6 +1636,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-select-channel,
+#openwebrx-panel-digimodes[data-mode="wmbus"]   #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="zvei"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="eas"]     #openwebrx-digimode-select-channel,
@@ -1664,6 +1666,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container,
+#openwebrx-panel-digimodes[data-mode="wmbus"]   #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="dsc"]     #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="cwskimmer"] #openwebrx-digimode-canvas-container
 {
