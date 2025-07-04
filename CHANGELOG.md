@@ -1,3 +1,10 @@
+**1.2.88**
+- Further improved noise reduction algorithm.
+- Added separate WMBus decoder using rtl-433.
+- Switched rtl-433 decoder to CF32 IQ format.
+- Removed AGC from the rtl-433 decoder input.
+- Fixed CW skimmer window not showing up.
+
 **1.2.87**
 - Added file size display to the file browser.
 - Added configurable limit of clients per IP address.

@@ -1,8 +1,10 @@
 openwebrx (1.2.88) bullseye jammy; urgency=low
 
   * Further improved noise reduction algorithm.
+  * Added separate WMBus decoder using rtl-433.
   * Switched rtl-433 decoder to CF32 IQ format.
   * Removed AGC from the rtl-433 decoder input.
+  * Fixed CW skimmer window not showing up.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Fri, 4 Jul 2025 16:12:00 +0000
 
