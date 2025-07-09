@@ -250,7 +250,8 @@ class Modes(object):
             "ism",
             "ISM",
             underlying=["empty"],
-            bandpass=Bandpass(-125000, 125000),
+            bandpass=None,
+            ifRate=250000,
             requirements=["ism"],
             service=True,
             squelch=False

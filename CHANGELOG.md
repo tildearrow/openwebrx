@@ -3,6 +3,7 @@
 - Added separate WMBus decoder using rtl-433.
 - Switched rtl-433 decoder to CF32 IQ format.
 - Removed AGC from the rtl-433 decoder input.
+- Removed 250kHz bandpass from the ISM mode.
 - Fixed CW skimmer window not showing up.
 
 **1.2.87**
