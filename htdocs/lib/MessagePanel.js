@@ -673,7 +673,7 @@ IsmMessagePanel.prototype.formatAttr = function(msg, key) {
     return('<td class="attr" colspan="2">' +
         '<div style="border-bottom:1px dotted;">' +
         '<span style="float:left;">' + key + '</span>' +
-        '<span style="float:right;">' + msg[key] + '</span>' +
+        '<span style="float:right;word-break:break-all;">' + msg[key] + '</span>' +
         '</div></td>'
     );
 };
