@@ -182,6 +182,10 @@ class ClientRegistry(object):
         # Done
         return result
 
+    # Ban a client for given number of minutes.
+    def banClient(self, client, minutes: int):
+        self.banIp(self.getIp(client.conn.handler), minutes)
+
     # Ban a client, by IP, for given number of minutes.
     def banIp(self, ip: str, minutes: int):
         self.expireBans()

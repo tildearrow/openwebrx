@@ -21,6 +21,7 @@ from abc import ABCMeta, abstractmethod
 import json
 import threading
 import struct
+import time
 
 import logging
 
@@ -159,6 +160,8 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         self.configSubs = []
         self.bookmarkSub = None
         self.connectionProperties = {}
+        self.lastProfileChange = time.time()
+        self.robotAlert = 0
 
         try:
             ClientRegistry.getSharedInstance().addClient(self)
@@ -326,20 +329,11 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                     if "params" in message and "sdr" in message["params"]:
                         self.setSdr(message["params"]["sdr"])
                 elif message["type"] == "selectprofile":
-                    # Locked source's profile can only be changed with a key
                     if "params" in message and "profile" in message["params"]:
                         params  = message["params"]
                         profile = params["profile"].split("|")
-                        magic   = self.stack["magic_key"]
                         key     = params["key"] if "key" in params else None
-                        self.setSdr(profile[0])
-                        # If source not locked, or no magic key, or it matches...
-                        if not self.sdr.isLocked() or magic == "" or key == magic:
-                            # Select a new profile
-                            self.sdr.activateProfile(profile[1])
-                        else:
-                            # Force update back to the current profile
-                            self.resetSdr()
+                        self.setProfile(profile[0], profile[1], key)
                 elif message["type"] == "setfrequency":
                     # If the magic key is set in the settings, only allow
                     # changes if it matches the received key
@@ -368,6 +362,36 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
 
         except json.JSONDecodeError:
             logger.warning("message is not json: {0}".format(message))
+
+    def setProfile(self, sdr: str, profile: str, key: str = None):
+        # Set new SDR source
+        self.setSdr(sdr)
+
+        # Locked source's profile can only be changed with a key
+        magic = self.stack["magic_key"]
+        if self.sdr.isLocked() and magic != "" and key != magic:
+            # Force update back to the current profile
+            self.resetSdr()
+
+        else:
+            # Keep track of frequent profile changes
+            thisChange = time.time()
+            robotScore = 10 - (thisChange - self.lastProfileChange)
+            self.lastProfileChange = thisChange;
+
+            # Keep the robot score
+            if robotScore < 0:
+                self.robotAlert = 0
+            else:
+                self.robotAlert += robotScore
+
+            # If this is not a robot...
+            if self.robotAlert < 20:
+                # Select a new profile
+                self.sdr.activateProfile(profile)
+            else:
+                # Ban the suspected robot
+                ClientRegistry.getSharedInstance().banClient(self, 60 * 12)
 
     def setSdr(self, id=None):
         next = None
