@@ -40,7 +40,7 @@ class Section(object):
             except FormError as e:
                 errors.append(e)
             except ValueError as e:
-                errors.append(FormError(i.id, "Invalid value, please, check and fix!"))
+                errors.append(FormError(i.id, "Invalid value. Please, check and fix!"))
             except Exception as e:
                 errors.append(FormError(i.id, "{}: {}".format(type(e).__name__, e)))
         return parsed_data, errors
