@@ -63,6 +63,14 @@ class ClientRegistry(object):
         ip = self.getIp(client.conn.handler)
         return len([x for x in self.clients if ip == self.getIp(x.conn.handler)])
 
+    def robotScore(self, client):
+        ip = self.getIp(client.conn.handler)
+        return sum([
+            max(0, 10 - (client.conn.startTime - x.conn.startTime).total_seconds())
+            for x in self.clients
+            if ip == self.getIp(x.conn.handler)
+        ])
+
     def removeClient(self, client):
         try:
             if client in self.chat:

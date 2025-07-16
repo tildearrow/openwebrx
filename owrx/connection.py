@@ -160,8 +160,13 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         self.configSubs = []
         self.bookmarkSub = None
         self.connectionProperties = {}
+
+        # Get initial robot score based on the number of recent connections
         self.lastProfileChange = time.time()
-        self.robotAlert = 0
+        self.robotAlert = ClientRegistry.getSharedInstance().robotScore(self)
+        # Ban the suspected robot
+        if self.robotAlert >= 30:
+            ClientRegistry.getSharedInstance().banClient(self, 60 * 12)
 
         try:
             ClientRegistry.getSharedInstance().addClient(self)
