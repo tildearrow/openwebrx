@@ -1,3 +1,11 @@
+openwebrx (1.2.89) bullseye jammy; urgency=low
+
+  * Automatically banning profile-scanning robots.
+  * Added message about incorrect values in forms.
+  * Added wrapping long ISM values.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 18 Jul 2025 16:12:00 +0000
+
 openwebrx (1.2.88) bullseye jammy; urgency=low
 
   * Further improved noise reduction algorithm.

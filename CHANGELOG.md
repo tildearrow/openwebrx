@@ -1,3 +1,8 @@
+**1.2.89**
+- Automatically banning profile-scanning robots.
+- Added message about incorrect values in forms.
+- Added wrapping long ISM values.
+
 **1.2.88**
 - Further improved noise reduction algorithm.
 - Added separate WMBus decoder using rtl-433.
