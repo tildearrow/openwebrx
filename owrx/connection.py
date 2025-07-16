@@ -386,7 +386,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
                 self.robotAlert += robotScore
 
             # If this is not a robot...
-            if self.robotAlert < 20:
+            if self.robotAlert < 30:
                 # Select a new profile
                 self.sdr.activateProfile(profile)
             else:
