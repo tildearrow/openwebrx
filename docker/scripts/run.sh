@@ -7,7 +7,9 @@ set -euo pipefail
 #fi
 
 echo "Probing SDRplay Devices..."
-SoapySDRUtil --probe=driver=sdrplay
+SoapySDRUtil --probe=driver=sdrplay || echo
+sleep 1
+SoapySDRUtil --probe=driver=sdrplay || echo
 #mkfifo /tmp/waitfifo
 #soapy_connector 2>/tmp/waitfifo &
 #cat /tmp/waitfifo | while read line; do
