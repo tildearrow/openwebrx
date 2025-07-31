@@ -60,7 +60,7 @@ function zoomOutTotal() {
 function tuneBySteps(steps) {
     steps = Math.round(steps);
     if (steps != 0) {
-        UI.setOffsetFrequency(UI.getOffsetFrequency() + steps * tuning_step);
+        UI.setFrequency(UI.getFrequency() + steps * tuning_step);
     }
 }
 
@@ -259,16 +259,17 @@ function scale_canvas_mousemove(evt) {
     else if (scale_canvas_drag_params.drag) {
         //call the drag_move for all demodulators (and they will decide if they're dragged)
         for (i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_move(evt.pageX);
-        if (!event_handled) UI.setFrequency(UI.getFrequency(evt.pageX));
+        if (!event_handled)
+            UI.setFrequency(UI.getFrequency(get_relative_x(evt)));
     }
 }
 
 function frequency_container_mousemove(evt) {
-    var freq = UI.getFrequency(evt.pageX);
+    var freq = UI.getFrequency(get_relative_x(evt));
     UI.getDemodulatorPanel().setMouseFrequency(freq);
 }
 
-function scale_canvas_end_drag(x) {
+function scale_canvas_end_drag(evt) {
     scale_canvas.style.cursor = "default";
     scale_canvas_drag_params.drag = false;
     scale_canvas_drag_params.mouse_down = false;
@@ -276,14 +277,14 @@ function scale_canvas_end_drag(x) {
     var demodulators = getDemodulators();
     for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_end();
     if (!event_handled) {
-        UI.setFrequency(UI.getFrequency(x));
+        UI.setFrequency(UI.getFrequency(get_relative_x(evt)));
         UI.toggleScanner(false);
     }
 }
 
 function scale_canvas_mouseup(evt) {
     if (evt.button == 0)
-        scale_canvas_end_drag(evt.pageX);
+        scale_canvas_end_drag(evt);
     else
         scale_canvas_drag_params.mouse2_down = false;
 }
@@ -713,17 +714,14 @@ function canvas_mouseup(evt) {
             canvas_mouse2_down = 0;
     } else {
         if (!waterfall_setup_done) return;
-        var relativeX = get_relative_x(evt);
 
         if (!canvas_drag) {
-            var f = UI.getOffsetFrequency(relativeX);
-            // For CW, move offset 800Hz below the actual carrier
-            if (UI.getModulation() === 'cw') f = f - 800;
-            UI.setOffsetFrequency(f);
+            UI.setFrequency(UI.getFrequency(get_relative_x(evt)));
             UI.toggleScanner(false);
         } else {
             canvas_end_drag();
         }
+
         canvas_mouse_down = false;
     }
 }

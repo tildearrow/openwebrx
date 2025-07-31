@@ -105,25 +105,20 @@ UI.setModulation = function(mode, underlying) {
 //
 
 UI.getOffsetFrequency = function(x) {
-    if (typeof(x) === 'undefined') {
-        // No argument: return currently tuned offset
-        return this.getDemodulator().get_offset_frequency();
-    } else {
-        // Pointer position: return offset under pointer
-        // Use rounded absolute frequency to get offset
-        return this.getFrequency(x) - center_freq;
-    }
+    return this.getFrequency(x) - center_freq;
 };
 
 UI.getFrequency = function(x) {
     if (typeof(x) === 'undefined') {
+        // When in CW mode, offset by 800Hz
+        var delta = this.getModulation() === 'cw'? 800 : 0;
         // No argument: return currently tuned frequency
-        return center_freq + this.getDemodulator().get_offset_frequency();
+        x = this.getDemodulator().get_offset_frequency();
+        return x + center_freq + delta;
     } else {
         // Pointer position: return frequency under pointer
         x = x / canvas_container.clientWidth;
         x = center_freq + (bandwidth * x) - (bandwidth / 2);
-        // Snap frequency to nearest step
         return Utils.snapFrequency(x, tuning_step);
     }
 };
@@ -133,7 +128,10 @@ UI.setOffsetFrequency = function(offset) {
 };
 
 UI.setFrequency = function(freq) {
-    freq = Utils.snapFrequency(freq, tuning_step)
+    // When in CW mode, offset by 800Hz
+    var delta = this.getModulation() === 'cw'? 800 : 0;
+    // Snap frequency to the tuning step
+    freq = Utils.snapFrequency(freq, tuning_step) - delta;
     return this.getDemodulator().set_offset_frequency(freq - center_freq);
 };
 
@@ -144,9 +142,8 @@ UI.tuneBookmark = function(b) {
     //console.log("TUNE: " + b.name + " at " + b.frequency + ": " + b.modulation);
 
     // Tune to the bookmark frequency
-    var freq = b.modulation === 'cw'? b.frequency - 800 : b.frequency;
-    UI.setFrequency(freq, b.modulation);
     UI.setModulation(b.modulation, b.underlying);
+    UI.setFrequency(b.frequency);
 
     // Done
     return true;
