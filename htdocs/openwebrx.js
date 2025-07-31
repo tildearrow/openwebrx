@@ -244,19 +244,6 @@ function scale_canvas_mousedown(evt) {
     evt.preventDefault();
 }
 
-function scale_offset_freq_from_px(x, visible_range) {
-    if (typeof visible_range === "undefined") visible_range = get_visible_freq_range();
-
-    var f = (visible_range.start + visible_range.bw * (x / waterfallWidth())) - center_freq;
-
-    if (tuning_step <= 0) {
-        return f;
-    } else {
-        f = Math.round((center_freq + f) / tuning_step) * tuning_step;
-        return f - center_freq;
-    }
-}
-
 function scale_canvas_mousemove(evt) {
     var event_handled = false;
     var i;
@@ -272,13 +259,13 @@ function scale_canvas_mousemove(evt) {
     else if (scale_canvas_drag_params.drag) {
         //call the drag_move for all demodulators (and they will decide if they're dragged)
         for (i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_move(evt.pageX);
-        if (!event_handled) demodulators[0].set_offset_frequency(scale_offset_freq_from_px(evt.pageX));
+        if (!event_handled) UI.setFrequency(UI.getFrequency(evt.pageX));
     }
 }
 
 function frequency_container_mousemove(evt) {
-    var frequency = center_freq + scale_offset_freq_from_px(evt.pageX);
-    UI.getDemodulatorPanel().setMouseFrequency(frequency);
+    var freq = UI.getFrequency(evt.pageX);
+    UI.getDemodulatorPanel().setMouseFrequency(freq);
 }
 
 function scale_canvas_end_drag(x) {
@@ -289,7 +276,7 @@ function scale_canvas_end_drag(x) {
     var demodulators = getDemodulators();
     for (var i = 0; i < demodulators.length; i++) event_handled |= demodulators[i].envelope.drag_end();
     if (!event_handled) {
-        demodulators[0].set_offset_frequency(scale_offset_freq_from_px(x));
+        UI.setFrequency(UI.getFrequency(x));
         UI.toggleScanner(false);
     }
 }

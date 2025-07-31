@@ -118,22 +118,23 @@ UI.getOffsetFrequency = function(x) {
 UI.getFrequency = function(x) {
     if (typeof(x) === 'undefined') {
         // No argument: return currently tuned frequency
-        return center_freq + this.getOffsetFrequency();
+        return center_freq + this.getDemodulator().get_offset_frequency();
     } else {
         // Pointer position: return frequency under pointer
         x = x / canvas_container.clientWidth;
         x = center_freq + (bandwidth * x) - (bandwidth / 2);
-        return tuning_step>0?
-            Math.round(x / tuning_step) * tuning_step : Math.round(x);
+        // Snap frequency to nearest step
+        return Utils.snapFrequency(x, tuning_step);
     }
 };
 
 UI.setOffsetFrequency = function(offset) {
-    return this.getDemodulator().set_offset_frequency(offset);
+    return this.setFrequency(center_freq + offset);
 };
 
 UI.setFrequency = function(freq) {
-    return this.setOffsetFrequency(freq - center_freq);
+    freq = Utils.snapFrequency(freq, tuning_step)
+    return this.getDemodulator().set_offset_frequency(freq - center_freq);
 };
 
 UI.tuneBookmark = function(b) {
