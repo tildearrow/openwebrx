@@ -675,9 +675,10 @@ function canvas_mousedown(evt) {
 
 function canvas_mousemove(evt) {
     if (!waterfall_setup_done) return;
-    var relativeX = get_relative_x(evt);
     if (!canvas_mouse_down) {
-        UI.getDemodulatorPanel().setMouseFrequency(UI.getFrequency(relativeX));
+        UI.getDemodulatorPanel().setMouseFrequency(
+            UI.getFrequency(get_relative_x(evt))
+        );
     } else {
         if (!canvas_drag && Math.abs(evt.pageX - canvas_drag_start_x) > canvas_drag_min_delta) {
             canvas_drag = true;
@@ -737,29 +738,28 @@ function zoom_center_where_calc(screenposX) {
 
 function get_relative_x(evt) {
     var relativeX = evt.offsetX || evt.layerX;
+
     if ($(evt.target).closest(canvas_container).length) return relativeX;
-    // compensate for the frequency scale, since that is not resized by the browser.
-    var relatives = $(evt.target).closest('#openwebrx-frequency-container').map(function(){
-        return evt.pageX - this.offsetLeft;
-    });
-    if (relatives.length) relativeX = relatives[0];
+
+    // Compensate for the frequency scale, as it is not resized by the browser.
+    var relatives = $(evt.target).closest('#openwebrx-frequency-container');
+    if (relatives.length) relativeX = evt.pageX - relatives[0].offsetLeft;
 
     return relativeX - zoom_offset_px;
 }
 
 function canvas_mousewheel(evt) {
     if (!waterfall_setup_done) return;
-    var relativeX = get_relative_x(evt);
-    var dir = (evt.deltaY / Math.abs(evt.deltaY)) > 0;
 
     // Zoom when mouse button down, tune otherwise
     // (optionally, invert this behavior)
     var zoom_me = (canvas_mouse2_down > 0) || evt.shiftKey?
         !UI.getWheelSwap() : UI.getWheelSwap();
+
     if (zoom_me) {
-        zoom_step(dir, relativeX, zoom_center_where_calc(evt.pageX));
+        zoom_step(dir, get_relative_x(evt), zoom_center_where_calc(evt.pageX));
     } else {
-        tuneBySteps(dir? -1:1);
+        tuneBySteps(evt.deltaY / Math.abs(evt.deltaY) > 0? -1:1);
     }
 
     evt.preventDefault();
@@ -1698,7 +1698,7 @@ function secondary_demod_update_marker() {
 
 function secondary_demod_update_channel_freq_from_event(evt) {
     if (typeof evt !== "undefined") {
-        var relativeX = (evt.offsetX) ? evt.offsetX : evt.layerX;
+        var relativeX = evt.offsetX || evt.layerX;
         secondary_demod_channel_freq = secondary_demod_low_cut +
             (relativeX / $(secondary_demod_canvas_container).width()) * (secondary_demod_high_cut - secondary_demod_low_cut);
     }
