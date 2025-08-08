@@ -1,3 +1,11 @@
+**1.2.90**
+- Added support for the HydraSDR RFOne receiver.
+- Added back option to select initial UI theme.
+- Fixed support for 8.33kHz steps (airband).
+- Fixed clicking in the noise reduction algorithm.
+- Fixed AGC algorithm, with help from VK4DL.
+- Refactored frequency snapping code.
+
 **1.2.89**
 - Automatically banning profile-scanning robots.
 - Added message about incorrect values in forms.
