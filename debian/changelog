@@ -7,7 +7,7 @@ openwebrx (1.2.90) bullseye jammy; urgency=low
   * Fixed AGC algorithm, with help from VK4DL.
   * Refactored frequency snapping code.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Fri, 8 Aug 2025 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 11 Aug 2025 16:12:00 +0000
 
 openwebrx (1.2.89) bullseye jammy; urgency=low
 
