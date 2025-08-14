@@ -112,6 +112,10 @@ class GeneralSettingsController(SettingsFormController):
                     + "and shown when a client session times out.",
                 ),
                 CheckboxInput(
+                    "bot_ban_enabled",
+                    "Detect and ban bots trying to connect",
+                ),
+                CheckboxInput(
                     "allow_chat",
                     "Allow users to chat with each other",
                 ),

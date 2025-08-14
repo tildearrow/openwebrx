@@ -166,7 +166,7 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         self.lastProfileChange = time.time()
         self.robotAlert = ClientRegistry.getSharedInstance().robotScore(self)
         # Ban the suspected robot
-        if self.robotAlert >= 30:
+        if self.robotAlert >= 30 and self.stack["bot_ban_enabled"]:
             ClientRegistry.getSharedInstance().banClient(self, 60 * 12)
 
         try:
@@ -391,13 +391,13 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
             else:
                 self.robotAlert += robotScore
 
-            # If this is not a robot...
-            if self.robotAlert < 30:
-                # Select a new profile
-                self.sdr.activateProfile(profile)
-            else:
+            # If this may be a robot...
+            if self.robotAlert >= 30 and self.stack["bot_ban_enabled"]:
                 # Ban the suspected robot
                 ClientRegistry.getSharedInstance().banClient(self, 60 * 12)
+            else:
+                # Select a new profile
+                self.sdr.activateProfile(profile)
 
     def setSdr(self, id=None):
         next = None

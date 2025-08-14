@@ -435,5 +435,6 @@ defaultConfig = PropertyLayer(
     rec_hang_time=1000,
     ssb_agc_profile="Fast",
     dab_output_rate=48000,
-    ui_theme="default"
+    ui_theme="default",
+    bot_ban_enabled=True
 ).readonly()
