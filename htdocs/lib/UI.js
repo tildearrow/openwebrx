@@ -128,12 +128,13 @@ UI.setOffsetFrequency = function(offset) {
     return this.setFrequency(center_freq + offset);
 };
 
-UI.setFrequency = function(freq) {
+UI.setFrequency = function(freq, snap = true) {
     // When in CW mode, offset by 800Hz
     var delta = this.getModulation() === 'cw'? 800 : 0;
     // Snap frequency to the tuning step
-    freq = Utils.snapFrequency(freq, tuning_step) - delta;
-    return this.getDemodulator().set_offset_frequency(freq - center_freq);
+    if (snap) freq = Utils.snapFrequency(freq, tuning_step);
+    // Tune to the frequency offset
+    return this.getDemodulator().set_offset_frequency(freq - delta - center_freq);
 };
 
 UI.tuneBookmark = function(b) {
@@ -142,9 +143,9 @@ UI.tuneBookmark = function(b) {
 
     //console.log("TUNE: " + b.name + " at " + b.frequency + ": " + b.modulation);
 
-    // Tune to the bookmark frequency
+    // Tune to the bookmark frequency, do not snap
     UI.setModulation(b.modulation, b.underlying);
-    UI.setFrequency(b.frequency);
+    UI.setFrequency(b.frequency, false);
 
     // Done
     return true;
