@@ -439,8 +439,7 @@ UI.setDefaultWfTheme = function(colors) {
 
     // If default theme currently used, update waterfall
     if (this.wfTheme === 'default') {
-        this.wfTheme = null;
-        this.setWfTheme('default');
+        Waterfall.setTheme(this.wfThemes[this.wfTheme]);
     }
 };
 

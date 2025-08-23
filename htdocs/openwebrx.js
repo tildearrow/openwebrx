@@ -1408,9 +1408,6 @@ function openwebrx_init() {
     bookmarks = new BookmarkBar();
     initSliders();
 
-    // Initialize waterfall colors
-    UI.setWfTheme('default');
-
     // Create bookmark scanner
     scanner = new Scanner(bookmarks, 1000);
 
