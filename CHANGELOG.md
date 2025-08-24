@@ -1,3 +1,9 @@
+**1.2.91**
+- Made bot protection scheme optional.
+- Fixed bookmarks getting snapped to nearest step.
+- Fixed waterfall theme resetting on page reload.
+- Fixed zooming with the mouse wheel.
+
 **1.2.90**
 - Added support for the HydraSDR RFOne receiver.
 - Added back option to select initial UI theme.

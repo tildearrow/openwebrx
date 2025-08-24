@@ -1,3 +1,12 @@
+openwebrx (1.2.91) bullseye jammy; urgency=low
+
+  * Made bot protection scheme optional.
+  * Fixed bookmarks getting snapped to nearest step.
+  * Fixed waterfall theme resetting on page reload.
+  * Fixed zooming with the mouse wheel.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 25 Aug 2025 16:12:00 +0000
+
 openwebrx (1.2.90) bullseye jammy; urgency=low
 
   * Added support for the HydraSDR RFOne receiver.
