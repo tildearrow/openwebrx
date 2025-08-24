@@ -98,7 +98,11 @@ class DecodingSettingsController(SettingsFormController):
                     "Recording squelch hang time",
                     validator=RangeValidator(0, 5000),
                     infotext="Time recording keeps going after signal disappears",
-                    append="ms"
+                    append="ms",
+                ),
+                CheckboxInput(
+                    "rec_produce_silence",
+                    "Record silence when there is no signal",
                 ),
             ),
             Section(

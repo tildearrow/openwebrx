@@ -263,10 +263,11 @@ class AudioRecorder(ServiceDemodulator, DialFrequencyReceiver):
         pm = Config.get()
         squelchLevel = pm["rec_squelch"]
         hangTime = int(sampleRate * pm["rec_hang_time"] / 1000)
+        produceSilence = pm["rec_produce_silence"]
         # Initialize state
         self.sampleRate = sampleRate
         self.recorder = Mp3Recorder(service)
-        self.squelch = SnrSquelch(Format.FLOAT, 2048, 512, hangTime, 0, 1)
+        self.squelch = SnrSquelch(Format.FLOAT, 2048, 512, hangTime, 0, 1, produceSilence)
         # Set recording squelch level
         self.setSquelchLevel(squelchLevel)
         workers = [

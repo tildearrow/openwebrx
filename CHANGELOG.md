@@ -1,4 +1,5 @@
 **1.2.91**
+- Added option to record silence in background recording.
 - Made bot protection scheme optional.
 - Fixed bookmarks getting snapped to nearest step.
 - Fixed waterfall theme resetting on page reload.

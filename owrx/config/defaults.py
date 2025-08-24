@@ -433,6 +433,7 @@ defaultConfig = PropertyLayer(
     rig_address=0,
     rec_squelch=20,
     rec_hang_time=1000,
+    rec_produce_silence=False,
     ssb_agc_profile="Fast",
     dab_output_rate=48000,
     ui_theme="default",
