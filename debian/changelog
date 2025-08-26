@@ -5,6 +5,7 @@ openwebrx (1.2.91) bullseye jammy; urgency=low
   * Fixed bookmarks getting snapped to nearest step.
   * Fixed waterfall theme resetting on page reload.
   * Fixed zooming with the mouse wheel.
+  * Fixed HydraSDR source selection.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Mon, 25 Aug 2025 16:12:00 +0000
 

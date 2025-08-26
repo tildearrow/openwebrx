@@ -4,6 +4,7 @@
 - Fixed bookmarks getting snapped to nearest step.
 - Fixed waterfall theme resetting on page reload.
 - Fixed zooming with the mouse wheel.
+- Fixed HydraSDR source selection.
 
 **1.2.90**
 - Added support for the HydraSDR RFOne receiver.
