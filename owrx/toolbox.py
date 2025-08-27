@@ -16,9 +16,9 @@ logger = logging.getLogger(__name__)
 
 
 class Mp3Recorder(ThreadModule, DataRecorder):
-    def __init__(self, service: bool = False):
+    def __init__(self, service: bool = False, maxBytes: int = 32 * 1024 * 1024):
         self.service = service
-        DataRecorder.__init__(self, "REC", ".mp3")
+        DataRecorder.__init__(self, "REC", ".mp3", maxBytes)
         ThreadModule.__init__(self)
 
     def getInputFormat(self) -> Format:
