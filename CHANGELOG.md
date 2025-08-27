@@ -2,7 +2,7 @@
 - Added option to record silence in background recording.
 - Added range check to the FFT size setting.
 - Added option to disable bot protection scheme.
-- Increased recorded audio file size limit to 32MB.
+- Increased recorded MP3 file size limit to 32MB.
 - Fixed bookmarks getting snapped to nearest step.
 - Fixed waterfall theme resetting on page reload.
 - Fixed zooming with the mouse wheel.
