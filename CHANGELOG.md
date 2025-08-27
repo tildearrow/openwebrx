@@ -1,6 +1,7 @@
 **1.2.91**
 - Added option to record silence in background recording.
-- Made bot protection scheme optional.
+- Added range check to the FFT size setting.
+- Added option to disable bot protection scheme.
 - Fixed bookmarks getting snapped to nearest step.
 - Fixed waterfall theme resetting on page reload.
 - Fixed zooming with the mouse wheel.

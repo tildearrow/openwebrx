@@ -164,7 +164,14 @@ class GeneralSettingsController(SettingsFormController):
                     + "Higher values will give you a faster waterfall, but will also use more CPU.",
                     append="frames per second",
                 ),
-                NumberInput("fft_size", "FFT size", append="bins"),
+                NumberInput(
+                    "fft_size",
+                    "FFT size",
+                    infotext="This setting specifies the horizontal resolution of the waterfall. "
+                    + "Raising it higher than 16384 bins may break waterfall display on some web browsers.",
+                    append="bins",
+                    validator=RangeValidator(256, 16384),
+                ),
                 FloatInput(
                     "fft_voverlap_factor",
                     "FFT vertical overlap factor",
