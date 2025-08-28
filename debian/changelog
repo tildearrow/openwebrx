@@ -9,7 +9,7 @@ openwebrx (1.2.91) bullseye jammy; urgency=low
   * Fixed zooming with the mouse wheel.
   * Fixed HydraSDR source selection.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Mon, 25 Aug 2025 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 29 Aug 2025 16:12:00 +0000
 
 openwebrx (1.2.90) bullseye jammy; urgency=low
 
