@@ -191,10 +191,9 @@ class AdsbDemodulator(ServiceDemodulator, DialFrequencyReceiver):
 
 class AcarsDemodulator(ServiceDemodulator, DialFrequencyReceiver):
     def __init__(self, service: bool = False):
-        self.sampleRate = 12500
+        self.sampleRate = 12000
         self.parser = AcarsParser(service=service)
         workers = [
-            Convert(Format.FLOAT, Format.SHORT),
             AcarsDecModule(self.sampleRate, jsonOutput = True),
             self.parser,
         ]

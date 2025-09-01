@@ -287,7 +287,7 @@ class Modes(object):
             "acars",
             "ACARS",
             underlying=["am"],
-            bandpass=Bandpass(-6250, 6250),
+            bandpass=Bandpass(-6000, 6000),
             requirements=["acars"],
             service=True,
             squelch=False

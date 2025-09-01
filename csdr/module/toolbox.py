@@ -104,20 +104,15 @@ class WavFileModule(PopenModule):
         self.process.stdin.write(header)
 
 
-class AcarsDecModule(WavFileModule):
-    def __init__(self, sampleRate: int = 12500, jsonOutput: bool = False):
+class AcarsDecModule(ExecModule):
+    def __init__(self, sampleRate: int = 12000, jsonOutput: bool = False):
         self.sampleRate = sampleRate
         self.jsonOutput = jsonOutput
-        super().__init__()
-
-    def getCommand(self):
-        return [
-            "acarsdec", "-f", "/dev/stdin",
-            "-o", str(4 if self.jsonOutput else 1)
+        cmd = [
+            "acarsdec", "--sndfile", "/dev/stdin,subtype=6",
+            "--output", str("json:file" if self.jsonOutput else "full:file")
         ]
-
-    def getOutputFormat(self) -> Format:
-        return Format.CHAR
+        super().__init__(Format.FLOAT, Format.CHAR, cmd)
 
 
 class CwSkimmerModule(ExecModule):

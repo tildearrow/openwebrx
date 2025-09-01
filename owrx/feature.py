@@ -749,13 +749,31 @@ class FeatureDetector(object):
         except ImportError:
             return False
 
+    def _has_acarsdec_version(self, required_version):
+        acarsdec_version_regex = re.compile("^Acarsdec\s+v(\S+)\s+")
+        try:
+            process = subprocess.Popen(["acarsdec"], stderr=subprocess.PIPE)
+            matches = None
+            for x in range(3):
+                matches = acarsdec_version_regex.match(process.stderr.readline().decode())
+                if matches is not None:
+                    break
+            process.wait(1)
+            if matches is None:
+                return False
+            else:
+                version = LooseVersion(matches.group(1))
+                return version >= required_version
+        except FileNotFoundError:
+            return False
+
     def has_acarsdec(self):
         """
         OpenWebRX supports decoding ACARS airplane communications by using the
         [AcarsDec](https://github.com/TLeconte/acarsdec) decoder. You can
         install the `acarsdec` package from the OpenWebRX repositories.
         """
-        return self.command_is_runnable("acarsdec --help")
+        return self._has_acarsdec_version(LooseVersion("4"))
 
     def has_imagemagick(self):
         """
