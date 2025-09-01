@@ -17,6 +17,7 @@ UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
 UI.bandplan = false;
+UI.bandpass = {};
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -195,6 +196,29 @@ UI.toggleMute = function(on) {
         $muteButton.addClass('muted');
         $volumePanel.prop('disabled', true);
         LS.save('volumeMuted', this.volumeMuted);
+    }
+};
+
+//
+// Bandpass Controls
+//
+
+// Set bandpass for a given modulation.
+UI.setBandpass = function(mode, low, high) {
+    var bp = { low_cut: low, high_cut: high };
+    LS.save('bp-' + mode, JSON.stringify(bp));
+    this.bandpass[mode] = bp;
+};
+
+// Get saved bandpass for a given modulation.
+UI.getBandpass = function(mode) {
+    // Load bandpass from storage as needed
+    if (mode in this.bandpass) {
+        return this.bandpass[mode];
+    } else {
+        var bp = JSON.parse(LS.loadStr('bp-' + mode)) || null;
+        if (bp) this.bandpass[mode] = bp;
+        return bp;
     }
 };
 

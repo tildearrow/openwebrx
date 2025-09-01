@@ -234,7 +234,7 @@ Envelope.prototype.wheel = function(x, dir, modifier){
     return true;
 };
 
-//******* class Demodulator_default_analog *******
+// ******* class Demodulator_default_analog *******
 // This can be used as a base for basic audio demodulators.
 // It already supports most basic modulations used for ham radio and commercial services: AM/FM/LSB/USB
 
@@ -250,10 +250,15 @@ function Demodulator(offset_frequency, modulation) {
     this.started = false;
     this.state = {};
     this.secondary_demod = false;
+
     var mode = Modes.findByModulation(modulation);
-    this.low_cut = mode && mode.bandpass? mode.bandpass.low_cut : null;
-    this.high_cut = mode && mode.bandpass? mode.bandpass.high_cut : null;
     this.ifRate = mode && mode.ifRate;
+
+    // Get bandpass from local storage first, then try the default bandpass
+    var bp = UI.getBandpass(modulation);
+    this.low_cut  = bp? bp.low_cut  : mode && mode.bandpass? mode.bandpass.low_cut  : null;
+    this.high_cut = bp? bp.high_cut : mode && mode.bandpass? mode.bandpass.high_cut : null;
+
     this.listeners = {
         "frequencychange": [],
         "squelchchange": []
@@ -379,17 +384,17 @@ Demodulator.prototype.setAudioServiceId = function(audio_service_id) {
 }
 
 Demodulator.prototype.setBandpass = function(bandpass) {
-    this.bandpass = bandpass;
+    UI.setBandpass(this.modulation, bandpass.low_cut, bandpass.high_cut);
     this.low_cut = bandpass.low_cut;
     this.high_cut = bandpass.high_cut;
     this.set();
 };
 
 Demodulator.prototype.disableBandpass = function() {
-    delete this.bandpass;
+    UI.setBandpass(this.modulation, null, null);
     this.low_cut = null;
     this.high_cut = null;
-    this.set()
+    this.set();
 };
 
 Demodulator.prototype.moveBandpass = function(low_new, high_new) {
@@ -412,6 +417,7 @@ Demodulator.prototype.moveBandpass = function(low_new, high_new) {
     if (high_new <= this.low_cut) return;
 
     // Set new bounds
+    UI.setBandpass(this.modulation, low_new, high_new);
     this.low_cut  = low_new;
     this.high_cut = high_new;
     this.set();
