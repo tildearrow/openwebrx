@@ -2,7 +2,6 @@ from pycsdr.modules import ExecModule
 from pycsdr.types import Format
 from csdr.module import PopenModule
 from owrx.config import Config
-import os
 
 class Rtl433Module(ExecModule):
     def __init__(self, sampleRate: int = 250000, jsonOutput: bool = False):
@@ -23,52 +22,6 @@ class MultimonModule(ExecModule):
         for x in decoders:
             cmd += ["-a", x]
         super().__init__(Format.SHORT, Format.CHAR, cmd)
-
-
-class DumpHfdlModule(ExecModule):
-    def __init__(self, sampleRate: int = 12000, jsonOutput: bool = False):
-        cmd = [
-            "dumphfdl", "--iq-file", "-", "--sample-format", "CF32",
-            "--sample-rate", str(sampleRate), "--output",
-            "decoded:%s:file:path=-" % ("json" if jsonOutput else "text"),
-            "--utc", "--centerfreq", "0", "0"
-        ]
-        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd)
-
-
-class DumpVdl2Module(ExecModule):
-    def __init__(self, sampleRate: int = 105000, jsonOutput: bool = False):
-        cmd = [
-            "dumpvdl2", "--iq-file", "-", "--sample-format", "S16_LE",
-            "--oversample", str(sampleRate // 105000), "--output",
-            "decoded:%s:file:path=-" % ("json" if jsonOutput else "text"),
-            "--decode-fragments", "--utc"
-        ]
-        super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
-
-
-class Dump1090Module(ExecModule):
-    def __init__(self, rawOutput: bool = False, jsonFolder: str = None):
-        pm  = Config.get()
-        lat = pm["receiver_gps"]["lat"]
-        lon = pm["receiver_gps"]["lon"]
-        cmd = [
-            "dump1090", "--ifile", "-", "--iformat", "SC16",
-            "--lat", str(lat), "--lon", str(lon),
-            "--modeac", "--metric"
-        ]
-        # If JSON files folder supplied, use that, disable STDOUT output
-        if jsonFolder is not None:
-            try:
-                os.makedirs(jsonFolder, exist_ok = True)
-                cmd += [ "--quiet", "--write-json", jsonFolder ]
-            except:
-                self.jsonFolder = None
-                pass
-        # RAW STDOUT output only makes sense if we are not using JSON
-        if rawOutput and jsonFolder is None:
-            cmd += [ "--raw" ]
-        super().__init__(Format.COMPLEX_SHORT, Format.CHAR, cmd)
 
 
 class WavFileModule(PopenModule):
@@ -102,17 +55,6 @@ class WavFileModule(PopenModule):
         header[40:43] = bytes([0, 0xFF, 0xFF, 0xFF])
         # Send .WAV file header to the process
         self.process.stdin.write(header)
-
-
-class AcarsDecModule(ExecModule):
-    def __init__(self, sampleRate: int = 12000, jsonOutput: bool = False):
-        self.sampleRate = sampleRate
-        self.jsonOutput = jsonOutput
-        cmd = [
-            "acarsdec", "--sndfile", "/dev/stdin,subtype=6",
-            "--output", str("json:file" if self.jsonOutput else "full:file")
-        ]
-        super().__init__(Format.FLOAT, Format.CHAR, cmd)
 
 
 class CwSkimmerModule(ExecModule):
@@ -154,29 +96,3 @@ class LameModule(ExecModule):
             "-s", str(sampleRate / 1000), "-", "-"
         ]
         super().__init__(Format.SHORT, Format.CHAR, cmd)
-
-
-class SatDumpModule(ExecModule):
-    def __init__(self, mode: str = "noaa_apt", sampleRate: int = 50000, frequency: int = 137100000, outFolder: str = "/tmp/satdump", options = None):
-        # Make sure we have output folder
-        try:
-            os.makedirs(outFolder, exist_ok = True)
-        except:
-            outFolder = "/tmp"
-        # Compose command line
-        cmd = [
-            "satdump", "live", mode, outFolder,
-            "--source", "file", "--file_path", "/dev/stdin",
-            "--samplerate", str(sampleRate),
-            "--frequency", str(frequency),
-            "--baseband_format", "f32",
-# Not trying to decode actual imagery for now, leaving .CADU file instead
-#            "--finish_processing",
-        ]
-        # Add pipeline-specific options
-        if options:
-            for key in options.keys():
-                cmd.append("--" + key)
-                cmd.append(str(options[key]))
-        # Create parent object
-        super().__init__(Format.COMPLEX_FLOAT, Format.CHAR, cmd, doNotKill=True)
