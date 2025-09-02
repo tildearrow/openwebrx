@@ -390,7 +390,7 @@ Shortcuts.handleKey = function(event) {
 
         case '|':
             // Clear all saved bandpass settings
-            UI.clearAllBandpasses();
+            UI.resetAllBandpasses();
             break;
 
         case '/': case '?':

@@ -17,7 +17,6 @@ UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
 UI.bandplan = false;
-UI.bandpass = {};
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -204,9 +203,7 @@ UI.toggleMute = function(on) {
 //
 
 // Clear saved bandpasses
-UI.clearAllBandpasses = function() {
-    // Clear cached bandpass data
-    this.bandpass = {};
+UI.resetAllBandpasses = function() {
     // Delete all saved bandpass data
     Modes.getModes().forEach(function(mode, i) {
         LS.delete('bp-' + mode.modulation);
@@ -217,19 +214,12 @@ UI.clearAllBandpasses = function() {
 UI.setBandpass = function(mode, low, high) {
     var bp = { low_cut: low, high_cut: high };
     LS.save('bp-' + mode, JSON.stringify(bp));
-    this.bandpass[mode] = bp;
 };
 
 // Get saved bandpass for given modulation.
 UI.getBandpass = function(mode) {
     // Load bandpass from storage as needed
-    if (mode in this.bandpass) {
-        return this.bandpass[mode];
-    } else {
-        var bp = JSON.parse(LS.loadStr('bp-' + mode)) || null;
-        if (bp) this.bandpass[mode] = bp;
-        return bp;
-    }
+    return JSON.parse(LS.loadStr('bp-' + mode)) || null;
 };
 
 //

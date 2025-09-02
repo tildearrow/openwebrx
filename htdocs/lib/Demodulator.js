@@ -414,8 +414,11 @@ Demodulator.prototype.moveBandpass = function(low_new, high_new) {
     // Sanity check to prevent GNU Radio "firdes check failed: fa <= fb"
     if (high_new <= this.low_cut) return;
 
+    // Save modified bandpass, but only in analog modes
+    if (!this.secondary_demod)
+        UI.setBandpass(this.modulation, low_new, high_new);
+
     // Set new bounds
-    UI.setBandpass(this.modulation, low_new, high_new);
     this.low_cut  = low_new;
     this.high_cut = high_new;
     this.set();
