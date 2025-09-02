@@ -203,14 +203,24 @@ UI.toggleMute = function(on) {
 // Bandpass Controls
 //
 
-// Set bandpass for a given modulation.
+// Clear saved bandpasses
+UI.clearAllBandpasses = function() {
+    // Clear cached bandpass data
+    this.bandpass = {};
+    // Delete all saved bandpass data
+    Modes.getModes().forEach(function(mode, i) {
+        LS.delete('bp-' + mode.modulation);
+    });
+};
+
+// Set bandpass for given modulation.
 UI.setBandpass = function(mode, low, high) {
     var bp = { low_cut: low, high_cut: high };
     LS.save('bp-' + mode, JSON.stringify(bp));
     this.bandpass[mode] = bp;
 };
 
-// Get saved bandpass for a given modulation.
+// Get saved bandpass for given modulation.
 UI.getBandpass = function(mode) {
     // Load bandpass from storage as needed
     if (mode in this.bandpass) {

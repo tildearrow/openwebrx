@@ -388,6 +388,11 @@ Shortcuts.handleKey = function(event) {
             $('div.button[data-toggle-panel="openwebrx-panel-receiver"]')[0].click();
             break;
 
+        case '|':
+            // Clear all saved bandpass settings
+            UI.clearAllBandpasses();
+            break;
+
         case '/': case '?':
             // ?: Show keyboard shortcuts help
             Shortcuts.overlay.slideToggle(100);

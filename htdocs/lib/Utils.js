@@ -290,6 +290,11 @@ LS.has = function(key) {
     return localStorage && (localStorage.getItem(key)!=null);
 };
 
+// Remove item from local storage.
+LS.delete = function(key) {
+    if (localStorage) localStorage.removeItem(key);
+};
+
 // Save named UI setting to local storage.
 LS.save = function(key, value) {
     if (localStorage) localStorage.setItem(key, value);
