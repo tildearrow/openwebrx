@@ -20,7 +20,7 @@ Filter.prototype.getLimits = function() {
     } else if (this.demodulator.get_secondary_demod() === "ism") {
         max_bw = 600000;
     } else {
-        max_bw = (audioEngine.getOutputRate() / 2) - 1;
+        max_bw = parseInt(audioEngine.getOutputRate() / 2);
     }
     return {
         high: max_bw,
@@ -384,14 +384,12 @@ Demodulator.prototype.setAudioServiceId = function(audio_service_id) {
 }
 
 Demodulator.prototype.setBandpass = function(bandpass) {
-    UI.setBandpass(this.modulation, bandpass.low_cut, bandpass.high_cut);
     this.low_cut = bandpass.low_cut;
     this.high_cut = bandpass.high_cut;
     this.set();
 };
 
 Demodulator.prototype.disableBandpass = function() {
-    UI.setBandpass(this.modulation, null, null);
     this.low_cut = null;
     this.high_cut = null;
     this.set();
