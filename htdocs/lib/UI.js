@@ -211,16 +211,21 @@ UI.resetAllBandpasses = function() {
     Modes.getModes().forEach(function(mode, i) {
         LS.delete('bp-' + mode.modulation);
     });
+
+    // Reset current bandpass to default
+    var mode = Modes.findByModulation(this.getModulation());
+    var bp = mode? mode.bandpass : null; 
+    if (bp) this.getDemodulator().setBandpass(bp);
 };
 
 // Set bandpass for given modulation.
-UI.setBandpass = function(mode, low, high) {
+UI.saveBandpass = function(mode, low, high) {
     var bp = { low_cut: low, high_cut: high };
     LS.save('bp-' + mode, JSON.stringify(bp));
 };
 
 // Get saved bandpass for given modulation.
-UI.getBandpass = function(mode) {
+UI.loadBandpass = function(mode) {
     // Load bandpass from storage as needed
     return JSON.parse(LS.loadStr('bp-' + mode)) || null;
 };

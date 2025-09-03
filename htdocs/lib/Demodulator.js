@@ -255,7 +255,7 @@ function Demodulator(offset_frequency, modulation) {
     this.ifRate = mode && mode.ifRate;
 
     // Get bandpass from local storage first, then try the default bandpass
-    var bp = UI.getBandpass(modulation);
+    var bp = UI.loadBandpass(modulation);
     this.low_cut  = bp? bp.low_cut  : mode && mode.bandpass? mode.bandpass.low_cut  : null;
     this.high_cut = bp? bp.high_cut : mode && mode.bandpass? mode.bandpass.high_cut : null;
 
@@ -416,7 +416,7 @@ Demodulator.prototype.moveBandpass = function(low_new, high_new) {
 
     // Save modified bandpass, but only in analog modes
     if (!this.secondary_demod)
-        UI.setBandpass(this.modulation, low_new, high_new);
+        UI.saveBandpass(this.modulation, low_new, high_new);
 
     // Set new bounds
     this.low_cut  = low_new;
