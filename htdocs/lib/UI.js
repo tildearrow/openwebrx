@@ -86,14 +86,16 @@ UI.getDemodulator = function() {
 }
 
 UI.getModulation = function() {
-    var mode1 = this.getDemodulator().get_secondary_demod();
-    var mode2 = this.getDemodulator().get_modulation();
+    var demod = this.getDemodulator();
+    var mode1 = demod? demod.get_secondary_demod() : null;
+    var mode2 = demod? demod.get_modulation() : null;
     return !!mode1? mode1 : !mode2? '' : mode2;
 };
 
 UI.getUnderlying = function() {
-    var mode1 = this.getDemodulator().get_secondary_demod();
-    var mode2 = this.getDemodulator().get_modulation();
+    var demod = this.getDemodulator();
+    var mode1 = demod? demod.get_secondary_demod() : null;
+    var mode2 = demod? demod.get_modulation() : null;
     return !mode1? '' : !mode2? '' : mode2;
 };
 
@@ -114,8 +116,8 @@ UI.getFrequency = function(x) {
         // When in CW mode, offset by 800Hz
         var delta = this.getModulation() === 'cw'? 800 : 0;
         // No argument: return currently tuned frequency
-        x = this.getDemodulator().get_offset_frequency();
-        return x + center_freq + delta;
+        var demod = this.getDemodulator();
+        return demod? demod.get_offset_frequency() + center_freq + delta : 0;
     } else {
         // Pointer position: return frequency under pointer
         x = x / canvas_container.clientWidth;
@@ -134,7 +136,8 @@ UI.setFrequency = function(freq, snap = true) {
     // Snap frequency to the tuning step
     if (snap) freq = Utils.snapFrequency(freq, tuning_step);
     // Tune to the frequency offset
-    return this.getDemodulator().set_offset_frequency(freq - delta - center_freq);
+    var demod = this.getDemodulator();
+    return demod? demod.set_offset_frequency(freq - delta - center_freq) : false;
 };
 
 UI.tuneBookmark = function(b) {
