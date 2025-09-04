@@ -1,3 +1,14 @@
+**1.2.92**
+- Switched to the new AcarsDec version 4.x.
+- Extended maximum fax page length to 10000 lines.
+- Added saving user-selected bandpass settings.
+- Added [|] shortcut to clear all bandpass settings.
+- Added acarsdec and original redsea to buildall.sh.
+- Added more shortcuts to the help page.
+- Fixed JS errors when demodulator not yet set.
+- Split aircraft and satellite code from toolbox.py.
+- Removed xz requirement from packaging.
+
 **1.2.91**
 - Added option to record silence in background recording.
 - Added range check to the FFT size setting.
