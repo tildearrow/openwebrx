@@ -764,7 +764,7 @@ class FeatureDetector(object):
             else:
                 version = LooseVersion(matches.group(1))
                 return version >= required_version
-        except FileNotFoundError:
+        except Exception as e:
             return False
 
     def has_acarsdec(self):
