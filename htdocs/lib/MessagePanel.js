@@ -494,6 +494,10 @@ AdsbMessagePanel.prototype.pushMessage = function(msg) {
         : entry.icao?     Utils.linkifyIcao(entry.icao)
         : '';
 
+        // Add country flag
+        var flag = entry.ccode && Lookup.ccode2flag(entry.ccode);
+        if (flag) aircraft = flag + '&nbsp;' + aircraft;
+
         // Altitude and climb / descent
         var alt  = entry.altitude? '' + entry.altitude : '';
         if (entry.vspeed) {
