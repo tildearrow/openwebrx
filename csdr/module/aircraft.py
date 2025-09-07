@@ -2,6 +2,8 @@ from pycsdr.modules import ExecModule
 from pycsdr.types import Format
 from owrx.config import Config
 
+import os
+
 
 class DumpHfdlModule(ExecModule):
     def __init__(self, sampleRate: int = 12000, jsonOutput: bool = False):
