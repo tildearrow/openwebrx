@@ -1,0 +1,487 @@
+[
+    {
+        "name" : "AAR1",
+        "frequency" : 159570000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR2",
+        "frequency" : 159810000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR3",
+        "frequency" : 159930000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR4",
+        "frequency" : 160050000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR5",
+        "frequency" : 160185000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR6",
+        "frequency" : 160200000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR7",
+        "frequency" : 160215000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR8",
+        "frequency" : 160230000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR9",
+        "frequency" : 160245000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR10",
+        "frequency" : 160260000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR11",
+        "frequency" : 160275000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR12",
+        "frequency" : 160290000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR13",
+        "frequency" : 160305000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR14",
+        "frequency" : 160320000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR15",
+        "frequency" : 160335000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR16",
+        "frequency" : 160350000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR17",
+        "frequency" : 160365000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR18",
+        "frequency" : 160380000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR19",
+        "frequency" : 160395000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR20",
+        "frequency" : 160410000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR21",
+        "frequency" : 160425000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR22",
+        "frequency" : 160440000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR23",
+        "frequency" : 160455000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR24",
+        "frequency" : 160470000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR25",
+        "frequency" : 160485000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR26",
+        "frequency" : 160500000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR27",
+        "frequency" : 160515000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR28",
+        "frequency" : 160530000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR29",
+        "frequency" : 160545000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR30",
+        "frequency" : 160560000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR31",
+        "frequency" : 160575000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR32",
+        "frequency" : 160590000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR33",
+        "frequency" : 160605000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR34",
+        "frequency" : 160620000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR35",
+        "frequency" : 160635000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR36",
+        "frequency" : 160650000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR37",
+        "frequency" : 160665000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR38",
+        "frequency" : 160680000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR39",
+        "frequency" : 160695000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR40",
+        "frequency" : 160710000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR41",
+        "frequency" : 160725000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR42",
+        "frequency" : 160740000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR43",
+        "frequency" : 160755000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR44",
+        "frequency" : 160770000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR45",
+        "frequency" : 160785000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR46",
+        "frequency" : 160800000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR47",
+        "frequency" : 160815000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR48",
+        "frequency" : 160830000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR49",
+        "frequency" : 160845000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR50",
+        "frequency" : 160860000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR51",
+        "frequency" : 160875000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR52",
+        "frequency" : 160890000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR53",
+        "frequency" : 160905000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR54",
+        "frequency" : 160920000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR55",
+        "frequency" : 160935000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR56",
+        "frequency" : 160950000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR57",
+        "frequency" : 160965000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR58",
+        "frequency" : 160980000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR59",
+        "frequency" : 160995000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR60",
+        "frequency" : 161010000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR61",
+        "frequency" : 161025000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR62",
+        "frequency" : 161040000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR63",
+        "frequency" : 161055000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR64",
+        "frequency" : 161070000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR65",
+        "frequency" : 161085000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR66",
+        "frequency" : 161100000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR67",
+        "frequency" : 161115000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR68",
+        "frequency" : 161130000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR69",
+        "frequency" : 161145000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR70",
+        "frequency" : 161160000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR71",
+        "frequency" : 161175000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR72",
+        "frequency" : 161190000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR73",
+        "frequency" : 161205000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR74",
+        "frequency" : 161220000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR75",
+        "frequency" : 161235000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR76",
+        "frequency" : 161250000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR77",
+        "frequency" : 161265000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR78",
+        "frequency" : 161280000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR79",
+        "frequency" : 161295000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR80",
+        "frequency" : 161310000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR81",
+        "frequency" : 161325000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR82",
+        "frequency" : 161340000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR83",
+        "frequency" : 161355000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR84",
+        "frequency" : 161370000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR85",
+        "frequency" : 161385000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR86",
+        "frequency" : 161400000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR87",
+        "frequency" : 161415000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR88",
+        "frequency" : 161430000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR89",
+        "frequency" : 161445000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR90",
+        "frequency" : 161460000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR91",
+        "frequency" : 161475000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR92",
+        "frequency" : 161490000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR93",
+        "frequency" : 161505000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR94",
+        "frequency" : 161520000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR95",
+        "frequency" : 161535000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR96",
+        "frequency" : 161550000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "AAR97",
+        "frequency" : 161565000,
+        "modulation" : "nfm"
+    }
+]
