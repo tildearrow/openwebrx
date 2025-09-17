@@ -1,486 +1,486 @@
 [
     {
-        "name" : "AAR1",
+        "name" : "RR1",
         "frequency" : 159570000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR2",
+        "name" : "RR2",
         "frequency" : 159810000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR3",
+        "name" : "RR3",
         "frequency" : 159930000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR4",
+        "name" : "RR4",
         "frequency" : 160050000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR5",
+        "name" : "RR5",
         "frequency" : 160185000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR6",
+        "name" : "RR6",
         "frequency" : 160200000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR7",
+        "name" : "RR7",
         "frequency" : 160215000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR8",
+        "name" : "RR8",
         "frequency" : 160230000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR9",
+        "name" : "RR9",
         "frequency" : 160245000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR10",
+        "name" : "RR10",
         "frequency" : 160260000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR11",
+        "name" : "RR11",
         "frequency" : 160275000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR12",
+        "name" : "RR12",
         "frequency" : 160290000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR13",
+        "name" : "RR13",
         "frequency" : 160305000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR14",
+        "name" : "RR14",
         "frequency" : 160320000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR15",
+        "name" : "RR15",
         "frequency" : 160335000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR16",
+        "name" : "RR16",
         "frequency" : 160350000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR17",
+        "name" : "RR17",
         "frequency" : 160365000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR18",
+        "name" : "RR18",
         "frequency" : 160380000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR19",
+        "name" : "RR19",
         "frequency" : 160395000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR20",
+        "name" : "RR20",
         "frequency" : 160410000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR21",
+        "name" : "RR21",
         "frequency" : 160425000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR22",
+        "name" : "RR22",
         "frequency" : 160440000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR23",
+        "name" : "RR23",
         "frequency" : 160455000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR24",
+        "name" : "RR24",
         "frequency" : 160470000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR25",
+        "name" : "RR25",
         "frequency" : 160485000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR26",
+        "name" : "RR26",
         "frequency" : 160500000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR27",
+        "name" : "RR27",
         "frequency" : 160515000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR28",
+        "name" : "RR28",
         "frequency" : 160530000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR29",
+        "name" : "RR29",
         "frequency" : 160545000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR30",
+        "name" : "RR30",
         "frequency" : 160560000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR31",
+        "name" : "RR31",
         "frequency" : 160575000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR32",
+        "name" : "RR32",
         "frequency" : 160590000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR33",
+        "name" : "RR33",
         "frequency" : 160605000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR34",
+        "name" : "RR34",
         "frequency" : 160620000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR35",
+        "name" : "RR35",
         "frequency" : 160635000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR36",
+        "name" : "RR36",
         "frequency" : 160650000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR37",
+        "name" : "RR37",
         "frequency" : 160665000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR38",
+        "name" : "RR38",
         "frequency" : 160680000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR39",
+        "name" : "RR39",
         "frequency" : 160695000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR40",
+        "name" : "RR40",
         "frequency" : 160710000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR41",
+        "name" : "RR41",
         "frequency" : 160725000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR42",
+        "name" : "RR42",
         "frequency" : 160740000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR43",
+        "name" : "RR43",
         "frequency" : 160755000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR44",
+        "name" : "RR44",
         "frequency" : 160770000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR45",
+        "name" : "RR45",
         "frequency" : 160785000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR46",
+        "name" : "RR46",
         "frequency" : 160800000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR47",
+        "name" : "RR47",
         "frequency" : 160815000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR48",
+        "name" : "RR48",
         "frequency" : 160830000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR49",
+        "name" : "RR49",
         "frequency" : 160845000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR50",
+        "name" : "RR50",
         "frequency" : 160860000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR51",
+        "name" : "RR51",
         "frequency" : 160875000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR52",
+        "name" : "RR52",
         "frequency" : 160890000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR53",
+        "name" : "RR53",
         "frequency" : 160905000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR54",
+        "name" : "RR54",
         "frequency" : 160920000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR55",
+        "name" : "RR55",
         "frequency" : 160935000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR56",
+        "name" : "RR56",
         "frequency" : 160950000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR57",
+        "name" : "RR57",
         "frequency" : 160965000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR58",
+        "name" : "RR58",
         "frequency" : 160980000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR59",
+        "name" : "RR59",
         "frequency" : 160995000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR60",
+        "name" : "RR60",
         "frequency" : 161010000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR61",
+        "name" : "RR61",
         "frequency" : 161025000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR62",
+        "name" : "RR62",
         "frequency" : 161040000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR63",
+        "name" : "RR63",
         "frequency" : 161055000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR64",
+        "name" : "RR64",
         "frequency" : 161070000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR65",
+        "name" : "RR65",
         "frequency" : 161085000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR66",
+        "name" : "RR66",
         "frequency" : 161100000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR67",
+        "name" : "RR67",
         "frequency" : 161115000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR68",
+        "name" : "RR68",
         "frequency" : 161130000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR69",
+        "name" : "RR69",
         "frequency" : 161145000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR70",
+        "name" : "RR70",
         "frequency" : 161160000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR71",
+        "name" : "RR71",
         "frequency" : 161175000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR72",
+        "name" : "RR72",
         "frequency" : 161190000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR73",
+        "name" : "RR73",
         "frequency" : 161205000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR74",
+        "name" : "RR74",
         "frequency" : 161220000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR75",
+        "name" : "RR75",
         "frequency" : 161235000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR76",
+        "name" : "RR76",
         "frequency" : 161250000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR77",
+        "name" : "RR77",
         "frequency" : 161265000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR78",
+        "name" : "RR78",
         "frequency" : 161280000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR79",
+        "name" : "RR79",
         "frequency" : 161295000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR80",
+        "name" : "RR80",
         "frequency" : 161310000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR81",
+        "name" : "RR81",
         "frequency" : 161325000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR82",
+        "name" : "RR82",
         "frequency" : 161340000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR83",
+        "name" : "RR83",
         "frequency" : 161355000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR84",
+        "name" : "RR84",
         "frequency" : 161370000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR85",
+        "name" : "RR85",
         "frequency" : 161385000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR86",
+        "name" : "RR86",
         "frequency" : 161400000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR87",
+        "name" : "RR87",
         "frequency" : 161415000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR88",
+        "name" : "RR88",
         "frequency" : 161430000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR89",
+        "name" : "RR89",
         "frequency" : 161445000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR90",
+        "name" : "RR90",
         "frequency" : 161460000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR91",
+        "name" : "RR91",
         "frequency" : 161475000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR92",
+        "name" : "RR92",
         "frequency" : 161490000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR93",
+        "name" : "RR93",
         "frequency" : 161505000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR94",
+        "name" : "RR94",
         "frequency" : 161520000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR95",
+        "name" : "RR95",
         "frequency" : 161535000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR96",
+        "name" : "RR96",
         "frequency" : 161550000,
         "modulation" : "nfm"
     },
     {
-        "name" : "AAR97",
+        "name" : "RR97",
         "frequency" : 161565000,
         "modulation" : "nfm"
     }
