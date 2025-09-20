@@ -245,7 +245,7 @@
         "modulation" : "nfm"
     },
     {
-        "name" : "M1/37A",
+        "name" : "M1",
         "frequency" : 157850000,
         "modulation" : "nfm"
     },
@@ -477,16 +477,6 @@
     {
         "name" : "M2/P4",
         "frequency" : 161425000,
-        "modulation" : "nfm"
-    },
-    {
-        "name" : "87B",
-        "frequency" : 161975000,
-        "modulation" : "nfm"
-    },
-    {
-        "name" : "88B",
-        "frequency" : 162025000,
         "modulation" : "nfm"
     },
     {
