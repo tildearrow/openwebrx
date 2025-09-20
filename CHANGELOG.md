@@ -1,3 +1,15 @@
+**1.2.93**
+- Added country flags to the ADSB display.
+- Fixed problem with the ADSB decoder.
+- Sorted bookmarks: blue, then yellow, then green.
+- Added ITU region-specific bookmark folders.
+- Added AAR railroad bookmarks for ITU region 2.
+- Added UCSG marine bookmarks for ITU region 2.
+- Added generic VHF marine bookmarks for regions 1/3.
+- Added Chinese PRS and SRS public radio bookmarks.
+- Added separate CB bookmarks for ITU regions 1/2.
+- Moved NOAA bookmarks to ITU region 2.
+
 **1.2.92**
 - Switched to the new AcarsDec version 4.x.
 - Extended maximum fax page length to 10000 lines.
