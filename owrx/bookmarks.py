@@ -115,8 +115,8 @@ class Bookmarks(object):
 
     def _getBookmarkFiles(self):
         pm = Config().get()
-        # Known bookmark files, starting with the main file
-        result = [Bookmarks._getBookmarksFile(), "/etc/openwebrx/bookmarks.json", "bookmarks.json"]
+        # Bookmarks added later override ones added earlier
+        result = [ "/etc/openwebrx/bookmarks.json" ]
         # Find additional bookmark files in the bookmarks.d folder
         result += self._listJsonFiles(Bookmarks.MAIN_DIR)
         # Find additional bookmark files in the region-specific folder
@@ -127,6 +127,8 @@ class Bookmarks(object):
         country = pm["receiver_country"].lower()
         if country != "":
             result += self._listJsonFiles("{0}/{1}".format(Bookmarks.MAIN_DIR, country))
+        # Known bookmark files, starting with the main file
+        result += [ "bookmarks.json", Bookmarks._getBookmarksFile() ]
         # Return the final list of bookmark files
         return result
 
@@ -148,7 +150,7 @@ class Bookmarks(object):
 
     def _loadBookmarks(self):
         mainFile = Bookmarks._getBookmarksFile()
-        result = []
+        result = {}
         # Collect bookmarks from all files in the result
         for file in self.fileList:
             # Main file bookmarks will not have srcFile set
@@ -157,15 +159,17 @@ class Bookmarks(object):
                 with open(file, "r") as f:
                     content = f.read()
                 if content:
-                    bookmarks_json = json.loads(content)
-                    result += [Bookmark(d, srcFile) for d in bookmarks_json]
+                    # Replace previous bookmarks at the same frequencies
+                    for x in json.loads(content):
+                        result[x["frequency"]] = Bookmark(x, srcFile)
             except FileNotFoundError:
                 pass
             except json.JSONDecodeError:
                 logger.exception("error while parsing bookmarks file %s", file)
             except Exception:
                 logger.exception("error while processing bookmarks from %s", file)
-        return result
+        # Return bookmarks, not the frequencies used as keys
+        return result.values()
 
     def getEditableBookmarks(self):
         # Only return bookmarks that can be saved
