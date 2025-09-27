@@ -1,0 +1,137 @@
+[
+    {
+        "name" : "RHA1",
+        "description" : "Roadside Assistance",
+        "frequency" : 68100000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA2",
+        "description" : "Motor Sports",
+        "frequency" : 68300000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA3",
+        "description" : "Rescue",
+        "frequency" : 68425000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA4",
+        "description" : "Motor Sports",
+        "frequency" : 68525000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA5",
+        "frequency" : 68050000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA6",
+        "frequency" : 68575000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA7",
+        "frequency" : 68175000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA8",
+        "frequency" : 67500000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA9",
+        "frequency" : 71375000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA10",
+        "frequency" : 71425000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA11",
+        "frequency" : 71475000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA12",
+        "frequency" : 71625000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA13",
+        "frequency" : 70200000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA14",
+        "frequency" : 71025000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA15",
+        "frequency" : 71050000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA16",
+        "frequency" : 71100000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA17",
+        "description" : "Rescue",
+        "frequency" : 68225000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA18",
+        "frequency" : 68375000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA19",
+        "frequency" : 71175000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA20",
+        "frequency" : 71750000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA21",
+        "frequency" : 71900000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA22",
+        "frequency" : 71350000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA23",
+        "frequency" : 71550000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA24",
+        "frequency" : 71575000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA25",
+        "frequency" : 71600000,
+        "modulation" : "nfm"
+    },
+    {
+        "name" : "RHA26",
+        "frequency" : 72325000,
+        "modulation" : "nfm"
+    }
+]
