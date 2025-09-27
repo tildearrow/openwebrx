@@ -10,6 +10,7 @@ defaultConfig = PropertyLayer(
     receiver_asl=200,
     receiver_admin="example@example.com",
     receiver_gps=PropertyLayer(lat=47.0, lon=19.0),
+    receiver_country="",
     photo_title="Panorama of Budapest from Schönherz Zoltán Dormitory",
     photo_desc="",
     fft_fps=9,

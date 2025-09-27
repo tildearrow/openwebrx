@@ -16,6 +16,7 @@ from owrx.form.input.receiverid import ReceiverKeysInput
 from owrx.form.input.gfx import AvatarInput, TopPhotoInput
 from owrx.form.input.device import WaterfallLevelsInput, WaterfallAutoLevelsInput
 from owrx.form.input.location import LocationInput
+from owrx.form.input.country import CountryInput
 from owrx.waterfall import WaterfallOptions
 from owrx.breadcrumb import Breadcrumb, BreadcrumbItem
 from owrx.controllers.settings import SettingsBreadcrumb
@@ -59,6 +60,7 @@ class GeneralSettingsController(SettingsFormController):
                     ],
                     converter=IntConverter(),
                 ),
+                CountryInput("receiver_country", "Receiver country"),
                 LocationInput("receiver_gps", "Receiver coordinates"),
                 CheckboxInput(
                     "gps_updates",

@@ -76,6 +76,7 @@ class BookmarkSubscription(object):
 
 
 class Bookmarks(object):
+    MAIN_DIR = "/etc/openwebrx/bookmarks.d"
     sharedInstance = None
 
     @staticmethod
@@ -90,36 +91,42 @@ class Bookmarks(object):
         self.subscriptions = []
         # Find all known bookmark files
         self.fileList = self._getBookmarkFiles()
-        # Subscribe to region changes
-        Config().get().wireProperty("bandplan_region", self._updateRegion)
+        # Subscribe to region and country changes
+        pm = Config().get()
+        pm.wireProperty("receiver_country", self._updateLocation)
+        pm.wireProperty("bandplan_region", self._updateLocation)
 
-    def _updateRegion(self, region):
+    def _updateLocation(self, region_or_country):
         # Refresh the list of known bookmark files
         self.fileList = self._getBookmarkFiles()
         # Make sure bookmarks are refreshed the next time they are queried
         self.file_modified = None
 
+    def _listJsonFiles(self, path: str):
+        try:
+            # Return list of all .json files
+            return [ path + "/" + file
+                for file in os.listdir(path) if file.endswith(".json")
+            ]
+        except Exception:
+            pass
+        # Something happened
+        return []
+
     def _getBookmarkFiles(self):
+        pm = Config().get()
         # Known bookmark files, starting with the main file
         result = [Bookmarks._getBookmarksFile(), "/etc/openwebrx/bookmarks.json", "bookmarks.json"]
         # Find additional bookmark files in the bookmarks.d folder
-        try:
-            bookmarksDir = "/etc/openwebrx/bookmarks.d"
-            result += [ bookmarksDir + "/" + file
-                for file in os.listdir(bookmarksDir) if file.endswith(".json")
-            ]
-        except Exception:
-            pass
+        result += self._listJsonFiles(Bookmarks.MAIN_DIR)
         # Find additional bookmark files in the region-specific folder
-        try:
-            region = Config.get()["bandplan_region"]
-            if region > 0:
-                bookmarksDir = "/etc/openwebrx/bookmarks.d/r{0}".format(region)
-            result += [ bookmarksDir + "/" + file
-                for file in os.listdir(bookmarksDir) if file.endswith(".json")
-            ]
-        except Exception:
-            pass
+        region = pm["bandplan_region"]
+        if region > 0:
+            result += self._listJsonFiles("{0}/r{1}".format(Bookmarks.MAIN_DIR, region))
+        # Find additional bookmark files in the country-specific folder
+        country = pm["receiver_country"].lower()
+        if country != "":
+            result += self._listJsonFiles("{0}/{1}".format(Bookmarks.MAIN_DIR, country))
         # Return the final list of bookmark files
         return result
 
