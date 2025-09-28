@@ -1,36 +1,36 @@
 [
     {
-        "name" : "CG01A",
+        "name" : "CG1A",
         "frequency" : 156050000,
         "modulation" : "nfm",
         "description" : "Port Operations and Commercial, VTS. Available only in New Orleans/Lower Mississippi area."
     },
     {
-        "name" : "CG05A",
+        "name" : "CG5A",
         "frequency" : 156250000,
         "modulation" : "nfm",
         "description" : "Port Operations or VTS in Houston, New Orleans and Seattle."
     },
     {
-        "name" : "CG06",
+        "name" : "CG6",
         "frequency" : 156300000,
         "modulation" : "nfm",
         "description" : "Intership Safety"
     },
     {
-        "name" : "CG07A",
+        "name" : "CG7A",
         "frequency" : 156350000,
         "modulation" : "nfm",
         "description" : "Commercial"
     },
     {
-        "name" : "CG08",
+        "name" : "CG8",
         "frequency" : 156400000,
         "modulation" : "nfm",
         "description" : "Commercial (Intership only)"
     },
     {
-        "name" : "CG09",
+        "name" : "CG9",
         "frequency" : 156450000,
         "modulation" : "nfm",
         "description" : "Boater Calling. Commercial and Non-Commercial."
