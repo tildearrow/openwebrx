@@ -26,16 +26,6 @@
     },
     {
         "name" : "KDR6",
-        "frequency" : 444875000,
-        "modulation" : "nfm"
-    },
-    {
-        "name" : "KDR7",
-        "frequency" : 444925000,
-        "modulation" : "nfm"
-    },
-    {
-        "name" : "KDR8",
         "frequency" : 444975000,
         "modulation" : "nfm"
     }
