@@ -59,8 +59,14 @@ class GeneralSettingsController(SettingsFormController):
                         Option("3", "ITU Region 3 (South Asia, Pacific)"),
                     ],
                     converter=IntConverter(),
+                    infotext="Band plan ribbons and region-specific default bookmarks will folow "
+                    + "the selected ITU region.",
                 ),
-                CountryInput("receiver_country", "Receiver country"),
+                CountryInput(
+                    "receiver_country",
+                    "Receiver country",
+                    infotext="Country-specific default bookmarks will folow the selected country.",
+                ),
                 LocationInput("receiver_gps", "Receiver coordinates"),
                 CheckboxInput(
                     "gps_updates",
@@ -132,7 +138,7 @@ class GeneralSettingsController(SettingsFormController):
                 TextInput(
                     "magic_key",
                     "Magic key",
-                    infotext="Enter a key the user has to supply to change center frequency."
+                    infotext="Enter the key users have to supply to change center frequency."
                     + " Leave empty if you do not want to protect frequency changes with a key."
                     + " When enabled, the key has to be added to receiver's URL after the hash"
                     + " sign: http://my.receiver.com/#key=keyvalue.",
