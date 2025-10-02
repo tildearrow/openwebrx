@@ -1,3 +1,14 @@
+openwebrx (1.2.94) bullseye jammy; urgency=low
+
+  * Updated bookmarks infrastructure.
+  * Added country selector, affecting bookmarks.
+  * Added Finnish, Norwegian, Swedish bookmarks.
+  * Added Chinese and German bookmarks.
+  * Added cues to several settings.
+  * Removing duplicate bookmarks, by importance.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 03 Oct 2025 16:12:00 +0000
+
 openwebrx (1.2.93) bullseye jammy; urgency=low
 
   * Added country flags to the ADSB display.
