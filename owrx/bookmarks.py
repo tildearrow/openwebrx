@@ -114,21 +114,20 @@ class Bookmarks(object):
         return []
 
     def _getBookmarkFiles(self):
+        # Bookmarks added later override ones added earlier !
         pm = Config().get()
-        # Bookmarks added later override ones added earlier
-        result = [ "/etc/openwebrx/bookmarks.json" ]
-        # Find additional bookmark files in the bookmarks.d folder
-        result += self._listJsonFiles(Bookmarks.MAIN_DIR)
-        # Find additional bookmark files in the region-specific folder
+        # 1) General default bookmark files
+        result = self._listJsonFiles(Bookmarks.MAIN_DIR)
+        # 2) Region-specific bookmark files
         region = pm["bandplan_region"]
         if region > 0:
             result += self._listJsonFiles("{0}/r{1}".format(Bookmarks.MAIN_DIR, region))
-        # Find additional bookmark files in the country-specific folder
+        # 3) Country-specific bookmark files
         country = pm["receiver_country"].lower()
         if country != "":
             result += self._listJsonFiles("{0}/{1}".format(Bookmarks.MAIN_DIR, country))
-        # Known bookmark files, starting with the main file
-        result += [ "bookmarks.json", Bookmarks._getBookmarksFile() ]
+        # 4) Main bookmark file editable by admin
+        result += [ Bookmarks._getMainBookmarkFile() ]
         # Return the final list of bookmark files
         return result
 
@@ -149,7 +148,7 @@ class Bookmarks(object):
         return datetime.fromtimestamp(timestamp, timezone.utc)
 
     def _loadBookmarks(self):
-        mainFile = Bookmarks._getBookmarksFile()
+        mainFile = Bookmarks._getMainBookmarkFile()
         result = {}
         # Collect bookmarks from all files in the result
         for file in self.fileList:
@@ -185,7 +184,7 @@ class Bookmarks(object):
             return [b for b in self.bookmarks if lo <= b.getFrequency() <= hi]
 
     @staticmethod
-    def _getBookmarksFile():
+    def _getMainBookmarkFile():
         coreConfig = CoreConfig()
         return "{data_directory}/bookmarks.json".format(data_directory=coreConfig.get_data_directory())
 
@@ -196,7 +195,7 @@ class Bookmarks(object):
             [b.__dict__() for b in self.bookmarks if b.getSrcFile() is None],
             indent=4
         )
-        with open(Bookmarks._getBookmarksFile(), "w") as file:
+        with open(Bookmarks._getMainBookmarkFile(), "w") as file:
             file.write(jsonContent)
         self.file_modified = self._getFileModifiedTimestamp()
 
