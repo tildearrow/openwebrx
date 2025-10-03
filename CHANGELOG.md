@@ -5,6 +5,7 @@
 - Added Chinese and German bookmarks.
 - Added cues to several settings.
 - Removing duplicate bookmarks, by importance.
+- Disabling scanner when profile side-stepped.
 
 **1.2.93**
 - Added country flags to the ADSB display.

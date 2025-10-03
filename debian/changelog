@@ -6,6 +6,7 @@ openwebrx (1.2.94) bullseye jammy; urgency=low
   * Added Chinese and German bookmarks.
   * Added cues to several settings.
   * Removing duplicate bookmarks, by importance.
+  * Disabling scanner when profile side-stepped.
 
  -- Marat Fayzullin <luarvique@gmail.com>  Fri, 03 Oct 2025 16:12:00 +0000
 

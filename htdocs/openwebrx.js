@@ -111,6 +111,7 @@ function jumpBySteps(steps) {
         ws.send(JSON.stringify({
             "type": "setfrequency", "params": { "frequency": f, "key": key }
         }));
+        UI.toggleScanner(false);
     }
 }
 
