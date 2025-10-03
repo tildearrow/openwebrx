@@ -750,7 +750,7 @@ class FeatureDetector(object):
             return False
 
     def _has_acarsdec_version(self, required_version):
-        acarsdec_version_regex = re.compile("^Acarsdec\s+v?(\S+)\s+")
+        acarsdec_version_regex = re.compile(r"^Acarsdec\s+v?(\S+)\s+")
         try:
             process = subprocess.Popen(["acarsdec"], stderr=subprocess.PIPE)
             matches = None
