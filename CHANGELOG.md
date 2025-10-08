@@ -1,11 +1,12 @@
 **1.2.94**
-- Updated bookmarks infrastructure.
+- Added a button for cloning SDR profiles.
 - Added country selector, affecting bookmarks.
 - Added Finnish, Norwegian, Swedish bookmarks.
 - Added Chinese and German bookmarks.
 - Added cues to several settings.
 - Removing duplicate bookmarks, by importance.
 - Disabling scanner when profile side-stepped.
+- Updated bookmarks infrastructure.
 
 **1.2.93**
 - Added country flags to the ADSB display.
