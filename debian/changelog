@@ -9,7 +9,7 @@ openwebrx (1.2.94) bullseye jammy; urgency=low
   * Disabling scanner when profile side-stepped.
   * Updated bookmarks infrastructure.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Fri, 03 Oct 2025 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 10 Oct 2025 16:12:00 +0000
 
 openwebrx (1.2.93) bullseye jammy; urgency=low
 
