@@ -119,6 +119,7 @@ class Router(object):
             ),
             RegexRoute("^/settings/deletesdr/([^/]+)$", SdrDeviceController, options={"action": "deleteDevice"}),
             RegexRoute("^/settings/sdr/([^/]+)/newprofile$", NewProfileController),
+            RegexRoute("^/settings/sdr/([^/]+)/newprofile/([^/]+)$", NewProfileController),
             RegexRoute(
                 "^/settings/sdr/([^/]+)/newprofile$",
                 NewProfileController,
