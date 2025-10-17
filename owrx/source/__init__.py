@@ -738,7 +738,21 @@ class SdrDeviceDescription(object):
             ),
             ExponentialInput("start_freq", "Initial frequency", "Hz"),
             ModesInput("start_mod", "Initial modulation"),
-            NumberInput("initial_squelch_level", "Initial squelch level", append="dBFS"),
+            NumberInput(
+                "initial_squelch_level",
+                "Initial squelch level",
+                append="dBFS"
+            ),
+            NumberInput(
+                "initial_nr_level",
+                "Initial noise reduction level",
+                validator=RangeValidator(-20, 20),
+                append="dB"
+            ),
+            CheckboxInput(
+                "initial_nr_enabled",
+                "Enable noise reduction by default"
+            ),
             DropdownInput(
                 "tuning_step",
                 "Tuning step",
@@ -797,6 +811,8 @@ class SdrDeviceDescription(object):
     def getProfileOptionalKeys(self):
         return [
             "initial_squelch_level",
+            "initial_nr_level",
+            "initial_nr_enabled",
             "rf_gain",
             "lfo_offset",
             "waterfall_levels",
