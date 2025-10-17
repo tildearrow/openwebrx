@@ -1,3 +1,11 @@
+openwebrx (1.2.95) bullseye jammy; urgency=low
+
+  * Added per-profile noise reduction options.
+  * Fixed typos in several setting cues.
+  * Fixed bookmarks editor.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Fri, 17 Oct 2025 16:12:00 +0000
+
 openwebrx (1.2.94) bullseye jammy; urgency=low
 
   * Added a button for cloning SDR profiles.

@@ -1,3 +1,8 @@
+**1.2.95**
+- Added per-profile noise reduction options.
+- Fixed typos in several setting cues.
+- Fixed bookmarks editor.
+
 **1.2.94**
 - Added a button for cloning SDR profiles.
 - Added country selector, affecting bookmarks.
