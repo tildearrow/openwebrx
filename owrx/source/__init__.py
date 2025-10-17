@@ -749,10 +749,6 @@ class SdrDeviceDescription(object):
                 validator=RangeValidator(-20, 20),
                 append="dB"
             ),
-            CheckboxInput(
-                "initial_nr_enabled",
-                "Enable noise reduction by default"
-            ),
             DropdownInput(
                 "tuning_step",
                 "Tuning step",
@@ -812,7 +808,6 @@ class SdrDeviceDescription(object):
         return [
             "initial_squelch_level",
             "initial_nr_level",
-            "initial_nr_enabled",
             "rf_gain",
             "lfo_offset",
             "waterfall_levels",
