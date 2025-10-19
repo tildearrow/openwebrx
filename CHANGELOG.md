@@ -1,6 +1,7 @@
 **1.2.95**
-- Centered CW tone in user-selected bandpass.
 - Added per-profile noise reduction option.
+- Can now change CW tone by moving bandpass.
+- Fixed frequency display/entry in CW mode.
 - Fixed typos in several setting cues.
 - Fixed creating new CW bookmarks.
 - Fixed bookmarks editor.

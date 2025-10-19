@@ -17,6 +17,7 @@ UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
 UI.bandplan = false;
+UI.cwOffset = null;
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -108,15 +109,21 @@ UI.setModulation = function(mode, underlying) {
 //
 
 UI.getCwOffset = function() {
-    // First, try getting CW bandpass from local storage
-    var bp = this.loadBandpass('cw');
-    // If no saved bandpass, try getting the default one
-    if (!bp) {
-        var mode = Modes.findByModulation('cw');
-        bp = mode? mode.bandpass : null;
+    // If no value cached yet...
+    if (this.cwOffset == null) {
+        // First, try getting CW bandpass from local storage
+        var bp = this.loadBandpass('cw');
+        // If no saved bandpass, try getting the default one
+        if (!bp) {
+            var mode = Modes.findByModulation('cw');
+            bp = mode? mode.bandpass : null;
+        }
+        // Center offset within bandpass, if present, else assume 800Hz
+        this.cwOffset = bp? Math.round((bp.low_cut + bp.high_cut) / 2) : 800;
     }
-    // Center offset within bandpass, if present, else assume 800Hz
-    return bp? Math.round((bp.low_cut + bp.high_cut) / 2) : 800;
+
+    // Return cached value
+    return this.cwOffset;
 };
 
 UI.getCwBandpass = function() {
@@ -239,6 +246,8 @@ UI.resetAllBandpasses = function() {
 UI.saveBandpass = function(mode, low, high) {
     var bp = { low_cut: low, high_cut: high };
     LS.save('bp-' + mode, JSON.stringify(bp));
+    // Clear cached CW tone offset
+    this.cwOffset == null;
 };
 
 // Get saved bandpass for given modulation.
