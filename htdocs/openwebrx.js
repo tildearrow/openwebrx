@@ -894,8 +894,6 @@ function on_ws_recv(evt) {
                             }
                         }
 
-                        if ('cw_offset' in config)
-                            UI.setCwOffset(config['cw_offset']);
                         if ('samp_rate' in config)
                             bandwidth = config['samp_rate'];
                         if ('center_freq' in config)

@@ -257,11 +257,8 @@ function Demodulator(offset_frequency, modulation) {
     // Get bandpass from local storage first
     var bp = UI.loadBandpass(modulation);
 
-    // In CW mode, use a narrow 200Hz bandpass
-    if (!bp && modulation === 'cw') {
-        var cwOffset = UI.getCwOffset();
-        bp = { low_cut: cwOffset - 100, high_cut: cwOffset + 100 };
-    }
+    // In CW mode, use bandpass that depends on tone
+    if (!bp && modulation === 'cw') bp = UI.getCwBandpass();
 
     // Default to mode-specific bandpass
     if (!bp && mode) bp = mode.bandpass;

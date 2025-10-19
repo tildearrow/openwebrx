@@ -17,7 +17,6 @@ UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
 UI.bandplan = false;
-UI.cwOffset = 800;
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -109,13 +108,20 @@ UI.setModulation = function(mode, underlying) {
 //
 
 UI.getCwOffset = function() {
-    return this.cwOffset;
+    // First, try getting CW bandpass from local storage
+    var bp = this.loadBandpass('cw');
+    // If no saved bandpass, try getting the default one
+    if (!bp) {
+        var mode = Modes.findByModulation('cw');
+        bp = mode? mode.bandpass : null;
+    }
+    // Center offset within bandpass, if present, else assume 800Hz
+    return bp? Math.round((bp.low_cut + bp.high_cut) / 2) : 800;
 };
 
-UI.setCwOffset = function(x) {
-    if (Number.isInteger(x)) {
-        this.cwOffset = x < 50? 50 : x > 1000? 1000 : x;
-    }
+UI.getCwBandpass = function() {
+    var cwOffset = this.getCwOffset();
+    return { low_cut: cwOffset - 100, high_cut: cwOffset + 100 };
 };
 
 UI.getOffsetFrequency = function(x) {
@@ -125,7 +131,7 @@ UI.getOffsetFrequency = function(x) {
 UI.getFrequency = function(x) {
     if (typeof(x) === 'undefined') {
         // When in CW mode, offset by 800Hz
-        var delta = this.getModulation() === 'cw'? this.cwOffset : 0;
+        var delta = this.getModulation() === 'cw'? this.getCwOffset() : 0;
         // No argument: return currently tuned frequency
         var demod = this.getDemodulator();
         return demod? demod.get_offset_frequency() + center_freq + delta : 0;
@@ -143,7 +149,7 @@ UI.setOffsetFrequency = function(offset) {
 
 UI.setFrequency = function(freq, snap = true) {
     // When in CW mode, offset by 800Hz
-    var delta = this.getModulation() === 'cw'? this.cwOffset : 0;
+    var delta = this.getModulation() === 'cw'? this.getCwOffset() : 0;
     // Snap frequency to the tuning step
     if (snap) freq = Utils.snapFrequency(freq, tuning_step);
     // Tune to the frequency offset
@@ -225,7 +231,7 @@ UI.resetAllBandpasses = function() {
 
     // Reset current bandpass to default
     var mode = Modes.findByModulation(this.getModulation());
-    var bp = mode? mode.bandpass : null; 
+    var bp = mode? mode.bandpass : null;
     if (bp) this.getDemodulator().setBandpass(bp);
 };
 

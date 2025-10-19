@@ -1,5 +1,5 @@
 **1.2.95**
-- Added configurable CW tone frequency.
+- Centered CW tone in user-selected bandpass.
 - Added per-profile noise reduction option.
 - Fixed typos in several setting cues.
 - Fixed creating new CW bookmarks.

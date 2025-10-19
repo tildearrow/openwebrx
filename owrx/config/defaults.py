@@ -438,6 +438,5 @@ defaultConfig = PropertyLayer(
     ssb_agc_profile="Fast",
     dab_output_rate=48000,
     ui_theme="default",
-    bot_ban_enabled=True,
-    cw_offset=800
+    bot_ban_enabled=True
 ).readonly()
