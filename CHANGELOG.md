@@ -1,6 +1,8 @@
 **1.2.95**
-- Added per-profile noise reduction options.
+- Added configurable CW tone frequency.
+- Added per-profile noise reduction option.
 - Fixed typos in several setting cues.
+- Fixed creating new CW bookmarks.
 - Fixed bookmarks editor.
 
 **1.2.94**

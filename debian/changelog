@@ -1,10 +1,12 @@
 openwebrx (1.2.95) bullseye jammy; urgency=low
 
-  * Added per-profile noise reduction options.
+  * Added configurable CW tone frequency.
+  * Added per-profile noise reduction option.
   * Fixed typos in several setting cues.
+  * Fixed creating new CW bookmarks.
   * Fixed bookmarks editor.
 
- -- Marat Fayzullin <luarvique@gmail.com>  Fri, 17 Oct 2025 16:12:00 +0000
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 20 Oct 2025 16:12:00 +0000
 
 openwebrx (1.2.94) bullseye jammy; urgency=low
 
