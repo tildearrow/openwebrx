@@ -17,6 +17,7 @@ UI.nrEnabled = false;
 UI.wheelSwap = false;
 UI.spectrum = false;
 UI.bandplan = false;
+UI.cwOffset = 800;
 
 // Foldable UI sections and their initial states
 UI.sections = {
@@ -107,6 +108,16 @@ UI.setModulation = function(mode, underlying) {
 // Frequency Controls
 //
 
+UI.getCwOffset = function() {
+    return this.cwOffset;
+};
+
+UI.setCwOffset = function(x) {
+    if (Number.isInteger(x)) {
+        this.cwOffset = x < 50? 50 : x > 1000? 1000 : x;
+    }
+};
+
 UI.getOffsetFrequency = function(x) {
     return this.getFrequency(x) - center_freq;
 };
@@ -114,7 +125,7 @@ UI.getOffsetFrequency = function(x) {
 UI.getFrequency = function(x) {
     if (typeof(x) === 'undefined') {
         // When in CW mode, offset by 800Hz
-        var delta = this.getModulation() === 'cw'? 800 : 0;
+        var delta = this.getModulation() === 'cw'? this.cwOffset : 0;
         // No argument: return currently tuned frequency
         var demod = this.getDemodulator();
         return demod? demod.get_offset_frequency() + center_freq + delta : 0;
@@ -132,7 +143,7 @@ UI.setOffsetFrequency = function(offset) {
 
 UI.setFrequency = function(freq, snap = true) {
     // When in CW mode, offset by 800Hz
-    var delta = this.getModulation() === 'cw'? 800 : 0;
+    var delta = this.getModulation() === 'cw'? this.cwOffset : 0;
     // Snap frequency to the tuning step
     if (snap) freq = Utils.snapFrequency(freq, tuning_step);
     // Tune to the frequency offset

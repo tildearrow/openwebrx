@@ -55,6 +55,13 @@ class DecodingSettingsController(SettingsFormController):
                     "wfm_rds_rbds",
                     "Decode USA-specific RBDS information from WFM broadcasts",
                 ),
+                NumberInput(
+                    "cw_offset",
+                    "CW tone frequency",
+                    validator=RangeValidator(50, 1000),
+                    infotext="Frequency offset used to produce CW tone",
+                    append="Hz",
+                ),
                 CheckboxInput(
                     "cw_showcw",
                     "Show CW codes (dits / dahs) when decoding CW",

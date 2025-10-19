@@ -254,10 +254,20 @@ function Demodulator(offset_frequency, modulation) {
     var mode = Modes.findByModulation(modulation);
     this.ifRate = mode && mode.ifRate;
 
-    // Get bandpass from local storage first, then try the default bandpass
+    // Get bandpass from local storage first
     var bp = UI.loadBandpass(modulation);
-    this.low_cut  = bp? bp.low_cut  : mode && mode.bandpass? mode.bandpass.low_cut  : null;
-    this.high_cut = bp? bp.high_cut : mode && mode.bandpass? mode.bandpass.high_cut : null;
+
+    // In CW mode, use a narrow 200Hz bandpass
+    if (!bp && modulation === 'cw') {
+        var cwOffset = UI.getCwOffset();
+        bp = { low_cut: cwOffset - 100, high_cut: cwOffset + 100 };
+    }
+
+    // Default to mode-specific bandpass
+    if (!bp && mode) bp = mode.bandpass;
+
+    this.low_cut  = bp? bp.low_cut  : null;
+    this.high_cut = bp? bp.high_cut : null;
 
     this.listeners = {
         "frequencychange": [],
