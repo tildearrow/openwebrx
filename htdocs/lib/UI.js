@@ -247,7 +247,7 @@ UI.saveBandpass = function(mode, low, high) {
     var bp = { low_cut: low, high_cut: high };
     LS.save('bp-' + mode, JSON.stringify(bp));
     // Clear cached CW tone offset
-    this.cwOffset == null;
+    this.cwOffset = null;
 };
 
 // Get saved bandpass for given modulation.
