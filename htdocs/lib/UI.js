@@ -248,7 +248,7 @@ UI.resetAllBandpasses = function() {
     this.cwOffset = null;
 
     // Update current frequency (may shift in CW mode)
-    this.setFrequency(freq);
+    this.setFrequency(freq, false);
 };
 
 // Set bandpass for given modulation.
@@ -265,7 +265,7 @@ UI.saveBandpass = function(mode, low, high) {
         // Clear cached CW offset
         this.cwOffset = null;
         // Current CW frequency has shifted
-        this.setFrequency(cwFreq);
+        this.setFrequency(cwFreq, false);
     }
 };
 
