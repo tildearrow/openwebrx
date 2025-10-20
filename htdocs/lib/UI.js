@@ -231,6 +231,9 @@ UI.toggleMute = function(on) {
 
 // Clear saved bandpasses
 UI.resetAllBandpasses = function() {
+    // Get current frequency
+    var freq = this.getFrequency();
+
     // Delete all saved bandpass data
     Modes.getModes().forEach(function(mode, i) {
         LS.delete('bp-' + mode.modulation);
@@ -240,14 +243,30 @@ UI.resetAllBandpasses = function() {
     var mode = Modes.findByModulation(this.getModulation());
     var bp = mode? mode.bandpass : null;
     if (bp) this.getDemodulator().setBandpass(bp);
+
+    // Clear cached CW offset
+    this.cwOffset = null;
+
+    // Update current frequency (may shift in CW mode)
+    this.setFrequency(freq);
 };
 
 // Set bandpass for given modulation.
 UI.saveBandpass = function(mode, low, high) {
+    // Get current frequency
+    var cwFreq = mode === 'cw'? this.getFrequency() : null;
+
+    // Save new bandpass boundaries
     var bp = { low_cut: low, high_cut: high };
     LS.save('bp-' + mode, JSON.stringify(bp));
-    // Clear cached CW tone offset
-    this.cwOffset = null;
+
+    // If changing CW bandpass...
+    if (cwFreq != null) {
+        // Clear cached CW offset
+        this.cwOffset = null;
+        // Current CW frequency has shifted
+        this.setFrequency(cwFreq);
+    }
 };
 
 // Get saved bandpass for given modulation.
