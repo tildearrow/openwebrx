@@ -190,9 +190,16 @@ FeatureMarker.prototype.update = function(update) {
     this.comment  = update.location.comment;
     this.ttl      = update.location.ttl;
     // Receivers
+    this.logourl  = update.location.logourl;
     this.altitude = update.location.altitude;
     this.device   = update.location.device;
     this.antenna  = update.location.antenna;
+    this.users    = update.location.users;
+    this.maxusers = update.location.maxusers;
+    this.freql    = update.location.freql;
+    this.freqh    = update.location.freqh;
+    this.qth      = update.location.qth;
+    this.bands    = update.location.bands;
     // EIBI
     this.schedule = update.location.schedule;
     // Repeaters
@@ -254,12 +261,13 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
     var distance = '';
 
     // If it is a repeater, its name is a callsign
-    if(!this.url && this.freq) {
+    if (!this.url && this.freq) {
         nameString = Utils.linkifyCallsign(name);
     }
 
-    if (this.altitude) {
-        detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
+    // If there is a logo, add it in
+    if (this.logourl) {
+        nameString = '<p><img height=80 src="' + this.logourl + '"></p>' + nameString;
     }
 
     if (this.device) {
@@ -272,10 +280,33 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Utils.makeListItem('Antenna', Utils.truncate(this.antenna, 24));
     }
 
+    if (this.altitude) {
+        detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
+    }
+
+    // Some markers have fixed frequency, others have a range
     if (this.freq) {
         detailsString += Utils.makeListItem('Frequency', Utils.linkifyFreq(
-            this.freq, this.mmode? this.mmode:'fm'
+            this.freq, this.mmode? this.mmode : 'nfm'
         ));
+    } else if (this.freql || this.freqh) {
+        detailsString += Utils.makeListItem('Frequency',
+            Utils.printFreq(this.freql) + '&nbsp;&hellip;&nbsp;' + Utils.printFreq(this.freqh)
+        );
+    }
+
+    // Show frequency ranges by band, if present
+    if (this.bands) {
+        for (var j = 0 ; j < this.bands.length ; j++) {
+            var band = this.bands[j];
+            detailsString += Utils.makeListItem('Band',
+                Utils.printFreq(band.freql) + '&nbsp;&hellip;&nbsp;' + Utils.printFreq(band.freqh)
+            );
+        }
+    }
+
+    if (this.maxusers) {
+        detailsString += Utils.makeListItem('Max Users', this.maxusers);
     }
 
     if (this.mmode) {

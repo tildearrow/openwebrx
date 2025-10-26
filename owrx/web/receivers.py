@@ -106,8 +106,16 @@ class Receivers(WebAgent):
                         "lon"     : lon,
                         "comment" : entry["desc"],
                         "url"     : entry["url"],
+                        "logourl" : entry["logourl"],
+                        "qth"     : entry["qth"],
                         "users"   : int(entry["users"]),
-                        "device"  : "WebSDR"
+                        "device"  : "WebSDR",
+                        "bands"   : [{
+                            "id"      : x["c"],
+                            "freql"   : int(float(x["l"]) * 1000000),
+                            "freqh"   : int(float(x["h"]) * 1000000),
+                            "antenna" : x["a"]
+                        } for x in entry["bands"]]
                     }
 
         except Exception as e:
@@ -116,12 +124,13 @@ class Receivers(WebAgent):
         # Done
         return result
 
-    def scrapeKiwiSDR(self, url: str = "http://kiwisdr.com/public/"):
+    def scrapeKiwiSDR(self, url: str = "http://kiwisdr.com/.public/"):
         result = {}
         try:
             patternAttr = re.compile(r".*<!--\s+(\S+)=(.*)\s+-->.*")
             patternUrl  = re.compile(r".*<a\s+href=['\"](\S+?)['\"].*>.*</a>.*")
             patternGps  = re.compile(r"\(\s*(-?\d+\.\d+)\s*,\s*(-?\d+\.\d+)\s*\)")
+            patternFreq = re.compile(r"(\d+)\s*-\s*(\d+)")
             entry = {}
 
             for line in self._openUrl(url).readlines():
@@ -132,14 +141,20 @@ class Receivers(WebAgent):
                 if m is not None:
                     # Add URL attribute
                     entry["url"] = m.group(1)
-                    # Must have "gps" attribut with latitude / longitude
+                    # Must have "gps" attribute with latitude / longitude
                     if "gps" in entry and "url" in entry:
                         m = patternGps.match(entry["gps"])
                         if m is not None:
-                            # Save accumulated attributes, use hostname as key
+                            # Use hostname as key
                             id  = re.sub(r"^.*://(.*?)(/.*)?$", r"\1", entry["url"])
+                            # Get location
                             lat = float(m.group(1))
                             lon = float(m.group(2))
+                            # Get frequency range
+                            m   = patternFreq.match(entry["bands"])
+                            lfq = int(m.group(1)) if m is not None else 0
+                            hfq = int(m.group(2)) if m is not None else 30000000
+                            # Save accumulated attributes
                             result[id] = {
                                 "type"    : "latlon",
                                 "mode"    : "KiwiSDR",
@@ -153,7 +168,9 @@ class Receivers(WebAgent):
                                 "loc"     : entry["loc"],
                                 "altitude": int(entry["asl"]),
                                 "antenna" : entry["antenna"],
-                                "device"  : re.sub("_v", " ", entry["sw_version"])
+                                "device"  : re.sub("_v", " ", entry["sw_version"]),
+                                "freql"   : lfq,
+                                "freqh"   : hfq
                             }
                     # Clear current entry
                     entry = {}
