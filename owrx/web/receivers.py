@@ -77,6 +77,11 @@ class Receivers(WebAgent):
                             "url"     : r["url"],
                             "device"  : dev
                         }
+                        # Add default logo URL for OpenWebRX receivers
+                        if r["type"] == "OpenWebRX":
+                            logo = "" if r["url"].endswith("/") else "/"
+                            logo = r["url"] + logo + "static/gfx/openwebrx-avatar.png"
+                            result[id]["logourl"] = logo
                         # Offset colocated receivers by ~500m
                         lon = lon + 0.0005
 
@@ -150,10 +155,6 @@ class Receivers(WebAgent):
                             # Get location
                             lat = float(m.group(1))
                             lon = float(m.group(2))
-                            # Get frequency range
-                            m   = patternFreq.match(entry["bands"])
-                            lfq = int(m.group(1)) if m is not None else 0
-                            hfq = int(m.group(2)) if m is not None else 30000000
                             # Save accumulated attributes
                             result[id] = {
                                 "type"    : "latlon",
@@ -168,10 +169,13 @@ class Receivers(WebAgent):
                                 "loc"     : entry["loc"],
                                 "altitude": int(entry["asl"]),
                                 "antenna" : entry["antenna"],
-                                "device"  : re.sub("_v", " ", entry["sw_version"]),
-                                "freql"   : lfq,
-                                "freqh"   : hfq
+                                "device"  : re.sub("_v", " ", entry["sw_version"])
                             }
+                            # Get frequency range
+                            m = patternFreq.match(entry["bands"])
+                            if m is not None:
+                                result[id]["freql"] = int(m.group(1))
+                                result[id]["freqh"] = int(m.group(2))
                     # Clear current entry
                     entry = {}
                 else:

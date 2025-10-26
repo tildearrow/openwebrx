@@ -284,18 +284,20 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         detailsString += Utils.makeListItem('Altitude', this.altitude.toFixed(0) + ' m');
     }
 
-    // Some markers have fixed frequency, others have a range
     if (this.freq) {
         detailsString += Utils.makeListItem('Frequency', Utils.linkifyFreq(
             this.freq, this.mmode? this.mmode : 'nfm'
         ));
-    } else if (this.freql || this.freqh) {
-        detailsString += Utils.makeListItem('Frequency',
+    }
+
+    // If there is band information...
+    if (this.freql || this.freqh) {
+        detailsString += Utils.makeListItem('Band',
             Utils.printFreq(this.freql) + '&nbsp;&hellip;&nbsp;' + Utils.printFreq(this.freqh)
         );
     }
 
-    // If theres is information about supported bands...
+    // If there are multiple bands...
     if (this.bands) {
         var antenna = this.bands[0].antenna;
 
