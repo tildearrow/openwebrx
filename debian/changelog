@@ -1,3 +1,14 @@
+openwebrx (1.2.96) bullseye jammy; urgency=low
+
+  * Added WebSDR logos, bands display.
+  * Added KiwiSDR user limit, band display.
+  * CW tone now changes when shifting bandpass.
+  * Disabled scanning for NOAA weather bookmarks.
+  * Fixed CW offset caching when bandpass changes.
+  * Fixed RDS demodulator reference.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 27 Oct 2025 16:12:00 +0000
+
 openwebrx (1.2.95) bullseye jammy; urgency=low
 
   * Added per-profile noise reduction option.

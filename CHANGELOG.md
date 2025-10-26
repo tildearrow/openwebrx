@@ -1,3 +1,11 @@
+**1.2.96**
+- Added WebSDR logos, bands display.
+- Added KiwiSDR user limit, band display.
+- CW tone now changes when shifting bandpass.
+- Disabled scanning for NOAA weather bookmarks.
+- Fixed CW offset caching when bandpass changes.
+- Fixed RDS demodulator reference.
+
 **1.2.95**
 - Added per-profile noise reduction option.
 - Can now change CW tone by moving bandpass.
