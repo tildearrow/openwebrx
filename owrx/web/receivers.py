@@ -32,12 +32,12 @@ class Receivers(WebAgent):
     def _loadFromWeb(self):
         # Cached receivers database stale, update it
         receivers = {}
+        logger.info("Scraping OpenWebRX website...")
+        receivers.update(self.scrapeOWRX())
         logger.info("Scraping KiwiSDR website...")
         receivers.update(self.scrapeKiwiSDR())
         logger.info("Scraping WebSDR website...")
         receivers.update(self.scrapeWebSDR())
-        logger.info("Scraping OpenWebRX website...")
-        receivers.update(self.scrapeOWRX())
         return list(receivers.values()) if len(receivers) > 0 else None
 
     #
