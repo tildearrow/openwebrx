@@ -295,13 +295,24 @@ FeatureMarker.prototype.getInfoHTML = function(name, receiverMarker = null) {
         );
     }
 
-    // Show frequency ranges by band, if present
+    // If theres is information about supported bands...
     if (this.bands) {
+        var antenna = this.bands[0].antenna;
+
+        // For each band...
         for (var j = 0 ; j < this.bands.length ; j++) {
             var band = this.bands[j];
+            // Keep track of available antennas
+            if (band.antenna != antenna) antenna = 'Multiple';
+            // Show frequency ranges by band
             detailsString += Utils.makeListItem('Band',
                 Utils.printFreq(band.freql) + '&nbsp;&hellip;&nbsp;' + Utils.printFreq(band.freqh)
             );
+        }
+
+        // Add computed antenna entry, if missing
+        if (antenna && !this.antenna) {
+            detailsString += Utils.makeListItem('Antenna', Utils.truncate(antenna, 24));
         }
     }
 
