@@ -1,6 +1,6 @@
 **1.2.96**
-- Added WebSDR logos, bands display.
-- Added KiwiSDR user limit, band display.
+- Added WebSDR logos, bands to map display.
+- Added KiwiSDR user limit, band to map display.
 - CW tone now changes when shifting bandpass.
 - Disabled scanning for NOAA weather bookmarks.
 - Fixed CW offset caching when bandpass changes.
