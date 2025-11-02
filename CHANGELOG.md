@@ -1,3 +1,8 @@
+**1.2.97**
+- Added Dream 2.2 support, with AAC.
+- Added DRM metadata display.
+- Fixed saving cloned profiles.
+
 **1.2.96**
 - Added WebSDR and OpenWebRX logos to the map.
 - Added WebSDR and KiwiSDR bands to the map.

@@ -1,3 +1,11 @@
+openwebrx (1.2.97) bullseye jammy; urgency=low
+
+  * Added Dream 2.2 support, with AAC.
+  * Added DRM metadata display.
+  * Fixed saving cloned profiles.
+
+ -- Marat Fayzullin <luarvique@gmail.com>  Mon, 3 Nov 2025 16:12:00 +0000
+
 openwebrx (1.2.96) bullseye jammy; urgency=low
 
   * Added WebSDR and OpenWebRX logos to the map.
