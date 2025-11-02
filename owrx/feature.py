@@ -88,6 +88,7 @@ class FeatureDetector(object):
         "pocsag": ["digiham"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
+        "dream-2-2": ["dream_2_2"],
         "adsb": ["dump1090"],
         "ism": ["rtl_433"],
         "hfdl": ["dumphfdl"],
@@ -596,6 +597,31 @@ class FeatureDetector(object):
         [OpenWebRX Wiki](https://github.com/jketterl/openwebrx/wiki/DRM-demodulator-notes).
         """
         return self.command_is_runnable("dream --help", 0)
+
+    def has_dream_2_2(self):
+        """
+        [Dream 2.2](https://github.com/wwek/dream) has some extended
+        features, such as status reporting. With Dream 2.2 installed,
+        you will be able to observe what the DRM decoder is doing and
+        what radio programs are available from the data stream.
+        """
+        # Will be looking for the --status-socket option
+        dream_status_regex = re.compile(".*--status-socket.*")
+        # Look through the --help output
+        try:
+            process = subprocess.Popen(["dream", "--help"], stderr=subprocess.PIPE)
+            while True:
+                line = process.stderr.readline()
+                if line is None:
+                    return False
+                else:
+                    matches = dream_status_regex.match(line.decode())
+                    if matches is not None:
+                        return True
+        except Exception as e:
+            pass
+        # Status-socket command line argument not present, old Dream
+        return False
 
     def has_sddc_connector(self):
         """

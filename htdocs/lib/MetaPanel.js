@@ -771,8 +771,8 @@ function DrmMetaPanel(el) {
                 '<span class="drm-indicator drm-journaline">Journaline</span>' +
                 '<span class="drm-indicator drm-slideshow">Slideshow</span>' +
             '</div>' +
-            '<div class="drm-line drm-programs">' +
-            '</div>' +
+            '<div class="drm-line drm-programs"></div>' +
+            '<div class="drm-clock"></div>' +
         '</div>'
     );
 
@@ -811,7 +811,7 @@ DrmMetaPanel.prototype.update = function(data) {
         var ilv = ['Short', 'Long'][data.drm_mode.interleaver] || '?';
         this.setText('mode', mode);
         this.setText('channel', bw);
-        this.setText('ilv', 'ilv');
+        this.setText('ilv', ilv);
     } else {
         this.setText('mode', '-');
         this.setText('channel', '-');
@@ -819,13 +819,17 @@ DrmMetaPanel.prototype.update = function(data) {
     }
 
     if (data.coding) {
-        var sdc = ['4-QAM', '16-QAM'][data.coding.sdc_qam] || '?';
-        var msc = ['16-QAM', '64-QAM'][data.coding.msc_qam] || '?';
-        this.setText('sdc-qam', sdc);
-        this.setText('msc-qam', msc);
+        this.setQam('sdc-qam', data.coding.sdc_qam);
+        this.setQam('msc-qam', data.coding.msc_qam);
     } else {
         this.setText('sdc-qam', '-');
         this.setText('msc-qam', '-');
+    }
+
+    if (data.received_time > 0) {
+        this.setText('clock', Utils.HHMMSS(data.received_time));
+    } else {
+        this.setText('clock', '');
     }
 
     var programs = '';
@@ -841,29 +845,34 @@ DrmMetaPanel.prototype.update = function(data) {
 
             programs +=
                 '<div class="drm-program">' +
-                    '<div style="color:yellow;"><b>' + entry.label + '</b> (' + id + ')</div>' +
-                    '<div>' +
-                        '<span class="drm-label">Type:&nbsp;</span>' +
-                        '<span class="drm-value">' + type + '</span>' +
-                        ' | <span class="drm-label">Codec:&nbsp;</span>' +
-                        '<span class="drm-value">' + codec + '</span>' +
-                        ' | <span class="drm-label">Bitrate:&nbsp;</span>' +
-                        '<span class="drm-value">' + entry.bitrate_kbps + ' kbps</span>' +
-                        ' | <span class="drm-label">Protection:&nbsp;</span>' +
-                        '<span class="drm-value">' + entry.protection_mode + '</span>';
+                    '<div style="color:yellow;"><b>' + entry.label + '</b> (' + id + ')</div>';
 
-            if (entry.country) {
+            if (entry.text) {
+                programs += '<div style="color:cyan;" class="drm-label">' + entry.text + '</div>';
+            }
+
+             programs +=
+                '<div>' +
+                    '<span class="drm-label">Type:&nbsp;</span>' +
+                    '<span class="drm-value">' + type + '</span>' +
+                    ' | <span class="drm-label">Codec:&nbsp;</span>' +
+                    '<span class="drm-value">' + codec + '</span>' +
+                    ' | <span class="drm-label">Bitrate:&nbsp;</span>' +
+                    '<span class="drm-value">' + entry.bitrate_kbps + ' kbps</span>' +
+                    ' | <span class="drm-label">Protection:&nbsp;</span>' +
+                    '<span class="drm-value">' + entry.protection_mode + '</span>';
+ 
+           if (entry.country) {
                 programs +=
-                        ' | <span class="drm-label">Country:&nbsp;</span>' +
-                        '<span class="drm-value">' + entry.country.name + '</span>';
+                    ' | <span class="drm-label">Country:&nbsp;</span>' +
+                    '<span class="drm-value">' + entry.country.name + '</span>';
 
             }
 
             if (entry.language) {
                 programs +=
-                        ' | <span class="drm-label">Language:&nbsp;</span>' +
-                        '<span class="drm-value">' + entry.language.name + '</span>';
-
+                    ' | <span class="drm-label">Language:&nbsp;</span>' +
+                    '<span class="drm-value">' + entry.language.name + '</span>';
             }
 
             programs += '</div></div>';
@@ -875,6 +884,10 @@ DrmMetaPanel.prototype.update = function(data) {
 
 DrmMetaPanel.prototype.isSupported = function(data) {
     return this.modes.includes(data.mode);
+};
+
+DrmMetaPanel.prototype.setQam = function(name, n) {
+    this.setText(name, ['4-QAM', '16-QAM', '64-QAM'][n] || '?');
 };
 
 DrmMetaPanel.prototype.setText = function(name, text) {

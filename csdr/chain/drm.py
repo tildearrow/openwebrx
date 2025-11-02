@@ -22,10 +22,13 @@ class Drm(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, Met
         super().__init__(workers)
 
         # Monitor DRM decoder status
-        self.monitor = DrmStatusMonitor(self.drmModule.getSocketPath())
-        self.monitor.add_callback(self._onDrmStatus)
-        self.monitor.start()
-        logger.debug(f"DRM chain ready: {self.drmModule.getSocketPath()}")
+        socketPath = self.drmModule.getSocketPath()
+        if socketPath is None:
+            self.monitor = None
+        else:
+            self.monitor = DrmStatusMonitor(self.drmModule.getSocketPath())
+            self.monitor.add_callback(self._onDrmStatus)
+            self.monitor.start()
 
     def supportsSquelch(self) -> bool:
         return False
@@ -60,5 +63,5 @@ class Drm(BaseDemodulatorChain, FixedIfSampleRateChain, FixedAudioRateChain, Met
                 status["mode"] = "DRM"
                 self.metaWriter.write(pickle.dumps(status));
             except Exception as e:
-                logger.error(f"DRM status error: {e}")
+                logger.error("DRM status error: {0}".format(e))
 

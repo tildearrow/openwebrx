@@ -1,5 +1,6 @@
 from pycsdr.modules import ExecModule
 from pycsdr.types import Format
+from owrx.feature import FeatureDetector
 
 import uuid
 import os
@@ -7,35 +8,38 @@ import os
 class DrmModule(ExecModule):
     def __init__(self):
         # Each instances gets its own status socket
-        self.instance_id = str(uuid.uuid4())[:8]
-        self.socket_path = f"/tmp/dream_status_{self.instance_id}.sock"
+        self.instanceId = str(uuid.uuid4())[:8]
+        self.socketPath = f"/tmp/dream_status_{self.instanceId}.sock"
 
         # Remove old status socket, if present
-        if os.path.exists(self.socket_path):
+        if os.path.exists(self.socketPath):
             try:
-                os.unlink(self.socket_path)
+                os.unlink(self.socketPath)
             except OSError:
                 pass
 
-        super().__init__(
-            Format.COMPLEX_SHORT,
-            Format.SHORT,
-            [
-                "dream", "-c", "6", "--sigsrate", "48000",
-                "--audsrate", "48000", "-I", "-", "-O", "-",
-                "--status-socket", self.socket_path
-            ]
-        )
+        # Compose basic command line
+        cmd = [
+            "dream", "-c", "6", "--sigsrate", "48000",
+            "--audsrate", "48000", "-I", "-", "-O", "-",
+        ]
+
+        # Only Dream 2.2 has --status-socket option
+        self.hasStatusSocket = FeatureDetector().is_available("dream-2-2")
+        if self.hasStatusSocket:
+            cmd += [ "--status-socket", self.socketPath ]
+
+        super().__init__(Format.COMPLEX_SHORT, Format.SHORT, cmd)
 
     def getSocketPath(self):
-        return self.socket_path
+        return self.socketPath if self.hasStatusSocket else None
 
     def stop(self):
         # Stop execution
         super().stop()
         # Remove status socket
-        if os.path.exists(self.socket_path):
+        if os.path.exists(self.socketPath):
             try:
-                os.unlink(self.socket_path)
+                os.unlink(self.socketPath)
             except OSError:
                 pass
