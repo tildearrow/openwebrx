@@ -669,13 +669,13 @@ function DabMetaPanel(el) {
     $(this.el).append($container);
     this.clear();
     this.programmeTimeout = false;
-}
+};
 
 DabMetaPanel.prototype = new MetaPanel();
 
 DabMetaPanel.prototype.isSupported = function(data) {
     return this.modes.includes(data.mode);
-}
+};
 
 DabMetaPanel.prototype.update = function(data) {
     if (!this.isSupported(data)) return;
@@ -711,7 +711,7 @@ DabMetaPanel.prototype.update = function(data) {
             me.$select.val(me.$select.find('option:first').val()).change();
         }, 1000);
     }
-}
+};
 
 DabMetaPanel.prototype.clear = function() {
     this.service_id = 0;
@@ -719,7 +719,188 @@ DabMetaPanel.prototype.clear = function() {
     this.$select.html(
         '<option value="" disabled selected hidden>Loading...</option>'
     );
-}
+};
+
+function DrmMetaPanel(el) {
+    MetaPanel.call(this, el);
+    this.modes = ['DRM'];
+    this.frequency = -1;
+
+    // Create info panel
+    var $container = $(
+        '<div class="drm-container">' +
+            '<div class="drm-line">' +
+                '<span class="drm-indicator drm-io">IO</span>' +
+                '<span class="drm-indicator drm-time">Time</span>' +
+                '<span class="drm-indicator drm-frame">Frame</span>' +
+                '<span class="drm-indicator drm-fac">FAC</span>' +
+                '<span class="drm-indicator drm-sdc">SDC</span>' +
+                '<span class="drm-indicator drm-msc">MSC</span>' +
+            '</div>' +
+            '<div class="drm-separator">' +
+                '<span class="drm-left">IF Level</span>' +
+                '<span class="drm-right drm-if"></span>' +
+                '<span class="drm-left">SNR</span>' +
+                '<span class="drm-right drm-snr"></span>' +
+            '</div>' +
+            '<div class="drm-line">' +
+                '<span class="drm-left">Mode</span>' +
+                '<span class="drm-right drm-mode"></span>' +
+                '<span class="drm-left">Channel</span>' +
+                '<span class="drm-right drm-channel"></span>' +
+            '</div>' +
+            '<div class="drm-line">' +
+                '<span class="drm-left">SDC</span>' +
+                '<span class="drm-right drm-sdc-qam"></span>' +
+                '<span class="drm-left">MSC</span>' +
+                '<span class="drm-right drm-msc-qam"></span>' +
+            '</div>' +
+            '<div class="drm-line">' +
+                '<span class="drm-left">ILV</span>' +
+                '<span class="drm-right drm-ilv"></span>' +
+                '<span class="drm-left">Protect</span>' +
+                '<span class="drm-right">' +
+                  '<span class="drm-indicator drm-prot-a">A</span>' +
+                  '<span class="drm-indicator drm-prot-b">B</span>' +
+                '</span>' +
+            '</div>' +
+            '<div class="drm-separator">' +
+                '<span class="drm-audio drm-indicator">Audio</span>' +
+                '<span class="drm-data drm-indicator">Data</span>' +
+                '<span class="drm-indicator drm-guide">Guide</span>' +
+                '<span class="drm-indicator drm-journaline">Journaline</span>' +
+                '<span class="drm-indicator drm-slideshow">Slideshow</span>' +
+            '</div>' +
+            '<div class="drm-line drm-programs">' +
+            '</div>' +
+        '</div>'
+    );
+
+    $(this.el).append($container);
+};
+
+DrmMetaPanel.prototype = new MetaPanel();
+
+DrmMetaPanel.prototype.update = function(data) {
+    if (!this.isSupported(data)) return;
+
+    // Update panel
+    var $el = $(this.el);
+    this.setIndicator('io', data.status.io);
+    this.setIndicator('time', data.status.time);
+    this.setIndicator('frame', data.status.frame);
+    this.setIndicator('fac', data.status.fac);
+    this.setIndicator('sdc', data.status.sdc);
+    this.setIndicator('msc', data.status.msc);
+
+    this.setIndicator('guide', data.media.program_guide);
+    this.setIndicator('journaline', data.media.journaline);
+    this.setIndicator('slideshow', data.media.slideshow);
+
+    this.setIndicator('prot-a', data.coding && data.coding.protection_a > 0? 1:0);
+    this.setIndicator('prot-b', data.coding && data.coding.protection_b > 0? 1:0);
+    this.setIndicator('audio', data.services && data.services.audio > 0? 1:0);
+    this.setIndicator('data', data.services && data.services.data > 0? 1:0);
+
+    this.setText('if', '' + data.signal.if_level_db + 'dB');
+    this.setText('snr', '' + data.signal.snr_db + 'dB');
+
+    if (data.drm_mode) {
+        var mode = ['A', 'B', 'C', 'D'][data.drm_mode.robustness] || '?';
+        var bw = ['4.5kHz', '5kHz', '9kHz', '10kHz', '18kHz', '20kHz'][data.drm_mode.bandwidth] || '?';
+        var ilv = ['Short', 'Long'][data.drm_mode.interleaver] || '?';
+        this.setText('mode', mode);
+        this.setText('channel', bw);
+        this.setText('ilv', 'ilv');
+    } else {
+        this.setText('mode', '-');
+        this.setText('channel', '-');
+        this.setText('ilv', '-');
+    }
+
+    if (data.coding) {
+        var sdc = ['4-QAM', '16-QAM'][data.coding.sdc_qam] || '?';
+        var msc = ['16-QAM', '64-QAM'][data.coding.msc_qam] || '?';
+        this.setText('sdc-qam', sdc);
+        this.setText('msc-qam', msc);
+    } else {
+        this.setText('sdc-qam', '-');
+        this.setText('msc-qam', '-');
+    }
+
+    var programs = '';
+    if (data.service_list) {
+        programs += '';
+        for (var j = 0 ; j < data.service_list.length ; j++) {
+            var entry = data.service_list[j];
+            var codec = ['AAC', 'OPUS', 'RESERVED', 'xHE-AAC'][entry.audio_coding] || 'UNKNOWN';
+            var country = entry.country? entry.country.name : '';
+            var language = entry.language? entry.language.name : '';
+            var id = parseInt(entry.id).toString(16).toUpperCase();
+            var type = entry.is_audio? entry.audio_mode.toUpperCase() : 'DATA';
+
+            programs +=
+                '<div class="drm-program">' +
+                    '<div style="color:yellow;"><b>' + entry.label + '</b> (' + id + ')</div>' +
+                    '<div>' +
+                        '<span class="drm-label">Type:&nbsp;</span>' +
+                        '<span class="drm-value">' + type + '</span>' +
+                        ' | <span class="drm-label">Codec:&nbsp;</span>' +
+                        '<span class="drm-value">' + codec + '</span>' +
+                        ' | <span class="drm-label">Bitrate:&nbsp;</span>' +
+                        '<span class="drm-value">' + entry.bitrate_kbps + ' kbps</span>' +
+                        ' | <span class="drm-label">Protection:&nbsp;</span>' +
+                        '<span class="drm-value">' + entry.protection_mode + '</span>';
+
+            if (entry.country) {
+                programs +=
+                        ' | <span class="drm-label">Country:&nbsp;</span>' +
+                        '<span class="drm-value">' + entry.country.name + '</span>';
+
+            }
+
+            if (entry.language) {
+                programs +=
+                        ' | <span class="drm-label">Language:&nbsp;</span>' +
+                        '<span class="drm-value">' + entry.language.name + '</span>';
+
+            }
+
+            programs += '</div></div>';
+        }
+    }
+
+    $el.find('.drm-programs').html(programs);
+};
+
+DrmMetaPanel.prototype.isSupported = function(data) {
+    return this.modes.includes(data.mode);
+};
+
+DrmMetaPanel.prototype.setText = function(name, text) {
+    $(this.el).find('.drm-' + name).text(text);
+};
+
+DrmMetaPanel.prototype.setIndicator = function(name, value, text = null) {
+    var $el = $(this.el).find('.drm-' + name);
+
+    // Remove all color
+    $el.removeClass('drm-error');
+    $el.removeClass('drm-off');
+    $el.removeClass('drm-on');
+
+    // Set new color based on the value
+    if (value > 0) {
+        $el.addClass('drm-on');
+    } else if (value == 0) {
+        $el.addClass('drm-off');
+    } else {
+        $el.addClass('drm-error');
+    }
+
+    // Set new text, if given
+    if (text != null) $el.text(text);
+};
 
 MetaPanel.types = {
     dmr: DmrMetaPanel,
@@ -730,6 +911,7 @@ MetaPanel.types = {
     wfm: WfmMetaPanel,
     dab: DabMetaPanel,
     hdr: HdrMetaPanel,
+    drm: DrmMetaPanel
 };
 
 $.fn.metaPanel = function() {
