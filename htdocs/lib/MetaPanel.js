@@ -745,20 +745,20 @@ function DrmMetaPanel(el) {
             '</div>' +
             '<div class="drm-line">' +
                 '<span class="drm-left">Mode</span>' +
-                '<span class="drm-right drm-mode"></span>' +
-                '<span class="drm-left">Channel</span>' +
-                '<span class="drm-right drm-channel"></span>' +
+                '<span class="drm-right drm-mode">-</span>' +
+                '<span class="drm-left">Bandwidth</span>' +
+                '<span class="drm-right drm-bandwidth">-</span>' +
             '</div>' +
             '<div class="drm-line">' +
                 '<span class="drm-left">SDC</span>' +
-                '<span class="drm-right drm-sdc-qam"></span>' +
+                '<span class="drm-right drm-sdc-qam">-</span>' +
                 '<span class="drm-left">MSC</span>' +
-                '<span class="drm-right drm-msc-qam"></span>' +
+                '<span class="drm-right drm-msc-qam">-</span>' +
             '</div>' +
             '<div class="drm-line">' +
-                '<span class="drm-left">ILV</span>' +
-                '<span class="drm-right drm-ilv"></span>' +
-                '<span class="drm-left">Protect</span>' +
+                '<span class="drm-left">Interleave</span>' +
+                '<span class="drm-right drm-interleave">-</span>' +
+                '<span class="drm-left">Protection</span>' +
                 '<span class="drm-right">' +
                   '<span class="drm-indicator drm-prot-a">A</span>' +
                   '<span class="drm-indicator drm-prot-b">B</span>' +
@@ -772,7 +772,6 @@ function DrmMetaPanel(el) {
                 '<span class="drm-indicator drm-slideshow">Slideshow</span>' +
             '</div>' +
             '<div class="drm-line drm-programs"></div>' +
-            '<div class="drm-clock"></div>' +
         '</div>'
     );
 
@@ -785,7 +784,6 @@ DrmMetaPanel.prototype.update = function(data) {
     if (!this.isSupported(data)) return;
 
     // Update panel
-    var $el = $(this.el);
     this.setIndicator('io', data.status.io);
     this.setIndicator('time', data.status.time);
     this.setIndicator('frame', data.status.frame);
@@ -810,12 +808,12 @@ DrmMetaPanel.prototype.update = function(data) {
         var bw = ['4.5kHz', '5kHz', '9kHz', '10kHz', '18kHz', '20kHz'][data.drm_mode.bandwidth] || '?';
         var ilv = ['Short', 'Long'][data.drm_mode.interleaver] || '?';
         this.setText('mode', mode);
-        this.setText('channel', bw);
-        this.setText('ilv', ilv);
+        this.setText('bandwidth', bw);
+        this.setText('interleave', ilv);
     } else {
         this.setText('mode', '-');
-        this.setText('channel', '-');
-        this.setText('ilv', '-');
+        this.setText('bandwidth', '-');
+        this.setText('interleave', '-');
     }
 
     if (data.coding) {
@@ -826,43 +824,47 @@ DrmMetaPanel.prototype.update = function(data) {
         this.setText('msc-qam', '-');
     }
 
-    if (data.received_time > 0) {
-        this.setText('clock', Utils.HHMMSS(data.received_time));
-    } else {
-        this.setText('clock', '');
-    }
+//    if (data.received_time > 0) {
+//        this.setText('clock', Utils.HHMMSS(data.received_time));
+//    } else {
+//        this.setText('clock', '');
+//    }
 
     var programs = '';
     if (data.service_list) {
         programs += '';
         for (var j = 0 ; j < data.service_list.length ; j++) {
             var entry = data.service_list[j];
-            var codec = ['AAC', 'OPUS', 'RESERVED', 'xHE-AAC'][entry.audio_coding] || 'UNKNOWN';
-            var country = entry.country? entry.country.name : '';
-            var language = entry.language? entry.language.name : '';
-            var id = parseInt(entry.id).toString(16).toUpperCase();
+            var codec = ['AAC', 'OPUS', 'RESERVED', 'xHE-AAC'][entry.audio_coding] || '?';
+            var id = '0x' + parseInt(entry.id).toString(16).toUpperCase();
             var type = entry.is_audio? entry.audio_mode.toUpperCase() : 'DATA';
 
             programs +=
                 '<div class="drm-program">' +
-                    '<div style="color:yellow;"><b>' + entry.label + '</b> (' + id + ')</div>';
+                    '<div style="color:yellow;"><b>' + entry.label + '</b> (ID: ' + id + ')</div>';
 
             if (entry.text) {
                 programs += '<div style="color:cyan;" class="drm-label">' + entry.text + '</div>';
             }
 
-             programs +=
+            programs +=
                 '<div>' +
                     '<span class="drm-label">Type:&nbsp;</span>' +
-                    '<span class="drm-value">' + type + '</span>' +
+                    '<span class="drm-value">' + type + '</span>';
+
+            if (entry.is_audio) {
+                programs +=
                     ' | <span class="drm-label">Codec:&nbsp;</span>' +
-                    '<span class="drm-value">' + codec + '</span>' +
-                    ' | <span class="drm-label">Bitrate:&nbsp;</span>' +
-                    '<span class="drm-value">' + entry.bitrate_kbps + ' kbps</span>' +
-                    ' | <span class="drm-label">Protection:&nbsp;</span>' +
-                    '<span class="drm-value">' + entry.protection_mode + '</span>';
- 
-           if (entry.country) {
+                    '<span class="drm-value">' + codec + '</span>';
+            }
+
+            programs +=
+                ' | <span class="drm-label">Bitrate:&nbsp;</span>' +
+                '<span class="drm-value">' + entry.bitrate_kbps + ' kbps</span>' +
+                ' | <span class="drm-label">Protection:&nbsp;</span>' +
+                '<span class="drm-value">' + entry.protection_mode + '</span>';
+
+            if (entry.country) {
                 programs +=
                     ' | <span class="drm-label">Country:&nbsp;</span>' +
                     '<span class="drm-value">' + entry.country.name + '</span>';
@@ -879,7 +881,7 @@ DrmMetaPanel.prototype.update = function(data) {
         }
     }
 
-    $el.find('.drm-programs').html(programs);
+    $(this.el).find('.drm-programs').html(programs);
 };
 
 DrmMetaPanel.prototype.isSupported = function(data) {
