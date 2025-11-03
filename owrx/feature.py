@@ -610,17 +610,20 @@ class FeatureDetector(object):
         # Look through the --help output
         try:
             process = subprocess.Popen(["dream", "--help"], stderr=subprocess.PIPE)
-            while True:
+            while process.poll() is None:
                 line = process.stderr.readline()
                 if line is None:
+                    # Output ended, old Dream
                     return False
                 else:
                     matches = dream_status_regex.match(line.decode())
                     if matches is not None:
+                        # --status-socket option supported, new Dream!
                         return True
         except Exception as e:
-            pass
-        # Status-socket command line argument not present, old Dream
+            # Something bad happens, probably no Dream
+            return False
+        # Process ended, old Dream
         return False
 
     def has_sddc_connector(self):
