@@ -591,10 +591,9 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [Dream](https://sourceforge.net/projects/drm/)
         software to decode DRM broadcasts. The default version of Dream,
-        supplied in most Linux distributions, will not work with OpenWebRX,
-        so you will have to compile Dream from the sources. The detailed
-        installation instructions are available from the
-        [OpenWebRX Wiki](https://github.com/jketterl/openwebrx/wiki/DRM-demodulator-notes).
+        supplied in most Linux distributions, so you will have to install
+        the specially built `dream` package from the OpenWebRX+
+        repositories.
         """
         return self.command_is_runnable("dream --help", 0)
 
