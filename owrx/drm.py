@@ -14,7 +14,6 @@ class DrmStatusMonitor(threading.Thread):
         self.socket_path = socket_path
         self.running = False
         self.callbacks = []
-        self._sock = None
 
     def add_callback(self, callback):
         self.callbacks.append(callback)
@@ -26,19 +25,22 @@ class DrmStatusMonitor(threading.Thread):
     def run(self):
         self.running = True
         reconnect_delay = 1.0
+        sock = None
 
         while self.running:
             try:
-                self._sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-                self._sock.settimeout(5.0)
-                self._sock.connect(self.socket_path)
+                # Connect new socket to Dream status
+                sock = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+                sock.settimeout(5.0)
+                sock.connect(self.socket_path)
                 logger.debug(f"DRM monitor connected: {self.socket_path}")
                 reconnect_delay = 1.0
 
+                # Keep reading Dream status via socket
                 buffer = b""
                 while self.running:
                     try:
-                        data = self._sock.recv(4096)
+                        data = sock.recv(4096)
                         if not data:
                             break
 
@@ -58,22 +60,31 @@ class DrmStatusMonitor(threading.Thread):
                         logger.error(f"DRM read error: {e}")
                         break
 
+                # Clean up and close socket
+                if sock:
+                    try:
+                        sock.shutdown(socket.SHUT_RDWR)
+                        sock.close()
+                    except (OSError, AttributeError) as e:
+                        logger.debug(f"Socket cleanup error: {e}")
+                    sock = None
+
             except (FileNotFoundError, ConnectionRefusedError):
                 logger.debug(f"DRM socket not ready: {self.socket_path}")
-                time.sleep(reconnect_delay)
-                reconnect_delay = min(reconnect_delay * 1.5, 10.0)
             except Exception as e:
                 logger.error(f"DRM monitor error: {e}")
+            finally:
                 time.sleep(reconnect_delay)
                 reconnect_delay = min(reconnect_delay * 1.5, 10.0)
-            finally:
-                if self._sock:
+                if sock:
                     try:
-                        self._sock.close()
+                        sock.close()
                     except:
                         pass
-                    self._sock = None
+                    sock = None
 
+        # Monitor thread done
+        self.running = False
         logger.debug(f"DRM monitor stopped: {self.socket_path}")
 
     def _process_status(self, json_str):
@@ -89,13 +100,7 @@ class DrmStatusMonitor(threading.Thread):
             logger.error(f"Invalid DRM JSON: {e}")
 
     def stop(self):
-        logger.info(f"Stopping DRM monitor: {self.socket_path}")
         self.running = False
-        if self._sock:
-            try:
-                self._sock.shutdown(socket.SHUT_RDWR)
-                self._sock.close()
-            except (OSError, AttributeError) as e:
-                logger.debug(f"Socket cleanup error: {e}")
         if self.is_alive():
-            self.join(timeout=2.0)
+            logger.info(f"Stopping DRM monitor: {self.socket_path}")
+            self.join(timeout = 2.0)
