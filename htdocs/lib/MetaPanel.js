@@ -836,8 +836,10 @@ DrmMetaPanel.prototype.update = function(data) {
         for (var j = 0 ; j < data.service_list.length ; j++) {
             var entry = data.service_list[j];
             var codec = ['AAC', 'OPUS', 'RESERVED', 'xHE-AAC'][entry.audio_coding] || '?';
-            var id = '0x' + parseInt(entry.id).toString(16).toUpperCase();
-            var type = entry.is_audio? entry.audio_mode.toUpperCase() : 'DATA';
+            var id = '0x' + entry.id.toUpperCase();
+            var type = entry.program_type? entry.program_type.name
+                     : entry.is_audio? entry.audio_mode
+                     : 'Data';
 
             programs +=
                 '<div class="drm-program">' +
