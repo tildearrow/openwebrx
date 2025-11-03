@@ -603,7 +603,8 @@ class FeatureDetector(object):
         [Dream 2.2](https://github.com/wwek/dream) has some extended
         features, such as status reporting. With Dream 2.2 installed,
         you will be able to observe what the DRM decoder is doing and
-        what radio programs are available from the data stream.
+        what radio programs are available from the data stream. You can
+        install the `dream` package from the OpenWebRX+ repositories.
         """
         # Will be looking for the --status-socket option
         dream_status_regex = re.compile(".*--status-socket.*")
