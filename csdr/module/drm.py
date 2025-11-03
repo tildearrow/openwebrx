@@ -1,15 +1,18 @@
 from pycsdr.modules import ExecModule
 from pycsdr.types import Format
 from owrx.feature import FeatureDetector
+from owrx.config.core import CoreConfig
 
 import uuid
 import os
 
 class DrmModule(ExecModule):
     def __init__(self):
-        # Each instances gets its own status socket
-        self.instanceId = str(uuid.uuid4())[:8]
-        self.socketPath = f"/tmp/dream_status_{self.instanceId}.sock"
+        # Each instance gets its own status socket
+        self.socketPath = "{tmp_dir}/dream_status_{uid}.sock".format(
+            tmp_dir = CoreConfig().get_temporary_directory(),
+            uid = str(uuid.uuid4())[:8]
+        )
 
         # Remove old status socket, if present
         if os.path.exists(self.socketPath):
