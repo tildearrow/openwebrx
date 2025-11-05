@@ -800,12 +800,12 @@ DrmMetaPanel.prototype.update = function(data) {
     this.setIndicator('audio', data.services && data.services.audio > 0? 1:0);
     this.setIndicator('data', data.services && data.services.data > 0? 1:0);
 
-    this.setText('if', '' + data.signal.if_level_db + 'dB');
-    this.setText('snr', '' + data.signal.snr_db + 'dB');
+    this.setText('if', '' + data.signal.if_level_db + ' dB');
+    this.setText('snr', '' + data.signal.snr_db + ' dB');
 
     if (data.drm_mode) {
         var mode = ['A', 'B', 'C', 'D'][data.drm_mode.robustness] || '?';
-        var bw = ['4.5kHz', '5kHz', '9kHz', '10kHz', '18kHz', '20kHz'][data.drm_mode.bandwidth] || '?';
+        var bw = ['4.5 kHz', '5 kHz', '9 kHz', '10 kHz', '18 kHz', '20 kHz'][data.drm_mode.bandwidth] || '?';
         var ilv = ['Short', 'Long'][data.drm_mode.interleaver] || '?';
         this.setText('mode', mode);
         this.setText('bandwidth', bw);
