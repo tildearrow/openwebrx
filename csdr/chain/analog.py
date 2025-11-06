@@ -147,9 +147,11 @@ class SAm(BaseDemodulatorChain):
 class SsbDigital(BaseDemodulatorChain, FixedAudioRateChain, HdAudio):
     def __init__(self, sampleRate: int = 48000):
         self.sampleRate = sampleRate
+        agc = Agc(Format.FLOAT)
+        agc.setProfile(AgcProfile.SLOW)
         workers = [
             RealPart(),
-            Agc(Format.FLOAT),
+            agc,
         ]
         super().__init__(workers)
 
