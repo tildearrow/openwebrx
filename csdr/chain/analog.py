@@ -1,7 +1,7 @@
 from csdr.chain.demodulator import BaseDemodulatorChain, FixedIfSampleRateChain, HdAudio, \
     FixedAudioRateChain, DeemphasisTauChain, MetaProvider, RdsChain
 from pycsdr.modules import AmDemod, DcBlock, FmDemod, Limit, NfmDeemphasis, Agc, Afc, \
-    WfmDeemphasis, FractionalDecimator, RealPart, Writer, Buffer
+    WfmDeemphasis, FractionalDecimator, RealPart, Writer, Buffer, Gain
 from pycsdr.types import Format, AgcProfile
 from csdr.chain.toolbox import RdsDemodulator
 from typing import Optional
@@ -17,6 +17,16 @@ class Am(BaseDemodulatorChain):
             AmDemod(),
             DcBlock(),
             agc,
+        ]
+        super().__init__(workers)
+
+class RawAm(BaseDemodulatorChain, HdAudio):
+    def __init__(self, sampleRate: int = 48000):
+        self.sampleRate = sampleRate
+        workers = [
+            AmDemod(),
+            DcBlock(),
+            Gain(Format.FLOAT,100.0)
         ]
         super().__init__(workers)
 
@@ -53,7 +63,7 @@ class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAu
         workers = [
             FmDemod(),
             self.limit,
-            FractionalDecimator(Format.FLOAT, 200000.0 / self.sampleRate, prefilter=True),
+            FractionalDecimator(Format.FLOAT, 250000.0 / self.sampleRate, prefilter=True),
             WfmDeemphasis(self.sampleRate, self.tau),
         ]
         self.metaChain = None
@@ -66,7 +76,7 @@ class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAu
         super()._connect(w1, w2, buffer)
 
     def getFixedIfSampleRate(self):
-        return 200000
+        return 250000
 
     def setDeemphasisTau(self, tau: float) -> None:
         if tau == self.tau:
@@ -78,7 +88,7 @@ class WFm(BaseDemodulatorChain, FixedIfSampleRateChain, DeemphasisTauChain, HdAu
         if sampleRate == self.sampleRate:
             return
         self.sampleRate = sampleRate
-        self.replace(2, FractionalDecimator(Format.FLOAT, 200000.0 / self.sampleRate, prefilter=True))
+        self.replace(2, FractionalDecimator(Format.FLOAT, 250000.0 / self.sampleRate, prefilter=True))
         self.replace(3, WfmDeemphasis(self.sampleRate, self.tau))
 
     def setMetaWriter(self, writer: Writer) -> None:
@@ -143,6 +153,18 @@ class SAm(BaseDemodulatorChain):
         ]
         super().__init__(workers)
 
+class RawSAm(BaseDemodulatorChain, HdAudio):
+    def __init__(self, sampleRate: int = 48000):
+        self.updatePeriod = 50
+        self.samplePeriod = 8
+        self.sampleRate = sampleRate
+        workers = [
+            Afc(self.updatePeriod, self.samplePeriod),
+            RealPart(),
+            DcBlock(),
+            Gain(Format.FLOAT,100.0)
+        ]
+        super().__init__(workers)
 
 class SsbDigital(BaseDemodulatorChain, FixedAudioRateChain, HdAudio):
     def __init__(self, sampleRate: int = 48000):

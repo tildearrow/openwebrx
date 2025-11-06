@@ -184,18 +184,18 @@ UI.tuneBookmark = function(b) {
 // Volume Controls
 //
 
-// Set audio volume in 0..150 range.
+// Set audio volume in 0..400 range.
 UI.setVolume = function(x) {
     // Must have running audio engine
     if (!audioEngine.isStarted()) return;
 
-    x = Math.min(150, Math.max(0, Math.round(parseFloat(x))));
+    x = Math.min(400, Math.max(0, Math.round(parseFloat(x))));
     if (this.volume != x) {
         this.volume = x;
         LS.save('volume', x);
         $('#openwebrx-panel-volume').val(x)
         if (audioEngine) {
-            // Map 0-150 to -55..+5db gain
+            // Map 0-400 to -55..+5db gain
             gain = x > 0? Math.pow(10, ((x / 2.5) - 55) / 20) : 0;
             audioEngine.setVolume(gain);
         }

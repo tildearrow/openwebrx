@@ -9,10 +9,10 @@ Filter.prototype.getLimits = function() {
         max_bw = 12500;
     } else if (['dmr', 'dstar', 'nxdn', 'ysf', 'm17'].indexOf(this.demodulator.get_modulation()) >= 0) {
         max_bw = 6250;
-    } else if (['lsbd', 'usbd'].indexOf(this.demodulator.get_modulation()) >= 0) {
+    } else if (['lsbd', 'usbd', 'rawam', 'rawsam'].indexOf(this.demodulator.get_modulation()) >= 0) {
         max_bw = 24000;
     } else if (this.demodulator.get_modulation() === 'wfm') {
-        max_bw = 100000;
+        max_bw = 125000;
     } else if (this.demodulator.get_modulation() === 'drm') {
         max_bw = 50000;
     } else if (this.demodulator.get_modulation() === "freedv") {

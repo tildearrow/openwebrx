@@ -122,13 +122,15 @@ class Js8Mode(AudioChopperMode):
 class Modes(object):
     mappings = [
         AnalogMode("nfm", "FM", bandpass=Bandpass(-5999, 5999)),
-        AnalogMode("wfm", "WFM", bandpass=Bandpass(-99999, 99999)),
+        AnalogMode("wfm", "WFM", bandpass=Bandpass(-124000, 124000)),
         AnalogMode("am", "AM", bandpass=Bandpass(-4700, 4700)),
         AnalogMode("lsb", "LSB", bandpass=Bandpass(-3000, -150)),
         AnalogMode("usb", "USB", bandpass=Bandpass(150, 3000)),
         AnalogMode("cw", "CW", bandpass=Bandpass(700, 900)),
         AnalogMode("sam", "SAM", bandpass=Bandpass(-4700, 4700)),
         AnalogMode("usbd", "DATA", bandpass=Bandpass(0, 24000)),
+        AnalogMode("rawam", "RAM", bandpass=Bandpass(-10000, 10000)),
+        AnalogMode("rawsam", "RSAM", bandpass=Bandpass(-10000, 10000)),
         AnalogMode("dmr", "DMR", bandpass=Bandpass(-6250, 6250), requirements=["digital_voice_digiham"], squelch=False),
         AnalogMode(
             "dstar", "D-Star", bandpass=Bandpass(-3250, 3250), requirements=["digital_voice_digiham"], squelch=False

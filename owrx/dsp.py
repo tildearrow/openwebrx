@@ -608,6 +608,12 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
         elif demod == "sam":
             from csdr.chain.analog import SAm
             return SAm()
+        elif demod == "rawam":
+            from csdr.chain.analog import RawAm
+            return RawAm(self.props["hd_output_rate"])
+        elif demod == "rawsam":
+            from csdr.chain.analog import RawSAm
+            return RawSAm(self.props["hd_output_rate"])
         elif demod in ["usb", "lsb", "cw"]:
             from csdr.chain.analog import Ssb
             return Ssb(AgcProfile(self.props["ssb_agc_profile"]))
