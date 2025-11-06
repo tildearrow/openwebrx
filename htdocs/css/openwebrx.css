@@ -1612,6 +1612,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-content-container,
+#openwebrx-panel-digimodes[data-mode="wmbus"]   #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="dsc"]     #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="cwskimmer"] #openwebrx-digimode-content-container,
 #openwebrx-panel-digimodes[data-mode="ft8"]     #openwebrx-digimode-select-channel,
@@ -1635,6 +1636,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-select-channel,
+#openwebrx-panel-digimodes[data-mode="wmbus"]   #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="selcall"] #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="zvei"]    #openwebrx-digimode-select-channel,
 #openwebrx-panel-digimodes[data-mode="eas"]     #openwebrx-digimode-select-channel,
@@ -1664,6 +1666,7 @@ img.openwebrx-mirror-img
 #openwebrx-panel-digimodes[data-mode="sstv"]    #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="fax"]     #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="ism"]     #openwebrx-digimode-canvas-container,
+#openwebrx-panel-digimodes[data-mode="wmbus"]   #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="dsc"]     #openwebrx-digimode-canvas-container,
 #openwebrx-panel-digimodes[data-mode="cwskimmer"] #openwebrx-digimode-canvas-container
 {
@@ -1798,7 +1801,7 @@ img.openwebrx-mirror-img
 
 #openwebrx-panel-metadata-hdr {
 	width: 350px;
-	max-height: 300px;
+	max-height: 400px;
 	padding: 10px 10px 10px 10px;
 }
 
@@ -1806,6 +1809,12 @@ img.openwebrx-mirror-img
 	width: 100%;
 	text-align: center;
 	overflow: hidden auto;
+}
+
+.hdr-image {
+	display: block;
+	margin: auto;
+	max-height: 200px;
 }
 
 .hdr-container .hdr-station {
@@ -1872,6 +1881,93 @@ img.openwebrx-mirror-img
 
 .dab-container .dab-ensemble-label:not(:empty):before {
 	content: "Ensemble: ";
+}
+
+#openwebrx-panel-metadata-drm {
+	width: 350px;
+	max-height: 640px;
+	padding: 10px 10px 10px 10px;
+}
+
+.drm-container {
+	width: 100%;
+}
+
+.drm-line, .drm-separator {
+	width: 100%;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	text-align: center;
+	color: #ccc;
+}
+
+.drm-separator {
+	border-top: 2px dotted;
+}
+
+.drm-program {
+	width: 95%;
+	padding: 5px 5px 5px 5px;
+	border-radius: 3px;
+        background: #111;
+	text-align: left;
+}
+
+.drm-label, .drm-left {
+	display: inline-block;
+	font-size: 11px;
+	letter-spacing: 0.3px;
+	color: #ccc;
+}
+
+.drm-left {
+	padding-right: 10px;
+	text-align: right;
+	width: 20%;
+}
+
+.drm-value, .drm-right {
+	display: inline-block;
+	font-size: 11px;
+	font-weight: 600;
+	letter-spacing: 0.3px;
+	color: #fff;
+}
+
+.drm-right {
+	padding-left: 10px;
+	text-align: left;
+	width: 20%;
+}
+
+.drm-indicator {
+	padding: 2px 6px;
+	margin-left: 3px;
+	margin-right: 3px;
+	border-radius: 3px;
+	font-size: 11px;
+	font-weight: 600;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 10px;
+	transition: background-color 0.2s ease, color 0.2s ease;
+	letter-spacing: 0.3px;
+}
+
+.drm-on {
+	background: #0f0;
+	color: #000;
+}
+
+.drm-off {
+	background: #666;
+	color: #ccc;
+}
+
+.drm-error {
+	background: #f00;
+	color: #fff;
 }
 
 @keyframes openwebrx-record-animation {

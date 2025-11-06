@@ -62,6 +62,7 @@ class FeatureDetector(object):
         "perseussdr": ["perseustest", "nmux"],
         "airspy": ["soapy_connector", "soapy_airspy"],
         "airspyhf": ["soapy_connector", "soapy_airspyhf"],
+        "hydrasdr": ["soapy_connector", "soapy_hydrasdr"],
         "afedri": ["soapy_connector", "soapy_afedri"],
         "lime_sdr": ["soapy_connector", "soapy_lime_sdr"],
         "fifi_sdr": ["alsa", "rockprog", "nmux"],
@@ -83,10 +84,11 @@ class FeatureDetector(object):
         "wsjt-x-2-3": ["wsjtx_2_3"],
         "wsjt-x-2-4": ["wsjtx_2_4"],
         "msk144": ["msk144decoder"],
-        "packet": ["direwolf"],
+        "packet": ["direwolf", "aprs_symbols"],
         "pocsag": ["digiham"],
         "js8call": ["js8", "js8py"],
         "drm": ["dream"],
+        "dream-2-2": ["dream_2_2"],
         "adsb": ["dump1090"],
         "ism": ["rtl_433"],
         "hfdl": ["dumphfdl"],
@@ -375,6 +377,13 @@ class FeatureDetector(object):
         """
         return self._has_soapy_driver("airspyhf")
 
+    def has_soapy_hydrasdr(self):
+        """
+        The [SoapySDR module for RFOne](https://github.com/hydrasdr/SoapyHydraSDR)
+        device is required for interfacing with HydraSDR RFOne devices.
+        """
+        return self._has_soapy_driver("hydrasdr")
+
     def has_soapy_afedri(self):
         """
         The [SoapyAfedri](https://github.com/alexander-sholohov/SoapyAfedri)
@@ -582,12 +591,40 @@ class FeatureDetector(object):
         """
         OpenWebRX uses the [Dream](https://sourceforge.net/projects/drm/)
         software to decode DRM broadcasts. The default version of Dream,
-        supplied in most Linux distributions, will not work with OpenWebRX,
-        so you will have to compile Dream from the sources. The detailed
-        installation instructions are available from the
-        [OpenWebRX Wiki](https://github.com/jketterl/openwebrx/wiki/DRM-demodulator-notes).
+        supplied in most Linux distributions, so you will have to install
+        the specially built `dream` package from the OpenWebRX+
+        repositories.
         """
         return self.command_is_runnable("dream --help", 0)
+
+    def has_dream_2_2(self):
+        """
+        [Dream 2.2](https://github.com/wwek/dream) has some extended
+        features, such as status reporting. With Dream 2.2 installed,
+        you will be able to observe what the DRM decoder is doing and
+        what radio programs are available from the data stream. You can
+        install the `dream` package from the OpenWebRX+ repositories.
+        """
+        # Will be looking for the --status-socket option
+        dream_status_regex = re.compile(".*--status-socket.*")
+        # Look through the --help output
+        try:
+            process = subprocess.Popen(["dream", "--help"], stderr=subprocess.PIPE)
+            while process.poll() is None:
+                line = process.stderr.readline()
+                if line is None:
+                    # Output ended, old Dream
+                    return False
+                else:
+                    matches = dream_status_regex.match(line.decode())
+                    if matches is not None:
+                        # --status-socket option supported, new Dream!
+                        return True
+        except Exception as e:
+            # Something bad happens, probably no Dream
+            return False
+        # Process ended, old Dream
+        return False
 
     def has_sddc_connector(self):
         """
@@ -741,13 +778,31 @@ class FeatureDetector(object):
         except ImportError:
             return False
 
+    def _has_acarsdec_version(self, required_version):
+        acarsdec_version_regex = re.compile(r"^Acarsdec\s+v?(\S+)\s+")
+        try:
+            process = subprocess.Popen(["acarsdec"], stderr=subprocess.PIPE)
+            matches = None
+            for x in range(3):
+                matches = acarsdec_version_regex.match(process.stderr.readline().decode())
+                if matches is not None:
+                    break
+            process.wait(1)
+            if matches is None:
+                return False
+            else:
+                version = LooseVersion(matches.group(1))
+                return version >= required_version
+        except Exception as e:
+            return False
+
     def has_acarsdec(self):
         """
         OpenWebRX supports decoding ACARS airplane communications by using the
         [AcarsDec](https://github.com/TLeconte/acarsdec) decoder. You can
         install the `acarsdec` package from the OpenWebRX repositories.
         """
-        return self.command_is_runnable("acarsdec --help")
+        return self._has_acarsdec_version(LooseVersion("4"))
 
     def has_imagemagick(self):
         """
@@ -806,3 +861,11 @@ class FeatureDetector(object):
         is available in most Linux distributions.
         """
         return self.command_is_runnable("lame --help")
+
+    def has_aprs_symbols(self):
+        """
+        OpenWebRX uses a collection of APRS symbol icons to show APRS
+        traffic at the map. You can install the `aprs-symbols` package
+        from the OpenWebRX repositories.
+        """
+        return os.path.isdir("/usr/share/aprs-symbols")

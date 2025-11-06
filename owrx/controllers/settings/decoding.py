@@ -1,6 +1,7 @@
 from owrx.controllers.settings import SettingsFormController, SettingsBreadcrumb
 from owrx.form.section import Section
-from owrx.form.input import CheckboxInput, NumberInput, DropdownInput, Js8ProfileCheckboxInput, MultiCheckboxInput, Option, TextInput
+from owrx.form.input import CheckboxInput, NumberInput, DropdownInput, Js8ProfileCheckboxInput, MultiCheckboxInput, Option, TextInput, AgcInput
+from owrx.form.input.dab import DabOutputRateValues
 from owrx.form.input.wfm import WfmTauValues
 from owrx.form.input.wsjt import Q65ModeMatrix, WsjtDecodingDepthsInput
 from owrx.form.input.converter import OptionalConverter
@@ -31,6 +32,17 @@ class DecodingSettingsController(SettingsFormController):
                     "Secondary FFT size",
                     infotext="Secondary waterfall resolution in digital modes",
                     append="bins"
+                ),
+                AgcInput(
+                    "ssb_agc_profile",
+                    "SSB AGC profile",
+                    infotext="AGC profile used for LSB, USB, and CW analog modes",
+                ),
+                DropdownInput(
+                    "dab_output_rate",
+                    "DAB audio rate",
+                    DabOutputRateValues,
+                    infotext="Your local DAB station may use a different audio rate",
                 ),
                 DropdownInput(
                     "wfm_deemphasis_tau",
@@ -70,6 +82,27 @@ class DecodingSettingsController(SettingsFormController):
                     "digital_voice_nxdn_id_lookup",
                     'Enable lookup of NXDN ids in the <a href="https://www.radioid.net/" target="_blank">'
                     + "radioid</a> database to show callsigns and names",
+                ),
+            ),
+            Section(
+                "Background audio recording",
+                NumberInput(
+                    "rec_squelch",
+                    "Recording squelch level",
+                    validator=RangeValidator(5, 70),
+                    infotext="Signal-to-noise ratio (SNR) that triggers recording",
+                    append="dB",
+                ),
+                NumberInput(
+                    "rec_hang_time",
+                    "Recording squelch hang time",
+                    validator=RangeValidator(0, 5000),
+                    infotext="Time recording keeps going after signal disappears",
+                    append="ms",
+                ),
+                CheckboxInput(
+                    "rec_produce_silence",
+                    "Record silence when there is no signal",
                 ),
             ),
             Section(
@@ -134,7 +167,7 @@ class DecodingSettingsController(SettingsFormController):
                 NumberInput(
                     "fax_max_length",
                     "Maximum page length",
-                    validator=RangeValidator(500, 3000),
+                    validator=RangeValidator(500, 10000),
                     append="lines",
                 ),
                 CheckboxInput("fax_postprocess", "Post-process received images to reduce noise"),
