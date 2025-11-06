@@ -29,15 +29,11 @@ class LocationInput(Input):
                 {inputs}
             </div>
             {errors}
-            <div class="row">
-                <div class="col map-input" data-key="{key}" for="{id}"></div>
-            </div>
         """.format(
             id=self.id,
             rowclass="is-invalid" if errors else "",
             inputs=self.render_input(value, errors),
             errors=self.render_errors(errors),
-            key=Config.get()["google_maps_api_key"],
         )
 
     def render_input(self, value, errors):
