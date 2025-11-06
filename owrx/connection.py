@@ -471,7 +471,8 @@ class OpenWebRxReceiverClient(OpenWebRxClient, SdrSourceEventClient):
         return self.dsp
 
     def write_spectrum_data(self, data):
-        self.mp_send(bytes([0x01]) + data)
+        if not self.getDsp().getStopFFT():
+            self.mp_send(bytes([0x01]) + data)
 
     def write_dsp_data(self, data):
         self.send(bytes([0x02]) + data)

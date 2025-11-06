@@ -37,12 +37,13 @@ class ClientDemodulatorSecondaryDspEventClient(ABC):
 
 
 class ClientDemodulatorChain(Chain):
-    def __init__(self, demod: BaseDemodulatorChain, sampleRate: int, outputRate: int, hdOutputRate: int, audioCompression: str, nrEnabled: bool, nrThreshold: int, secondaryDspEventReceiver: ClientDemodulatorSecondaryDspEventClient):
+    def __init__(self, demod: BaseDemodulatorChain, sampleRate: int, outputRate: int, hdOutputRate: int, audioCompression: str, nrEnabled: bool, nrThreshold: int, stopFFT: bool, secondaryDspEventReceiver: ClientDemodulatorSecondaryDspEventClient):
         self.sampleRate = sampleRate
         self.outputRate = outputRate
         self.hdOutputRate = hdOutputRate
         self.nrEnabled = nrEnabled
         self.nrThreshold = nrThreshold
+        self.stopFFT = stopFFT
         self.secondaryDspEventReceiver = secondaryDspEventReceiver
         self.selector = Selector(sampleRate, outputRate)
         self.selectorBuffer = Buffer(Format.COMPLEX_FLOAT)
@@ -65,6 +66,7 @@ class ClientDemodulatorChain(Chain):
         self.secondaryFftWriter = None
         self.secondaryWriter = None
         self.squelchLevel = -150
+        self.stopFFT = False
         self.secondarySelector = None
         self.secondaryFrequencyOffset = None
         super().__init__([self.selector, self.demodulator, self.clientAudioChain])
@@ -228,6 +230,9 @@ class ClientDemodulatorChain(Chain):
         else:
             self.selector.setSquelchLevel(self.squelchLevel)
 
+    def getStopFFT(self) -> bool:
+        return self.stopFFT
+
     def setLowCut(self, lowCut: Union[float, None]):
         self.selector.setLowCut(lowCut)
 
@@ -269,6 +274,9 @@ class ClientDemodulatorChain(Chain):
 
     def setNrThreshold(self, nrThreshold: int) -> None:
         self.clientAudioChain.setNrThreshold(nrThreshold)
+
+    def setStopFFT(self, stopFFT: bool) -> None:
+        self.stopFFT = stopFFT
 
     def setSquelchLevel(self, level: float) -> None:
         if level == self.squelchLevel:
@@ -453,6 +461,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             "audio_service_id": "int",
             "nr_enabled": "bool",
             "nr_threshold": "int",
+            "stop_fft": "bool"
         }
         self.localProps = PropertyValidator(PropertyLayer().filter(*validators.keys()), validators)
 
@@ -485,7 +494,8 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
                 hd_output_rate=48000,
                 digital_voice_codecserver="",
                 nr_enabled=False,
-                nr_threshold=0
+                nr_threshold=0,
+                stop_fft=False
             ).readonly()
         )
 
@@ -497,6 +507,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props["audio_compression"],
             self.props["nr_enabled"],
             self.props["nr_threshold"],
+            self.props["stop_fft"],
             self
         )
 
@@ -547,6 +558,7 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
             self.props.wireProperty("secondary_offset_freq", self.chain.setSecondaryFrequencyOffset),
             self.props.wireProperty("nr_enabled", self.chain.setNrEnabled),
             self.props.wireProperty("nr_threshold", self.chain.setNrThreshold),
+            self.props.wireProperty("stop_fft", self.chain.setStopFFT),
         ]
 
         # wire power level output
@@ -810,6 +822,9 @@ class DspManager(SdrSourceEventClient, ClientDemodulatorSecondaryDspEventClient)
 
     def setHighCut(self, highCut: Union[float, PropertyDeletion]):
         self.chain.setHighCut(None if highCut is PropertyDeleted else highCut)
+
+    def getStopFFT(self) -> bool:
+        return self.chain.getStopFFT()
 
     def start(self):
         if self.sdrSource.isAvailable():

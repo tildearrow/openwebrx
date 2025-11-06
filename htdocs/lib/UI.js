@@ -310,7 +310,8 @@ UI.updateNR = function() {
         'type': 'connectionproperties',
         'params': {
             'nr_enabled': this.nrEnabled,
-            'nr_threshold': this.nrThreshold
+            'nr_threshold': this.nrThreshold,
+            'stop_fft': this.stopfft
         }
     }));
 }
@@ -419,6 +420,7 @@ UI.toggleStopFFT = function(on) {
         $('#openwebrx-stopfft-checkbox').attr('checked', on);
 	stopfft = this.stopfft;
     }
+    this.updateNR();
 };
 
 // Show or hide frame around receiver and other panels.
